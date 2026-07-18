@@ -1,0 +1,9 @@
+name = "recollect-flow"
+main = "apps/worker-api/src/index.ts"
+compatibility_date = "2026-07-18"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "recollect-flow"
+database_id = "replace-with-production-d1-id"
+migrations_dir = "migrations"
