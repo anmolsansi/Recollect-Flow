@@ -1,8 +1,4 @@
-export interface Env {
-  DB: D1Database;
-  CAPTURE_TOKEN: string;
-  ADMIN_TOKEN: string;
-}
+export type Env = Cloudflare.Env;
 
 export interface AppContext {
   Bindings: Env;

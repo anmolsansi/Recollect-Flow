@@ -1,9 +1,21 @@
 name = "recollect-flow"
 main = "apps/worker-api/src/index.ts"
 compatibility_date = "2026-07-18"
+workers_dev = true
+preview_urls = false
 
 [[d1_databases]]
 binding = "DB"
-database_name = "recollect-flow"
-database_id = "replace-with-production-d1-id"
+database_name = "recollect-flow-prod"
+database_id = "5fcba514-d0f7-45e7-a632-d4c59233af71"
 migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "ATTACHMENTS"
+bucket_name = "recollect-flow-attachments-prod"
+
+[ai]
+binding = "AI"
+
+[secrets]
+required = ["CAPTURE_TOKEN", "ADMIN_TOKEN"]
