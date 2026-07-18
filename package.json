@@ -13,14 +13,13 @@
     "test": "vitest run",
     "check": "npm run format && npm run lint && npm run typecheck && npm test",
     "db:migrate:local": "wrangler d1 migrations apply recollect-flow --local",
-    "db:migrate:remote": "wrangler d1 migrations apply recollect-flow --remote"
+    "db:migrate:remote": "wrangler d1 migrations apply recollect-flow-prod --remote"
   },
   "dependencies": {
     "hono": "^4.8.10",
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260718.0",
     "@eslint/js": "^9.31.0",
     "@types/node": "^24.0.15",
     "eslint": "^9.31.0",

@@ -37,6 +37,8 @@ class MemoryCaptureRepository implements CaptureRepository {
 
 const env = {
   DB: {} as D1Database,
+  ATTACHMENTS: {} as R2Bucket,
+  AI: {} as Ai,
   CAPTURE_TOKEN: 'capture-secret',
   ADMIN_TOKEN: 'admin-secret',
 } satisfies Env;

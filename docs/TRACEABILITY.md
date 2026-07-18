@@ -19,6 +19,7 @@
 | Linear  | Requirements currently evidenced                                               | Repository evidence                                             |
 | ------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------- |
 | OPE-213 | Product scope decisions                                                        | `COMPLETE_PRODUCT_SPEC.md`, `DECISIONS.md`                      |
+| OPE-214 | Cloudflare account, bindings, secrets, migration, and provider smoke tests     | `tickets/OPE-214.md`, `wrangler.toml`, generated binding types  |
 | OPE-215 | Foundation/CI/docs shell                                                       | configuration, CI, README, `repo_context.md`                    |
 | OPE-216 | Core item/attachment/job/sync/provider/audit schema                            | `migrations/0001_initial.sql`, migration tests                  |
 | OPE-217 | CAP-002/004 partial, ING-001/002 partial, SEC-001/002 partial, JOB-001 partial | capture route/service/repository tests and live D1 replay       |
