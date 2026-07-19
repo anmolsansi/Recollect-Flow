@@ -1,2 +1,5 @@
 CAPTURE_TOKEN="local-capture-token"
 ADMIN_TOKEN="local-admin-token"
+NOTION_ACCESS_TOKEN="local-notion-access-token"
+TELEGRAM_BOT_TOKEN="local-telegram-bot-token"
+TELEGRAM_CHAT_ID="local-private-chat-id"

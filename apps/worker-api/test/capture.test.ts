@@ -39,8 +39,12 @@ const env = {
   DB: {} as D1Database,
   ATTACHMENTS: {} as R2Bucket,
   AI: {} as Ai,
+  NOTION_DATABASE_ID: '3a21b726-4ada-80a3-bfe1-ef808e3c293f',
   CAPTURE_TOKEN: 'capture-secret',
   ADMIN_TOKEN: 'admin-secret',
+  NOTION_ACCESS_TOKEN: 'notion-secret',
+  TELEGRAM_BOT_TOKEN: 'telegram-secret',
+  TELEGRAM_CHAT_ID: 'private-chat-id',
 } satisfies Env;
 
 const validCapture = {

@@ -45,6 +45,40 @@ Stale leases expire safely. Result submission is idempotent and version-checked.
 
 No payment method without a separate owner decision. Maintain internal usage estimates even when providers expose counters. Soft warnings at 70% and 90%; hard threshold pauses optional AI/embedding/transcription/reranking/generation. Capture, raw retrieval, and exact search continue. Revalidate pricing/limits quarterly and before release/provider changes. If hosted AI disappears, use deterministic extraction plus local Ollama; if Notion changes, use Web Inbox/export.
 
+Cloudflare budget alerts are required before any future pay-as-you-go enablement.
+On the current free configuration, provider hard limits and the application
+thresholds above are the active spending controls. Record D1 rows/storage, R2
+bytes/operations, Workers requests, and Workers AI use during each quarterly
+review. Never describe a budget alert as enabled without dashboard or API
+evidence.
+
+## Notion and Telegram credentials
+
+### Notion limits and rotation
+
+Throttle each connection to an average of three requests per second and also
+respect the plan-scaled workspace limit. Treat HTTP 429 and 529 as retryable,
+honor `Retry-After`, and use bounded backoff. Keep requests below 500 KB and
+1,000 blocks; validate individual property limits before sending.
+
+Rotate the internal-connection token from its Notion Developer portal
+Configuration tab, securely replace the Worker secret, and then verify database
+read plus disposable page create/read/update/read-back. Confirm the destination
+still grants only the required content access and capabilities. Record dates and
+safe page IDs, never the token.
+
+### Telegram privacy and rotation
+
+Use only a private chat or non-public private group/channel. A digest may contain
+a neutral title/label and authenticated application link. For Sensitive items,
+send only `Private item due for review.` Never include raw captures, notes,
+summaries, excerpts, attachments, provider tokens, or private query strings.
+
+Rotate with `@BotFather`, securely replace `TELEGRAM_BOT_TOKEN`, run `getMe`,
+confirm the destination with `getChat`, and deliver one neutral `sendMessage`
+test. Store `TELEGRAM_CHAT_ID` as a secret and repeat the destination check after
+any chat migration. Record only safe result metadata.
+
 ## Backup schedule
 
 At least weekly metadata export with schema version, row counts, attachment manifest, checksums, projects/topics/events/jobs, and deletion state. Store latest backups outside primary D1—R2 plus periodic Mac download. Protect exports like source data. Track creation, verification, retention, and restore-rehearsal timestamp.

@@ -18,4 +18,7 @@ bucket_name = "recollect-flow-attachments-prod"
 binding = "AI"
 
 [secrets]
-required = ["CAPTURE_TOKEN", "ADMIN_TOKEN"]
+required = ["CAPTURE_TOKEN", "ADMIN_TOKEN", "NOTION_ACCESS_TOKEN", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"]
+
+[vars]
+NOTION_DATABASE_ID = "3a21b726-4ada-80a3-bfe1-ef808e3c293f"
