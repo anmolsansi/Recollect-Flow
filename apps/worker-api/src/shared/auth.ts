@@ -40,3 +40,18 @@ export const requireCaptureToken: MiddlewareHandler<AppContext> = async (
   }
   await next();
 };
+
+export const requireAdminToken: MiddlewareHandler<AppContext> = async (
+  context,
+  next,
+) => {
+  const provided = bearerToken(context.req.header('Authorization'));
+  const adminMatch = provided
+    ? constantTimeEqual(provided, context.env.ADMIN_TOKEN)
+    : false;
+
+  if (!adminMatch) {
+    throw new AppError(403, 'FORBIDDEN', 'A valid admin token is required.');
+  }
+  await next();
+};

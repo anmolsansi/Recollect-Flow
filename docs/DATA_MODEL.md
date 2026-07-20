@@ -10,6 +10,10 @@ D1 owns canonical metadata and state. R2 owns original attachment bytes. Notion 
 
 Stable ID, idempotency key, source type/app, original URL, canonical URL, raw/shared text, immutable user reason, quick category, privacy, title/summary/project/topics/importance/suggested action, coverage, lifecycle status, processing status, duplicate-of, hashes, Notion ID, review date, captured/created/updated/deleted timestamps, and schema/content version.
 
+### CaptureEvent
+
+One immutable record for every share attempt accepted under a new idempotency key. It references the canonical Item and preserves the original source URL/text, user note, privacy selection, optional attachment, capture time, and `duplicate_of` canonical item ID. Repeated shares never require a second knowledge item.
+
 ### Attachment
 
 Item relationship, opaque R2 key, safe display filename, detected/declared MIME, byte size, checksum, dimensions/page/duration metadata, upload/link/extraction state, privacy, creation/purge timestamps. Unlinked attachments expire.
@@ -73,7 +77,7 @@ Job lifecycle: `Pending → Leased/Processing → Complete`; recoverable failure
 
 ## Duplicate model
 
-Idempotency replay is the same request and returns the original item. Cross-key duplication is a separate conservative match using canonical URL or exact content hash. Every share preserves a capture/audit event and new user note. The canonical item may reference duplicate captures; repeated captures do not count as independent evidence in RAG.
+Idempotency replay is the same request and returns its existing CaptureEvent and Item. Cross-key duplication reuses one Item only when the exact source URL, normalized canonical URL, or byte-exact text hash matches. Every accepted new key creates a CaptureEvent and preserves its note. Query parameters not on the tracking allowlist, path differences, and even whitespace/case changes in text remain distinct. Repeated events do not count as independent evidence in RAG.
 
 ## Deletion and retention
 

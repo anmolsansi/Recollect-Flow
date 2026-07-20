@@ -44,7 +44,8 @@ export function captureRoutes(
           capture_id: result.capture.id,
           status: 'saved',
           processing_status: result.capture.processingStatus,
-          duplicate_of: null,
+          duplicate_of: result.capture.duplicateOf,
+          privacy_level: result.capture.privacyLevel,
           message: result.replayed
             ? 'Already saved.'
             : 'Saved to RecollectFlow.',

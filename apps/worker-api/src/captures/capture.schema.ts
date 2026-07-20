@@ -14,10 +14,11 @@ const categorySchema = z.enum([
 export const captureSchema = z
   .object({
     idempotency_key: z.string().min(12).max(200),
-    source_type: z.enum(['url', 'text', 'note']),
+    source_type: z.enum(['url', 'text', 'note', 'image', 'file']),
     source_app: z.string().min(1).max(80),
     url: z.string().url().max(2_048).optional(),
     shared_text: z.string().max(100_000).optional(),
+    attachment_id: z.string().uuid().optional(),
     user_reason: z.string().max(2_000).optional(),
     quick_category: categorySchema.optional(),
     privacy_level: z
@@ -41,13 +42,23 @@ export const captureSchema = z
       });
     }
     if (
-      capture.source_type !== 'url' &&
+      (capture.source_type === 'text' || capture.source_type === 'note') &&
       (!capture.shared_text || capture.shared_text.trim().length === 0)
     ) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['shared_text'],
         message: 'Text is required for text and note captures.',
+      });
+    }
+    if (
+      ['image', 'file'].includes(capture.source_type) &&
+      !capture.attachment_id
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['attachment_id'],
+        message: 'A finalized attachment is required for this source type.',
       });
     }
   });
