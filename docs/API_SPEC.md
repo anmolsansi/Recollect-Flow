@@ -23,9 +23,9 @@ Tokens are long random Worker secrets, rotatable without migration. Future publi
 
 ### `POST /api/v1/captures`
 
-Current JSON fields: `idempotency_key`, `source_type` (`url|text|note`), `source_app`, conditional `url` or `shared_text`, optional `user_reason`, `quick_category`, `privacy_level`, `captured_at`, and strict `client{name,version}`.
+Current JSON fields: `idempotency_key`, `source_type` (`url|text|note|image|file`), `source_app`, conditional `url`, `shared_text`, or finalized `attachment_id`, optional `user_reason`, `quick_category`, `privacy_level`, `captured_at`, and strict `client{name,version}`. Audio bytes use an upload `source_type` of `audio` and a capture `source_type` of `file` until the future recording contract is approved.
 
-Future-compatible capture contract adds `attachment_id`, `review_at`, source metadata, and approved image/file/audio/video source types only through a documented contract change.
+Future-compatible capture fields still reserved include `review_at`, richer source metadata, and video/recording source types.
 
 - `201`: new raw item saved; downstream status may be pending.
 - `200`: idempotent replay returns original ID.
@@ -35,21 +35,27 @@ Future-compatible capture contract adds `attachment_id`, `review_at`, source met
 - `422`: field or conditional validation.
 - `503`: raw storage unavailable; retry with same key.
 
-## Planned attachment flow
+## Implemented attachment flow
 
 ### `POST /api/v1/uploads/init`
 
-Capture scope. Input: filename, MIME type, byte size, optional content hash, intended source type. Validate configured size, allowlist, signature policy, and free-tier headroom. Output: attachment ID, opaque object key/upload target, expiry, allowed headers.
+Capture scope. Input: filename, MIME type, exact byte size, optional SHA-256 content hash, and intended source type. The Worker validates the configured size ceiling and MIME allowlist, persists expiry, and returns an attachment ID plus controlled upload target and allowed headers.
 
 ### `PUT /api/v1/uploads/:attachmentId/content`
 
-Controlled or signed byte upload. Enforce exact attachment state, size, content type, checksum when supplied, and expiry. Never expose public bucket listing.
+Controlled byte upload. The authenticated Worker enforces pending state, expiry, exact `Content-Length` and actual byte length, declared MIME, bounded magic-byte signature, and SHA-256 before writing to private R2.
 
 ### `POST /api/v1/uploads/:attachmentId/finalize`
 
-Verify object existence/metadata/hash and mark the attachment linkable. Repeated finalization is idempotent. Orphans are purged after retention.
+Verify object existence, metadata, size, and hash and mark the attachment linkable. Repeated finalization is idempotent. Hourly cleanup removes expired unlinked R2 objects idempotently.
 
-`POST /api/v1/captures` then links the finalized `attachment_id`; failure never discards already uploaded bytes silently and cleanup remains auditable.
+`POST /api/v1/captures` links one finalized `attachment_id` to its canonical item. `GET /api/v1/attachments/:attachmentId/content` streams authorized private bytes; `DELETE` is admin-only. `GET /api/v1/uploads/usage` reports active object counts and bytes by lifecycle state.
+
+## Implemented privacy override
+
+### `PATCH /api/v1/items/:itemId/privacy`
+
+Admin scope. Input: `privacy_level` plus `derived_data_action` (`reprocess|purge`). The operation invalidates current derived fields/jobs, records an audit event and either creates a policy-stamped enrichment job or leaves derived data purged.
 
 ## Planned item and review API
 
