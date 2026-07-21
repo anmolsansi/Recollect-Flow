@@ -2,7 +2,7 @@
 
 ## Assets and trust boundaries
 
-Assets: raw captures, attachments, private notes, tokens, provider credentials, derived content, indexes, exports, citations, audit trails. Boundaries: capture clients ↔ Worker, Worker ↔ D1/R2, Worker ↔ providers/Notion/Telegram, local worker ↔ API/Ollama, admin browser ↔ API.
+Assets: raw captures, attachments, private notes, tokens, provider credentials, derived content, indexes, exports, citations, audit trails. Boundaries: capture clients ↔ Worker, Worker ↔ D1/R2, Worker ↔ providers/Notion/Telegram, user-provided provider credentials ↔ secure secret storage, admin browser ↔ API.
 
 ## Threat model
 
@@ -20,16 +20,16 @@ Assets: raw captures, attachments, private notes, tokens, provider credentials, 
 
 ## Classification and routing
 
-Policy version `2026-07-20.1` uses Unknown, Public, Personal, and Sensitive. Sensitive includes confidential/restricted content such as secrets, passwords, financial or medical records, immigration documents, and private conversations. Unknown is the default and fails closed.
+Policy version `2026-07-21.1` uses Unknown, Public, Personal, and Sensitive. Sensitive includes confidential/restricted content such as secrets, passwords, financial or medical records, immigration documents, and private conversations. Unknown is the default and fails closed.
 
-| Data class | Workers AI                                | Gemini free tier               | Local Ollama                          | No AI          |
-| ---------- | ----------------------------------------- | ------------------------------ | ------------------------------------- | -------------- |
-| Unknown    | Never                                     | Never                          | Never automatically                   | Default        |
-| Public     | Text and approved modalities within quota | Owner-requested image/PDF only | Allowed                               | Always allowed |
-| Personal   | Never                                     | Never                          | Default local route                   | Always allowed |
-| Sensitive  | Never                                     | Never                          | Explicit per-item local approval only | Default        |
+| Data class | App-managed OpenRouter                                                               | User-provided provider key                                      | Gemini free fallback                        | No AI          |
+| ---------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ------------------------------------------- | -------------- |
+| Unknown    | Never                                                                                | Never                                                           | Never                                       | Default        |
+| Public     | Default hosted route                                                                 | Allowed                                                         | Allowed when OpenRouter is unavailable      | Always allowed |
+| Personal   | Explicit hosted consent plus per-request ZDR and `data_collection=deny`; no fallback | Explicit hosted consent and the selected provider's terms apply | Never through the app-managed free fallback | Always allowed |
+| Sensitive  | Never                                                                                | Never                                                           | Never                                       | Default        |
 
-Provider unavailability or hosted quota exhaustion fails closed to no AI; it never falls back to a less private or billable provider. Changing classification invalidates derived fields and jobs, records an audit event, and requires an explicit `reprocess` or `purge` choice. Already transmitted provider data cannot be revoked. This matrix is implemented and tested but remains an owner approval gate under OPE-224.
+Personal routing never switches providers silently. The app-managed path is OpenRouter-only and must enforce zero data retention and deny provider data collection on every request. A user-provided key changes credential ownership, not the provider's data practices; the selected provider and applicable terms must be disclosed before consent. Gemini free is used only for Public content. Provider unavailability, missing consent, missing compliance controls, or hosted quota exhaustion fails closed to no AI. Changing classification invalidates derived fields and jobs, records an audit event, and requires an explicit `reprocess` or `purge` choice. Already transmitted provider data cannot be revoked. The owner approved this matrix on 2026-07-21 under OPE-224.
 
 ## Authentication and authorization
 

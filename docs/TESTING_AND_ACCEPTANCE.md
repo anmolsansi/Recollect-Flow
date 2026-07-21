@@ -60,7 +60,7 @@ Report Recall@K and ranking separately from answer groundedness/citations. Inclu
 - [ ] Webpage and text PDF become searchable.
 - [ ] Instagram URL-only state is honest.
 - [ ] Structured AI validates and preserves user edits.
-- [ ] Sensitive fixture stays local/no-AI.
+- [ ] Sensitive fixture always selects no AI.
 - [ ] Seeded and real items are recoverable through search.
 - [ ] Notion retry creates no duplicate page.
 - [ ] Daily digest links exact items and hides sensitive text.

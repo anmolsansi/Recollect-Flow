@@ -99,7 +99,7 @@ The exact model is defined in [DATA_MODEL.md](DATA_MODEL.md).
 
 ## AI and retrieval policy
 
-Deterministic parsing precedes AI. Provider selection considers sensitivity, modality, quota, and availability. Workers AI is the hosted default within approved free allocation. Ollama is the private/quota-overflow path. Optional Gemini use is restricted to explicitly approved public content. Enrichment must be structured, grounded to supplied content, coverage-aware, versioned, and safe to reject.
+Deterministic parsing precedes AI. Provider selection considers sensitivity, consent, credential source, provider data controls, modality, quota, and availability. App-managed OpenRouter is the Public default with a Public-only Gemini free fallback. Personal content requires explicit hosted-processing consent; app-managed Personal routing requires OpenRouter ZDR and denied data collection, while user-provided credentials never trigger a silent provider fallback. Unknown, Sensitive, and restricted content fail closed. Enrichment must be structured, grounded to supplied content, coverage-aware, versioned, and safe to reject.
 
 V1 search is D1 FTS5 plus structured filters. V1.5 combines lexical and vector candidates, metadata/privacy filters, deterministic fusion, duplicate control, source diversity, optional reranking, bounded context, and validated citations. A model may not silently supplement saved evidence with general knowledge.
 

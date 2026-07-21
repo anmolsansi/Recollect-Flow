@@ -2,7 +2,7 @@
 
 ## 1. Stack Decisions
 
-Cloudflare Worker + Hono + Zod + TypeScript; D1 as the system of record; private R2 for binary objects; Notion for review; D1 FTS5 for V1 search; Workers AI when policy permits and Ollama as a local fallback. RAG infrastructure is absent until V1.5 gates pass.
+Cloudflare Worker + Hono + Zod + TypeScript; D1 as the system of record; private R2 for binary objects; Notion for review; D1 FTS5 for V1 search; policy-gated OpenRouter with a Public-only Gemini fallback. RAG infrastructure is absent until V1.5 gates pass.
 
 ## 2. Frontend Architecture
 

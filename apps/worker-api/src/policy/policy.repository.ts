@@ -59,6 +59,12 @@ export class D1PolicyRepository implements PolicyRepository {
           JSON.stringify({
             privacy_level: input.privacy_level,
             derived_data_action: input.derived_data_action,
+            requested_provider: input.ai_provider ?? null,
+            fallback_providers: decision.fallbackProviders,
+            credential_source: decision.credentialSource,
+            hosted_processing_consent: decision.hostedProcessingConsent,
+            zero_data_retention_required: decision.zeroDataRetentionRequired,
+            data_collection_denied: decision.dataCollectionDenied,
             policy_version: decision.policyVersion,
           }),
           now,
@@ -71,8 +77,13 @@ export class D1PolicyRepository implements PolicyRepository {
           .prepare(
             `INSERT INTO processing_jobs (
               id, item_id, job_type, status, available_at, created_at, updated_at,
-              privacy_level_snapshot, provider_eligibility, policy_version
-            ) VALUES (?1, ?2, 'enrich', 'pending', ?3, ?3, ?3, ?4, ?5, ?6)`,
+              privacy_level_snapshot, provider_eligibility, policy_version,
+              credential_source, hosted_processing_consent,
+              zero_data_retention_required, data_collection_denied
+            ) VALUES (
+              ?1, ?2, 'enrich', 'pending', ?3, ?3, ?3, ?4, ?5, ?6,
+              ?7, ?8, ?9, ?10
+            )`,
           )
           .bind(
             crypto.randomUUID(),
@@ -81,6 +92,10 @@ export class D1PolicyRepository implements PolicyRepository {
             input.privacy_level,
             decision.provider,
             decision.policyVersion,
+            decision.credentialSource,
+            decision.hostedProcessingConsent ? 1 : 0,
+            decision.zeroDataRetentionRequired ? 1 : 0,
+            decision.dataCollectionDenied ? 1 : 0,
           ),
       );
     }

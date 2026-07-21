@@ -15,9 +15,10 @@
 ## Provider routing
 
 - Deterministic/no-AI path is always valid.
-- Workers AI is the hosted default only within approved free allowance.
-- Ollama local worker handles Sensitive/approved Personal content and hosted-quota overflow.
-- Optional Gemini free multimodal use is limited to owner-approved Public content under current terms.
+- App-managed OpenRouter is the hosted default for Public content.
+- Gemini free is a Public-only fallback when OpenRouter is unavailable.
+- Personal content requires explicit hosted-processing consent. App-managed Personal routing is OpenRouter-only with ZDR and data collection denied; a user-provided provider key uses the selected provider without silent fallback.
+- Unknown content is not sent automatically. Sensitive and restricted content never use hosted AI.
 - A privacy or quota failure leaves work pending/partial; it never silently chooses a less private or billable provider.
 
 ## Enrichment contract
