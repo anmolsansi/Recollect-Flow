@@ -21,6 +21,13 @@ const policyMigration = readFileSync(
   new URL('../../../migrations/0004_add_policy_routing.sql', import.meta.url),
   'utf8',
 );
+const approvedPolicyMigration = readFileSync(
+  new URL(
+    '../../../migrations/0005_update_hosted_ai_policy.sql',
+    import.meta.url,
+  ),
+  'utf8',
+);
 
 describe('0001_initial migration contract', () => {
   it('creates every V1 durability table', () => {
@@ -87,5 +94,21 @@ describe('follow-up migration contracts', () => {
     expect(policyMigration).toContain('privacy_level_snapshot');
     expect(policyMigration).toContain('provider_eligibility');
     expect(policyMigration).toContain('policy_version');
+  });
+
+  it('preserves jobs while adding OpenRouter and consent evidence', () => {
+    expect(approvedPolicyMigration).toContain(
+      'CREATE TABLE processing_jobs_policy_20260721',
+    );
+    expect(approvedPolicyMigration).toContain('INSERT INTO processing_jobs');
+    expect(approvedPolicyMigration.indexOf('INSERT INTO')).toBeLessThan(
+      approvedPolicyMigration.indexOf('DROP TABLE processing_jobs'),
+    );
+    expect(approvedPolicyMigration).toContain("'openrouter'");
+    expect(approvedPolicyMigration).toContain('credential_source');
+    expect(approvedPolicyMigration).toContain('hosted_processing_consent');
+    expect(approvedPolicyMigration).toContain('zero_data_retention_required');
+    expect(approvedPolicyMigration).toContain('data_collection_denied');
+    expect(approvedPolicyMigration).toContain("'2026-07-21.1'");
   });
 });

@@ -24,7 +24,7 @@
 | OPE-216 | Core item/attachment/job/sync/provider/audit schema                            | `migrations/0001_initial.sql`, migration tests                                           |
 | OPE-217 | CAP-002/004 partial, ING-001/002 partial, SEC-001/002 partial, JOB-001 partial | capture route/service/repository tests and live D1 replay                                |
 | OPE-218 | ING-002 cross-key canonical reuse and event preservation                       | capture event/deduplication migrations, repository/service and tests                     |
-| OPE-224 | AI provider privacy routing, fail-closed defaults and override lifecycle       | policy matrix/service/routes, policy-stamped jobs and tests; owner approval pending      |
+| OPE-224 | AI provider privacy routing, fail-closed defaults and override lifecycle       | approved policy `2026-07-21.1`, consent/ZDR-stamped jobs, routes, migration and tests    |
 | OPE-249 | Private attachment durability and lifecycle                                    | R2 upload/finalize/link/download/cleanup routes, migrations and tests                    |
 | OPE-219 | Shortcut client contract and offline/retry design                              | build sheet, Mac Share Sheet template and device QA matrix; physical-device gate pending |
 

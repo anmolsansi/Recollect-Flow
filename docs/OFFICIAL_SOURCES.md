@@ -13,6 +13,8 @@ The source PRD validated these references on 2026-07-16. Limits, pricing, APIs, 
 - [Notion small file uploads](https://developers.notion.com/guides/data-apis/uploading-small-files)
 - [Gemini API pricing](https://ai.google.dev/gemini-api/docs/pricing)
 - [Gemini API Additional Terms](https://ai.google.dev/gemini-api/terms)
+- [OpenRouter provider routing and data controls](https://openrouter.ai/docs/guides/routing/provider-selection)
+- [OpenRouter zero data retention](https://openrouter.ai/docs/guides/features/zdr)
 - [Ollama API](https://docs.ollama.com/api/introduction)
 - [Ollama embeddings](https://docs.ollama.com/api/embed)
 - [Meta Instagram oEmbed](https://developers.facebook.com/documentation/instagram-platform/oembed)

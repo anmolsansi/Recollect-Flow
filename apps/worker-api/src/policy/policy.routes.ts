@@ -33,6 +33,11 @@ export function policyRoutes(
     const decision = policy.route({
       privacyLevel: parsed.data.privacy_level,
       modality: 'text',
+      requestedProvider: parsed.data.ai_provider,
+      credentialSource: parsed.data.credential_source,
+      hostedProcessingConsent: parsed.data.hosted_processing_consent,
+      zeroDataRetentionEnforced: parsed.data.zero_data_retention_enforced,
+      dataCollectionDenied: parsed.data.data_collection_denied,
     });
     await repositoryFactory(context.env).changePrivacy(
       context.req.param('id'),
@@ -47,6 +52,11 @@ export function policyRoutes(
         privacy_level: parsed.data.privacy_level,
         derived_data_action: parsed.data.derived_data_action,
         provider_eligibility: decision.provider,
+        fallback_providers: decision.fallbackProviders,
+        credential_source: decision.credentialSource,
+        hosted_processing_consent: decision.hostedProcessingConsent,
+        zero_data_retention_required: decision.zeroDataRetentionRequired,
+        data_collection_denied: decision.dataCollectionDenied,
         policy_version: decision.policyVersion,
       },
       meta: { request_id: context.get('requestId') },

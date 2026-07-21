@@ -55,7 +55,7 @@ Verify object existence, metadata, size, and hash and mark the attachment linkab
 
 ### `PATCH /api/v1/items/:itemId/privacy`
 
-Admin scope. Input: `privacy_level` plus `derived_data_action` (`reprocess|purge`). The operation invalidates current derived fields/jobs, records an audit event and either creates a policy-stamped enrichment job or leaves derived data purged.
+Admin scope. Required input: `privacy_level` plus `derived_data_action` (`reprocess|purge`). Optional hosted-routing evidence: `ai_provider` (`openrouter|gemini`), `credential_source` (`app_managed|user_provided|none`), `hosted_processing_consent`, `zero_data_retention_enforced`, and `data_collection_denied`. The API never accepts or returns a provider secret. The operation invalidates current derived fields/jobs, records an audit event and either creates a policy-stamped enrichment job or leaves derived data purged. Personal app-managed reprocessing selects OpenRouter only when consent, ZDR and denied data collection are all explicit; otherwise it records `none`.
 
 ## Planned item and review API
 
@@ -81,7 +81,7 @@ Parameters: `q`, cursor/page size, source, project, topics, lifecycle status, pr
 
 - `GET /api/v1/jobs`: admin filters/status/error/backlog.
 - `POST /api/v1/jobs/:id/retry`: bounded manual retry.
-- `POST /api/v1/jobs/lease?provider=ollama`: local worker lease with expiry.
+- Future provider workers lease only policy-approved jobs; provider selection and credential resolution are implemented under OPE-222 rather than exposed as an Ollama-only route.
 - `POST /api/v1/jobs/:id/heartbeat`: extend owned active lease.
 - `POST /api/v1/jobs/:id/result`: validated idempotent result submission.
 - `POST /api/v1/jobs/:id/release`: controlled release/shutdown.

@@ -23,56 +23,82 @@ describe('PolicyService', () => {
       expect(Object.keys(ALLOWED_DATA_MATRIX[level]).sort()).toEqual([
         'gemini',
         'none',
-        'ollama',
-        'workers_ai',
+        'openrouter',
       ]);
     }
   });
 
-  it('routes public text to Workers AI', () => {
-    expect(
-      service.route({ privacyLevel: 'public', modality: 'text' }).provider,
-    ).toBe('workers_ai');
+  it('routes Public content to OpenRouter with Gemini fallback', () => {
+    const decision = service.route({
+      privacyLevel: 'public',
+      modality: 'text',
+    });
+    expect(decision.provider).toBe('openrouter');
+    expect(decision.fallbackProviders).toEqual(['gemini']);
+    expect(decision.credentialSource).toBe('app_managed');
   });
 
-  it('allows Gemini only for approved public multimodal input', () => {
+  it('uses Gemini when OpenRouter is unavailable for Public content', () => {
     expect(
       service.route({
         privacyLevel: 'public',
         modality: 'image',
-        requestedProvider: 'gemini',
+        availableProviders: ['gemini', 'none'],
       }).provider,
     ).toBe('gemini');
+  });
+
+  it('requires explicit consent and compliant settings for app-managed Personal routing', () => {
     expect(
       service.route({
         privacyLevel: 'personal',
-        modality: 'image',
-        requestedProvider: 'gemini',
-      }).provider,
-    ).toBe('none');
-  });
-
-  it('routes personal content locally and fails unknown closed', () => {
-    expect(
-      service.route({ privacyLevel: 'personal', modality: 'text' }).provider,
-    ).toBe('ollama');
-    expect(
-      service.route({ privacyLevel: 'unknown', modality: 'text' }).provider,
-    ).toBe('none');
-  });
-
-  it('requires explicit approval before sensitive local processing', () => {
-    expect(
-      service.route({ privacyLevel: 'sensitive', modality: 'text' }).provider,
-    ).toBe('none');
-    expect(
-      service.route({
-        privacyLevel: 'sensitive',
         modality: 'text',
-        requestedProvider: 'ollama',
-        localProcessingApproved: true,
+        requestedProvider: 'openrouter',
+        credentialSource: 'app_managed',
       }).provider,
-    ).toBe('ollama');
+    ).toBe('none');
+    const approved = service.route({
+      privacyLevel: 'personal',
+      modality: 'text',
+      requestedProvider: 'openrouter',
+      credentialSource: 'app_managed',
+      hostedProcessingConsent: true,
+      zeroDataRetentionEnforced: true,
+      dataCollectionDenied: true,
+    });
+    expect(approved.provider).toBe('openrouter');
+    expect(approved.fallbackProviders).toEqual([]);
+    expect(approved.zeroDataRetentionRequired).toBe(true);
+    expect(approved.dataCollectionDenied).toBe(true);
+  });
+
+  it('allows an explicitly consented user-provided provider for Personal content', () => {
+    const approved = service.route({
+      privacyLevel: 'personal',
+      modality: 'text',
+      requestedProvider: 'gemini',
+      credentialSource: 'user_provided',
+      hostedProcessingConsent: true,
+    });
+    expect(approved.provider).toBe('gemini');
+    expect(approved.credentialSource).toBe('user_provided');
+    expect(approved.fallbackProviders).toEqual([]);
+  });
+
+  it('fails Unknown and Sensitive content closed', () => {
+    for (const privacyLevel of ['unknown', 'sensitive'] as const) {
+      expect(
+        service.route({
+          privacyLevel,
+          modality: 'text',
+          requestedProvider: 'openrouter',
+          credentialSource: 'user_provided',
+          hostedProcessingConsent: true,
+          zeroDataRetentionEnforced: true,
+          dataCollectionDenied: true,
+        }).provider,
+      ).toBe('none');
+    }
   });
 
   it('never sends restricted categories to hosted providers', () => {
@@ -95,7 +121,7 @@ describe('PolicyService', () => {
     ).toBe('none');
     expect(
       service.route({
-        privacyLevel: 'personal',
+        privacyLevel: 'sensitive',
         modality: 'text',
         availableProviders: ['none'],
       }).provider,
@@ -138,6 +164,11 @@ describe('PATCH /api/v1/items/:id/privacy', () => {
       body: JSON.stringify({
         privacy_level: 'personal',
         derived_data_action: 'reprocess',
+        ai_provider: 'openrouter',
+        credential_source: 'app_managed',
+        hosted_processing_consent: true,
+        zero_data_retention_enforced: true,
+        data_collection_denied: true,
       }),
     };
 
@@ -159,7 +190,14 @@ describe('PATCH /api/v1/items/:id/privacy', () => {
     expect(changes[0]?.[1]).toEqual({
       privacy_level: 'personal',
       derived_data_action: 'reprocess',
+      ai_provider: 'openrouter',
+      credential_source: 'app_managed',
+      hosted_processing_consent: true,
+      zero_data_retention_enforced: true,
+      data_collection_denied: true,
     });
-    expect(changes[0]?.[2].provider).toBe('ollama');
+    expect(changes[0]?.[2].provider).toBe('openrouter');
+    expect(changes[0]?.[2].zeroDataRetentionRequired).toBe(true);
+    expect(changes[0]?.[2].dataCollectionDenied).toBe(true);
   });
 });

@@ -103,7 +103,75 @@ assert(
   'Duplicate response did not identify the canonical item.',
 );
 
-const policy = await jsonRequest(
+const publicPolicy = await jsonRequest(
+  `/api/v1/items/${firstCapture.data.capture_id}/privacy`,
+  {
+    method: 'PATCH',
+    headers: adminHeaders,
+    body: JSON.stringify({
+      privacy_level: 'public',
+      derived_data_action: 'reprocess',
+    }),
+  },
+  200,
+);
+assert(
+  publicPolicy.data?.provider_eligibility === 'openrouter',
+  'Public data did not select OpenRouter.',
+);
+assert(
+  JSON.stringify(publicPolicy.data?.fallback_providers) ===
+    JSON.stringify(['gemini']),
+  'Public data did not publish the Gemini fallback.',
+);
+
+const personalWithoutConsent = await jsonRequest(
+  `/api/v1/items/${firstCapture.data.capture_id}/privacy`,
+  {
+    method: 'PATCH',
+    headers: adminHeaders,
+    body: JSON.stringify({
+      privacy_level: 'personal',
+      derived_data_action: 'reprocess',
+      ai_provider: 'openrouter',
+      credential_source: 'app_managed',
+    }),
+  },
+  200,
+);
+assert(
+  personalWithoutConsent.data?.provider_eligibility === 'none',
+  'Personal data without consent did not fail closed.',
+);
+
+const personalWithConsent = await jsonRequest(
+  `/api/v1/items/${firstCapture.data.capture_id}/privacy`,
+  {
+    method: 'PATCH',
+    headers: adminHeaders,
+    body: JSON.stringify({
+      privacy_level: 'personal',
+      derived_data_action: 'reprocess',
+      ai_provider: 'openrouter',
+      credential_source: 'app_managed',
+      hosted_processing_consent: true,
+      zero_data_retention_enforced: true,
+      data_collection_denied: true,
+    }),
+  },
+  200,
+);
+assert(
+  personalWithConsent.data?.provider_eligibility === 'openrouter',
+  'Compliant Personal routing did not select OpenRouter.',
+);
+assert(
+  personalWithConsent.data?.zero_data_retention_required === true &&
+    personalWithConsent.data?.data_collection_denied === true,
+  'Compliant Personal routing did not require both privacy controls.',
+);
+
+const sensitivePolicy = await jsonRequest(
   `/api/v1/items/${firstCapture.data.capture_id}/privacy`,
   {
     method: 'PATCH',
@@ -116,11 +184,11 @@ const policy = await jsonRequest(
   200,
 );
 assert(
-  policy.data?.provider_eligibility === 'none',
+  sensitivePolicy.data?.provider_eligibility === 'none',
   'Sensitive data did not fail closed.',
 );
 assert(
-  policy.data?.policy_version === '2026-07-20.1',
+  sensitivePolicy.data?.policy_version === '2026-07-21.1',
   'Unexpected policy version.',
 );
 
@@ -216,8 +284,16 @@ console.log(
     anonymous_capture_status: 401,
     duplicate_item_id: firstCapture.data.capture_id,
     duplicate_of: secondCapture.data.duplicate_of,
-    policy_provider: policy.data.provider_eligibility,
-    policy_version: policy.data.policy_version,
+    public_policy_provider: publicPolicy.data.provider_eligibility,
+    public_policy_fallbacks: publicPolicy.data.fallback_providers,
+    personal_without_consent: personalWithoutConsent.data.provider_eligibility,
+    personal_with_consent: personalWithConsent.data.provider_eligibility,
+    personal_zdr_required:
+      personalWithConsent.data.zero_data_retention_required,
+    personal_data_collection_denied:
+      personalWithConsent.data.data_collection_denied,
+    sensitive_policy_provider: sensitivePolicy.data.provider_eligibility,
+    policy_version: sensitivePolicy.data.policy_version,
     attachment_id: attachmentId,
     attachment_item_id: fileCapture.data.capture_id,
     authorized_download: 200,

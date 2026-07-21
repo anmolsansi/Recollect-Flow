@@ -1,7 +1,8 @@
-export const POLICY_VERSION = '2026-07-20.1';
+export const POLICY_VERSION = '2026-07-21.1';
 
 export type PrivacyLevel = 'unknown' | 'public' | 'personal' | 'sensitive';
-export type AiProvider = 'workers_ai' | 'gemini' | 'ollama' | 'none';
+export type AiProvider = 'openrouter' | 'gemini' | 'none';
+export type CredentialSource = 'app_managed' | 'user_provided' | 'none';
 export type Modality =
   'text' | 'image' | 'pdf' | 'file' | 'audio' | 'embedding';
 
@@ -18,33 +19,34 @@ export const ALLOWED_DATA_MATRIX: Readonly<
   Record<PrivacyLevel, Readonly<Record<AiProvider, readonly Modality[]>>>
 > = {
   unknown: {
-    workers_ai: [],
+    openrouter: [],
     gemini: [],
-    ollama: [],
     none: ALL_MODALITIES,
   },
   public: {
-    workers_ai: ALL_MODALITIES,
-    gemini: ['image', 'pdf'],
-    ollama: ALL_MODALITIES,
+    openrouter: ALL_MODALITIES,
+    gemini: ALL_MODALITIES,
     none: ALL_MODALITIES,
   },
   personal: {
-    workers_ai: [],
-    gemini: [],
-    ollama: ALL_MODALITIES,
+    openrouter: ALL_MODALITIES,
+    gemini: ALL_MODALITIES,
     none: ALL_MODALITIES,
   },
   sensitive: {
-    workers_ai: [],
+    openrouter: [],
     gemini: [],
-    ollama: ALL_MODALITIES,
     none: ALL_MODALITIES,
   },
 };
 
 export interface RouteDecision {
   provider: AiProvider;
+  fallbackProviders: readonly AiProvider[];
+  credentialSource: CredentialSource;
+  hostedProcessingConsent: boolean;
+  zeroDataRetentionRequired: boolean;
+  dataCollectionDenied: boolean;
   reason: string;
   policyVersion: string;
 }
@@ -55,28 +57,34 @@ export interface RouteInput {
   requestedProvider?: AiProvider;
   availableProviders?: readonly AiProvider[];
   hostedQuotaAvailable?: boolean;
-  localProcessingApproved?: boolean;
+  credentialSource?: CredentialSource;
+  hostedProcessingConsent?: boolean;
+  zeroDataRetentionEnforced?: boolean;
+  dataCollectionDenied?: boolean;
   containsRestrictedCategory?: boolean;
 }
 
-const HOSTED_PROVIDERS = new Set<AiProvider>(['workers_ai', 'gemini']);
+const HOSTED_PROVIDERS = new Set<AiProvider>(['openrouter', 'gemini']);
 
 export class PolicyService {
   route(input: RouteInput): RouteDecision {
     const available = new Set(
-      input.availableProviders ?? ['workers_ai', 'gemini', 'ollama', 'none'],
+      input.availableProviders ?? ['openrouter', 'gemini', 'none'],
     );
     const hostedQuotaAvailable = input.hostedQuotaAvailable ?? true;
-    const localApproved = input.localProcessingApproved ?? false;
+    const hostedProcessingConsent = input.hostedProcessingConsent ?? false;
 
     let requested = input.requestedProvider;
     if (!requested) {
-      requested =
-        input.privacyLevel === 'public'
-          ? 'workers_ai'
-          : input.privacyLevel === 'personal'
-            ? 'ollama'
-            : 'none';
+      requested = input.privacyLevel === 'public' ? 'openrouter' : 'none';
+    }
+    if (
+      input.privacyLevel === 'public' &&
+      requested === 'openrouter' &&
+      !available.has('openrouter') &&
+      available.has('gemini')
+    ) {
+      requested = 'gemini';
     }
 
     if (input.containsRestrictedCategory && HOSTED_PROVIDERS.has(requested)) {
@@ -98,18 +106,55 @@ export class PolicyService {
     if (HOSTED_PROVIDERS.has(requested) && !hostedQuotaAvailable) {
       return this.none('Hosted AI quota is unavailable; routing fails closed.');
     }
-    if (
-      requested === 'ollama' &&
-      input.privacyLevel === 'sensitive' &&
-      !localApproved
-    ) {
+    if (input.privacyLevel === 'personal' && !hostedProcessingConsent) {
       return this.none(
-        'Sensitive content requires an explicit local-processing approval.',
+        'Personal content requires explicit hosted-processing consent.',
       );
     }
 
+    const credentialSource =
+      input.credentialSource ??
+      (input.privacyLevel === 'public' ? 'app_managed' : 'none');
+    if (input.privacyLevel === 'personal' && credentialSource === 'none') {
+      return this.none(
+        'Personal content requires a user-provided key or approved app-managed routing.',
+      );
+    }
+    if (
+      input.privacyLevel === 'personal' &&
+      credentialSource === 'app_managed' &&
+      requested !== 'openrouter'
+    ) {
+      return this.none(
+        'App-managed Personal routing is limited to OpenRouter.',
+      );
+    }
+    if (
+      input.privacyLevel === 'personal' &&
+      credentialSource === 'app_managed' &&
+      (!input.zeroDataRetentionEnforced || !input.dataCollectionDenied)
+    ) {
+      return this.none(
+        'App-managed Personal routing requires ZDR and denied data collection.',
+      );
+    }
+
+    const fallbackProviders =
+      input.privacyLevel === 'public' &&
+      requested === 'openrouter' &&
+      available.has('gemini')
+        ? (['gemini'] as const)
+        : [];
+
     return {
       provider: requested,
+      fallbackProviders,
+      credentialSource,
+      hostedProcessingConsent,
+      zeroDataRetentionRequired:
+        input.privacyLevel === 'personal' && requested === 'openrouter',
+      dataCollectionDenied:
+        input.privacyLevel === 'personal' && requested === 'openrouter',
       reason: `${requested} is approved by the ${POLICY_VERSION} policy.`,
       policyVersion: POLICY_VERSION,
     };
@@ -120,6 +165,15 @@ export class PolicyService {
   }
 
   private none(reason: string): RouteDecision {
-    return { provider: 'none', reason, policyVersion: POLICY_VERSION };
+    return {
+      provider: 'none',
+      fallbackProviders: [],
+      credentialSource: 'none',
+      hostedProcessingConsent: false,
+      zeroDataRetentionRequired: false,
+      dataCollectionDenied: false,
+      reason,
+      policyVersion: POLICY_VERSION,
+    };
   }
 }

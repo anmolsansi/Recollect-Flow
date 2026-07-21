@@ -263,8 +263,13 @@ export class D1CaptureRepository implements CaptureRepository {
           .prepare(
             `INSERT INTO processing_jobs (
               id, item_id, job_type, status, available_at, created_at, updated_at,
-              privacy_level_snapshot, provider_eligibility, policy_version
-            ) VALUES (?1, ?2, 'enrich', 'pending', ?3, ?3, ?3, ?4, ?5, ?6)`,
+              privacy_level_snapshot, provider_eligibility, policy_version,
+              credential_source, hosted_processing_consent,
+              zero_data_retention_required, data_collection_denied
+            ) VALUES (
+              ?1, ?2, 'enrich', 'pending', ?3, ?3, ?3, ?4, ?5, ?6,
+              ?7, ?8, ?9, ?10
+            )`,
           )
           .bind(
             crypto.randomUUID(),
@@ -273,6 +278,10 @@ export class D1CaptureRepository implements CaptureRepository {
             capture.privacyLevel,
             decision.provider,
             decision.policyVersion,
+            decision.credentialSource,
+            decision.hostedProcessingConsent ? 1 : 0,
+            decision.zeroDataRetentionRequired ? 1 : 0,
+            decision.dataCollectionDenied ? 1 : 0,
           ),
       );
     }

@@ -66,6 +66,8 @@ Job lifecycle: `Pending → Leased/Processing → Complete`; recoverable failure
 
 `Unknown`, `Public`, `Personal`, `Sensitive`. Unknown routes conservatively. A later move to more restrictive privacy invalidates future hosted eligibility, indexes/caches where required, and communicates that already-sent provider data cannot be revoked.
 
+Every processing job snapshots policy version, eligible provider, credential source, hosted-processing consent, ZDR requirement and data-collection restriction. Provider keys are never stored in job or audit payloads.
+
 ## Index strategy
 
 - Unique idempotency key.
