@@ -6,6 +6,7 @@ export interface StoredCapture {
   id: string;
   eventId: string;
   idempotencyKey: string;
+  requestFingerprint: string | null;
   duplicateOf: string | null;
   privacyLevel: CaptureInput['privacy_level'];
   processingStatus: 'pending' | 'processing' | 'complete' | 'failed';
@@ -17,6 +18,7 @@ export interface NewCapture extends CaptureInput {
   canonicalUrl: string | null;
   contentHash: string | null;
   duplicateOf: string | null;
+  requestFingerprint: string;
   createdAt: string;
 }
 
@@ -39,6 +41,7 @@ interface CaptureRow {
   id: string;
   event_id: string;
   idempotency_key: string;
+  request_fingerprint: string | null;
   duplicate_of: string | null;
   privacy_level: CaptureInput['privacy_level'];
   processing_status: StoredCapture['processingStatus'];
@@ -56,6 +59,7 @@ function toStoredCapture(row: CaptureRow): StoredCapture {
     id: row.id,
     eventId: row.event_id,
     idempotencyKey: row.idempotency_key,
+    requestFingerprint: row.request_fingerprint,
     duplicateOf: row.duplicate_of,
     privacyLevel: row.privacy_level,
     processingStatus: row.processing_status,
@@ -80,7 +84,8 @@ export class D1CaptureRepository implements CaptureRepository {
   async findByIdempotencyKey(key: string): Promise<StoredCapture | null> {
     const row = await this.database
       .prepare(
-        `SELECT i.id, e.id AS event_id, e.idempotency_key, e.duplicate_of,
+        `SELECT i.id, e.id AS event_id, e.idempotency_key,
+                e.request_fingerprint, e.duplicate_of,
                 i.privacy_level, i.processing_status
          FROM capture_events e
          INNER JOIN items i ON i.id = e.item_id
@@ -102,6 +107,7 @@ export class D1CaptureRepository implements CaptureRepository {
     const row = await this.database
       .prepare(
         `SELECT i.id, e.id AS event_id, e.idempotency_key,
+                e.request_fingerprint,
                 i.id AS duplicate_of, i.privacy_level, i.processing_status
          FROM item_deduplication_keys k
          INNER JOIN items i ON i.id = k.item_id
@@ -190,15 +196,19 @@ export class D1CaptureRepository implements CaptureRepository {
       this.database
         .prepare(
           `INSERT INTO capture_events (
-            id, item_id, idempotency_key, duplicate_of, source_type, source_app,
+            id, item_id, idempotency_key, request_fingerprint, duplicate_of,
+            source_type, source_app,
             source_url, raw_text, user_note, quick_category, privacy_level,
             attachment_id, captured_at, created_at
-          ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14)`,
+          ) VALUES (
+            ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15
+          )`,
         )
         .bind(
           capture.eventId,
           itemId,
           capture.idempotency_key,
+          capture.requestFingerprint,
           capture.duplicateOf,
           capture.source_type,
           capture.source_app,
@@ -231,6 +241,7 @@ export class D1CaptureRepository implements CaptureRepository {
       id: itemId,
       eventId: capture.eventId,
       idempotencyKey: capture.idempotency_key,
+      requestFingerprint: capture.requestFingerprint,
       duplicateOf: capture.duplicateOf,
       privacyLevel: capture.privacy_level,
       processingStatus: 'pending',

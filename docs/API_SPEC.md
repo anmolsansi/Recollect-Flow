@@ -21,6 +21,26 @@ Tokens are long random Worker secrets, rotatable without migration. Future publi
 
 ## Implemented capture endpoint
 
+### `POST /api/v1/shortcut/captures`
+
+Capture-token-only compatibility endpoint for Apple Shortcuts. It accepts one
+`multipart/form-data` or URL-encoded form with `idempotency_key`, `kind_hint`
+(`auto|url|text|attachment`), `content`, optional `user_reason`,
+`privacy_level`, and `client_version`. URL/text content may be a string or the
+UTF-8 file restored from the offline queue. Attachment content must be an
+allowlisted File.
+
+The Worker performs bounded validation, signature and SHA-256 checks, private R2
+write/verification, attachment finalization, D1 linking, and capture creation.
+An idempotency key is bound to the first request fingerprint; reuse for different
+content is rejected.
+
+This route always returns HTTP `200` after reaching the Worker so Shortcuts can
+branch on stable top-level fields: `ok`, `saved`, `retryable`, `outcome`,
+`shortcut_action`, `code`, `message`, and `request_id`. Actions are
+`DELETE_QUEUE`, `KEEP_RETRY`, `KEEP_FIX`, and `KEEP_STOP`. Network/edge failures
+produce no envelope, so the client retains its queue record.
+
 ### `POST /api/v1/captures`
 
 Current JSON fields: `idempotency_key`, `source_type` (`url|text|note|image|file`), `source_app`, conditional `url`, `shared_text`, or finalized `attachment_id`, optional `user_reason`, `quick_category`, `privacy_level`, `captured_at`, and strict `client{name,version}`. Audio bytes use an upload `source_type` of `audio` and a capture `source_type` of `file` until the future recording contract is approved.
@@ -50,6 +70,10 @@ Controlled byte upload. The authenticated Worker enforces pending state, expiry,
 Verify object existence, metadata, size, and hash and mark the attachment linkable. Repeated finalization is idempotent. Hourly cleanup removes expired unlinked R2 objects idempotently.
 
 `POST /api/v1/captures` links one finalized `attachment_id` to its canonical item. `GET /api/v1/attachments/:attachmentId/content` streams authorized private bytes; `DELETE` is admin-only. `GET /api/v1/uploads/usage` reports active object counts and bytes by lifecycle state.
+
+The Shortcut compatibility endpoint orchestrates this same private lifecycle
+server-side in one request; the staged endpoints remain available to richer
+clients.
 
 ## Implemented privacy override
 
@@ -115,7 +139,7 @@ Vector/generation outage degrades to lexical retrieval or evidence-only results,
 
 ## Stable error families
 
-`INVALID_JSON`, `VALIDATION_ERROR`, `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `VERSION_CONFLICT`, `UNSUPPORTED_TYPE`, `FILE_TOO_LARGE`, `INVALID_URL`, `UPLOAD_EXPIRED`, `UPLOAD_INCOMPLETE`, `STORAGE_UNAVAILABLE`, `QUOTA_PAUSED`, `JOB_NOT_LEASABLE`, `PROVIDER_UNAVAILABLE`, `INVALID_PROVIDER_OUTPUT`, `SYNC_RATE_LIMITED`, `EXPORT_NOT_READY`, `PURGE_CONFIRMATION_REQUIRED`, `INSUFFICIENT_EVIDENCE`, `INTERNAL_ERROR`.
+`INVALID_JSON`, `INVALID_FORM`, `VALIDATION_ERROR`, `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `IDEMPOTENCY_CONFLICT`, `VERSION_CONFLICT`, `UNSUPPORTED_TYPE`, `WRONG_SIGNATURE`, `FILE_TOO_LARGE`, `INVALID_URL`, `UPLOAD_EXPIRED`, `UPLOAD_INCOMPLETE`, `STORAGE_UNAVAILABLE`, `QUOTA_PAUSED`, `JOB_NOT_LEASABLE`, `PROVIDER_UNAVAILABLE`, `INVALID_PROVIDER_OUTPUT`, `SYNC_RATE_LIMITED`, `EXPORT_NOT_READY`, `PURGE_CONFIRMATION_REQUIRED`, `INSUFFICIENT_EVIDENCE`, `INTERNAL_ERROR`.
 
 ## Pagination, concurrency, and idempotency
 

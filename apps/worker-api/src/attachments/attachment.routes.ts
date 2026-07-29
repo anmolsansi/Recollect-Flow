@@ -15,6 +15,7 @@ import {
   normalizeContentType,
   signatureMatches,
 } from './attachment.validation';
+import { positiveInteger, safeFilename } from './attachment.utils';
 
 export function attachmentRoutes(
   repositoryFactory: (env: Cloudflare.Env) => AttachmentRepository = (env) =>
@@ -24,18 +25,6 @@ export function attachmentRoutes(
 
   router.use('/uploads/*', requireCaptureToken);
   router.use('/attachments/*', requireCaptureToken);
-
-  function positiveInteger(
-    value: string | undefined,
-    fallback: number,
-  ): number {
-    const parsed = Number(value);
-    return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
-  }
-
-  function safeFilename(value: string): string {
-    return value.replace(/[\r\n"\\/]/g, '_').slice(0, 255);
-  }
 
   router.post('/uploads/init', async (context) => {
     const body = await context.req.json().catch(() => {
@@ -256,6 +245,7 @@ export function attachmentRoutes(
         'Content-Length': String(object.size),
         'Content-Disposition': `attachment; filename="${safeFilename(attachment.fileName)}"`,
         'Cache-Control': 'private, no-store',
+        'X-Content-Type-Options': 'nosniff',
         ETag: object.httpEtag,
       },
     });

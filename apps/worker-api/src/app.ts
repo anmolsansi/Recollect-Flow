@@ -9,6 +9,13 @@ import { policyRoutes } from './policy/policy.routes';
 import type { PolicyRepository } from './policy/policy.repository';
 import type { AppContext, Env } from './env';
 import { errorResponse } from './shared/errors';
+import { shortcutRoutes } from './shortcut/shortcut.routes';
+
+function requestId(value: string | undefined): string {
+  return value && /^[A-Za-z0-9._:-]{1,100}$/.test(value)
+    ? value
+    : crypto.randomUUID();
+}
 
 export function createApp(
   repositoryFactory?: (env: Env) => CaptureRepository,
@@ -18,10 +25,7 @@ export function createApp(
   const app = new Hono<AppContext>();
 
   app.use('*', async (context, next) => {
-    context.set(
-      'requestId',
-      context.req.header('X-Request-Id') ?? crypto.randomUUID(),
-    );
+    context.set('requestId', requestId(context.req.header('X-Request-Id')));
     await next();
   });
 
@@ -40,6 +44,13 @@ export function createApp(
   );
 
   app.route('/api/v1', attachmentRoutes(attachmentRepositoryFactory));
+  app.route(
+    '/api/v1',
+    shortcutRoutes(
+      repositoryFactory ?? ((env) => new D1CaptureRepository(env.DB)),
+      attachmentRepositoryFactory,
+    ),
+  );
   app.route('/api/v1', policyRoutes(policyRepositoryFactory));
 
   app.notFound((context) =>

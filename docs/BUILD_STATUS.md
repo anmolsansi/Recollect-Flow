@@ -1,4 +1,4 @@
-# Build status — 2026-07-21
+# Build status — 2026-07-28
 
 ## Completed and deployed
 
@@ -9,13 +9,14 @@
 - OPE-218 canonical item reuse with immutable per-share capture events, exact-key race protection, preserved notes and conservative duplicate boundaries.
 - OPE-224 policy version `2026-07-21.1`, approved OpenRouter/Gemini/no-AI matrix, consent/ZDR-stamped jobs and audited privacy reprocess/purge override.
 - OPE-249 controlled private-R2 upload, validation/finalization/link/download/delete/cleanup/usage lifecycle with a data-preserving migration.
-- Thirty-six automated tests plus preservation, duplicate-backfill, attachment-link trigger and foreign-key migration checks.
-- Production Worker version `33065734-2b25-4a07-9a1f-eee5cd49ed19` at `https://recollect-flow.recollectflow.workers.dev`, with the private R2 binding and hourly cleanup schedule.
+- OPE-219 one-request Shortcut capture endpoint with stable queue actions, request-fingerprint conflict protection, private attachment orchestration and compensating cleanup.
+- Forty-four automated tests plus preservation, duplicate-backfill, attachment-link trigger and foreign-key migration checks.
+- Production Worker version `c0e78f89-d7a6-4416-a638-57693d256c03` at `https://recollect-flow.recollectflow.workers.dev`, with the private R2 binding and hourly cleanup schedule.
 
 ## Acceptance evidence
 
-- `npm run check`: formatting, lint, typecheck, 5 test files / 36 tests pass.
-- Fresh migration chain `0001`–`0005` executes successfully.
+- `npm run check`: formatting, lint, typecheck, 6 test files / 44 tests pass.
+- Fresh migration chain `0001`–`0006` executes successfully.
 - Seeded preservation migration retains an existing linked attachment and backfills its capture event with no foreign-key violations.
 - Seeded duplicate migration accepts two pre-existing canonical duplicates, assigns the atomic key to the oldest item, and links a finalized attachment through the D1 trigger.
 - Live isolated Worker story: two normalized URL shares returned one canonical ID with `duplicate_of`; D1 confirmed 1 item, 2 events and 2 distinct notes.
@@ -25,6 +26,8 @@
 - Production duplicate story returned one canonical item for two differently keyed URL captures; D1 confirmed two capture events and two distinct notes.
 - Production policy `2026-07-21.1` verified Public → OpenRouter with Gemini fallback, Personal without consent → no AI, compliant Personal → OpenRouter with ZDR/data collection denied, and Sensitive → no AI. All four changes produced audit evidence.
 - Production attachment story passed private PDF init/upload/finalize/link/download with byte-exact SHA-256, rejected anonymous download with `401`, and passed authenticated deletion with a D1 tombstone and zero remaining R2 objects.
+- Production Shortcut story passed authenticated text and PDF saves and exact-key replays; D1 confirmed one linked attachment for the PDF capture.
+- Secret-free Mac exports exist for online save and manual retry. Durable iCloud queue behavior and file magic-variable handling remain physical-iPhone acceptance work.
 
 ## Not complete
 

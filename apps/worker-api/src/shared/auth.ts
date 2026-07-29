@@ -3,20 +3,36 @@ import type { MiddlewareHandler } from 'hono';
 import type { AppContext } from '../env';
 import { AppError } from './errors';
 
-function constantTimeEqual(left: string, right: string): boolean {
-  if (left.length !== right.length) return false;
-
+async function constantTimeEqual(
+  left: string,
+  right: string,
+): Promise<boolean> {
+  const encoder = new TextEncoder();
+  const [leftHash, rightHash] = await Promise.all([
+    crypto.subtle.digest('SHA-256', encoder.encode(left)),
+    crypto.subtle.digest('SHA-256', encoder.encode(right)),
+  ]);
+  const leftBytes = new Uint8Array(leftHash);
+  const rightBytes = new Uint8Array(rightHash);
   let mismatch = 0;
-  for (let index = 0; index < left.length; index += 1) {
-    mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  for (let index = 0; index < leftBytes.length; index += 1) {
+    mismatch |= leftBytes[index]! ^ rightBytes[index]!;
   }
   return mismatch === 0;
 }
 
-function bearerToken(header: string | undefined): string | null {
+export function bearerToken(header: string | undefined): string | null {
   if (!header?.startsWith('Bearer ')) return null;
   const value = header.slice('Bearer '.length).trim();
   return value.length > 0 ? value : null;
+}
+
+export async function matchesCaptureToken(
+  header: string | undefined,
+  expectedToken: string,
+): Promise<boolean> {
+  const provided = bearerToken(header);
+  return provided ? constantTimeEqual(provided, expectedToken) : false;
 }
 
 export const requireCaptureToken: MiddlewareHandler<AppContext> = async (
@@ -25,10 +41,10 @@ export const requireCaptureToken: MiddlewareHandler<AppContext> = async (
 ) => {
   const provided = bearerToken(context.req.header('Authorization'));
   const captureMatch = provided
-    ? constantTimeEqual(provided, context.env.CAPTURE_TOKEN)
+    ? await constantTimeEqual(provided, context.env.CAPTURE_TOKEN)
     : false;
   const adminMatch = provided
-    ? constantTimeEqual(provided, context.env.ADMIN_TOKEN)
+    ? await constantTimeEqual(provided, context.env.ADMIN_TOKEN)
     : false;
 
   if (!captureMatch && !adminMatch) {
@@ -47,7 +63,7 @@ export const requireAdminToken: MiddlewareHandler<AppContext> = async (
 ) => {
   const provided = bearerToken(context.req.header('Authorization'));
   const adminMatch = provided
-    ? constantTimeEqual(provided, context.env.ADMIN_TOKEN)
+    ? await constantTimeEqual(provided, context.env.ADMIN_TOKEN)
     : false;
 
   if (!adminMatch) {
