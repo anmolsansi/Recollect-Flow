@@ -28,6 +28,13 @@ const approvedPolicyMigration = readFileSync(
   ),
   'utf8',
 );
+const captureFingerprintMigration = readFileSync(
+  new URL(
+    '../../../migrations/0006_add_capture_request_fingerprint.sql',
+    import.meta.url,
+  ),
+  'utf8',
+);
 
 describe('0001_initial migration contract', () => {
   it('creates every V1 durability table', () => {
@@ -110,5 +117,14 @@ describe('follow-up migration contracts', () => {
     expect(approvedPolicyMigration).toContain('zero_data_retention_required');
     expect(approvedPolicyMigration).toContain('data_collection_denied');
     expect(approvedPolicyMigration).toContain("'2026-07-21.1'");
+  });
+
+  it('binds idempotency keys to request fingerprints', () => {
+    expect(captureFingerprintMigration).toContain(
+      'ADD COLUMN request_fingerprint TEXT',
+    );
+    expect(captureFingerprintMigration).toContain(
+      'idx_capture_events_request_fingerprint',
+    );
   });
 });

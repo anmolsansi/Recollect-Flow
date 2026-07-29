@@ -45,6 +45,7 @@ class MemoryCaptureRepository implements CaptureRepository {
       id: itemId,
       eventId: capture.eventId,
       idempotencyKey: capture.idempotency_key,
+      requestFingerprint: capture.requestFingerprint,
       duplicateOf: capture.duplicateOf,
       privacyLevel: capture.privacy_level,
       processingStatus: 'pending',
@@ -268,6 +269,21 @@ describe('POST /api/v1/captures', () => {
     expect(repository.items).toHaveLength(1);
     expect(repository.events).toHaveLength(1);
     expect(repository.scheduled).toBe(1);
+  });
+
+  it('rejects an idempotency key reused for different content', async () => {
+    const repository = new MemoryCaptureRepository();
+    const app = createApp(() => repository);
+    await post(app, validCapture);
+    const conflict = await post(app, {
+      ...validCapture,
+      url: 'https://example.com/different',
+    });
+
+    expect(conflict.status).toBe(409);
+    await expect(conflict.json()).resolves.toMatchObject({
+      error: { code: 'IDEMPOTENCY_CONFLICT' },
+    });
   });
 
   it('rejects a missing or invalid bearer token', async () => {

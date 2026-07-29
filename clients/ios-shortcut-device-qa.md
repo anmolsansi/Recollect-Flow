@@ -18,7 +18,7 @@ Do not include the capture token, Authorization action, private content, or unre
 | Airplane mode               | Not claimed saved; queue retains content/key  | Pending |               |
 | Retry after reconnect       | Uses original key and clears queue on success | Pending |               |
 | Rotated/invalid token       | Not saved; authentication guidance            | Pending |               |
-| Expired attachment upload   | Fresh upload from preserved bytes             | Pending |               |
+| Ambiguous failed file save  | Same key/bytes replay; no duplicate object    | Pending |               |
 | Unsupported signature/type  | Not saved; actionable type message            | Pending |               |
 | Server/R2 outage            | Not confirmed saved; queue retained           | Pending |               |
 

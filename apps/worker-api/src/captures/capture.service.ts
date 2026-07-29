@@ -20,11 +20,53 @@ export class CaptureService {
     private readonly policy = new PolicyService(),
   ) {}
 
-  async save(input: CaptureInput): Promise<SaveResult> {
+  private async fingerprint(input: CaptureInput): Promise<string> {
+    return sha256(
+      JSON.stringify({
+        idempotency_key: input.idempotency_key,
+        source_type: input.source_type,
+        source_app: input.source_app,
+        url: input.url ?? null,
+        shared_text: input.shared_text ?? null,
+        attachment_id: input.attachment_id ?? null,
+        user_reason: input.user_reason ?? null,
+        quick_category: input.quick_category ?? null,
+        privacy_level: input.privacy_level,
+        captured_at: input.captured_at,
+        client: input.client,
+      }),
+    );
+  }
+
+  private requireMatchingFingerprint(
+    existing: StoredCapture,
+    requestFingerprint: string,
+  ): void {
+    if (
+      existing.requestFingerprint &&
+      existing.requestFingerprint !== requestFingerprint
+    ) {
+      throw new AppError(
+        409,
+        'IDEMPOTENCY_CONFLICT',
+        'The idempotency key was already used for different content.',
+      );
+    }
+  }
+
+  async save(
+    input: CaptureInput,
+    suppliedFingerprint?: string,
+  ): Promise<SaveResult> {
+    const requestFingerprint =
+      suppliedFingerprint ?? (await this.fingerprint(input));
     const existing = await this.repository.findByIdempotencyKey(
       input.idempotency_key,
     );
-    if (existing) return { capture: existing, replayed: true };
+    if (existing) {
+      this.requireMatchingFingerprint(existing, requestFingerprint);
+      return { capture: existing, replayed: true };
+    }
 
     const canonicalUrl = input.url ? normalizeUrl(input.url) : null;
     const contentHash = input.shared_text
@@ -45,6 +87,7 @@ export class CaptureService {
       canonicalUrl,
       contentHash,
       duplicateOf: duplicate ? duplicate.id : null,
+      requestFingerprint,
       createdAt: now,
     };
 
@@ -57,7 +100,10 @@ export class CaptureService {
       const raced = await this.repository.findByIdempotencyKey(
         input.idempotency_key,
       );
-      if (raced) return { capture: raced, replayed: true };
+      if (raced) {
+        this.requireMatchingFingerprint(raced, requestFingerprint);
+        return { capture: raced, replayed: true };
+      }
 
       const racedDuplicate = await this.repository.findCanonicalDuplicate(
         input.url ?? null,
@@ -75,6 +121,10 @@ export class CaptureService {
             input.idempotency_key,
           );
           if (duplicateReplay) {
+            this.requireMatchingFingerprint(
+              duplicateReplay,
+              requestFingerprint,
+            );
             return { capture: duplicateReplay, replayed: true };
           }
           console.error(
