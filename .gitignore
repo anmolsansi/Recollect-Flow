@@ -1,6 +1,7 @@
 node_modules/
 .wrangler/
 .dev.vars
+.backups/
 coverage/
 dist/
 .DS_Store

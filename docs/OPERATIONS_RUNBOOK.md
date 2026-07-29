@@ -41,6 +41,23 @@ Every API/job attempt has request/job IDs. Record safe entity ID, stage, status,
 
 Stale leases expire safely. Result submission is idempotent and version-checked. Manual retry cannot bypass privacy, deletion, or hard-quota policy.
 
+Local workers report processing failures through
+`POST /api/v1/worker/jobs/:id/fail`. They may supply a stable uppercase error
+code, retryability, and a bounded `retry_after_seconds`; they cannot raise the
+server-owned maximum-attempt limit. A non-retryable failure must not include a
+retry delay.
+
+`retry_wait` is an operator/API projection, not a stored database status:
+`status = pending AND available_at > now`. A failed job may be manually retried
+at most three times and keeps its original attempt count. Deleted items, stale
+privacy snapshots, ineligible provider policy and the
+`optional_processing_paused` control fail closed.
+
+When Notion reports a stored page as missing, do not clear the page ID directly.
+Verify the owner wants recreation, then call
+`POST /api/v1/items/:id/notion/recreate` with the admin token. This creates an
+audit event and one new retry-safe sync attempt.
+
 ## Zero-cost controls
 
 No payment method without a separate owner decision. Maintain internal usage estimates even when providers expose counters. Soft warnings at 70% and 90%; hard threshold pauses optional AI/embedding/transcription/reranking/generation. Capture, raw retrieval, and exact search continue. Revalidate pricing/limits quarterly and before release/provider changes. If hosted AI disappears, use deterministic extraction plus local Ollama; if Notion changes, use Web Inbox/export.

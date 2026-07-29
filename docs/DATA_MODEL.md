@@ -56,7 +56,10 @@ User lifecycle: `Inbox → Reviewed → Actioned|Archived`; any active state may
 
 Processing lifecycle is independent: `Saved → MetadataPending → ExtractionPending → AiPending → NotionSyncPending → Ready`; recoverable failure enters `RetryWait`; nonrecoverable optional failure becomes `ReadyPartial`; no stage removes Saved availability.
 
-Job lifecycle: `Pending → Leased/Processing → Complete`; recoverable failure `RetryWait → Pending`; terminal failure `Failed`; stale lease returns safely to pending/retry.
+Job lifecycle: `Pending → Leased/Processing → Complete`; recoverable failure
+is stored as `pending` with a future `available_at` and exposed to operators as
+derived `retry_wait`; terminal failure is `failed`; stale leases become leasable
+after `lease_expires_at`. Results are keyed by job and idempotent submission ID.
 
 ## Coverage vocabulary
 

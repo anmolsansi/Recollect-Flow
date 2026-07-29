@@ -295,6 +295,18 @@ export class D1CaptureRepository implements CaptureRepository {
             decision.dataCollectionDenied ? 1 : 0,
           ),
       );
+
+      statements.push(
+        this.database
+          .prepare(
+            `INSERT INTO sync_attempts (id, item_id, destination, status, attempts, available_at, created_at, updated_at)
+             SELECT ?1, ?2, 'notion', 'pending', 0, ?3, ?3, ?3
+             WHERE NOT EXISTS (
+               SELECT 1 FROM sync_attempts WHERE item_id = ?2 AND destination = 'notion' AND status IN ('pending', 'processing')
+             )`,
+          )
+          .bind(crypto.randomUUID(), capture.id, at),
+      );
     }
 
     await this.database.batch(statements);
