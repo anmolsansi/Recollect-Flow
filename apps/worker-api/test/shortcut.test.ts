@@ -172,6 +172,7 @@ function env(bucket: R2Bucket): Env {
     UPLOAD_TTL_SECONDS: '3600',
     CAPTURE_TOKEN: 'capture-secret',
     ADMIN_TOKEN: 'admin-secret',
+    LOCAL_WORKER_TOKEN: 'local-worker-secret',
     NOTION_ACCESS_TOKEN: 'notion-secret',
     TELEGRAM_BOT_TOKEN: 'telegram-secret',
     TELEGRAM_CHAT_ID: 'private-chat-id',

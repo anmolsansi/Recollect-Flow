@@ -71,3 +71,21 @@ export const requireAdminToken: MiddlewareHandler<AppContext> = async (
   }
   await next();
 };
+
+export const requireLocalWorkerToken: MiddlewareHandler<AppContext> = async (
+  context,
+  next,
+) => {
+  const provided = bearerToken(context.req.header('Authorization'));
+  const workerMatch = provided
+    ? await constantTimeEqual(provided, context.env.LOCAL_WORKER_TOKEN)
+    : false;
+  if (!workerMatch) {
+    throw new AppError(
+      403,
+      'FORBIDDEN',
+      'A valid local-worker token is required.',
+    );
+  }
+  await next();
+};

@@ -35,6 +35,24 @@ const captureFingerprintMigration = readFileSync(
   ),
   'utf8',
 );
+const leaseMigration = readFileSync(
+  new URL('../../../migrations/0007_add_job_leases.sql', import.meta.url),
+  'utf8',
+);
+const syncAvailabilityMigration = readFileSync(
+  new URL(
+    '../../../migrations/0008_add_sync_available_at.sql',
+    import.meta.url,
+  ),
+  'utf8',
+);
+const completedJobMigration = readFileSync(
+  new URL(
+    '../../../migrations/0009_complete_jobs_and_notion_projection.sql',
+    import.meta.url,
+  ),
+  'utf8',
+);
 
 describe('0001_initial migration contract', () => {
   it('creates every V1 durability table', () => {
@@ -126,5 +144,36 @@ describe('follow-up migration contracts', () => {
     expect(captureFingerprintMigration).toContain(
       'idx_capture_events_request_fingerprint',
     );
+  });
+
+  it('adds owner-checked job and sync leases', () => {
+    expect(leaseMigration).toContain('lease_owner');
+    expect(leaseMigration).toContain('lease_expires_at');
+    expect(leaseMigration).toContain('idx_processing_jobs_lease');
+    expect(leaseMigration).toContain('idx_sync_attempts_lease');
+  });
+
+  it('rebuilds sync attempts with a non-null availability timestamp', () => {
+    expect(syncAvailabilityMigration).toContain(
+      'CREATE TABLE sync_attempts_available_20260729',
+    );
+    expect(syncAvailabilityMigration).toContain('available_at TEXT NOT NULL');
+    expect(syncAvailabilityMigration).toContain('INSERT INTO sync_attempts');
+    expect(syncAvailabilityMigration.indexOf('INSERT INTO')).toBeLessThan(
+      syncAvailabilityMigration.indexOf('DROP TABLE sync_attempts'),
+    );
+  });
+
+  it('adds projection metadata, idempotent results and active-job uniqueness', () => {
+    expect(completedJobMigration).toContain('projection_hash');
+    expect(completedJobMigration).toContain('notion_missing_at');
+    expect(completedJobMigration).toContain(
+      'CREATE TABLE processing_job_results',
+    );
+    expect(completedJobMigration).toContain(
+      'idx_processing_jobs_active_unique',
+    );
+    expect(completedJobMigration).toContain('idx_sync_attempts_active_unique');
+    expect(completedJobMigration).toContain('operational_controls');
   });
 });

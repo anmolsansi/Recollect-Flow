@@ -34,7 +34,8 @@ export class D1PolicyRepository implements PolicyRepository {
       this.database
         .prepare(
           `UPDATE items
-           SET privacy_level = ?1, title = NULL, notion_page_id = NULL,
+           SET privacy_level = ?1, title = NULL,
+               summary = NULL, suggested_action = NULL,
                processing_status = ?2, updated_at = ?3
            WHERE id = ?4`,
         )

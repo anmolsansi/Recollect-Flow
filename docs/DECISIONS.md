@@ -2,26 +2,31 @@
 
 ## Frozen decisions
 
-| ID      | Decision                                                  | Rationale                                                               |
-| ------- | --------------------------------------------------------- | ----------------------------------------------------------------------- |
-| ADR-001 | Cloudflare D1 is the system of record                     | Relational, indexed, portable authority independent of Notion/providers |
-| ADR-002 | Private R2 stores attachment bytes                        | Keeps files out of D1 with opaque private access                        |
-| ADR-003 | Notion is a review projection                             | Familiar UI without capture/data dependence                             |
-| ADR-004 | Apple Shortcut is the first mobile client                 | Fastest Share Sheet proof without App Store                             |
-| ADR-005 | Capture never depends on AI                               | Provider/quota/Mac/Notion failure cannot lose source                    |
-| ADR-006 | V1 search is D1 FTS5 plus filters                         | Exact, inexpensive, explainable recall first                            |
-| ADR-007 | `/api/v1` is the canonical route prefix                   | Versioned API contract aligned with repository standards                |
-| ADR-008 | Separate capture/admin/local-worker credentials           | Least privilege and independent rotation                                |
-| ADR-009 | Raw source and user reason are immutable evidence         | Derived edits/retries cannot rewrite truth                              |
-| ADR-010 | Provider adapters and structured validation are mandatory | Replaceability, privacy, quota, and correctness                         |
-| ADR-011 | No implicit payment method or overage                     | $0 policy must fail closed                                              |
-| ADR-012 | Instagram is URL/coverage-first; no scraper promise       | Platform/access/rights reality and honest UX                            |
-| ADR-013 | Deletion is grace then explicit purge                     | Recovery plus complete cross-system cleanup                             |
-| ADR-014 | RAG is V1.5 and separately accepted                       | Avoid fluent answers before useful reliable corpus                      |
-| ADR-015 | RAG uses hybrid retrieval and exact citations             | Exact recall plus semantic help with traceability                       |
-| ADR-016 | Restricted RAG uses local or retrieval-only path          | Privacy takes priority over completeness                                |
-| ADR-017 | Every conversation turn retrieves fresh evidence          | Prevent model history becoming evidence                                 |
-| ADR-018 | Wrangler migrations directory is forward-only             | Wrangler applies every SQL file found there                             |
+| ID      | Decision                                                   | Rationale                                                               |
+| ------- | ---------------------------------------------------------- | ----------------------------------------------------------------------- |
+| ADR-001 | Cloudflare D1 is the system of record                      | Relational, indexed, portable authority independent of Notion/providers |
+| ADR-002 | Private R2 stores attachment bytes                         | Keeps files out of D1 with opaque private access                        |
+| ADR-003 | Notion is a review projection                              | Familiar UI without capture/data dependence                             |
+| ADR-004 | Apple Shortcut is the first mobile client                  | Fastest Share Sheet proof without App Store                             |
+| ADR-005 | Capture never depends on AI                                | Provider/quota/Mac/Notion failure cannot lose source                    |
+| ADR-006 | V1 search is D1 FTS5 plus filters                          | Exact, inexpensive, explainable recall first                            |
+| ADR-007 | `/api/v1` is the canonical route prefix                    | Versioned API contract aligned with repository standards                |
+| ADR-008 | Separate capture/admin/local-worker credentials            | Least privilege and independent rotation                                |
+| ADR-009 | Raw source and user reason are immutable evidence          | Derived edits/retries cannot rewrite truth                              |
+| ADR-010 | Provider adapters and structured validation are mandatory  | Replaceability, privacy, quota, and correctness                         |
+| ADR-011 | No implicit payment method or overage                      | $0 policy must fail closed                                              |
+| ADR-012 | Instagram is URL/coverage-first; no scraper promise        | Platform/access/rights reality and honest UX                            |
+| ADR-013 | Deletion is grace then explicit purge                      | Recovery plus complete cross-system cleanup                             |
+| ADR-014 | RAG is V1.5 and separately accepted                        | Avoid fluent answers before useful reliable corpus                      |
+| ADR-015 | RAG uses hybrid retrieval and exact citations              | Exact recall plus semantic help with traceability                       |
+| ADR-016 | Restricted RAG uses local or retrieval-only path           | Privacy takes priority over completeness                                |
+| ADR-017 | Every conversation turn retrieves fresh evidence           | Prevent model history becoming evidence                                 |
+| ADR-018 | Wrangler migrations directory is forward-only              | Wrangler applies every SQL file found there                             |
+| ADR-019 | Project uses Notion Select for V1                          | Simpler schema mapping until knowledge graph is needed                  |
+| ADR-020 | Retry waiting is exposed as derived `retry_wait`           | Avoids redundant state; `pending` + `available_at > now` computes it    |
+| ADR-021 | Deleted Notion pages require owner approval for recreation | Prevents zombie sync loops and respects human deletion intent           |
+| ADR-022 | Notion human-owned fields are create-only in V1            | Preserves edits without an ambiguous timestamp-wins conflict policy     |
+| ADR-023 | Privacy is D1/admin-owned and never imported from Notion   | A display edit cannot silently authorize hosted processing              |
 
 ## Conditional decisions
 
@@ -38,7 +43,7 @@
 | Decision                                             | Owner evidence required                                           |
 | ---------------------------------------------------- | ----------------------------------------------------------------- |
 | Production Cloudflare D1/R2/Worker account/resources | Resource IDs, regions/config, no-billing confirmation             |
-| Notion workspace/database and editable-field policy  | Owner access and schema approval                                  |
+| Notion destination access and live view verification | Destination-only Access evidence and view checklist               |
 | Telegram digest channel                              | Bot/chat credentials and privacy approval                         |
 | Exact V1 file allowlist/size                         | Mobile reliability/storage/security test; recommended start 20 MB |
 | Privacy provider matrix                              | Explicit Public/Personal/Sensitive routing approval               |

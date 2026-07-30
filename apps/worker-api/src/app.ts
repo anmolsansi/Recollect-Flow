@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 
 import type { CaptureRepository } from './captures/capture.repository';
 import { D1CaptureRepository } from './captures/capture.repository';
+import { jobRoutes } from './jobs/job.routes';
 import { captureRoutes } from './captures/capture.routes';
 import { attachmentRoutes } from './attachments/attachment.routes';
 import type { AttachmentRepository } from './attachments/attachment.repository';
@@ -25,8 +26,23 @@ export function createApp(
   const app = new Hono<AppContext>();
 
   app.use('*', async (context, next) => {
-    context.set('requestId', requestId(context.req.header('X-Request-Id')));
-    await next();
+    const id = requestId(context.req.header('X-Request-Id'));
+    const startedAt = Date.now();
+    context.set('requestId', id);
+    try {
+      await next();
+    } finally {
+      console.log(
+        JSON.stringify({
+          event: 'http_request_completed',
+          request_id: id,
+          method: context.req.method,
+          path: new URL(context.req.url).pathname,
+          status: context.res.status,
+          duration_ms: Date.now() - startedAt,
+        }),
+      );
+    }
   });
 
   app.get('/api/v1/health', (context) =>
@@ -52,6 +68,7 @@ export function createApp(
     ),
   );
   app.route('/api/v1', policyRoutes(policyRepositoryFactory));
+  app.route('/api/v1', jobRoutes());
 
   app.notFound((context) =>
     context.json(

@@ -4,12 +4,15 @@ This is the canonical one-ticket-at-a-time queue. Pick the first incomplete tick
 
 ## Already completed
 
-| Done | Ticket  | Outcome                                                |
-| ---- | ------- | ------------------------------------------------------ |
-| ✓    | OPE-213 | Full product scope and non-goals locked                |
-| ✓    | OPE-215 | Repository and local/CI workflow bootstrapped          |
-| ✓    | OPE-216 | Durable D1 schema and migrations implemented           |
-| ✓    | OPE-217 | Authenticated raw-first idempotent capture implemented |
+| Done | Ticket  | Outcome                                                 |
+| ---- | ------- | ------------------------------------------------------- |
+| ✓    | OPE-213 | Full product scope and non-goals locked                 |
+| ✓    | OPE-215 | Repository and local/CI workflow bootstrapped           |
+| ✓    | OPE-216 | Durable D1 schema and migrations implemented            |
+| ✓    | OPE-217 | Authenticated raw-first idempotent capture implemented  |
+| ✓    | OPE-246 | Reusable jobs, leases, retries, and recovery deployed   |
+| ✓    | OPE-220 | Notion knowledge inbox and review workflow approved     |
+| ✓    | OPE-221 | Retry-safe Notion synchronization deployed and verified |
 
 ## Pick in this exact order
 
@@ -19,10 +22,7 @@ This is the canonical one-ticket-at-a-time queue. Pick the first incomplete tick
 |   2 | **OPE-218 — Implement URL normalization and duplicate detection**                                     | Build                | Finish conservative cross-key duplicate behavior while the capture contract is small                         |
 |   3 | **OPE-224 — Approve sensitivity classification and AI provider routing policy**                       | Human/architect gate | Freeze Public/Personal/Sensitive/Unknown routing before provider implementation                              |
 |   4 | **OPE-249 — Implement private R2 attachment upload and lifecycle**                                    | Build                | Required before image/PDF/file Shortcut completion, extraction, deletion, and recovery                       |
-|   5 | **OPE-246 — Implement reusable processing jobs, leases, retries, and recovery**                       | Build                | Shared async foundation for Notion, extraction, AI, digest, and Ollama                                       |
 |   6 | **OPE-219 — Build and validate the iPhone Share Sheet Shortcut**                                      | Human + build        | Complete real URL/text/image/file capture on the owner’s iPhone                                              |
-|   7 | **OPE-220 — Design the Notion knowledge inbox and review workflow**                                   | Human/architect gate | Approve properties, views, editable-field policy, and authority boundary                                     |
-|   8 | **OPE-221 — Implement retry-safe Notion synchronization worker**                                      | Build                | Uses the approved Notion schema and reusable job framework                                                   |
 |   9 | **OPE-222 — Implement provider-independent AI enrichment pipeline**                                   | Build                | Starts after routing policy and job framework; raw data remains independent                                  |
 |  10 | **OPE-223 — Implement multimodal extraction for screenshots, PDFs, and shared files**                 | Build                | Uses durable R2 objects, jobs, and approved provider routing                                                 |
 |  11 | **OPE-225 — Add D1 FTS5 indexing and knowledge search API**                                           | Build                | Makes the corpus recoverable without RAG or Notion                                                           |

@@ -101,14 +101,36 @@ Raw source fields and original user reason are immutable. Corrections target der
 
 Parameters: `q`, cursor/page size, source, project, topics, lifecycle status, processing status, privacy, importance range, captured-from/to, coverage. Output cards include ID/title/source, why-saved, highlighted snippet, project/topics/date/status/coverage and safe actions. V1 must not require AI.
 
-## Planned processing and operations API
+## Implemented processing and operations API
 
-- `GET /api/v1/jobs`: admin filters/status/error/backlog.
-- `POST /api/v1/jobs/:id/retry`: bounded manual retry.
-- Future provider workers lease only policy-approved jobs; provider selection and credential resolution are implemented under OPE-222 rather than exposed as an Ollama-only route.
-- `POST /api/v1/jobs/:id/heartbeat`: extend owned active lease.
-- `POST /api/v1/jobs/:id/result`: validated idempotent result submission.
-- `POST /api/v1/jobs/:id/release`: controlled release/shutdown.
+- `GET /api/v1/jobs`: admin-only list. Query `kind=processing|sync`,
+  `status=pending|processing|retry_wait|complete|failed`, optional `type`,
+  `item_id`, and `limit` 1–100. `retry_wait` is the derived representation of
+  `pending` plus a future `available_at`.
+- `POST /api/v1/jobs/:id/retry?kind=processing|sync`: admin-only, bounded to
+  three manual retries. It rejects deleted items, paused optional processing,
+  stale privacy snapshots, ineligible hosted processing and deleted Notion
+  pages.
+- `POST /api/v1/items/:id/notion/recreate`: admin-only owner approval for a
+  confirmed deleted/missing Notion page.
+- `POST /api/v1/worker/jobs/lease`: local-worker token; body contains
+  `job_type`, `owner_id`, `ttl_minutes` and `limit`.
+- `POST /api/v1/worker/jobs/:id/heartbeat`: local-worker token and exact owner.
+- `POST /api/v1/worker/jobs/:id/fail`: local-worker token and exact owner;
+  accepts a stable `error_code`, `retryable`, and optional bounded
+  `retry_after_seconds`. The server owns the retry ceiling and persists only
+  safe error codes.
+- `POST /api/v1/worker/jobs/:id/result`: local-worker token; idempotent
+  `submission_id`, `input_hash`, `result_version`, and a credential-key-free
+  result object capped at 64 KiB.
+- `POST /api/v1/worker/jobs/:id/release`: local-worker token; controlled
+  release/shutdown.
+
+Provider workers lease only policy-stamped jobs. Separate capture, admin, and
+local-worker secrets preserve least privilege.
+
+## Planned operations API
+
 - `GET /api/v1/usage`: storage, provider use, quotas/headroom, rows read/written, sync lag.
 - `GET /api/v1/health`: service/dependency status without secrets.
 - `POST /api/v1/exports`: create versioned export job.
