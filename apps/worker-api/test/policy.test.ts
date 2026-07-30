@@ -21,6 +21,7 @@ describe('PolicyService', () => {
       'sensitive',
     ] as const) {
       expect(Object.keys(ALLOWED_DATA_MATRIX[level]).sort()).toEqual([
+        'cloudflare',
         'gemini',
         'none',
         'openrouter',

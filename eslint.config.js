@@ -3,7 +3,13 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['.wrangler', 'coverage', 'dist', 'worker-configuration.d.ts'],
+    ignores: [
+      '.wrangler',
+      'coverage',
+      'dist',
+      'worker-configuration.d.ts',
+      'apps/web/dist',
+    ],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
