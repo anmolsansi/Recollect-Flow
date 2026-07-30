@@ -1,4 +1,6 @@
-export type Env = Cloudflare.Env;
+export type Env = Cloudflare.Env & {
+  AI_PROVIDER_CLOUDFLARE_ENABLED?: string;
+};
 
 export interface AppContext {
   Bindings: Env;

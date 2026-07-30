@@ -1,7 +1,7 @@
 export const POLICY_VERSION = '2026-07-21.1';
 
 export type PrivacyLevel = 'unknown' | 'public' | 'personal' | 'sensitive';
-export type AiProvider = 'openrouter' | 'gemini' | 'none';
+export type AiProvider = 'openrouter' | 'gemini' | 'cloudflare' | 'none';
 export type CredentialSource = 'app_managed' | 'user_provided' | 'none';
 export type Modality =
   'text' | 'image' | 'pdf' | 'file' | 'audio' | 'embedding';
@@ -21,21 +21,25 @@ export const ALLOWED_DATA_MATRIX: Readonly<
   unknown: {
     openrouter: [],
     gemini: [],
+    cloudflare: [],
     none: ALL_MODALITIES,
   },
   public: {
     openrouter: ALL_MODALITIES,
     gemini: ALL_MODALITIES,
+    cloudflare: [],
     none: ALL_MODALITIES,
   },
   personal: {
     openrouter: ALL_MODALITIES,
     gemini: ALL_MODALITIES,
+    cloudflare: [],
     none: ALL_MODALITIES,
   },
   sensitive: {
     openrouter: [],
     gemini: [],
+    cloudflare: [],
     none: ALL_MODALITIES,
   },
 };
@@ -64,7 +68,11 @@ export interface RouteInput {
   containsRestrictedCategory?: boolean;
 }
 
-const HOSTED_PROVIDERS = new Set<AiProvider>(['openrouter', 'gemini']);
+const HOSTED_PROVIDERS = new Set<AiProvider>([
+  'openrouter',
+  'gemini',
+  'cloudflare',
+]);
 
 export class PolicyService {
   route(input: RouteInput): RouteDecision {
