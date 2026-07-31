@@ -7,10 +7,21 @@ import type {
   ClassificationResult,
   ExtractResult,
 } from './ai.interface';
+import {
+  DigestSummaryResultSchema,
+  DigestSummaryResultJsonSchema,
+} from './ai.schema';
+
 import { WorkersAiAdapter } from './workers-ai.adapter';
 import { AppError } from '../../shared/errors';
 import { PolicyService } from '../../policy/policy.service';
-import type { PrivacyLevel, Modality } from '../../policy/policy.service';
+import type {
+  PrivacyLevel,
+  Modality,
+  AiProvider as PolicyAiProvider,
+} from '../../policy/policy.service';
+import { MockAiAdapter } from './mock-ai.adapter';
+import { OpenRouterAdapter } from './openrouter.adapter';
 
 export class AiProviderRegistry {
   private providers = new Map<string, AiProvider>();
@@ -18,7 +29,15 @@ export class AiProviderRegistry {
 
   constructor(private readonly env: Env) {
     this.policyService = new PolicyService();
-    this.register(new WorkersAiAdapter(env));
+
+    if (this.env.MOCK_AI_ENABLED === 'true') {
+      this.register(new MockAiAdapter('openrouter'));
+      this.register(new MockAiAdapter('gemini'));
+      this.register(new MockAiAdapter('cloudflare'));
+    } else {
+      this.register(new WorkersAiAdapter(env));
+      this.register(new OpenRouterAdapter(env));
+    }
   }
 
   register(provider: AiProvider) {
@@ -29,17 +48,29 @@ export class AiProviderRegistry {
     privacyLevel: PrivacyLevel,
     modality: Modality = 'text',
   ): AiProviderConfig | null {
-    const decision = this.policyService.route({ privacyLevel, modality });
-    if (decision.provider === 'none') {
-      return null;
+    const availableProviders: PolicyAiProvider[] = [];
+
+    if (
+      this.env.AI_PROVIDER_CLOUDFLARE_ENABLED === 'true' ||
+      this.env.MOCK_AI_ENABLED === 'true'
+    ) {
+      availableProviders.push('cloudflare');
+    }
+    if (this.env.OPENROUTER_API_KEY || this.env.MOCK_AI_ENABLED === 'true') {
+      availableProviders.push('openrouter');
     }
 
-    // Architect rule: Workers AI is disabled by default for now.
-    // If the policy returns 'cloudflare' (if it were allowed), we check env.
-    if (
-      decision.provider === 'cloudflare' &&
-      this.env.AI_PROVIDER_CLOUDFLARE_ENABLED !== 'true'
-    ) {
+    const requestedProvider = this.env.AI_PROVIDER_DEFAULT as
+      PolicyAiProvider | undefined;
+
+    const decision = this.policyService.route({
+      privacyLevel,
+      modality,
+      availableProviders,
+      requestedProvider,
+    });
+
+    if (decision.provider === 'none') {
       return null;
     }
 
@@ -98,5 +129,21 @@ export class AiProviderRegistry {
         'No eligible AI provider for this privacy level',
       );
     return this.getAdapter(config.provider).extractData(text, config);
+  }
+
+  async generateDigestSummary(prompt: string, privacyLevel: PrivacyLevel) {
+    const config = this.getProviderForPolicy(privacyLevel);
+    if (!config)
+      throw new AppError(
+        500,
+        'NO_ELIGIBLE_PROVIDER',
+        'No eligible AI provider for this privacy level',
+      );
+    return this.getAdapter(config.provider).extractStructured(
+      prompt,
+      DigestSummaryResultSchema,
+      DigestSummaryResultJsonSchema,
+      config,
+    );
   }
 }

@@ -67,4 +67,8 @@ export interface AiProvider {
     text: string,
     config?: AiProviderConfig,
   ): Promise<AiEnrichmentResult<ExtractResult>>;
+  embed?(
+    text: string,
+    config?: AiProviderConfig,
+  ): Promise<AiEnrichmentResult<number[]>>;
 }
