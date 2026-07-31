@@ -15,13 +15,13 @@ import {
   ClassificationResultSchema,
   ClassificationResultJsonSchema,
 } from './ai.schema';
-import type { ZodSchema } from 'zod';
+import { ZodError, type ZodSchema } from 'zod';
 import { AppError } from '../../shared/errors';
 
 export class WorkersAiAdapter implements AiProvider {
   name = 'cloudflare';
 
-  constructor(private readonly env: Env) {}
+  constructor(private readonly env: Pick<Env, 'AI'>) {}
 
   private async callAi<T>(
     prompt: string,
@@ -83,8 +83,8 @@ export class WorkersAiAdapter implements AiProvider {
         provider: this.name,
         model,
         latencyMs,
-        inputUnits: Math.ceil(prompt.length / 4),
-        outputUnits: Math.ceil(rawResponse.length / 4),
+        inputUnits: Math.max(1, Math.ceil(prompt.length / 4)),
+        outputUnits: Math.max(1, Math.ceil(rawResponse.length / 4)),
         status: 'success',
       };
     } catch (error) {
@@ -115,7 +115,11 @@ export class WorkersAiAdapter implements AiProvider {
           errorCode:
             error instanceof SyntaxError
               ? 'JSON_PARSE_ERROR'
-              : (error as Error).message,
+              : error instanceof ZodError
+                ? 'SCHEMA_VALIDATION_ERROR'
+                : error instanceof AppError
+                  ? error.code
+                  : 'AI_REQUEST_FAILED',
         },
       );
     }
@@ -196,8 +200,8 @@ export class WorkersAiAdapter implements AiProvider {
         provider: this.name,
         model,
         latencyMs: Date.now() - startTime,
-        inputUnits: Math.ceil(text.length / 4),
-        outputUnits: vector.length,
+        inputUnits: Math.max(1, Math.ceil(text.length / 4)),
+        outputUnits: Math.max(1, vector.length),
         status: 'success',
       };
     } catch (error) {

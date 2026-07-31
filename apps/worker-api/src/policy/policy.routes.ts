@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 
-import type { AppContext } from '../env';
+import type { AppContext, Env } from '../env';
 import { requireAdminToken } from '../shared/auth';
 import { AppError } from '../shared/errors';
 import { D1PolicyRepository } from './policy.repository';
@@ -9,7 +9,7 @@ import { privacyChangeSchema } from './policy.schema';
 import { PolicyService } from './policy.service';
 
 export function policyRoutes(
-  repositoryFactory: (env: Cloudflare.Env) => PolicyRepository = (env) =>
+  repositoryFactory: (env: Env) => PolicyRepository = (env) =>
     new D1PolicyRepository(env.DB),
 ) {
   const router = new Hono<AppContext>();

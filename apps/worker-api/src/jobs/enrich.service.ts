@@ -2,7 +2,25 @@ import type { Env } from '../env';
 import { JobService, type JobRecord } from './job.service';
 import { AiProviderRegistry } from './ai/ai-provider.registry';
 import { AppError } from '../shared/errors';
-import type { PrivacyLevel } from '../policy/policy.service';
+import type {
+  AiProvider as PolicyAiProvider,
+  CredentialSource,
+  PrivacyLevel,
+} from '../policy/policy.service';
+
+interface EnrichmentRoutingRow {
+  provider_eligibility: PolicyAiProvider | 'workers_ai';
+  credential_source: CredentialSource;
+  hosted_processing_consent: number;
+  zero_data_retention_required: number;
+  data_collection_denied: number;
+}
+
+function normalizeProvider(
+  provider: EnrichmentRoutingRow['provider_eligibility'],
+): PolicyAiProvider {
+  return provider === 'workers_ai' ? 'cloudflare' : provider;
+}
 
 export class EnrichService {
   private jobService: JobService;
@@ -20,6 +38,19 @@ export class EnrichService {
     job: JobRecord,
     ownerId: string,
   ): Promise<boolean> {
+    const routingRow = await this.db
+      .prepare(
+        `SELECT provider_eligibility, credential_source,
+                hosted_processing_consent, zero_data_retention_required,
+                data_collection_denied
+         FROM processing_jobs
+         WHERE id = ?1 AND item_id = ?2 AND status = 'processing'
+           AND lease_owner = ?3`,
+      )
+      .bind(job.id, job.itemId, ownerId)
+      .first<EnrichmentRoutingRow>();
+    if (!routingRow) return false;
+
     const itemRow = await this.db
       .prepare(
         `SELECT raw_text, user_note, source_type, privacy_level, title FROM items WHERE id = ?1 AND deleted_at IS NULL`,
@@ -57,10 +88,15 @@ export class EnrichService {
     }
 
     try {
-      const enrichmentResult = await this.aiRegistry.extractData(
-        textToEnrich,
-        itemRow.privacy_level,
-      );
+      const enrichmentResult = await this.aiRegistry.extractData(textToEnrich, {
+        privacyLevel: itemRow.privacy_level,
+        requestedProvider: normalizeProvider(routingRow.provider_eligibility),
+        credentialSource: routingRow.credential_source,
+        hostedProcessingConsent: routingRow.hosted_processing_consent === 1,
+        zeroDataRetentionEnforced:
+          routingRow.zero_data_retention_required === 1,
+        dataCollectionDenied: routingRow.data_collection_denied === 1,
+      });
 
       const now = new Date().toISOString();
       const extracted = enrichmentResult.result;
@@ -77,74 +113,50 @@ export class EnrichService {
         overridesResult.results.map((r) => [r.field_name, r.override_value]),
       );
 
-      // Merge extracted data with overrides
-      const finalTitle = overrides.has('title')
-        ? (overrides.get('title') ?? null)
-        : (extracted.title ?? null);
-      const finalSummary = overrides.has('summary')
-        ? (overrides.get('summary') ?? null)
-        : (extracted.summary ?? null);
-      const finalTopics = overrides.has('topics')
-        ? (overrides.get('topics') ?? null)
-        : JSON.stringify(extracted.topics ?? []);
-      const finalPeople = overrides.has('people')
-        ? (overrides.get('people') ?? null)
-        : JSON.stringify(extracted.people ?? []);
-      const finalCompanies = overrides.has('companies')
-        ? (overrides.get('companies') ?? null)
-        : JSON.stringify(extracted.companies ?? []);
-      const finalProject = overrides.has('project')
-        ? (overrides.get('project') ?? null)
-        : (extracted.project ?? null);
-      const finalImportance = overrides.has('importance')
-        ? parseInt(overrides.get('importance')!, 10)
-        : (extracted.importance ?? null);
-      const finalWhyItMatters = overrides.has('why_it_matters')
-        ? (overrides.get('why_it_matters') ?? null)
-        : (extracted.whyItMatters ?? null);
-      const finalSuggestedAction = overrides.has('suggested_action')
-        ? (overrides.get('suggested_action') ?? null)
-        : (extracted.suggestedAction ?? null);
+      // Build dynamic update query respecting overrides
+      const updateFields: string[] = ['updated_at = ?1'];
+      const updateValues: unknown[] = [now];
+      let paramIndex = 2;
+
+      const addField = (field: string, value: unknown, useCoalesce = false) => {
+        if (!overrides.has(field)) {
+          if (useCoalesce) {
+            updateFields.push(`${field} = COALESCE(${field}, ?${paramIndex})`);
+          } else {
+            updateFields.push(`${field} = ?${paramIndex}`);
+          }
+          updateValues.push(value);
+          paramIndex++;
+        }
+      };
+
+      addField('title', extracted.title ?? null, true);
+      addField('summary', extracted.summary ?? null);
+      addField('topics_json', JSON.stringify(extracted.topics ?? []));
+      addField('people', JSON.stringify(extracted.people ?? []));
+      addField('companies', JSON.stringify(extracted.companies ?? []));
+      addField('project', extracted.project ?? null);
+      addField('importance', extracted.importance ?? null);
+      addField('why_it_matters', extracted.whyItMatters ?? null);
+      addField('suggested_action', extracted.suggestedAction ?? null);
+      updateFields.push(`processing_status = 'complete'`);
+
+      const baseWhere = `id = ?${paramIndex++} AND deleted_at IS NULL AND privacy_level = ?${paramIndex++} AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?${paramIndex++} AND lease_owner = ?${paramIndex++} AND status = 'processing')`;
+      updateValues.push(job.itemId, itemRow.privacy_level, job.id, ownerId);
+
+      const updateItemsQuery = `UPDATE items SET ${updateFields.join(', ')} WHERE ${baseWhere}`;
 
       // Update in a transaction
       const statements = [
-        this.db
-          .prepare(
-            `UPDATE items SET
-             title = COALESCE(title, ?1),
-             summary = ?2,
-             topics_json = ?3,
-             people = ?4,
-             companies = ?5,
-             project = ?6,
-             importance = ?7,
-             why_it_matters = ?8,
-             suggested_action = ?9,
-             processing_status = 'complete',
-             updated_at = ?10
-           WHERE id = ?11 AND deleted_at IS NULL AND privacy_level = ?12`, // Enforce privacy unchanged
-          )
-          .bind(
-            finalTitle,
-            finalSummary,
-            finalTopics,
-            finalPeople,
-            finalCompanies,
-            finalProject,
-            finalImportance,
-            finalWhyItMatters,
-            finalSuggestedAction,
-            now,
-            job.itemId,
-            itemRow.privacy_level,
-          ),
+        this.db.prepare(updateItemsQuery).bind(...updateValues),
         this.db
           .prepare(
             `INSERT INTO provider_usage (
              id, item_id, provider, model, operation, latency_ms,
              input_units, output_units, status, created_at
            ) SELECT ?1, ?2, ?3, ?4, 'enrich', ?5, ?6, ?7, 'success', ?8
-             FROM items WHERE id = ?9 AND deleted_at IS NULL AND privacy_level = ?10`,
+             FROM items WHERE id = ?9 AND deleted_at IS NULL AND privacy_level = ?10
+             AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?11 AND lease_owner = ?12 AND status = 'processing')`,
           )
           .bind(
             crypto.randomUUID(),
@@ -157,13 +169,16 @@ export class EnrichService {
             now,
             job.itemId,
             itemRow.privacy_level,
+            job.id,
+            ownerId,
           ),
         this.db
           .prepare(
             `INSERT INTO audit_events (
              id, item_id, event_type, actor_type, details_json, created_at
            ) SELECT ?1, ?2, 'enrichment_completed', 'system', ?3, ?4
-             FROM items WHERE id = ?5 AND deleted_at IS NULL AND privacy_level = ?6`,
+             FROM items WHERE id = ?5 AND deleted_at IS NULL AND privacy_level = ?6
+             AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?7 AND lease_owner = ?8 AND status = 'processing')`,
           )
           .bind(
             crypto.randomUUID(),
@@ -176,6 +191,8 @@ export class EnrichService {
             now,
             job.itemId,
             itemRow.privacy_level,
+            job.id,
+            ownerId,
           ),
         this.db
           .prepare(
@@ -229,16 +246,20 @@ export class EnrichService {
       // Record failed usage if there's provider info on the error
       let errorCode = error instanceof AppError ? error.code : 'UNKNOWN_ERROR';
 
-      if (error instanceof Object && 'provider' in error) {
-        const provider = (error as Record<string, unknown>).provider as string;
-        const model = (error as Record<string, unknown>).model as string;
-        const latencyMs = (error as Record<string, unknown>)
-          .latencyMs as number;
+      if (error && typeof error === 'object' && 'provider' in error) {
+        const providerError = error as {
+          provider?: string;
+          model?: string;
+          latencyMs?: number;
+          errorCode?: string;
+        };
+        const provider = String(providerError.provider || 'unknown');
+        const model = String(providerError.model || 'unknown');
+        const latencyMs = Number(providerError.latencyMs || 0);
 
-        const rawErrorCode = (error as Record<string, unknown>)
-          .errorCode as string;
+        const rawErrorCode = providerError.errorCode;
         if (rawErrorCode) {
-          errorCode = rawErrorCode
+          errorCode = String(rawErrorCode)
             .replace(/[^a-zA-Z0-9_]/g, '_')
             .substring(0, 50)
             .toUpperCase();
