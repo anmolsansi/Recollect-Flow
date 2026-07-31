@@ -9,7 +9,7 @@ export default defineConfig({
     cloudflareTest(async () => ({
       main: './apps/worker-api/src/index.ts',
       miniflare: {
-        d1Databases: ['DB', 'MIGRATION_DB'],
+        d1Databases: ['DB', 'MIGRATION_DB', 'OPE222_MIGRATION_DB'],
         r2Buckets: ['ATTACHMENTS'],
         bindings: {
           TEST_MIGRATIONS: await readD1Migrations('./migrations'),
@@ -22,6 +22,11 @@ export default defineConfig({
           TELEGRAM_CHAT_ID: 'test-telegram-chat',
           MAX_ATTACHMENT_BYTES: '25000000',
           UPLOAD_TTL_SECONDS: '3600',
+          MOCK_AI_ENABLED: 'true',
+          AI_PROVIDER_DEFAULT: 'openrouter',
+          AI_PROVIDERS_ENABLED: 'openrouter,cloudflare',
+          AI_PROVIDER_IMPLEMENTATIONS:
+            '{"openrouter":"mock","cloudflare":"mock"}',
         },
       },
     })),

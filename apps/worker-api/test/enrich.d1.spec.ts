@@ -1,7 +1,10 @@
 import { env, applyD1Migrations } from 'cloudflare:test';
 import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
+import type { Env } from '../src/env';
 import { EnrichService } from '../src/jobs/enrich.service';
 import type { JobRecord } from '../src/jobs/job.service';
+
+const workerEnv: Env = env;
 
 describe('EnrichService (D1 Integration)', () => {
   let enrichService: EnrichService;
@@ -11,9 +14,7 @@ describe('EnrichService (D1 Integration)', () => {
   });
 
   beforeEach(async () => {
-    // Enable Mock AI for testing
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (env as any).MOCK_AI_ENABLED = 'true';
+    workerEnv.MOCK_AI_ENABLED = 'true';
 
     await env.DB.prepare('DELETE FROM processing_jobs').run();
     const tables = [
@@ -29,8 +30,7 @@ describe('EnrichService (D1 Integration)', () => {
       await env.DB.prepare(`DELETE FROM ${table}`).run();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    enrichService = new EnrichService(env as any, env.DB);
+    enrichService = new EnrichService(workerEnv, env.DB);
   });
 
   const insertItem = async (
@@ -304,5 +304,59 @@ describe('EnrichService (D1 Integration)', () => {
       .bind('item-7')
       .first();
     expect(item?.title).toBeNull();
+  });
+
+  it('keeps the item and job safely pending when no provider is available', async () => {
+    const previousMock = workerEnv.MOCK_AI_ENABLED;
+    const previousEnabled = workerEnv.AI_PROVIDERS_ENABLED;
+    const previousImplementations = workerEnv.AI_PROVIDER_IMPLEMENTATIONS;
+    try {
+      workerEnv.MOCK_AI_ENABLED = 'false';
+      workerEnv.AI_PROVIDERS_ENABLED = '';
+      workerEnv.AI_PROVIDER_IMPLEMENTATIONS = '{}';
+      await insertItem('item-no-provider', {
+        raw_text: 'Source must remain unchanged',
+      });
+      await insertJob('job-no-provider', 'item-no-provider');
+
+      const completed = await new EnrichService(
+        workerEnv,
+        env.DB,
+      ).processEnrichmentJob(
+        { id: 'job-no-provider', itemId: 'item-no-provider' } as JobRecord,
+        'owner-1',
+      );
+      expect(completed).toBe(false);
+
+      const item = await env.DB.prepare(
+        `SELECT raw_text, processing_status FROM items
+         WHERE id = 'item-no-provider'`,
+      ).first<{ raw_text: string; processing_status: string }>();
+      expect(item).toEqual({
+        raw_text: 'Source must remain unchanged',
+        processing_status: 'pending',
+      });
+
+      const job = await env.DB.prepare(
+        `SELECT status, last_error_code, available_at FROM processing_jobs
+         WHERE id = 'job-no-provider'`,
+      ).first<{
+        status: string;
+        last_error_code: string | null;
+        available_at: string;
+      }>();
+      expect(job?.status).toBe('pending');
+      expect(job?.last_error_code).toBe('NO_ELIGIBLE_PROVIDER');
+      expect(new Date(job!.available_at).getTime()).toBeGreaterThan(Date.now());
+
+      const usage = await env.DB.prepare(
+        `SELECT id FROM provider_usage WHERE item_id = 'item-no-provider'`,
+      ).first();
+      expect(usage).toBeNull();
+    } finally {
+      workerEnv.MOCK_AI_ENABLED = previousMock;
+      workerEnv.AI_PROVIDERS_ENABLED = previousEnabled;
+      workerEnv.AI_PROVIDER_IMPLEMENTATIONS = previousImplementations;
+    }
   });
 });

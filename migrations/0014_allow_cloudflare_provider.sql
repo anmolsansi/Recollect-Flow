@@ -1,6 +1,26 @@
--- OPE-222: Allow 'cloudflare' in processing_jobs provider_eligibility
+-- OPE-222: allow Cloudflare provider eligibility without losing durable job data.
 
 PRAGMA defer_foreign_keys = true;
+
+-- processing_job_results references processing_jobs with ON DELETE RESTRICT.
+-- Preserve it explicitly while the parent table is rebuilt.
+CREATE TABLE processing_job_results_policy_20260731 (
+  job_id TEXT PRIMARY KEY,
+  submission_id TEXT NOT NULL UNIQUE,
+  input_hash TEXT NOT NULL,
+  result_version TEXT NOT NULL,
+  result_json TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+INSERT INTO processing_job_results_policy_20260731 (
+  job_id, submission_id, input_hash, result_version, result_json, created_at
+)
+SELECT
+  job_id, submission_id, input_hash, result_version, result_json, created_at
+FROM processing_job_results;
+
+DROP TABLE processing_job_results;
 
 CREATE TABLE processing_jobs_policy_20260731 (
   id TEXT PRIMARY KEY,
@@ -16,8 +36,8 @@ CREATE TABLE processing_jobs_policy_20260731 (
   privacy_level_snapshot TEXT NOT NULL DEFAULT 'unknown'
     CHECK (privacy_level_snapshot IN ('unknown', 'public', 'personal', 'sensitive')),
   provider_eligibility TEXT NOT NULL DEFAULT 'none'
-    CHECK (provider_eligibility IN ('workers_ai', 'cloudflare', 'gemini', 'ollama', 'openrouter', 'none')),
-  policy_version TEXT NOT NULL DEFAULT '2026-07-21.1',
+    CHECK (provider_eligibility IN ('cloudflare', 'gemini', 'ollama', 'openrouter', 'none')),
+  policy_version TEXT NOT NULL DEFAULT '2026-07-31.2',
   credential_source TEXT NOT NULL DEFAULT 'none'
     CHECK (credential_source IN ('app_managed', 'user_provided', 'none')),
   hosted_processing_consent INTEGER NOT NULL DEFAULT 0
@@ -34,6 +54,7 @@ CREATE TABLE processing_jobs_policy_20260731 (
   heartbeat_at TEXT,
   completed_at TEXT,
   manual_retry_count INTEGER NOT NULL DEFAULT 0
+    CHECK (manual_retry_count >= 0 AND manual_retry_count <= 3)
 );
 
 INSERT INTO processing_jobs_policy_20260731 (
@@ -46,18 +67,48 @@ INSERT INTO processing_jobs_policy_20260731 (
 )
 SELECT
   id, item_id, job_type, status, attempts, available_at, last_error_code,
-  created_at, updated_at, privacy_level_snapshot, provider_eligibility,
+  created_at, updated_at, privacy_level_snapshot,
+  CASE provider_eligibility
+    WHEN 'workers_ai' THEN 'cloudflare'
+    ELSE provider_eligibility
+  END,
   policy_version, credential_source, hosted_processing_consent,
   zero_data_retention_required, data_collection_denied,
   lease_owner, lease_expires_at, priority, input_hash, result_version,
   heartbeat_at, completed_at, manual_retry_count
 FROM processing_jobs;
 
-UPDATE processing_jobs_policy_20260731 SET provider_eligibility = 'cloudflare' WHERE provider_eligibility = 'workers_ai';
-
 DROP TABLE processing_jobs;
 ALTER TABLE processing_jobs_policy_20260731 RENAME TO processing_jobs;
 
-CREATE INDEX idx_processing_jobs_ready ON processing_jobs(status, available_at);
-CREATE INDEX idx_processing_jobs_item_id ON processing_jobs(item_id);
-CREATE INDEX idx_processing_jobs_lease ON processing_jobs(status, lease_expires_at);
+CREATE TABLE processing_job_results (
+  job_id TEXT PRIMARY KEY REFERENCES processing_jobs(id) ON DELETE RESTRICT,
+  submission_id TEXT NOT NULL UNIQUE,
+  input_hash TEXT NOT NULL,
+  result_version TEXT NOT NULL,
+  result_json TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+INSERT INTO processing_job_results (
+  job_id, submission_id, input_hash, result_version, result_json, created_at
+)
+SELECT
+  job_id, submission_id, input_hash, result_version, result_json, created_at
+FROM processing_job_results_policy_20260731;
+
+DROP TABLE processing_job_results_policy_20260731;
+
+CREATE INDEX idx_processing_jobs_ready
+  ON processing_jobs(status, available_at);
+CREATE INDEX idx_processing_jobs_item_id
+  ON processing_jobs(item_id);
+CREATE INDEX idx_processing_jobs_lease
+  ON processing_jobs(status, lease_expires_at);
+CREATE UNIQUE INDEX idx_processing_jobs_active_unique
+  ON processing_jobs(item_id, job_type)
+  WHERE status IN ('pending', 'processing');
+CREATE INDEX idx_processing_jobs_lease_ready
+  ON processing_jobs(
+    job_type, status, available_at, lease_expires_at, priority DESC
+  );

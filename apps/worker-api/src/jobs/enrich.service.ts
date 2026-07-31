@@ -2,7 +2,25 @@ import type { Env } from '../env';
 import { JobService, type JobRecord } from './job.service';
 import { AiProviderRegistry } from './ai/ai-provider.registry';
 import { AppError } from '../shared/errors';
-import type { PrivacyLevel } from '../policy/policy.service';
+import type {
+  AiProvider as PolicyAiProvider,
+  CredentialSource,
+  PrivacyLevel,
+} from '../policy/policy.service';
+
+interface EnrichmentRoutingRow {
+  provider_eligibility: PolicyAiProvider | 'workers_ai';
+  credential_source: CredentialSource;
+  hosted_processing_consent: number;
+  zero_data_retention_required: number;
+  data_collection_denied: number;
+}
+
+function normalizeProvider(
+  provider: EnrichmentRoutingRow['provider_eligibility'],
+): PolicyAiProvider {
+  return provider === 'workers_ai' ? 'cloudflare' : provider;
+}
 
 export class EnrichService {
   private jobService: JobService;
@@ -20,6 +38,19 @@ export class EnrichService {
     job: JobRecord,
     ownerId: string,
   ): Promise<boolean> {
+    const routingRow = await this.db
+      .prepare(
+        `SELECT provider_eligibility, credential_source,
+                hosted_processing_consent, zero_data_retention_required,
+                data_collection_denied
+         FROM processing_jobs
+         WHERE id = ?1 AND item_id = ?2 AND status = 'processing'
+           AND lease_owner = ?3`,
+      )
+      .bind(job.id, job.itemId, ownerId)
+      .first<EnrichmentRoutingRow>();
+    if (!routingRow) return false;
+
     const itemRow = await this.db
       .prepare(
         `SELECT raw_text, user_note, source_type, privacy_level, title FROM items WHERE id = ?1 AND deleted_at IS NULL`,
@@ -57,10 +88,15 @@ export class EnrichService {
     }
 
     try {
-      const enrichmentResult = await this.aiRegistry.extractData(
-        textToEnrich,
-        itemRow.privacy_level,
-      );
+      const enrichmentResult = await this.aiRegistry.extractData(textToEnrich, {
+        privacyLevel: itemRow.privacy_level,
+        requestedProvider: normalizeProvider(routingRow.provider_eligibility),
+        credentialSource: routingRow.credential_source,
+        hostedProcessingConsent: routingRow.hosted_processing_consent === 1,
+        zeroDataRetentionEnforced:
+          routingRow.zero_data_retention_required === 1,
+        dataCollectionDenied: routingRow.data_collection_denied === 1,
+      });
 
       const now = new Date().toISOString();
       const extracted = enrichmentResult.result;

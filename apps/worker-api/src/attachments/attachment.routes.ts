@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 
 import { sha256Bytes } from '../captures/hash';
-import type { AppContext } from '../env';
+import type { AppContext, Env } from '../env';
 import { requireAdminToken, requireCaptureToken } from '../shared/auth';
 import { AppError } from '../shared/errors';
 import { D1AttachmentRepository } from './attachment.repository';
@@ -18,7 +18,7 @@ import {
 import { positiveInteger, safeFilename } from './attachment.utils';
 
 export function attachmentRoutes(
-  repositoryFactory: (env: Cloudflare.Env) => AttachmentRepository = (env) =>
+  repositoryFactory: (env: Env) => AttachmentRepository = (env) =>
     new D1AttachmentRepository(env.DB),
 ) {
   const router = new Hono<AppContext>();

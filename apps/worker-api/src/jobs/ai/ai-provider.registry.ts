@@ -19,9 +19,82 @@ import type {
   PrivacyLevel,
   Modality,
   AiProvider as PolicyAiProvider,
+  CredentialSource,
 } from '../../policy/policy.service';
 import { MockAiAdapter } from './mock-ai.adapter';
 import { OpenRouterAdapter } from './openrouter.adapter';
+
+const POLICY_PROVIDERS = ['openrouter', 'gemini', 'cloudflare'] as const;
+type ConfiguredProvider = (typeof POLICY_PROVIDERS)[number];
+type ProviderImplementation = 'openrouter' | 'cloudflare' | 'mock';
+
+export interface AiRoutingContext {
+  privacyLevel: PrivacyLevel;
+  requestedProvider?: PolicyAiProvider;
+  credentialSource?: CredentialSource;
+  hostedProcessingConsent?: boolean;
+  zeroDataRetentionEnforced?: boolean;
+  dataCollectionDenied?: boolean;
+}
+
+function providerConfigError(message: string): never {
+  throw new AppError(500, 'PROVIDER_CONFIG_ERROR', message);
+}
+
+function parseImplementations(value: string | undefined) {
+  if (!value) return new Map<ConfiguredProvider, ProviderImplementation>();
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    return providerConfigError(
+      'AI_PROVIDER_IMPLEMENTATIONS must be valid JSON',
+    );
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return providerConfigError('AI_PROVIDER_IMPLEMENTATIONS must be an object');
+  }
+
+  const aliases: Record<string, ProviderImplementation> = {
+    openrouter: 'openrouter',
+    OpenRouterAdapter: 'openrouter',
+    cloudflare: 'cloudflare',
+    WorkersAiAdapter: 'cloudflare',
+    mock: 'mock',
+    MockAiAdapter: 'mock',
+  };
+  const result = new Map<ConfiguredProvider, ProviderImplementation>();
+  for (const [provider, rawImplementation] of Object.entries(parsed)) {
+    if (!POLICY_PROVIDERS.includes(provider as ConfiguredProvider)) {
+      return providerConfigError(`Unsupported AI provider: ${provider}`);
+    }
+    if (typeof rawImplementation !== 'string' || !aliases[rawImplementation]) {
+      return providerConfigError(
+        `Unsupported implementation for AI provider ${provider}`,
+      );
+    }
+    result.set(provider as ConfiguredProvider, aliases[rawImplementation]!);
+  }
+  return result;
+}
+
+function parseEnabledProviders(
+  value: string | undefined,
+): ConfiguredProvider[] {
+  if (!value) return [];
+  const providers = [
+    ...new Set(value.split(',').map((entry) => entry.trim())),
+  ].filter(Boolean);
+  for (const provider of providers) {
+    if (!POLICY_PROVIDERS.includes(provider as ConfiguredProvider)) {
+      return providerConfigError(
+        `Unsupported enabled AI provider: ${provider}`,
+      );
+    }
+  }
+  return providers as ConfiguredProvider[];
+}
 
 export class AiProviderRegistry {
   private providers = new Map<string, AiProvider>();
@@ -30,39 +103,34 @@ export class AiProviderRegistry {
   constructor(private readonly env: Env) {
     this.policyService = new PolicyService();
 
-    let implementations: Record<string, string> = {};
-    if (this.env.AI_PROVIDER_IMPLEMENTATIONS) {
-      try {
-        implementations = JSON.parse(this.env.AI_PROVIDER_IMPLEMENTATIONS);
-      } catch {
-        // Fallback to empty if parse fails
-      }
+    const implementations = parseImplementations(
+      this.env.AI_PROVIDER_IMPLEMENTATIONS,
+    );
+    let enabledProviders = parseEnabledProviders(this.env.AI_PROVIDERS_ENABLED);
+    if (this.env.MOCK_AI_ENABLED === 'true' && enabledProviders.length === 0) {
+      enabledProviders = [...POLICY_PROVIDERS];
     }
 
-    const enabledProviders = this.env.AI_PROVIDERS_ENABLED
-      ? this.env.AI_PROVIDERS_ENABLED.split(',').map((s) => s.trim())
-      : [];
-
-    // Legacy fallback for tests
-    if (this.env.MOCK_AI_ENABLED === 'true') {
-      this.register(new MockAiAdapter('openrouter'));
-      this.register(new MockAiAdapter('gemini'));
-      this.register(new MockAiAdapter('cloudflare'));
-    } else {
-      // Dynamic registration
-      for (const provider of enabledProviders) {
-        const impl = implementations[provider] || provider;
-        if (impl === 'cloudflare') {
-          const adapter = new WorkersAiAdapter(env);
-          adapter.name = provider; // Override name
-          this.register(adapter);
-        } else if (impl === 'openrouter') {
-          const adapter = new OpenRouterAdapter(env);
-          adapter.name = provider;
-          this.register(adapter);
-        } else if (impl === 'mock') {
-          this.register(new MockAiAdapter(provider));
+    for (const provider of enabledProviders) {
+      const implementation =
+        implementations.get(provider) ??
+        (this.env.MOCK_AI_ENABLED === 'true' ? 'mock' : provider);
+      if (implementation === 'mock') {
+        if (this.env.MOCK_AI_ENABLED !== 'true') {
+          providerConfigError('Mock AI adapters require MOCK_AI_ENABLED=true');
         }
+        this.register(new MockAiAdapter(provider));
+      } else if (implementation === 'cloudflare') {
+        const adapter = new WorkersAiAdapter(env);
+        adapter.name = provider;
+        this.register(adapter);
+      } else if (implementation === 'openrouter') {
+        if (!this.env.OPENROUTER_API_KEY) continue;
+        const adapter = new OpenRouterAdapter(env);
+        adapter.name = provider;
+        this.register(adapter);
+      } else {
+        providerConfigError(`No implementation configured for ${provider}`);
       }
     }
   }
@@ -72,7 +140,7 @@ export class AiProviderRegistry {
   }
 
   private getProviderForPolicy(
-    privacyLevel: PrivacyLevel,
+    routing: PrivacyLevel | AiRoutingContext,
     modality: Modality = 'text',
   ): AiProviderConfig | null {
     const availableProviders: PolicyAiProvider[] = [];
@@ -84,11 +152,14 @@ export class AiProviderRegistry {
       }
     }
 
-    const requestedProvider = this.env.AI_PROVIDER_DEFAULT as
-      PolicyAiProvider | undefined;
+    const context =
+      typeof routing === 'string' ? { privacyLevel: routing } : routing;
+    const requestedProvider =
+      context.requestedProvider ??
+      (this.env.AI_PROVIDER_DEFAULT as PolicyAiProvider | undefined);
 
     const decision = this.policyService.route({
-      privacyLevel,
+      ...context,
       modality,
       availableProviders,
       requestedProvider,
@@ -143,9 +214,9 @@ export class AiProviderRegistry {
 
   async extractData(
     text: string,
-    privacyLevel: PrivacyLevel,
+    routing: PrivacyLevel | AiRoutingContext,
   ): Promise<AiEnrichmentResult<ExtractResult>> {
-    const config = this.getProviderForPolicy(privacyLevel);
+    const config = this.getProviderForPolicy(routing);
     if (!config)
       throw new AppError(
         500,

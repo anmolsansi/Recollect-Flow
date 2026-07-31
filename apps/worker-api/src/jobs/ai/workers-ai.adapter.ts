@@ -15,13 +15,13 @@ import {
   ClassificationResultSchema,
   ClassificationResultJsonSchema,
 } from './ai.schema';
-import type { ZodSchema } from 'zod';
+import { ZodError, type ZodSchema } from 'zod';
 import { AppError } from '../../shared/errors';
 
 export class WorkersAiAdapter implements AiProvider {
   name = 'cloudflare';
 
-  constructor(private readonly env: Env) {}
+  constructor(private readonly env: Pick<Env, 'AI'>) {}
 
   private async callAi<T>(
     prompt: string,
@@ -115,7 +115,11 @@ export class WorkersAiAdapter implements AiProvider {
           errorCode:
             error instanceof SyntaxError
               ? 'JSON_PARSE_ERROR'
-              : (error as Error).message,
+              : error instanceof ZodError
+                ? 'SCHEMA_VALIDATION_ERROR'
+                : error instanceof AppError
+                  ? error.code
+                  : 'AI_REQUEST_FAILED',
         },
       );
     }
