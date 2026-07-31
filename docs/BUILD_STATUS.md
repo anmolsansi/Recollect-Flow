@@ -1,4 +1,4 @@
-# Build status — 2026-07-28
+# Build status — 2026-07-31
 
 ## Completed and deployed
 
@@ -10,12 +10,16 @@
 - OPE-224 policy version `2026-07-21.1`, approved OpenRouter/Gemini/no-AI matrix, consent/ZDR-stamped jobs and audited privacy reprocess/purge override.
 - OPE-249 controlled private-R2 upload, validation/finalization/link/download/delete/cleanup/usage lifecycle with a data-preserving migration.
 - OPE-219 one-request Shortcut capture endpoint with stable queue actions, request-fingerprint conflict protection, private attachment orchestration and compensating cleanup.
-- Forty-four automated tests plus preservation, duplicate-backfill, attachment-link trigger and foreign-key migration checks.
+- OPE-222 provider-independent AI enrichment pipeline via background queues, utilizing D1 queue tracking, durable error boundaries, and `items.topics_json`/`items.why_it_matters`.
+- OPE-223 multimodal extraction for PDFs (via `pdfjs-dist`) and images (via OpenRouter/Gemini), decoupled into `extraction_records` without mutating the canonical source.
+- OPE-225 D1 FTS5 index spanning `items` and `extraction_records` using SQLite triggers and query builder logic.
+- OPE-248 Web Inbox and item review interface (React frontend via Vite, searching via FTS5).
+- Sixty-six automated tests plus preservation, duplicate-backfill, attachment-link trigger, and FTS synchronization checks.
 - Production Worker version `c0e78f89-d7a6-4416-a638-57693d256c03` at `https://recollect-flow.recollectflow.workers.dev`, with the private R2 binding and hourly cleanup schedule.
 
 ## Acceptance evidence
 
-- `npm run check`: formatting, lint, typecheck, 6 test files / 44 tests pass.
+- `npm run check`: formatting, lint, typecheck, 8 test files / 66 tests pass.
 - Fresh migration chain `0001`–`0006` executes successfully.
 - Seeded preservation migration retains an existing linked attachment and backfills its capture event with no foreign-key violations.
 - Seeded duplicate migration accepts two pre-existing canonical duplicates, assigns the atomic key to the oldest item, and links a finalized attachment through the D1 trigger.

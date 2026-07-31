@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import type { ZodSchema } from 'zod';
 import type { Env } from '../../env';
 import type {
   AiProvider,
@@ -7,6 +10,7 @@ import type {
   ClassificationResult,
   ExtractResult,
 } from './ai.interface';
+import { AppError } from '../../shared/errors';
 import {
   ExtractResultSchema,
   ExtractResultJsonSchema,
@@ -15,11 +19,9 @@ import {
   ClassificationResultSchema,
   ClassificationResultJsonSchema,
 } from './ai.schema';
-import type { ZodSchema } from 'zod';
-import { AppError } from '../../shared/errors';
 
-export class WorkersAiAdapter implements AiProvider {
-  name = 'cloudflare';
+export class OpenRouterAdapter implements AiProvider {
+  name = 'openrouter';
 
   constructor(private readonly env: Env) {}
 
@@ -30,36 +32,67 @@ export class WorkersAiAdapter implements AiProvider {
     model: string,
     attempt = 1,
   ): Promise<AiEnrichmentResult<T>> {
+    const apiKey = this.env.OPENROUTER_API_KEY;
+    if (!apiKey) {
+      throw new AppError(
+        500,
+        'PROVIDER_CONFIG_ERROR',
+        'OpenRouter API key is not configured',
+      );
+    }
+
     const startTime = Date.now();
     let rawResponse: string | null = null;
+
     try {
-      const response = await this.env.AI.run(
-        model as '@cf/meta/llama-3-8b-instruct',
+      const response = await fetch(
+        'https://openrouter.ai/api/v1/chat/completions',
         {
-          messages: [{ role: 'user', content: prompt }],
-          response_format: {
-            type: 'json_schema',
-            json_schema: jsonSchemaDefinition,
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://github.com/anmolsansi/Recollect-Flow', // OpenRouter requires referer
+            'X-Title': 'RecollectFlow',
           },
+          body: JSON.stringify({
+            model: model,
+            messages: [{ role: 'user', content: prompt }],
+            response_format: {
+              type: 'json_schema',
+              json_schema: {
+                name: 'result_schema',
+                strict: true,
+                schema: jsonSchemaDefinition,
+              },
+            },
+          }),
         },
       );
 
-      const latencyMs = Date.now() - startTime;
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new AppError(
+          503,
+          'PROVIDER_HTTP_ERROR',
+          `OpenRouter HTTP error ${response.status}: ${errorText}`,
+        );
+      }
 
-      const rawJson =
-        typeof response === 'object' &&
-        response !== null &&
-        'response' in response
-          ? response.response
-          : response;
-      if (typeof rawJson !== 'string') {
+      const data = (await response.json()) as any;
+      if (!data.choices || data.choices.length === 0) {
         throw new AppError(
           503,
           'AI_BAD_RESPONSE',
-          'Invalid response format from AI',
+          'Invalid response format from OpenRouter',
         );
       }
+
+      const rawJson = data.choices[0].message.content;
       rawResponse = rawJson;
+
+      const inputUnits = data.usage?.prompt_tokens || 0;
+      const outputUnits = data.usage?.completion_tokens || 0;
 
       // Repair JSON attempt (simple regex matching if wrapped in backticks)
       let cleanedJson = rawJson.trim();
@@ -82,9 +115,9 @@ export class WorkersAiAdapter implements AiProvider {
         result: validated,
         provider: this.name,
         model,
-        latencyMs,
-        inputUnits: Math.ceil(prompt.length / 4),
-        outputUnits: Math.ceil(rawResponse.length / 4),
+        latencyMs: Date.now() - startTime,
+        inputUnits,
+        outputUnits,
         status: 'success',
       };
     } catch (error) {
@@ -100,13 +133,17 @@ export class WorkersAiAdapter implements AiProvider {
             2,
           );
         } catch {
-          // ignore repair error and throw original or repair error wrapper
+          // ignore repair error and throw original
         }
       }
 
       const latencyMs = Date.now() - startTime;
       throw Object.assign(
-        new AppError(503, 'AI_REQUEST_FAILED', 'Failed to execute AI request'),
+        new AppError(
+          503,
+          'AI_REQUEST_FAILED',
+          'Failed to execute OpenRouter AI request',
+        ),
         {
           provider: this.name,
           model,
@@ -115,7 +152,7 @@ export class WorkersAiAdapter implements AiProvider {
           errorCode:
             error instanceof SyntaxError
               ? 'JSON_PARSE_ERROR'
-              : (error as Error).message,
+              : (error as AppError).code || 'UNKNOWN_ERROR',
         },
       );
     }
@@ -127,7 +164,7 @@ export class WorkersAiAdapter implements AiProvider {
     jsonSchemaDefinition: object,
     config: AiProviderConfig,
   ): Promise<AiEnrichmentResult<T>> {
-    const model = config.model || '@cf/meta/llama-3-8b-instruct';
+    const model = config.model || 'meta-llama/llama-3-8b-instruct:free';
     return this.callAi(prompt, schema, jsonSchemaDefinition, model);
   }
 
@@ -171,51 +208,13 @@ export class WorkersAiAdapter implements AiProvider {
   }
 
   async embed(
-    text: string,
-    config?: AiProviderConfig,
+    _text: string,
+    _config?: AiProviderConfig,
   ): Promise<AiEnrichmentResult<number[]>> {
-    const model = config?.model || '@cf/baai/bge-small-en-v1.5';
-    const startTime = Date.now();
-    try {
-      const response = (await this.env.AI.run(
-        model as '@cf/baai/bge-small-en-v1.5',
-        { text: [text] },
-      )) as { shape: number[]; data: number[][] };
-
-      const vector = response.data?.[0];
-      if (!vector) {
-        throw new AppError(
-          503,
-          'AI_BAD_RESPONSE',
-          'Invalid response from embedding model',
-        );
-      }
-
-      return {
-        result: vector,
-        provider: this.name,
-        model,
-        latencyMs: Date.now() - startTime,
-        inputUnits: Math.ceil(text.length / 4),
-        outputUnits: vector.length,
-        status: 'success',
-      };
-    } catch (error) {
-      const latencyMs = Date.now() - startTime;
-      throw Object.assign(
-        new AppError(
-          503,
-          'AI_REQUEST_FAILED',
-          'Failed to execute embedding request',
-        ),
-        {
-          provider: this.name,
-          model,
-          latencyMs,
-          status: 'failed',
-          errorCode: (error as Error).message,
-        },
-      );
-    }
+    throw new AppError(
+      500,
+      'NOT_IMPLEMENTED',
+      'OpenRouter does not strictly provide an embedding endpoint in the unified chat interface yet.',
+    );
   }
 }

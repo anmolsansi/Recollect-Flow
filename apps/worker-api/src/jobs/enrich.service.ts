@@ -65,6 +65,47 @@ export class EnrichService {
       const now = new Date().toISOString();
       const extracted = enrichmentResult.result;
 
+      // Fetch manual overrides
+      const overridesResult = await this.db
+        .prepare(
+          `SELECT field_name, override_value FROM item_field_overrides WHERE item_id = ?1`,
+        )
+        .bind(job.itemId)
+        .all<{ field_name: string; override_value: string }>();
+
+      const overrides = new Map(
+        overridesResult.results.map((r) => [r.field_name, r.override_value]),
+      );
+
+      // Merge extracted data with overrides
+      const finalTitle = overrides.has('title')
+        ? (overrides.get('title') ?? null)
+        : (extracted.title ?? null);
+      const finalSummary = overrides.has('summary')
+        ? (overrides.get('summary') ?? null)
+        : (extracted.summary ?? null);
+      const finalTopics = overrides.has('topics')
+        ? (overrides.get('topics') ?? null)
+        : JSON.stringify(extracted.topics ?? []);
+      const finalPeople = overrides.has('people')
+        ? (overrides.get('people') ?? null)
+        : JSON.stringify(extracted.people ?? []);
+      const finalCompanies = overrides.has('companies')
+        ? (overrides.get('companies') ?? null)
+        : JSON.stringify(extracted.companies ?? []);
+      const finalProject = overrides.has('project')
+        ? (overrides.get('project') ?? null)
+        : (extracted.project ?? null);
+      const finalImportance = overrides.has('importance')
+        ? parseInt(overrides.get('importance')!, 10)
+        : (extracted.importance ?? null);
+      const finalWhyItMatters = overrides.has('why_it_matters')
+        ? (overrides.get('why_it_matters') ?? null)
+        : (extracted.whyItMatters ?? null);
+      const finalSuggestedAction = overrides.has('suggested_action')
+        ? (overrides.get('suggested_action') ?? null)
+        : (extracted.suggestedAction ?? null);
+
       // Update in a transaction
       const statements = [
         this.db
@@ -84,15 +125,15 @@ export class EnrichService {
            WHERE id = ?11 AND deleted_at IS NULL AND privacy_level = ?12`, // Enforce privacy unchanged
           )
           .bind(
-            extracted.title || null,
-            extracted.summary,
-            JSON.stringify(extracted.topics),
-            JSON.stringify(extracted.people),
-            JSON.stringify(extracted.companies),
-            extracted.project || null,
-            extracted.importance,
-            extracted.whyItMatters,
-            extracted.suggestedAction || null,
+            finalTitle,
+            finalSummary,
+            finalTopics,
+            finalPeople,
+            finalCompanies,
+            finalProject,
+            finalImportance,
+            finalWhyItMatters,
+            finalSuggestedAction,
             now,
             job.itemId,
             itemRow.privacy_level,
@@ -102,7 +143,8 @@ export class EnrichService {
             `INSERT INTO provider_usage (
              id, item_id, provider, model, operation, latency_ms,
              input_units, output_units, status, created_at
-           ) VALUES (?1, ?2, ?3, ?4, 'enrich', ?5, ?6, ?7, 'success', ?8)`,
+           ) SELECT ?1, ?2, ?3, ?4, 'enrich', ?5, ?6, ?7, 'success', ?8
+             FROM items WHERE id = ?9 AND deleted_at IS NULL AND privacy_level = ?10`,
           )
           .bind(
             crypto.randomUUID(),
@@ -113,12 +155,15 @@ export class EnrichService {
             enrichmentResult.inputUnits,
             enrichmentResult.outputUnits,
             now,
+            job.itemId,
+            itemRow.privacy_level,
           ),
         this.db
           .prepare(
             `INSERT INTO audit_events (
              id, item_id, event_type, actor_type, details_json, created_at
-           ) VALUES (?1, ?2, 'enrichment_completed', 'system', ?3, ?4)`,
+           ) SELECT ?1, ?2, 'enrichment_completed', 'system', ?3, ?4
+             FROM items WHERE id = ?5 AND deleted_at IS NULL AND privacy_level = ?6`,
           )
           .bind(
             crypto.randomUUID(),
@@ -129,21 +174,27 @@ export class EnrichService {
               latency_ms: enrichmentResult.latencyMs,
             }),
             now,
+            job.itemId,
+            itemRow.privacy_level,
           ),
         this.db
           .prepare(
             `UPDATE processing_jobs
            SET status = 'complete', lease_owner = NULL, lease_expires_at = NULL,
                completed_at = ?1, last_error_code = NULL, updated_at = ?1
-           WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'`,
+           WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
+           AND EXISTS (SELECT 1 FROM items WHERE id = ?4 AND deleted_at IS NULL AND privacy_level = ?5)`,
           )
-          .bind(now, job.id, ownerId),
+          .bind(now, job.id, ownerId, job.itemId, itemRow.privacy_level),
       ];
 
       const results = await this.db.batch(statements);
 
-      // If the item update failed (e.g., deleted_at changed or privacy_level changed), we consider it a failure.
-      if (!results[0] || results[0].meta.changes === 0) {
+      // If the processing job update failed (0 changes), it means either:
+      // 1. The job was stolen/cancelled
+      // 2. The item was deleted or had a privacy change during enrichment.
+      // In either case, the job shouldn't be completed. We still fail it.
+      if (!results[3] || results[3].meta.changes === 0) {
         return this.jobService.failProcessingJob(
           job.id,
           ownerId,
@@ -176,22 +227,40 @@ export class EnrichService {
       }
 
       // Record failed usage if there's provider info on the error
+      let errorCode = error instanceof AppError ? error.code : 'UNKNOWN_ERROR';
+
       if (error instanceof Object && 'provider' in error) {
+        const provider = (error as Record<string, unknown>).provider as string;
+        const model = (error as Record<string, unknown>).model as string;
+        const latencyMs = (error as Record<string, unknown>)
+          .latencyMs as number;
+
+        const rawErrorCode = (error as Record<string, unknown>)
+          .errorCode as string;
+        if (rawErrorCode) {
+          errorCode = rawErrorCode
+            .replace(/[^a-zA-Z0-9_]/g, '_')
+            .substring(0, 50)
+            .toUpperCase();
+        }
+
         await this.db
           .prepare(
             `INSERT INTO provider_usage (
              id, item_id, provider, model, operation, latency_ms,
              input_units, output_units, status, error_code, created_at
-           ) VALUES (?1, ?2, ?3, ?4, 'enrich', ?5, 0, 0, 'failed', ?6, ?7)`,
+           ) SELECT ?1, ?2, ?3, ?4, 'enrich', ?5, 0, 0, 'failed', ?6, ?7
+             FROM items WHERE id = ?8 AND deleted_at IS NULL`,
           )
           .bind(
             crypto.randomUUID(),
             job.itemId,
-            (error as { provider: string }).provider,
-            (error as { model: string }).model,
-            (error as { latencyMs: number }).latencyMs,
-            (error as { errorCode: string }).errorCode,
+            provider,
+            model,
+            latencyMs,
+            errorCode,
             new Date().toISOString(),
+            job.itemId,
           )
           .run();
       }
@@ -199,7 +268,7 @@ export class EnrichService {
       return this.jobService.failProcessingJob(
         job.id,
         ownerId,
-        error instanceof AppError ? error.code : 'UNKNOWN_ERROR',
+        errorCode,
         true,
       );
     }

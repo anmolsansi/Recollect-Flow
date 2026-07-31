@@ -36,6 +36,8 @@ required = ["CAPTURE_TOKEN", "ADMIN_TOKEN", "LOCAL_WORKER_TOKEN", "NOTION_ACCESS
 NOTION_DATABASE_ID = "3a21b726-4ada-80a3-bfe1-ef808e3c293f"
 MAX_ATTACHMENT_BYTES = "25000000"
 UPLOAD_TTL_SECONDS = "3600"
+AI_PROVIDER_DEFAULT = "openrouter"
+AI_PROVIDER_CLOUDFLARE_ENABLED = "true"
 
 [triggers]
-crons = ["17 * * * *"]
+crons = ["17 * * * *", "0 2 * * *"]

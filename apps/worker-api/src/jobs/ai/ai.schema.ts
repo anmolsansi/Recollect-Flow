@@ -12,6 +12,19 @@ export const ExtractResultSchema = z.object({
   suggestedAction: z.string().optional(),
 });
 
+export const DigestSummaryResultSchema = z.object({
+  summary: z.string(),
+  topicGroups: z.array(
+    z.object({
+      topic: z.string(),
+      items: z.array(z.string()),
+    }),
+  ),
+  topItems: z.array(z.string()),
+  suggestedActions: z.array(z.string()),
+  dormantIdeas: z.array(z.string()).optional(),
+});
+
 export const ExtractResultJsonSchema = {
   type: 'object',
   properties: {
@@ -33,6 +46,28 @@ export const ExtractResultJsonSchema = {
     'importance',
     'whyItMatters',
   ],
+};
+
+export const DigestSummaryResultJsonSchema = {
+  type: 'object',
+  properties: {
+    summary: { type: 'string' },
+    topicGroups: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          topic: { type: 'string' },
+          items: { type: 'array', items: { type: 'string' } },
+        },
+        required: ['topic', 'items'],
+      },
+    },
+    topItems: { type: 'array', items: { type: 'string' } },
+    suggestedActions: { type: 'array', items: { type: 'string' } },
+    dormantIdeas: { type: 'array', items: { type: 'string' } },
+  },
+  required: ['summary', 'topicGroups', 'topItems', 'suggestedActions'],
 };
 
 export const SummaryResultSchema = z.object({
