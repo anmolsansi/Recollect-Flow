@@ -30,13 +30,40 @@ export class AiProviderRegistry {
   constructor(private readonly env: Env) {
     this.policyService = new PolicyService();
 
+    let implementations: Record<string, string> = {};
+    if (this.env.AI_PROVIDER_IMPLEMENTATIONS) {
+      try {
+        implementations = JSON.parse(this.env.AI_PROVIDER_IMPLEMENTATIONS);
+      } catch {
+        // Fallback to empty if parse fails
+      }
+    }
+
+    const enabledProviders = this.env.AI_PROVIDERS_ENABLED
+      ? this.env.AI_PROVIDERS_ENABLED.split(',').map((s) => s.trim())
+      : [];
+
+    // Legacy fallback for tests
     if (this.env.MOCK_AI_ENABLED === 'true') {
       this.register(new MockAiAdapter('openrouter'));
       this.register(new MockAiAdapter('gemini'));
       this.register(new MockAiAdapter('cloudflare'));
     } else {
-      this.register(new WorkersAiAdapter(env));
-      this.register(new OpenRouterAdapter(env));
+      // Dynamic registration
+      for (const provider of enabledProviders) {
+        const impl = implementations[provider] || provider;
+        if (impl === 'cloudflare') {
+          const adapter = new WorkersAiAdapter(env);
+          adapter.name = provider; // Override name
+          this.register(adapter);
+        } else if (impl === 'openrouter') {
+          const adapter = new OpenRouterAdapter(env);
+          adapter.name = provider;
+          this.register(adapter);
+        } else if (impl === 'mock') {
+          this.register(new MockAiAdapter(provider));
+        }
+      }
     }
   }
 
@@ -50,14 +77,11 @@ export class AiProviderRegistry {
   ): AiProviderConfig | null {
     const availableProviders: PolicyAiProvider[] = [];
 
-    if (
-      this.env.AI_PROVIDER_CLOUDFLARE_ENABLED === 'true' ||
-      this.env.MOCK_AI_ENABLED === 'true'
-    ) {
-      availableProviders.push('cloudflare');
-    }
-    if (this.env.OPENROUTER_API_KEY || this.env.MOCK_AI_ENABLED === 'true') {
-      availableProviders.push('openrouter');
+    // Derive available providers from registry
+    for (const name of this.providers.keys()) {
+      if (['openrouter', 'gemini', 'cloudflare'].includes(name)) {
+        availableProviders.push(name as PolicyAiProvider);
+      }
     }
 
     const requestedProvider = this.env.AI_PROVIDER_DEFAULT as

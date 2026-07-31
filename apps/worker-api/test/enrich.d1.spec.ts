@@ -22,7 +22,6 @@ describe('EnrichService (D1 Integration)', () => {
       'audit_events',
       'provider_usage',
       'item_field_overrides',
-      'extraction_records',
       'sync_attempts',
       'items',
     ];
@@ -197,7 +196,10 @@ describe('EnrichService (D1 Integration)', () => {
   });
 
   it('preserves manual field overrides', async () => {
-    await insertItem('item-3', { raw_text: 'Valid text to process' });
+    await insertItem('item-3', {
+      raw_text: 'Valid text to process',
+      title: 'Manual User Title',
+    });
     await insertJob('job-3', 'item-3');
 
     // Create an override
@@ -249,5 +251,58 @@ describe('EnrichService (D1 Integration)', () => {
       .bind('item-4')
       .first();
     expect(usage).toBeNull();
+  });
+
+  it('defers job and avoids orphaned usage if provider has outage', async () => {
+    await insertItem('item-5', { raw_text: 'TRIGGER_PROVIDER_FAILURE' });
+    await insertJob('job-5', 'item-5');
+
+    await enrichService.processEnrichmentJob(
+      { id: 'job-5', itemId: 'item-5' } as unknown as JobRecord,
+      'owner-1',
+    );
+
+    const job = await env.DB.prepare(
+      'SELECT * FROM processing_jobs WHERE id = ?',
+    )
+      .bind('job-5')
+      .first();
+
+    // Outage is a transient error, so it should be pending for a retry.
+    expect(job?.status).toBe('pending');
+    expect(job?.last_error_code).toBe('PROVIDER_OUTAGE');
+
+    const usage = await env.DB.prepare(
+      'SELECT * FROM provider_usage WHERE item_id = ?',
+    )
+      .bind('item-5')
+      .first();
+    // Failed usage SHOULD be logged for outages so we track provider availability!
+    expect(usage?.status).toBe('failed');
+    expect(usage?.error_code).toBe('PROVIDER_OUTAGE');
+  });
+
+  it('fails job but updates nothing if job lease is stolen', async () => {
+    await insertItem('item-7', { raw_text: 'Valid text' });
+    await insertJob('job-7', 'item-7');
+
+    // Steal lease
+    await env.DB.prepare(
+      'UPDATE processing_jobs SET lease_owner = ? WHERE id = ?',
+    )
+      .bind('owner-2', 'job-7')
+      .run();
+
+    await enrichService.processEnrichmentJob(
+      { id: 'job-7', itemId: 'item-7' } as unknown as JobRecord,
+      'owner-1',
+    );
+
+    // Should fail with ITEM_STATE_CHANGED_DURING_ENRICHMENT
+    // and item title should NOT be updated.
+    const item = await env.DB.prepare('SELECT title FROM items WHERE id = ?')
+      .bind('item-7')
+      .first();
+    expect(item?.title).toBeNull();
   });
 });

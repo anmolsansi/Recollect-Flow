@@ -1,4 +1,4 @@
-export const POLICY_VERSION = '2026-07-21.1';
+export const POLICY_VERSION = '2026-07-31.2';
 
 export type PrivacyLevel = 'unknown' | 'public' | 'personal' | 'sensitive';
 export type AiProvider = 'openrouter' | 'gemini' | 'cloudflare' | 'none';
@@ -21,13 +21,13 @@ export const ALLOWED_DATA_MATRIX: Readonly<
   unknown: {
     openrouter: [],
     gemini: [],
-    cloudflare: [],
+    cloudflare: ALL_MODALITIES,
     none: ALL_MODALITIES,
   },
   public: {
     openrouter: ALL_MODALITIES,
     gemini: ALL_MODALITIES,
-    cloudflare: [],
+    cloudflare: ALL_MODALITIES,
     none: ALL_MODALITIES,
   },
   personal: {
@@ -77,7 +77,12 @@ const HOSTED_PROVIDERS = new Set<AiProvider>([
 export class PolicyService {
   route(input: RouteInput): RouteDecision {
     const available = new Set(
-      input.availableProviders ?? ['openrouter', 'gemini', 'none'],
+      input.availableProviders ?? [
+        'openrouter',
+        'gemini',
+        'cloudflare',
+        'none',
+      ],
     );
     const hostedQuotaAvailable = input.hostedQuotaAvailable ?? true;
     const hostedProcessingConsent = input.hostedProcessingConsent ?? false;

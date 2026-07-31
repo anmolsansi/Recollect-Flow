@@ -83,8 +83,8 @@ export class WorkersAiAdapter implements AiProvider {
         provider: this.name,
         model,
         latencyMs,
-        inputUnits: Math.ceil(prompt.length / 4),
-        outputUnits: Math.ceil(rawResponse.length / 4),
+        inputUnits: Math.max(1, Math.ceil(prompt.length / 4)),
+        outputUnits: Math.max(1, Math.ceil(rawResponse.length / 4)),
         status: 'success',
       };
     } catch (error) {
@@ -196,8 +196,8 @@ export class WorkersAiAdapter implements AiProvider {
         provider: this.name,
         model,
         latencyMs: Date.now() - startTime,
-        inputUnits: Math.ceil(text.length / 4),
-        outputUnits: vector.length,
+        inputUnits: Math.max(1, Math.ceil(text.length / 4)),
+        outputUnits: Math.max(1, vector.length),
         status: 'success',
       };
     } catch (error) {
