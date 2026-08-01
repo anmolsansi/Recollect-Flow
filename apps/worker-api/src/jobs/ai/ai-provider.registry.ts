@@ -6,6 +6,7 @@ import type {
   SummaryResult,
   ClassificationResult,
   ExtractResult,
+  ImageExtractResult,
 } from './ai.interface';
 import {
   DigestSummaryResultSchema,
@@ -139,7 +140,7 @@ export class AiProviderRegistry {
     this.providers.set(provider.name, provider);
   }
 
-  private getProviderForPolicy(
+  public getProviderForPolicy(
     routing: PrivacyLevel | AiRoutingContext,
     modality: Modality = 'text',
   ): AiProviderConfig | null {
@@ -240,5 +241,29 @@ export class AiProviderRegistry {
       DigestSummaryResultJsonSchema,
       config,
     );
+  }
+
+  async extractImage(
+    dataUrl: string,
+    contentType: string,
+    prompt: string,
+    routing: PrivacyLevel | AiRoutingContext,
+  ): Promise<AiEnrichmentResult<ImageExtractResult>> {
+    const config = this.getProviderForPolicy(routing, 'image');
+    if (!config)
+      throw new AppError(
+        500,
+        'NO_ELIGIBLE_PROVIDER',
+        'No eligible AI provider for this privacy level',
+      );
+    const adapter = this.getAdapter(config.provider);
+    if (!adapter.extractImage) {
+      throw new AppError(
+        500,
+        'NO_ELIGIBLE_PROVIDER',
+        'Provider does not support image extraction',
+      );
+    }
+    return adapter.extractImage(dataUrl, contentType, prompt, config);
   }
 }

@@ -116,4 +116,26 @@ export class MockAiAdapter implements AiProvider {
       status: 'success',
     };
   }
+
+  async extractImage(
+    _dataUrl: string,
+    _contentType: string,
+    _prompt: string,
+    _config?: AiProviderConfig,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Promise<AiEnrichmentResult<any>> {
+    return {
+      result: {
+        visible_text: 'Mock visible text from image',
+        description: 'Mock image description',
+        confidence: 0.95,
+      },
+      provider: this.name,
+      model: 'mock-vision-model',
+      latencyMs: 10,
+      inputUnits: 10,
+      outputUnits: 10,
+      status: 'success',
+    };
+  }
 }

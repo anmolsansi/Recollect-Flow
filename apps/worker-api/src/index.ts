@@ -3,6 +3,7 @@ import { D1AttachmentRepository } from './attachments/attachment.repository';
 import { cleanupExpiredAttachments } from './attachments/attachment.service';
 import { processNotionSyncJobs } from './sync/sync.worker';
 import { processEnrichJobs } from './jobs/enrich.worker';
+import { processExtractionJobs } from './jobs/extraction/extraction.worker';
 
 const app = createApp();
 
@@ -19,6 +20,7 @@ export default {
         env.ATTACHMENTS,
       ),
     );
+    context.waitUntil(processExtractionJobs(env));
     context.waitUntil(processEnrichJobs(env));
     context.waitUntil(
       processNotionSyncJobs(

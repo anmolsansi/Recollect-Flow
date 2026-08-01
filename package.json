@@ -17,12 +17,14 @@
   },
   "dependencies": {
     "hono": "^4.8.10",
+    "pdfjs-dist": "^6.2.108",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.19.1",
     "@eslint/js": "^10.0.1",
     "@types/node": "^24.0.15",
+    "@types/pdfjs-dist": "^2.10.377",
     "eslint": "^10.8.0",
     "prettier": "^3.6.2",
     "typescript": "^5.8.3",

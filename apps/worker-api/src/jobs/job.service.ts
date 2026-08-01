@@ -470,6 +470,115 @@ export class JobService {
     };
   }
 
+  async submitExtractionResults(
+    jobId: string,
+    ownerId: string,
+    itemId: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    results: any[], // array of validated extraction results mapped to attachment_ids
+    enqueueEnrich: boolean,
+    now: Date = new Date(),
+  ): Promise<boolean> {
+    requireNonEmpty(jobId, 'jobId');
+    requireNonEmpty(ownerId, 'ownerId');
+    requireNonEmpty(itemId, 'itemId');
+
+    const nowIso = now.toISOString();
+
+    const job = await this.db
+      .prepare(
+        `SELECT item_id FROM processing_jobs
+         WHERE id = ?1 AND lease_owner = ?2 AND status = 'processing'
+           AND lease_expires_at > ?3`,
+      )
+      .bind(jobId, ownerId, nowIso)
+      .first<{ item_id: string }>();
+
+    if (!job || job.item_id !== itemId) return false;
+
+    const stmts: D1PreparedStatement[] = [];
+
+    for (const res of results) {
+      stmts.push(
+        this.db
+          .prepare(
+            `INSERT INTO extraction_records (
+             id, item_id, attachment_id, extractor_name, extractor_version,
+             extracted_text, image_description, confidence, page_count,
+             completeness, coverage, provider_name, model_name, error_code,
+             created_at, updated_at
+           ) VALUES (
+             ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?15
+           )
+           ON CONFLICT (attachment_id) DO UPDATE SET
+             extractor_name = excluded.extractor_name,
+             extractor_version = excluded.extractor_version,
+             extracted_text = excluded.extracted_text,
+             image_description = excluded.image_description,
+             confidence = excluded.confidence,
+             page_count = excluded.page_count,
+             completeness = excluded.completeness,
+             coverage = excluded.coverage,
+             provider_name = excluded.provider_name,
+             model_name = excluded.model_name,
+             error_code = excluded.error_code,
+             updated_at = excluded.updated_at`,
+          )
+          .bind(
+            crypto.randomUUID(),
+            itemId,
+            res.attachmentId,
+            res.extractorName,
+            res.extractorVersion,
+            res.extractedText || null,
+            res.imageDescription || null,
+            res.confidence ?? null,
+            res.pageCount ?? null,
+            res.completeness,
+            res.coverage,
+            res.providerName || null,
+            res.modelName || null,
+            res.errorCode || null,
+            nowIso,
+          ),
+      );
+    }
+
+    if (enqueueEnrich) {
+      stmts.push(
+        this.db
+          .prepare(
+            `INSERT INTO processing_jobs (
+              id, item_id, job_type, status, attempts, available_at, created_at,
+              updated_at, input_hash
+            )
+            SELECT ?1, ?2, 'enrich', 'pending', 0, ?3, ?3, ?3, ?4
+            WHERE NOT EXISTS (
+              SELECT 1 FROM processing_jobs
+              WHERE item_id = ?2 AND job_type = 'enrich'
+                AND status IN ('pending', 'processing')
+            )`,
+          )
+          .bind(crypto.randomUUID(), itemId, nowIso, 'enrich-after-extract'),
+      );
+    }
+
+    stmts.push(
+      this.db
+        .prepare(
+          `UPDATE processing_jobs
+         SET status = 'complete', lease_owner = NULL, lease_expires_at = NULL,
+             completed_at = ?1, last_error_code = NULL, updated_at = ?1
+         WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
+           AND lease_expires_at > ?1`,
+        )
+        .bind(nowIso, jobId, ownerId),
+    );
+
+    await this.db.batch(stmts);
+    return true;
+  }
+
   async failProcessingJob(
     jobId: string,
     ownerId: string,
