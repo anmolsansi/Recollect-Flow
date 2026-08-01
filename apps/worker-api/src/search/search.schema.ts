@@ -62,7 +62,7 @@ export const searchSchema = z
 
 export type SearchInput = z.infer<typeof searchSchema>;
 
-const snippetSchema = z
+export const searchSnippetSchema = z
   .object({
     segments: z
       .array(
@@ -109,7 +109,7 @@ export const searchResponseSchema = z.object({
       privacy_level: z.string(),
       captured_at: z.string(),
       coverage: z.string().nullable().optional(),
-      snippet: snippetSchema,
+      snippet: searchSnippetSchema,
     }),
   ),
   meta: z.object({
@@ -119,3 +119,6 @@ export const searchResponseSchema = z.object({
     duration_ms: z.number(),
   }),
 });
+
+export type SearchSnippet = z.infer<typeof searchSnippetSchema>;
+export type SearchResponse = z.infer<typeof searchResponseSchema>;

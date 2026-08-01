@@ -26,7 +26,20 @@ export function decodeCursor(
   currentMode: 'keyword' | 'filter',
 ): CursorData | null {
   try {
-    const json = Buffer.from(cursorStr, 'base64url').toString('utf-8');
+    if (
+      cursorStr.length === 0 ||
+      cursorStr.length % 4 === 1 ||
+      !/^[A-Za-z0-9_-]+$/.test(cursorStr)
+    ) {
+      return null;
+    }
+
+    const bytes = Buffer.from(cursorStr, 'base64url');
+    if (bytes.toString('base64url') !== cursorStr) {
+      return null;
+    }
+
+    const json = bytes.toString('utf-8');
     const parsed = JSON.parse(json);
     const result = cursorPayloadSchema.safeParse(parsed);
     if (!result.success) return null;

@@ -77,7 +77,12 @@ Every processing job snapshots policy version, eligible provider, credential sou
 - Canonical URL and content hash for conservative duplicate lookup.
 - Lifecycle/processing/captured/project/privacy compound indexes.
 - Pending jobs by state/available/priority.
-- FTS5 `item_search_fts` index across title, user note, shared/extracted text, summary, topics, project, people, companies. Uses `unicode61` tokenizer for lexical search independent of AI embeddings. Keeps synchronized via D1 `AFTER` triggers.
+- Migration `0016_add_item_search_fts.sql` adds the rebuildable FTS5
+  `item_search_fts` projection across `title`, `raw_text`, `user_note`,
+  `summary`, `topics`, `project`, `people`, and `companies`. It uses the
+  `unicode61` tokenizer for lexical search independent of AI embeddings and is
+  synchronized from canonical `items` rows by insert, relevant-update, and
+  delete triggers. `items` remains the source of truth for privacy and deletion.
 - Avoid unindexed broad scans because D1 pricing counts rows read.
 
 ## Duplicate model

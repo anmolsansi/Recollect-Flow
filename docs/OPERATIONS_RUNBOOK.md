@@ -142,23 +142,24 @@ If the D1 FTS5 `item_search_fts` index drifts from the `items` table, use the re
 
 #### Local rehearsal only
 
-* **Fresh local migration:** `npx wrangler d1 migrations apply recollect-flow-db --local`
-* **Populated pre-0016 migration:** (Import data, then run) `npx wrangler d1 migrations apply recollect-flow-db --local`
-* **Local rebuild:** `npx wrangler d1 execute recollect-flow-db --local --file=scripts/rebuild-item-search-index.sql`
-* **Local verification queries:** `npx wrangler d1 execute recollect-flow-db --local --command="SELECT COUNT(*) FROM item_search_fts"`
-* **Local corruption and idempotency rehearsal:** Manually corrupt local FTS and run the rebuild script twice to verify zero rows in drift queries.
-* **Local smoke tests:** Execute `npm run test`
+- **Fresh local migration:** choose an empty operator-owned directory, then run `npx wrangler d1 migrations apply recollect-flow-prod --local --persist-to /path/to/empty-d1-state`.
+- **Populated pre-0016 migration:** seed an isolated database through migration 0015, then apply migration 0016 and verify its backfill.
+- **Local rebuild:** `npx wrangler d1 execute recollect-flow-prod --local --file=scripts/rebuild-item-search-index.sql`.
+- **Local verification:** the rebuild script emits missing, orphaned/deleted, duplicate, canonical, and indexed counts. Every drift count must be zero and all population counts must match.
+- **Local corruption and idempotency rehearsal:** corrupt an isolated local FTS index and run the rebuild twice. Both runs must restore the same searchable IDs without duplicates.
+- **Local smoke tests:** run `npm run check` rather than the test command alone.
 
 #### Production only after backup and approval
 
-* **Require approval before remote changes.**
-* **Require a D1 backup before migration or rebuild:** `npx wrangler d1 backup create recollect-flow-prod`
-* **Use `--remote` explicitly.**
-* **Exact database name:** `recollect-flow-prod`
-* **Migration verification:** `npx wrangler d1 migrations list recollect-flow-prod --remote`
-* **Rebuild verification:** Execute `npx wrangler d1 execute recollect-flow-prod --remote --file=scripts/rebuild-item-search-index.sql` and then run the verification queries from the script comments.
-* **Rollback or recovery guidance:** If the index is corrupt, run the rebuild script. If the database itself is corrupt, restore from the backup taken prior to operations.
-* **Commands for capturing deployment and request evidence:** Use Cloudflare Dash logs or `wrangler tail` to capture real-time request IDs.
+- **Require approval before remote changes.**
+- **Require a D1 export before migration or rebuild:** `npx wrangler d1 export recollect-flow-prod --remote --output=/secure/operator/path/recollect-flow-prod-pre-ope225.sql`. Confirm the export exists and is non-empty before continuing.
+- **Use `--remote` explicitly.**
+- **Exact database name:** `recollect-flow-prod`
+- **Migration verification:** `npx wrangler d1 migrations list recollect-flow-prod --remote`
+- **Migration execution after approval/export:** `npm run db:migrate:remote`.
+- **Rebuild verification:** Execute `npx wrangler d1 execute recollect-flow-prod --remote --file=scripts/rebuild-item-search-index.sql`; its final row must report zero for every drift count and equal canonical/indexed/distinct population counts.
+- **Rollback or recovery guidance:** If the index is corrupt, run the rebuild script. If the database itself is corrupt, restore from the backup taken prior to operations.
+- **Commands for capturing deployment and request evidence:** Use Cloudflare Dash logs or `wrangler tail` to capture real-time request IDs.
 
 ## Deployment and rollback
 

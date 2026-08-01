@@ -1,10 +1,10 @@
 # OPE-225 Completion Tasks
 
 > **Ticket:** OPE-225 — Add D1 FTS5 indexing and knowledge search API  
-> **Linear status:** Backlog  
+> **Linear status:** Not changed by this local completion run
 > **Priority / estimate:** High / 5 points  
 > **Milestone:** M4 — Search and resurfacing  
-> **Current implementation state:** Not started on `main` as of 2026-08-01  
+> **Current implementation state:** Local acceptance complete on `feature/ope-225-search` as of 2026-08-02; production and PR gates remain
 > **Dependencies:** OPE-216 and OPE-222 are complete
 
 ## Goal
@@ -293,5 +293,5 @@ The response must use the global `{ data, meta }` envelope. Each result should i
 - [x] Search runs with no AI provider dependency.
 - [x] Rebuild and drift-detection procedures are documented and rehearsed.
 - [x] Full checks, D1 migrations, Wrangler type generation check, dry deploy, and startup check pass.
-- [x] Production migration/deployment smoke evidence is recorded.
-- [x] PR is merged and Linear OPE-225 contains the evidence before being moved to Done.
+- [ ] After approval, back up production D1, apply migration 0016, deploy, and record the production smoke-test evidence described in Task 12.
+- [ ] Create and merge the PR, attach local and production evidence to Linear OPE-225, and only then move the ticket to Done.

@@ -1,4 +1,4 @@
-import type { SearchInput } from './search.schema';
+import type { SearchInput, SearchSnippet } from './search.schema';
 import { decodeCursor, encodeCursor, generateFingerprint } from './cursor';
 import { AppError } from '../shared/errors';
 
@@ -16,86 +16,156 @@ function parseTopics(value: string | null): string[] {
   }
 }
 
-function constrainSegments(segments: {text: string, highlighted: boolean}[], isTruncated: boolean) {
-  const merged: {text: string, highlighted: boolean}[] = [];
-  for (const s of segments) {
-    if (s.text.length === 0) continue;
-    if (merged.length > 0 && merged[merged.length - 1].highlighted === s.highlighted) {
-      merged[merged.length - 1].text += s.text;
+interface SearchRow {
+  id: string;
+  title: string | null;
+  source_type: string;
+  source_app: string;
+  project: string | null;
+  topics_json: string | null;
+  importance: number | null;
+  lifecycle_status: string;
+  processing_status: string;
+  privacy_level: string;
+  captured_at: string;
+  coverage: string | null;
+  summary: string | null;
+  user_note: string | null;
+  raw_text: string | null;
+  rank: number | null;
+  fts_snippet: string | null;
+}
+
+interface SearchExecutionResult {
+  data: Array<{
+    id: string;
+    title: string | null;
+    source_type: string;
+    source_app: string;
+    project: string | null;
+    topics: string[];
+    importance: number | null;
+    lifecycle_status: string;
+    processing_status: string;
+    privacy_level: string;
+    captured_at: string;
+    coverage: string | null;
+    snippet: SearchSnippet;
+  }>;
+  meta: {
+    count: number;
+    duration_ms: number;
+    next_cursor?: string;
+  };
+}
+
+const ADMIN_VISIBLE_PRIVACY_LEVELS = [
+  'unknown',
+  'public',
+  'personal',
+  'sensitive',
+] as const;
+
+function constrainSegments(
+  segments: SearchSnippet['segments'],
+  isTruncated: boolean,
+): SearchSnippet {
+  const merged: SearchSnippet['segments'] = [];
+  for (const segment of segments) {
+    if (segment.text.length === 0) continue;
+    const previous = merged.at(-1);
+    if (previous && previous.highlighted === segment.highlighted) {
+      previous.text += segment.text;
     } else {
-      merged.push({ ...s });
+      merged.push({ ...segment });
     }
   }
-  
-  const finalSegments: {text: string, highlighted: boolean}[] = [];
+
+  const finalSegments: SearchSnippet['segments'] = [];
   let remaining = 150;
   let truncated = isTruncated;
-  
-  for (let i = 0; i < merged.length; i++) {
+
+  for (const segment of merged) {
     if (finalSegments.length >= 10) {
       truncated = true;
       break;
     }
-    const s = merged[i];
-    if (s.text.length > remaining) {
-      finalSegments.push({ text: s.text.substring(0, remaining), highlighted: s.highlighted });
+    if (segment.text.length > remaining) {
+      finalSegments.push({
+        text: segment.text.substring(0, remaining),
+        highlighted: segment.highlighted,
+      });
       truncated = true;
       break;
     }
-    finalSegments.push(s);
-    remaining -= s.text.length;
+    finalSegments.push(segment);
+    remaining -= segment.text.length;
   }
-  
+
   if (finalSegments.length === 0) {
     finalSegments.push({ text: '', highlighted: false });
   }
-  
+
   return { segments: finalSegments, truncated };
 }
 
-function parseSnippet(rawText: string, startMarker: string, endMarker: string, ellipsisMarker: string) {
+function parseSnippet(
+  rawText: string,
+  startMarker: string,
+  endMarker: string,
+  ellipsisMarker: string,
+): SearchSnippet {
   let text = rawText;
   let truncated = false;
-  
+
   if (text.includes(ellipsisMarker)) {
     truncated = true;
     text = text.replaceAll(ellipsisMarker, '...');
   }
-  
-  const segments: {text: string, highlighted: boolean}[] = [];
+
+  const segments: SearchSnippet['segments'] = [];
   let i = 0;
   let highlightOpen = false;
   while (i < text.length) {
     const marker = highlightOpen ? endMarker : startMarker;
     const idx = text.indexOf(marker, i);
-    
+
     if (idx === -1) {
       if (i < text.length) {
         segments.push({ text: text.substring(i), highlighted: highlightOpen });
       }
       break;
     }
-    
+
     if (idx > i) {
-      segments.push({ text: text.substring(i, idx), highlighted: highlightOpen });
+      segments.push({
+        text: text.substring(i, idx),
+        highlighted: highlightOpen,
+      });
     }
-    
+
     highlightOpen = !highlightOpen;
     i = idx + marker.length;
   }
-  
+
   return constrainSegments(segments, truncated);
 }
 
-export async function executeSearch(db: D1Database, input: SearchInput) {
+export async function executeSearch(
+  db: D1Database,
+  input: SearchInput,
+): Promise<SearchExecutionResult> {
   const queryStr = input.q || '';
-  const effectiveTokens = queryStr
-    .normalize('NFC')
-    .match(/[\p{L}\p{N}\p{M}]+/gu) ?? [];
-    
+  const effectiveTokens =
+    queryStr.normalize('NFC').match(/[\p{L}\p{N}\p{M}]+/gu) ?? [];
+
   const tokens = effectiveTokens
     .slice(0, 32)
-    .map(t => t.slice(0, 64));
+    .map((token) => token.slice(0, 64));
+
+  if (queryStr.length > 0 && tokens.length === 0) {
+    return { data: [], meta: { count: 0, duration_ms: 0 } };
+  }
 
   const isFilterOnly = tokens.length === 0;
   const currentMode = isFilterOnly ? 'filter' : 'keyword';
@@ -124,8 +194,11 @@ export async function executeSearch(db: D1Database, input: SearchInput) {
       .join(' AND ');
   }
 
-  const conditions = ['i.deleted_at IS NULL'];
-  const params: unknown[] = [];
+  const conditions = [
+    'i.deleted_at IS NULL',
+    `i.privacy_level IN (${ADMIN_VISIBLE_PRIVACY_LEVELS.map(() => '?').join(', ')})`,
+  ];
+  const params: unknown[] = [...ADMIN_VISIBLE_PRIVACY_LEVELS];
 
   if (!isFilterOnly) {
     conditions.push('fts.item_search_fts MATCH ?');
@@ -198,7 +271,7 @@ export async function executeSearch(db: D1Database, input: SearchInput) {
   }
 
   const limit = input.limit ?? 25;
-  params.push(limit + 1); 
+  params.push(limit + 1);
 
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
@@ -232,7 +305,7 @@ export async function executeSearch(db: D1Database, input: SearchInput) {
   const queryResult = await db
     .prepare(query)
     .bind(...params)
-    .all();
+    .all<SearchRow>();
   const durationMs = Date.now() - startTime;
 
   if (queryResult.error) {
@@ -254,41 +327,59 @@ export async function executeSearch(db: D1Database, input: SearchInput) {
 
   let nextCursor: string | null = null;
   if (hasNextPage) {
-    const last = pageResults[pageResults.length - 1] as Record<string, unknown>;
+    const last = pageResults.at(-1);
+    if (!last) {
+      throw new AppError(
+        500,
+        'DATABASE_ERROR',
+        'Search pagination could not determine its continuation point.',
+      );
+    }
     nextCursor = encodeCursor({
       v: 1,
       mode: currentMode,
-      r: last.rank as number | undefined,
-      t: last.captured_at as string,
-      i: last.id as string,
+      ...(currentMode === 'keyword' && last.rank !== null
+        ? { r: last.rank }
+        : {}),
+      t: last.captured_at,
+      i: last.id,
       f: fingerprint,
       c: cutoff,
     });
   }
 
-  const mappedData = pageResults.map((r: Record<string, unknown>) => {
-    let snippet;
+  const mappedData = pageResults.map((row) => {
+    let snippet: SearchSnippet;
 
-    if (r.fts_snippet) {
-      snippet = parseSnippet(r.fts_snippet as string, startMarker, endMarker, ellipsisMarker);
+    if (row.fts_snippet) {
+      snippet = parseSnippet(
+        row.fts_snippet,
+        startMarker,
+        endMarker,
+        ellipsisMarker,
+      );
     } else {
-      const fallbackText = (r.summary || r.user_note || r.title || r.raw_text || '') as string;
-      snippet = constrainSegments([{text: fallbackText, highlighted: false}], false);
+      const fallbackText =
+        row.summary || row.user_note || row.title || row.raw_text || '';
+      snippet = constrainSegments(
+        [{ text: fallbackText, highlighted: false }],
+        false,
+      );
     }
 
     return {
-      id: r.id,
-      title: r.title,
-      source_type: r.source_type,
-      source_app: r.source_app,
-      project: r.project,
-      topics: parseTopics(r.topics_json as string | null),
-      importance: r.importance,
-      lifecycle_status: r.lifecycle_status,
-      processing_status: r.processing_status,
-      privacy_level: r.privacy_level,
-      captured_at: r.captured_at,
-      coverage: r.coverage,
+      id: row.id,
+      title: row.title,
+      source_type: row.source_type,
+      source_app: row.source_app,
+      project: row.project,
+      topics: parseTopics(row.topics_json),
+      importance: row.importance,
+      lifecycle_status: row.lifecycle_status,
+      processing_status: row.processing_status,
+      privacy_level: row.privacy_level,
+      captured_at: row.captured_at,
+      coverage: row.coverage,
       snippet,
     };
   });

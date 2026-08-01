@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { EnrichService } from '../src/jobs/enrich.service';
 import type { JobRecord } from '../src/jobs/job.service';
 import { POLICY_VERSION } from '../src/policy/policy.service';
+import { executeSearch } from '../src/search/search.service';
 
 interface StoredJobEvidence {
   id: string;
@@ -44,6 +45,15 @@ describe('OPE-222 acceptance evidence', () => {
         now,
       )
       .run();
+
+    expect(
+      (
+        await executeSearch(env.DB, {
+          q: 'Immutable raw',
+          limit: 10,
+        })
+      ).data.map((result) => result.id),
+    ).toContain(itemId);
 
     await env.DB.prepare(
       `INSERT INTO processing_jobs (
@@ -121,6 +131,20 @@ describe('OPE-222 acceptance evidence', () => {
       processing_status: 'complete',
     });
 
+    const enrichedSearch = await executeSearch(env.DB, {
+      q: 'Mock summary mock_topic',
+      limit: 10,
+    });
+    expect(enrichedSearch.data.map((result) => result.id)).toContain(itemId);
+    expect(
+      (
+        await executeSearch(env.DB, {
+          q: 'Immutable raw',
+          limit: 10,
+        })
+      ).data.map((result) => result.id),
+    ).toContain(itemId);
+
     const usage = await env.DB.prepare(
       `SELECT provider, model, latency_ms, input_units, output_units, status
        FROM provider_usage WHERE item_id = ?1`,
@@ -171,10 +195,12 @@ describe('OPE-222 acceptance evidence', () => {
       .prepare(
         `INSERT INTO items (
          id, idempotency_key, source_type, source_app, privacy_level,
-         processing_status, captured_at, created_at, updated_at
+         processing_status, raw_text, topics_json, captured_at, created_at,
+         updated_at
        ) VALUES (
          'ope222-migration-item', 'ope222-migration-key', 'url', 'test',
-         'public', 'complete', ?1, ?1, ?1
+         'public', 'complete', 'populated migration searchable', '{malformed',
+         ?1, ?1, ?1
        )`,
       )
       .bind(now)
@@ -230,6 +256,14 @@ describe('OPE-222 acceptance evidence', () => {
       )
       .first<{ result_json: string }>();
     expect(result?.result_json).toBe('{"ok":true}');
+
+    const migratedSearchRow = await migrationDb
+      .prepare(
+        `SELECT item_id FROM item_search_fts
+         WHERE item_search_fts MATCH 'populated* AND migration*'`,
+      )
+      .first<{ item_id: string }>();
+    expect(migratedSearchRow?.item_id).toBe('ope222-migration-item');
 
     const indexRows = await migrationDb
       .prepare(`PRAGMA index_list('processing_jobs')`)

@@ -1,7 +1,9 @@
 -- OPE-225: Rebuild item_search_fts index
 -- Use this script to recover from index drift or corruption.
--- Execute via wrangler:
--- npx wrangler d1 execute recollect-flow-prod --file=scripts/rebuild-item-search-index.sql
+-- Local rehearsal:
+-- npx wrangler d1 execute recollect-flow-prod --local --file=scripts/rebuild-item-search-index.sql
+-- Production requires a backup and explicit approval:
+-- npx wrangler d1 execute recollect-flow-prod --remote --file=scripts/rebuild-item-search-index.sql
 
 BEGIN TRANSACTION;
 
@@ -23,23 +25,35 @@ INSERT INTO item_search_fts(
 FROM items
 WHERE deleted_at IS NULL;
 
--- Verify the rebuild (these should return 0 rows or match appropriately)
-
--- 1. Canonical rows missing from FTS
--- SELECT id FROM items WHERE deleted_at IS NULL AND rowid NOT IN (SELECT rowid FROM item_search_fts);
-
--- 2. Indexed rows missing from canonical items
--- SELECT rowid, item_id FROM item_search_fts WHERE rowid NOT IN (SELECT rowid FROM items);
-
--- 3. Indexed soft-deleted items
--- SELECT f.rowid, f.item_id FROM item_search_fts f JOIN items i ON f.rowid = i.rowid WHERE i.deleted_at IS NOT NULL;
-
--- 4. Duplicate indexed IDs
--- SELECT item_id, COUNT(*) as c FROM item_search_fts GROUP BY item_id HAVING c > 1;
-
--- 5. Canonical versus indexed counts (these 3 counts should be identical)
--- SELECT COUNT(*) as items_count FROM items WHERE deleted_at IS NULL;
--- SELECT COUNT(*) as fts_count FROM item_search_fts;
--- SELECT COUNT(DISTINCT item_id) as distinct_fts_items FROM item_search_fts;
-
 COMMIT;
+
+-- Wrangler prints the final statement from a SQL file, so keep every health
+-- signal in this one result row. All drift counts must be zero and all three
+-- population counts must match.
+SELECT
+  (SELECT COUNT(*) FROM items WHERE deleted_at IS NULL) AS canonical_items,
+  (SELECT COUNT(*) FROM item_search_fts) AS indexed_rows,
+  (SELECT COUNT(DISTINCT item_id) FROM item_search_fts) AS distinct_indexed_items,
+  (
+    SELECT COUNT(*)
+    FROM items i
+    WHERE i.deleted_at IS NULL
+      AND NOT EXISTS (
+        SELECT 1 FROM item_search_fts f WHERE f.rowid = i.rowid
+      )
+  ) AS missing_from_fts,
+  (
+    SELECT COUNT(*)
+    FROM item_search_fts f
+    LEFT JOIN items i ON i.rowid = f.rowid
+    WHERE i.rowid IS NULL OR i.deleted_at IS NOT NULL
+  ) AS orphaned_or_deleted_in_fts,
+  (
+    SELECT COUNT(*)
+    FROM (
+      SELECT item_id
+      FROM item_search_fts
+      GROUP BY item_id
+      HAVING COUNT(*) > 1
+    )
+  ) AS duplicate_item_ids;
