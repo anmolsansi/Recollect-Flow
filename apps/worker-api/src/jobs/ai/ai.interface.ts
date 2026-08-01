@@ -40,6 +40,12 @@ export interface ExtractResult {
   suggestedAction?: string;
 }
 
+export interface ImageExtractResult {
+  visible_text: string;
+  description: string;
+  confidence: number;
+}
+
 export interface AiProviderConfig {
   provider: string;
   model?: string;
@@ -67,6 +73,12 @@ export interface AiProvider {
     text: string,
     config?: AiProviderConfig,
   ): Promise<AiEnrichmentResult<ExtractResult>>;
+  extractImage?(
+    dataUrl: string,
+    contentType: string,
+    prompt: string,
+    config?: AiProviderConfig,
+  ): Promise<AiEnrichmentResult<ImageExtractResult>>;
   embed?(
     text: string,
     config?: AiProviderConfig,

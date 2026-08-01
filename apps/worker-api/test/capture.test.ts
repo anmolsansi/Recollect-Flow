@@ -49,6 +49,7 @@ class MemoryCaptureRepository implements CaptureRepository {
       duplicateOf: capture.duplicateOf,
       privacyLevel: capture.privacy_level,
       processingStatus: 'pending',
+      attachmentId: null,
     };
     this.events.set(capture.idempotency_key, stored);
     this.eventInputs.set(capture.idempotency_key, capture);

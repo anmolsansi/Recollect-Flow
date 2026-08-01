@@ -112,3 +112,22 @@ export const ClassificationResultJsonSchema = {
   },
   required: ['category', 'importance'],
 };
+
+export const ImageExtractResultSchema = z
+  .object({
+    visible_text: z.string().max(250000),
+    description: z.string().max(10000),
+    confidence: z.number().min(0).max(1),
+  })
+  .strict();
+
+export const ImageExtractResultJsonSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    visible_text: { type: 'string' },
+    description: { type: 'string' },
+    confidence: { type: 'number', minimum: 0, maximum: 1 },
+  },
+  required: ['visible_text', 'description', 'confidence'],
+};

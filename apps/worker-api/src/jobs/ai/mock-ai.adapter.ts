@@ -7,6 +7,7 @@ import type {
   SummaryResult,
   ClassificationResult,
   ExtractResult,
+  ImageExtractResult,
 } from './ai.interface';
 
 export class MockAiAdapter implements AiProvider {
@@ -110,6 +111,27 @@ export class MockAiAdapter implements AiProvider {
       result: mockResult as T,
       provider: this.name,
       model: 'mock-model',
+      latencyMs: 10,
+      inputUnits: 10,
+      outputUnits: 10,
+      status: 'success',
+    };
+  }
+
+  async extractImage(
+    _dataUrl: string,
+    _contentType: string,
+    _prompt: string,
+    _config?: AiProviderConfig,
+  ): Promise<AiEnrichmentResult<ImageExtractResult>> {
+    return {
+      result: {
+        visible_text: 'Mock visible text from image',
+        description: 'Mock image description',
+        confidence: 0.95,
+      },
+      provider: this.name,
+      model: 'mock-vision-model',
       latencyMs: 10,
       inputUnits: 10,
       outputUnits: 10,

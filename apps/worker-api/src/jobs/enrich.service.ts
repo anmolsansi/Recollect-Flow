@@ -74,7 +74,28 @@ export class EnrichService {
       );
     }
 
-    const textToEnrich = [itemRow.title, itemRow.user_note, itemRow.raw_text]
+    const extractionRows = await this.db
+      .prepare(
+        `SELECT extracted_text, image_description
+         FROM extraction_records
+         WHERE item_id = ?1 AND completeness IN ('complete', 'partial')`,
+      )
+      .bind(job.itemId)
+      .all<{
+        extracted_text: string | null;
+        image_description: string | null;
+      }>();
+
+    const extractions = (extractionRows.results || [])
+      .flatMap((r) => [r.extracted_text, r.image_description])
+      .filter(Boolean);
+
+    const textToEnrich = [
+      itemRow.title,
+      itemRow.user_note,
+      itemRow.raw_text,
+      ...extractions,
+    ]
       .filter(Boolean)
       .join('\n\n');
 

@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "hono": "^4.8.10",
+    "unpdf": "^1.8.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

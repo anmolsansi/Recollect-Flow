@@ -1,3 +1,5 @@
+import type { AttachmentExtractionResult } from './extraction/extraction.types';
+
 const MAX_LEASE_MINUTES = 60;
 const MAX_BATCH_SIZE = 100;
 const MAX_ATTEMPTS = 20;
@@ -468,6 +470,130 @@ export class JobService {
       accepted: batch[0]?.meta.changes === 1 && batch[1]?.meta.changes === 1,
       replayed: false,
     };
+  }
+
+  async submitExtractionResults(
+    jobId: string,
+    ownerId: string,
+    itemId: string,
+    results: AttachmentExtractionResult[],
+    enqueueEnrich: boolean,
+    now: Date = new Date(),
+  ): Promise<boolean> {
+    requireNonEmpty(jobId, 'jobId');
+    requireNonEmpty(ownerId, 'ownerId');
+    requireNonEmpty(itemId, 'itemId');
+
+    const nowIso = now.toISOString();
+
+    if (results.length === 0) return false;
+
+    const stmts: D1PreparedStatement[] = [];
+
+    for (const res of results) {
+      stmts.push(
+        this.db
+          .prepare(
+            `INSERT INTO extraction_records (
+             id, item_id, attachment_id, extractor_name, extractor_version,
+             extracted_text, image_description, confidence, page_count,
+             completeness, coverage, provider_name, model_name, error_code,
+             created_at, updated_at
+           )
+           SELECT
+             ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?15
+           FROM processing_jobs
+           WHERE id = ?16 AND item_id = ?2 AND lease_owner = ?17
+             AND status = 'processing' AND lease_expires_at > ?15
+             AND EXISTS (
+               SELECT 1 FROM attachments
+               WHERE id = ?3 AND item_id = ?2 AND status = 'linked'
+             )
+           ON CONFLICT (attachment_id) DO UPDATE SET
+             extractor_name = excluded.extractor_name,
+             extractor_version = excluded.extractor_version,
+             extracted_text = excluded.extracted_text,
+             image_description = excluded.image_description,
+             confidence = excluded.confidence,
+             page_count = excluded.page_count,
+             completeness = excluded.completeness,
+             coverage = excluded.coverage,
+             provider_name = excluded.provider_name,
+             model_name = excluded.model_name,
+             error_code = excluded.error_code,
+             updated_at = excluded.updated_at`,
+          )
+          .bind(
+            crypto.randomUUID(),
+            itemId,
+            res.attachmentId,
+            res.extractorName,
+            res.extractorVersion,
+            res.extractedText || null,
+            res.imageDescription || null,
+            res.confidence ?? null,
+            res.pageCount ?? null,
+            res.completeness,
+            res.coverage,
+            res.providerName || null,
+            res.modelName || null,
+            res.errorCode || null,
+            nowIso,
+            jobId,
+            ownerId,
+          ),
+      );
+    }
+
+    if (enqueueEnrich) {
+      stmts.push(
+        this.db
+          .prepare(
+            `INSERT INTO processing_jobs (
+              id, item_id, job_type, status, attempts, available_at, created_at,
+              updated_at, input_hash, privacy_level_snapshot,
+              provider_eligibility, policy_version, credential_source,
+              hosted_processing_consent, zero_data_retention_required,
+              data_collection_denied
+            )
+            SELECT ?1, source.item_id, 'enrich', 'pending', 0, ?2, ?2, ?2,
+                   'enrich-after-extract', source.privacy_level_snapshot,
+                   source.provider_eligibility, source.policy_version,
+                   source.credential_source, source.hosted_processing_consent,
+                   source.zero_data_retention_required,
+                   source.data_collection_denied
+            FROM processing_jobs AS source
+            WHERE source.id = ?3 AND source.item_id = ?4
+              AND source.lease_owner = ?5 AND source.status = 'processing'
+              AND source.lease_expires_at > ?2
+              AND NOT EXISTS (
+                SELECT 1 FROM processing_jobs
+                WHERE item_id = ?4 AND job_type = 'enrich'
+                  AND status IN ('pending', 'processing')
+              )`,
+          )
+          .bind(crypto.randomUUID(), nowIso, jobId, itemId, ownerId),
+      );
+    }
+
+    stmts.push(
+      this.db
+        .prepare(
+          `UPDATE processing_jobs
+         SET status = 'complete', lease_owner = NULL, lease_expires_at = NULL,
+             completed_at = ?1, last_error_code = NULL, updated_at = ?1
+         WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
+           AND lease_expires_at > ?1 AND item_id = ?4`,
+        )
+        .bind(nowIso, jobId, ownerId, itemId),
+    );
+
+    const batch = await this.db.batch(stmts);
+    const extractionWritesAccepted = batch
+      .slice(0, results.length)
+      .every((result) => result.meta.changes === 1);
+    const completionAccepted = batch[batch.length - 1]?.meta.changes === 1;
+    return extractionWritesAccepted && completionAccepted;
   }
 
   async failProcessingJob(

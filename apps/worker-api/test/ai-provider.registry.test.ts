@@ -116,4 +116,32 @@ describe('AiProviderRegistry configuration', () => {
     });
     expect(result.provider).toBe('openrouter');
   });
+
+  it('does not advertise text-only providers as vision-capable', () => {
+    const registry = new AiProviderRegistry(
+      testEnv({
+        AI_PROVIDERS_ENABLED: 'cloudflare',
+        AI_PROVIDER_IMPLEMENTATIONS: '{"cloudflare":"cloudflare"}',
+        AI_PROVIDER_DEFAULT: 'cloudflare',
+      }),
+    );
+
+    expect(
+      registry.getProviderForPolicy(
+        {
+          privacyLevel: 'public',
+          requestedProvider: 'cloudflare',
+          credentialSource: 'app_managed',
+        },
+        'image',
+      ),
+    ).toBeNull();
+    expect(
+      registry.getProviderForPolicy({
+        privacyLevel: 'public',
+        requestedProvider: 'cloudflare',
+        credentialSource: 'app_managed',
+      }),
+    ).toEqual({ provider: 'cloudflare' });
+  });
 });
