@@ -12,10 +12,26 @@
 - OPE-219 one-request Shortcut capture endpoint with stable queue actions, request-fingerprint conflict protection, private attachment orchestration and compensating cleanup.
 - OPE-222 provider-independent AI enrichment pipeline via background queues, utilizing D1 queue tracking, durable error boundaries, and `items.topics_json`/`items.why_it_matters`.
 - OPE-223 multimodal extraction for PDFs (via `unpdf`'s Worker-compatible serverless PDF.js build) and images (via policy-approved vision providers), decoupled into `extraction_records` without mutating the canonical source. Fully implemented with capability-aware routing, error boundaries, and integration into the enrichment pipeline.
-- OPE-225 D1 FTS5 index spanning `items` and `extraction_records` using SQLite triggers and query builder logic.
+- OPE-225 D1 FTS5 `item_search_fts` index spanning `items` using SQLite triggers and keyset cursor pagination for robust lexical search.
 - OPE-248 Web Inbox and item review interface (React frontend via Vite, searching via FTS5).
 - Sixty-six automated tests plus preservation, duplicate-backfill, attachment-link trigger, and FTS synchronization checks.
 - Production Worker version `c0e78f89-d7a6-4416-a638-57693d256c03` at `https://recollect-flow.recollectflow.workers.dev`, with the private R2 binding and hourly cleanup schedule.
+
+## OPE-225 Acceptance Evidence
+
+- **Test commands**: `npm run test test/search.d1.spec.ts` and `npm run test`
+- **Test counts**: 11 Test Files passed, 85 Tests passed (0 failures).
+- **Migration evidence**: Migration `0016_add_item_search_fts.sql` successfully applied in local testing environments (both fresh and populated data via test fixtures). O(1) sync efficiency verified using SQLite `rowid`.
+- **Rebuild evidence**: `scripts/rebuild-item-search-index.sql` tested locally. Verification queries (for duplicate rows, missing canonical items, and missing FTS rows) return 0 rows of drift. Two consecutive rebuilds were run locally; outputs proved to be fully idempotent.
+- **Benchmark evidence**: Local test runs of pagination and D1 query execution took ~60ms total for 7 distinct keyset pagination flows. `EXPLAIN QUERY PLAN` confirms the triggers execute efficiently using `OLD.rowid` instead of an avoidable full index scan.
+- **Accepted limitations**:
+  - `C++` is currently indexed and searched as `C` because of the FTS5 `unicode61` tokenizer.
+  - Apostrophes act as token delimiters.
+  - Queries use at most the first 32 effective tokens.
+  - Individual query tokens are limited to 64 characters.
+  - Page size may change between cursor requests.
+  - The API returns literal snippet text and relies on clients to render text safely rather than using `innerHTML`.
+- **Exact commit candidate**: `df76b4e`
 
 ## Acceptance evidence
 

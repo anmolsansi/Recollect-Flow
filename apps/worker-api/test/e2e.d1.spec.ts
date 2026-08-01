@@ -163,8 +163,8 @@ describe('OPE-222 acceptance evidence', () => {
   it('upgrades a populated database without losing jobs, results, constraints, or indexes', async () => {
     const migrationDb = env.OPE222_MIGRATION_DB!;
     const migrations = env.TEST_MIGRATIONS!;
-    // Apply up to 0013 (0014 and 0015 are remaining)
-    await applyD1Migrations(migrationDb, migrations.slice(0, -2));
+    // Apply up to 0013 (0014, 0015, 0016 are remaining)
+    await applyD1Migrations(migrationDb, migrations.slice(0, -3));
     const now = new Date().toISOString();
 
     await migrationDb
@@ -205,7 +205,7 @@ describe('OPE-222 acceptance evidence', () => {
       .bind(now)
       .run();
 
-    await applyD1Migrations(migrationDb, migrations.slice(-2));
+    await applyD1Migrations(migrationDb, migrations.slice(-3));
 
     const migratedJob = await migrationDb
       .prepare(

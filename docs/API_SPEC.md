@@ -95,11 +95,11 @@ Admin scope. Required input: `privacy_level` plus `derived_data_action` (`reproc
 
 Raw source fields and original user reason are immutable. Corrections target derived/editable fields and create audit events.
 
-## Planned search API
+## Implemented search API
 
 ### `GET /api/v1/search`
 
-Parameters: `q`, cursor/page size, source, project, topics, lifecycle status, processing status, privacy, importance range, captured-from/to, coverage. Output cards include ID/title/source, why-saved, highlighted snippet, project/topics/date/status/coverage and safe actions. V1 must not require AI.
+Admin scope. Parameters: `q` (max 256), cursor/limit (max 100), `source`, `project`, `lifecycle_status`, `processing_status`, `importance_min`/`max`, `captured_from`/`to`. Output cards include ID, title, source, highlighted snippet, project, topics, date, and status. Implemented using D1 FTS5 `unicode61` for deterministic, AI-independent matching. Support for combinable filters and opaque base64url keyset pagination cursors.
 
 ## Implemented processing and operations API
 

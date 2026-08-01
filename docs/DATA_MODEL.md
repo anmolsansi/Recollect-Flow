@@ -77,7 +77,7 @@ Every processing job snapshots policy version, eligible provider, credential sou
 - Canonical URL and content hash for conservative duplicate lookup.
 - Lifecycle/processing/captured/project/privacy compound indexes.
 - Pending jobs by state/available/priority.
-- FTS5 across title, reason, shared/extracted text, summary, topics, project, source account/site.
+- FTS5 `item_search_fts` index across title, user note, shared/extracted text, summary, topics, project, people, companies. Uses `unicode61` tokenizer for lexical search independent of AI embeddings. Keeps synchronized via D1 `AFTER` triggers.
 - Avoid unindexed broad scans because D1 pricing counts rows read.
 
 ## Duplicate model
