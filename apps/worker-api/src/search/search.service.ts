@@ -1,0 +1,395 @@
+import type { SearchInput, SearchSnippet } from './search.schema';
+import { decodeCursor, encodeCursor, generateFingerprint } from './cursor';
+import { AppError } from '../shared/errors';
+
+function parseTopics(value: string | null): string[] {
+  if (!value) {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed)
+      ? parsed.filter((topic): topic is string => typeof topic === 'string')
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+interface SearchRow {
+  id: string;
+  title: string | null;
+  source_type: string;
+  source_app: string;
+  project: string | null;
+  topics_json: string | null;
+  importance: number | null;
+  lifecycle_status: string;
+  processing_status: string;
+  privacy_level: string;
+  captured_at: string;
+  coverage: string | null;
+  summary: string | null;
+  user_note: string | null;
+  raw_text: string | null;
+  rank: number | null;
+  fts_snippet: string | null;
+}
+
+interface SearchExecutionResult {
+  data: Array<{
+    id: string;
+    title: string | null;
+    source_type: string;
+    source_app: string;
+    project: string | null;
+    topics: string[];
+    importance: number | null;
+    lifecycle_status: string;
+    processing_status: string;
+    privacy_level: string;
+    captured_at: string;
+    coverage: string | null;
+    snippet: SearchSnippet;
+  }>;
+  meta: {
+    count: number;
+    duration_ms: number;
+    next_cursor?: string;
+  };
+}
+
+const ADMIN_VISIBLE_PRIVACY_LEVELS = [
+  'unknown',
+  'public',
+  'personal',
+  'sensitive',
+] as const;
+
+function constrainSegments(
+  segments: SearchSnippet['segments'],
+  isTruncated: boolean,
+): SearchSnippet {
+  const merged: SearchSnippet['segments'] = [];
+  for (const segment of segments) {
+    if (segment.text.length === 0) continue;
+    const previous = merged.at(-1);
+    if (previous && previous.highlighted === segment.highlighted) {
+      previous.text += segment.text;
+    } else {
+      merged.push({ ...segment });
+    }
+  }
+
+  const finalSegments: SearchSnippet['segments'] = [];
+  let remaining = 150;
+  let truncated = isTruncated;
+
+  for (const segment of merged) {
+    if (finalSegments.length >= 10) {
+      truncated = true;
+      break;
+    }
+    if (segment.text.length > remaining) {
+      finalSegments.push({
+        text: segment.text.substring(0, remaining),
+        highlighted: segment.highlighted,
+      });
+      truncated = true;
+      break;
+    }
+    finalSegments.push(segment);
+    remaining -= segment.text.length;
+  }
+
+  if (finalSegments.length === 0) {
+    finalSegments.push({ text: '', highlighted: false });
+  }
+
+  return { segments: finalSegments, truncated };
+}
+
+function parseSnippet(
+  rawText: string,
+  startMarker: string,
+  endMarker: string,
+  ellipsisMarker: string,
+): SearchSnippet {
+  let text = rawText;
+  let truncated = false;
+
+  if (text.includes(ellipsisMarker)) {
+    truncated = true;
+    text = text.replaceAll(ellipsisMarker, '...');
+  }
+
+  const segments: SearchSnippet['segments'] = [];
+  let i = 0;
+  let highlightOpen = false;
+  while (i < text.length) {
+    const marker = highlightOpen ? endMarker : startMarker;
+    const idx = text.indexOf(marker, i);
+
+    if (idx === -1) {
+      if (i < text.length) {
+        segments.push({ text: text.substring(i), highlighted: highlightOpen });
+      }
+      break;
+    }
+
+    if (idx > i) {
+      segments.push({
+        text: text.substring(i, idx),
+        highlighted: highlightOpen,
+      });
+    }
+
+    highlightOpen = !highlightOpen;
+    i = idx + marker.length;
+  }
+
+  return constrainSegments(segments, truncated);
+}
+
+export async function executeSearch(
+  db: D1Database,
+  input: SearchInput,
+): Promise<SearchExecutionResult> {
+  const queryStr = input.q || '';
+  const effectiveTokens =
+    queryStr.normalize('NFC').match(/[\p{L}\p{N}\p{M}]+/gu) ?? [];
+
+  const tokens = effectiveTokens
+    .slice(0, 32)
+    .map((token) => token.slice(0, 64));
+
+  if (queryStr.length > 0 && tokens.length === 0) {
+    return { data: [], meta: { count: 0, duration_ms: 0 } };
+  }
+
+  const isFilterOnly = tokens.length === 0;
+  const currentMode = isFilterOnly ? 'filter' : 'keyword';
+
+  const fingerprint = await generateFingerprint(input, tokens);
+
+  let cursorData = null;
+  if (input.cursor) {
+    cursorData = decodeCursor(input.cursor, currentMode);
+    if (!cursorData || cursorData.f !== fingerprint) {
+      throw new AppError(
+        400,
+        'INVALID_CURSOR',
+        'The cursor is invalid or incompatible with the search parameters.',
+      );
+    }
+  }
+
+  let ftsMatch = '';
+  if (!isFilterOnly) {
+    ftsMatch = tokens
+      .map((t) => {
+        const escaped = t.replace(/"/g, '""');
+        return `"${escaped}"*`;
+      })
+      .join(' AND ');
+  }
+
+  const conditions = [
+    'i.deleted_at IS NULL',
+    `i.privacy_level IN (${ADMIN_VISIBLE_PRIVACY_LEVELS.map(() => '?').join(', ')})`,
+  ];
+  const params: unknown[] = [...ADMIN_VISIBLE_PRIVACY_LEVELS];
+
+  if (!isFilterOnly) {
+    conditions.push('fts.item_search_fts MATCH ?');
+    params.push(ftsMatch);
+  }
+
+  if (input.source) {
+    conditions.push('i.source_type = ?');
+    params.push(input.source);
+  }
+
+  if (input.project) {
+    conditions.push('i.project = ?');
+    params.push(input.project);
+  }
+
+  if (input.lifecycle_status) {
+    conditions.push('i.lifecycle_status = ?');
+    params.push(input.lifecycle_status);
+  }
+
+  if (input.processing_status) {
+    conditions.push('i.processing_status = ?');
+    params.push(input.processing_status);
+  }
+
+  if (input.importance_min !== undefined) {
+    conditions.push('i.importance >= ?');
+    params.push(input.importance_min);
+  }
+
+  if (input.importance_max !== undefined) {
+    conditions.push('i.importance <= ?');
+    params.push(input.importance_max);
+  }
+
+  if (input.captured_from) {
+    conditions.push('i.captured_at >= ?');
+    params.push(input.captured_from);
+  }
+
+  let cutoff = new Date().toISOString();
+  if (cursorData && cursorData.c) {
+    cutoff = cursorData.c;
+  } else if (input.captured_to) {
+    cutoff = input.captured_to;
+  }
+  conditions.push('i.captured_at <= ?');
+  params.push(cutoff);
+
+  if (cursorData) {
+    if (!isFilterOnly && cursorData.r !== undefined) {
+      conditions.push(
+        `(bm25(fts.item_search_fts) > ? OR (bm25(fts.item_search_fts) = ? AND i.captured_at < ?) OR (bm25(fts.item_search_fts) = ? AND i.captured_at = ? AND i.id > ?))`,
+      );
+      params.push(
+        cursorData.r,
+        cursorData.r,
+        cursorData.t,
+        cursorData.r,
+        cursorData.t,
+        cursorData.i,
+      );
+    } else {
+      conditions.push(
+        `(i.captured_at < ? OR (i.captured_at = ? AND i.id > ?))`,
+      );
+      params.push(cursorData.t, cursorData.t, cursorData.i);
+    }
+  }
+
+  const limit = input.limit ?? 25;
+  params.push(limit + 1);
+
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  const orderClause = !isFilterOnly
+    ? 'ORDER BY bm25(fts.item_search_fts) ASC, i.captured_at DESC, i.id ASC'
+    : 'ORDER BY i.captured_at DESC, i.id ASC';
+
+  const nonce = crypto.randomUUID();
+  const startMarker = `\uE000${nonce}:start\uE000`;
+  const endMarker = `\uE001${nonce}:end\uE001`;
+  const ellipsisMarker = `\uE002${nonce}:ellipsis\uE002`;
+
+  const selectFts = !isFilterOnly
+    ? `bm25(fts.item_search_fts) AS rank, snippet(fts.item_search_fts, -1, '${startMarker}', '${endMarker}', '${ellipsisMarker}', 64) AS fts_snippet`
+    : `NULL AS rank, NULL AS fts_snippet`;
+
+  const query = `
+    SELECT 
+      i.id, i.title, i.source_type, i.source_app, i.project, i.topics_json,
+      i.importance, i.lifecycle_status, i.processing_status, i.privacy_level, i.captured_at, i.coverage,
+      i.summary, i.user_note, i.raw_text,
+      ${selectFts}
+    FROM items i
+    ${!isFilterOnly ? 'JOIN item_search_fts fts ON fts.item_id = i.id' : ''}
+    ${whereClause}
+    ${orderClause}
+    LIMIT ?
+  `;
+
+  const startTime = Date.now();
+  const queryResult = await db
+    .prepare(query)
+    .bind(...params)
+    .all<SearchRow>();
+  const durationMs = Date.now() - startTime;
+
+  if (queryResult.error) {
+    throw new AppError(
+      500,
+      'DATABASE_ERROR',
+      'A database error occurred during search.',
+    );
+  }
+
+  const results = queryResult.results ?? [];
+
+  if (results.length === 0) {
+    return { data: [], meta: { count: 0, duration_ms: durationMs } };
+  }
+
+  const hasNextPage = results.length > limit;
+  const pageResults = hasNextPage ? results.slice(0, limit) : results;
+
+  let nextCursor: string | null = null;
+  if (hasNextPage) {
+    const last = pageResults.at(-1);
+    if (!last) {
+      throw new AppError(
+        500,
+        'DATABASE_ERROR',
+        'Search pagination could not determine its continuation point.',
+      );
+    }
+    nextCursor = encodeCursor({
+      v: 1,
+      mode: currentMode,
+      ...(currentMode === 'keyword' && last.rank !== null
+        ? { r: last.rank }
+        : {}),
+      t: last.captured_at,
+      i: last.id,
+      f: fingerprint,
+      c: cutoff,
+    });
+  }
+
+  const mappedData = pageResults.map((row) => {
+    let snippet: SearchSnippet;
+
+    if (row.fts_snippet) {
+      snippet = parseSnippet(
+        row.fts_snippet,
+        startMarker,
+        endMarker,
+        ellipsisMarker,
+      );
+    } else {
+      const fallbackText =
+        row.summary || row.user_note || row.title || row.raw_text || '';
+      snippet = constrainSegments(
+        [{ text: fallbackText, highlighted: false }],
+        false,
+      );
+    }
+
+    return {
+      id: row.id,
+      title: row.title,
+      source_type: row.source_type,
+      source_app: row.source_app,
+      project: row.project,
+      topics: parseTopics(row.topics_json),
+      importance: row.importance,
+      lifecycle_status: row.lifecycle_status,
+      processing_status: row.processing_status,
+      privacy_level: row.privacy_level,
+      captured_at: row.captured_at,
+      coverage: row.coverage,
+      snippet,
+    };
+  });
+
+  return {
+    data: mappedData,
+    meta: {
+      count: pageResults.length,
+      duration_ms: durationMs,
+      ...(nextCursor ? { next_cursor: nextCursor } : {}),
+    },
+  };
+}

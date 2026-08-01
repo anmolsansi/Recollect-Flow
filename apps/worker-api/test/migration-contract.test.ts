@@ -53,6 +53,14 @@ const completedJobMigration = readFileSync(
   ),
   'utf8',
 );
+const searchMigration = readFileSync(
+  new URL('../../../migrations/0016_add_item_search_fts.sql', import.meta.url),
+  'utf8',
+);
+const searchRebuildScript = readFileSync(
+  new URL('../../../scripts/rebuild-item-search-index.sql', import.meta.url),
+  'utf8',
+);
 
 describe('0001_initial migration contract', () => {
   it('creates every V1 durability table', () => {
@@ -175,5 +183,53 @@ describe('follow-up migration contracts', () => {
     );
     expect(completedJobMigration).toContain('idx_sync_attempts_active_unique');
     expect(completedJobMigration).toContain('operational_controls');
+  });
+
+  it('creates and synchronizes the complete OPE-225 lexical projection', () => {
+    expect(searchMigration).toContain(
+      'CREATE VIRTUAL TABLE item_search_fts USING fts5',
+    );
+    for (const field of [
+      'title',
+      'raw_text',
+      'user_note',
+      'summary',
+      'topics',
+      'project',
+      'people',
+      'companies',
+    ]) {
+      expect(searchMigration).toMatch(new RegExp(`\\b${field}\\b`));
+    }
+    expect(searchMigration).toContain(
+      "tokenize='unicode61 remove_diacritics 1'",
+    );
+    expect(searchMigration).toContain("prefix='2 3 4 5'");
+    expect(searchMigration).toContain('WHERE deleted_at IS NULL');
+    expect(searchMigration).toContain('CREATE TRIGGER items_search_fts_ai');
+    expect(searchMigration).toContain('CREATE TRIGGER items_search_fts_au');
+    expect(searchMigration).toContain('CREATE TRIGGER items_search_fts_ad');
+    expect(searchMigration).toContain('WHERE rowid = OLD.rowid');
+    expect(searchMigration).toContain('json_valid(NEW.topics_json)');
+    expect(searchMigration).toContain('json_valid(NEW.people)');
+    expect(searchMigration).toContain('json_valid(NEW.companies)');
+  });
+
+  it('keeps the OPE-225 rebuild operational, repeatable and verifiable', () => {
+    expect(searchRebuildScript).toContain('BEGIN TRANSACTION');
+    expect(searchRebuildScript).toContain('DELETE FROM item_search_fts');
+    expect(searchRebuildScript).toContain('FROM items');
+    expect(searchRebuildScript).toContain('WHERE deleted_at IS NULL');
+    expect(searchRebuildScript).toContain('COMMIT');
+    expect(searchRebuildScript).toContain('missing_from_fts');
+    expect(searchRebuildScript).toContain('orphaned_or_deleted_in_fts');
+    expect(searchRebuildScript).toContain('duplicate_item_ids');
+    expect(searchRebuildScript).toContain('distinct_indexed_items');
+    expect(searchRebuildScript).toContain(
+      'd1 execute recollect-flow-prod --local',
+    );
+    expect(searchRebuildScript).toContain(
+      'd1 execute recollect-flow-prod --remote',
+    );
   });
 });

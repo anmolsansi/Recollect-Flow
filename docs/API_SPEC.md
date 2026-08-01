@@ -95,11 +95,46 @@ Admin scope. Required input: `privacy_level` plus `derived_data_action` (`reproc
 
 Raw source fields and original user reason are immutable. Corrections target derived/editable fields and create audit events.
 
-## Planned search API
+## Implemented search API
 
 ### `GET /api/v1/search`
 
-Parameters: `q`, cursor/page size, source, project, topics, lifecycle status, processing status, privacy, importance range, captured-from/to, coverage. Output cards include ID/title/source, why-saved, highlighted snippet, project/topics/date/status/coverage and safe actions. V1 must not require AI.
+Admin scope only. Capture and local-worker tokens are rejected. The server returns
+all non-deleted privacy levels for the current personal-admin contract; clients
+cannot override visibility.
+
+Query parameters:
+
+- `q`: optional keyword query, trimmed and capped at 256 characters. Missing or
+  blank selects filter-only browsing; a nonblank query containing no searchable
+  Unicode letter, number, or underscore returns an empty page.
+- `source`: one of `url`, `text`, `note`, `image`, or `file`.
+- `project`, `lifecycle_status`, `processing_status`, `importance_min`,
+  `importance_max`, `captured_from`, and `captured_to`: optional exact/range
+  filters combined with `AND`. Importance is 0–100 and capture dates are
+  offset-bearing ISO-8601 timestamps; inverted ranges are rejected.
+- `limit`: 1–100, default 25.
+- `cursor`: optional opaque base64url keyset cursor, capped at 1024 characters.
+  Cursors are versioned and fingerprinted to the normalized query and filters;
+  changing those values invalidates the cursor. Page size may change.
+
+Keyword results order by FTS rank ascending, then `captured_at DESC`, then
+`id ASC`. Filter-only results order by `captured_at DESC`, then `id ASC`.
+Cursors include the corresponding order keys and the first-page cutoff, so a
+newer capture does not enter a traversal that is already in progress.
+
+The response uses `{ data, meta }`. Each data item contains the item ID, title,
+source type/app, project, topics, importance, lifecycle/processing/privacy
+statuses, captured date, coverage, and `snippet: { segments, truncated }`.
+Each segment is `{ text, highlighted }`; callers must render `text` as text and
+must not feed it to `innerHTML`. `meta` contains `request_id`, `count`,
+`duration_ms`, and `next_cursor` only when another page exists. Invalid input
+returns the standard `VALIDATION_ERROR` envelope; auth and internal failures use
+the existing redacted global error contract.
+
+Search is lexical retrieval using D1 FTS5 `unicode61`. It does not call an AI
+provider and does not require embeddings, a vector database, reranking, or
+generation.
 
 ## Implemented processing and operations API
 

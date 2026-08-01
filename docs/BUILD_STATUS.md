@@ -1,4 +1,4 @@
-# Build status — 2026-07-31
+# Build status — 2026-08-02
 
 ## Completed and deployed
 
@@ -12,10 +12,53 @@
 - OPE-219 one-request Shortcut capture endpoint with stable queue actions, request-fingerprint conflict protection, private attachment orchestration and compensating cleanup.
 - OPE-222 provider-independent AI enrichment pipeline via background queues, utilizing D1 queue tracking, durable error boundaries, and `items.topics_json`/`items.why_it_matters`.
 - OPE-223 multimodal extraction for PDFs (via `unpdf`'s Worker-compatible serverless PDF.js build) and images (via policy-approved vision providers), decoupled into `extraction_records` without mutating the canonical source. Fully implemented with capability-aware routing, error boundaries, and integration into the enrichment pipeline.
-- OPE-225 D1 FTS5 index spanning `items` and `extraction_records` using SQLite triggers and query builder logic.
 - OPE-248 Web Inbox and item review interface (React frontend via Vite, searching via FTS5).
 - Sixty-six automated tests plus preservation, duplicate-backfill, attachment-link trigger, and FTS synchronization checks.
 - Production Worker version `c0e78f89-d7a6-4416-a638-57693d256c03` at `https://recollect-flow.recollectflow.workers.dev`, with the private R2 binding and hourly cleanup schedule.
+
+## Locally complete, release pending
+
+- OPE-225 D1 FTS5 `item_search_fts` index, synchronization triggers,
+  admin-only search API, structural snippets, combinable filters, and stable
+  keyset pagination are implemented on `feature/ope-225-search`.
+- This local completion does not mean the production migration, deployment,
+  smoke test, PR merge, or Linear closure has occurred.
+
+## OPE-225 local acceptance evidence
+
+- **Full gate**: `npm run check` passes: 11 Node test files / 87 tests and
+  5 D1 test files / 47 tests, with formatting, lint, and typecheck green.
+- **Behavior evidence**: the D1 suite covers the real capture and search routes,
+  all eight indexed fields, enrichment/reprocessing replacement, every privacy
+  level under admin scope, rejected capture/local/invalid tokens, AI-independent
+  search, combined filters, safe snippets, deletion/restoration, malformed
+  legacy JSON, cursor rejection, and a 120-item tied traversal without duplicate
+  or omitted IDs.
+- **Migration evidence**: the complete migration chain through
+  `0016_add_item_search_fts.sql` applies to an isolated fresh local D1. A
+  populated-through-0015 fixture verifies backfill of an existing item, including
+  malformed legacy topic JSON.
+- **Rebuild evidence**: `scripts/rebuild-item-search-index.sql` was run twice
+  against local D1. Both passes reported zero missing, orphaned/deleted, and
+  duplicate rows, with canonical/indexed/distinct counts equal. The D1 suite
+  additionally clears one canonical index row, inserts an orphan, rebuilds twice,
+  and verifies restored search and zero drift.
+- **Query-plan evidence**: local `EXPLAIN QUERY PLAN` reports
+  `SCAN fts VIRTUAL TABLE INDEX 0:M9`, then primary-key lookup on `items`; the
+  implementation does not scan raw text with `LIKE`.
+- **Worker gates**: Wrangler 4.116.0 reports binding types current, dry-run bundle
+  success (2779.88 KiB / 642.08 KiB gzip), and a 53.6 ms local startup profile
+  window.
+- **Accepted limitations**:
+  - `C++` is currently indexed and searched as `C` because of the FTS5 `unicode61` tokenizer.
+  - Apostrophes act as token delimiters.
+  - Queries use at most the first 32 effective tokens.
+  - Individual query tokens are limited to 64 characters.
+  - Page size may change between cursor requests.
+  - Snippets are structured text segments; clients must render segment text as
+    text rather than using `innerHTML`.
+- **Source state**: local working-tree changes after `428d0b0`; not yet
+  committed, pushed, deployed, or merged.
 
 ## Acceptance evidence
 
@@ -35,6 +78,6 @@
 
 ## Not complete
 
-This is not V1. Remaining slices include physical-iPhone Shortcut completion/device QA, reusable provider execution under OPE-222, Notion projection, extraction/enrichment execution, FTS search, resurfacing, observability dashboards, backup/export/deletion/recovery, and full production end-to-end acceptance.
+This is not V1. Remaining slices include physical-iPhone Shortcut completion/device QA, reusable provider execution under OPE-222, Notion projection, extraction/enrichment execution, OPE-225 production migration/deployment smoke testing, resurfacing, observability dashboards, backup/export/deletion/recovery, and full production end-to-end acceptance.
 
 RAG is intentionally not started. It remains a V1.5 milestone gated by V1 acceptance and 100 useful captures.
