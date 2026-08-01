@@ -1,3 +1,5 @@
+import type { AttachmentExtractionResult } from './extraction/extraction.types';
+
 const MAX_LEASE_MINUTES = 60;
 const MAX_BATCH_SIZE = 100;
 const MAX_ATTEMPTS = 20;
@@ -474,8 +476,7 @@ export class JobService {
     jobId: string,
     ownerId: string,
     itemId: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    results: any[], // array of validated extraction results mapped to attachment_ids
+    results: AttachmentExtractionResult[],
     enqueueEnrich: boolean,
     now: Date = new Date(),
   ): Promise<boolean> {
@@ -485,16 +486,7 @@ export class JobService {
 
     const nowIso = now.toISOString();
 
-    const job = await this.db
-      .prepare(
-        `SELECT item_id FROM processing_jobs
-         WHERE id = ?1 AND lease_owner = ?2 AND status = 'processing'
-           AND lease_expires_at > ?3`,
-      )
-      .bind(jobId, ownerId, nowIso)
-      .first<{ item_id: string }>();
-
-    if (!job || job.item_id !== itemId) return false;
+    if (results.length === 0) return false;
 
     const stmts: D1PreparedStatement[] = [];
 
@@ -507,9 +499,16 @@ export class JobService {
              extracted_text, image_description, confidence, page_count,
              completeness, coverage, provider_name, model_name, error_code,
              created_at, updated_at
-           ) VALUES (
-             ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?15
            )
+           SELECT
+             ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?15
+           FROM processing_jobs
+           WHERE id = ?16 AND item_id = ?2 AND lease_owner = ?17
+             AND status = 'processing' AND lease_expires_at > ?15
+             AND EXISTS (
+               SELECT 1 FROM attachments
+               WHERE id = ?3 AND item_id = ?2 AND status = 'linked'
+             )
            ON CONFLICT (attachment_id) DO UPDATE SET
              extractor_name = excluded.extractor_name,
              extractor_version = excluded.extractor_version,
@@ -540,6 +539,8 @@ export class JobService {
             res.modelName || null,
             res.errorCode || null,
             nowIso,
+            jobId,
+            ownerId,
           ),
       );
     }
@@ -550,16 +551,28 @@ export class JobService {
           .prepare(
             `INSERT INTO processing_jobs (
               id, item_id, job_type, status, attempts, available_at, created_at,
-              updated_at, input_hash
+              updated_at, input_hash, privacy_level_snapshot,
+              provider_eligibility, policy_version, credential_source,
+              hosted_processing_consent, zero_data_retention_required,
+              data_collection_denied
             )
-            SELECT ?1, ?2, 'enrich', 'pending', 0, ?3, ?3, ?3, ?4
-            WHERE NOT EXISTS (
-              SELECT 1 FROM processing_jobs
-              WHERE item_id = ?2 AND job_type = 'enrich'
-                AND status IN ('pending', 'processing')
-            )`,
+            SELECT ?1, source.item_id, 'enrich', 'pending', 0, ?2, ?2, ?2,
+                   'enrich-after-extract', source.privacy_level_snapshot,
+                   source.provider_eligibility, source.policy_version,
+                   source.credential_source, source.hosted_processing_consent,
+                   source.zero_data_retention_required,
+                   source.data_collection_denied
+            FROM processing_jobs AS source
+            WHERE source.id = ?3 AND source.item_id = ?4
+              AND source.lease_owner = ?5 AND source.status = 'processing'
+              AND source.lease_expires_at > ?2
+              AND NOT EXISTS (
+                SELECT 1 FROM processing_jobs
+                WHERE item_id = ?4 AND job_type = 'enrich'
+                  AND status IN ('pending', 'processing')
+              )`,
           )
-          .bind(crypto.randomUUID(), itemId, nowIso, 'enrich-after-extract'),
+          .bind(crypto.randomUUID(), nowIso, jobId, itemId, ownerId),
       );
     }
 
@@ -570,13 +583,17 @@ export class JobService {
          SET status = 'complete', lease_owner = NULL, lease_expires_at = NULL,
              completed_at = ?1, last_error_code = NULL, updated_at = ?1
          WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
-           AND lease_expires_at > ?1`,
+           AND lease_expires_at > ?1 AND item_id = ?4`,
         )
-        .bind(nowIso, jobId, ownerId),
+        .bind(nowIso, jobId, ownerId, itemId),
     );
 
-    await this.db.batch(stmts);
-    return true;
+    const batch = await this.db.batch(stmts);
+    const extractionWritesAccepted = batch
+      .slice(0, results.length)
+      .every((result) => result.meta.changes === 1);
+    const completionAccepted = batch[batch.length - 1]?.meta.changes === 1;
+    return extractionWritesAccepted && completionAccepted;
   }
 
   async failProcessingJob(

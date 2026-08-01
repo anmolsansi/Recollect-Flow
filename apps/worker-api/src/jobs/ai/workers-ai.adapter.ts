@@ -6,7 +6,6 @@ import type {
   SummaryResult,
   ClassificationResult,
   ExtractResult,
-  ImageExtractResult,
 } from './ai.interface';
 import {
   ExtractResultSchema,
@@ -222,22 +221,5 @@ export class WorkersAiAdapter implements AiProvider {
         },
       );
     }
-  }
-
-  async extractImage(
-    dataUrl: string,
-    contentType: string,
-    prompt: string,
-    config?: AiProviderConfig,
-  ): Promise<AiEnrichmentResult<ImageExtractResult>> {
-    void dataUrl;
-    void contentType;
-    void prompt;
-    void config;
-    throw new AppError(
-      500,
-      'NOT_IMPLEMENTED',
-      'Cloudflare Workers AI vision extraction is not implemented yet.',
-    );
   }
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { ZodSchema } from 'zod';
+import { z, type ZodSchema } from 'zod';
 import type { Env } from '../../env';
 import type {
   AiProvider,
@@ -22,6 +22,22 @@ import {
   ImageExtractResultSchema,
   ImageExtractResultJsonSchema,
 } from './ai.schema';
+
+const OpenRouterImageResponseSchema = z.object({
+  choices: z
+    .array(
+      z.object({
+        message: z.object({ content: z.string() }).passthrough(),
+      }),
+    )
+    .min(1),
+  usage: z
+    .object({
+      prompt_tokens: z.number().nonnegative().optional(),
+      completion_tokens: z.number().nonnegative().optional(),
+    })
+    .optional(),
+});
 
 export class OpenRouterAdapter implements AiProvider {
   name = 'openrouter';
@@ -266,16 +282,7 @@ export class OpenRouterAdapter implements AiProvider {
               json_schema: {
                 name: 'image_extract_schema',
                 strict: true,
-                schema: {
-                  type: 'object',
-                  properties: {
-                    visible_text: { type: 'string' },
-                    description: { type: 'string' },
-                    confidence: { type: 'number' },
-                  },
-                  required: ['visible_text', 'description', 'confidence'],
-                  additionalProperties: false,
-                },
+                schema: ImageExtractResultJsonSchema,
               },
             },
           }),
@@ -290,16 +297,9 @@ export class OpenRouterAdapter implements AiProvider {
         );
       }
 
-      const data = (await response.json()) as any;
-      if (!data.choices || data.choices.length === 0) {
-        throw new AppError(
-          503,
-          'AI_BAD_RESPONSE',
-          'Invalid response format from OpenRouter',
-        );
-      }
+      const data = OpenRouterImageResponseSchema.parse(await response.json());
 
-      const rawJson = data.choices[0].message.content;
+      const rawJson = data.choices[0]!.message.content;
       let cleanedJson = rawJson.trim();
       if (cleanedJson.startsWith('```json')) {
         cleanedJson = cleanedJson
@@ -337,7 +337,7 @@ export class OpenRouterAdapter implements AiProvider {
           model: modelName,
           latencyMs: Date.now() - startTime,
           status: 'failed',
-          errorCode: (error as AppError).code || 'UNKNOWN_ERROR',
+          errorCode: error instanceof AppError ? error.code : 'UNKNOWN_ERROR',
         },
       );
     }

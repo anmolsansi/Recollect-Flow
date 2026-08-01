@@ -4,14 +4,13 @@ import type {
   ExtractionResult,
 } from './extraction.types';
 import type { Env } from '../../env';
-import { PolicyService } from '../../policy/policy.service';
-import type { PrivacyLevel } from '../../policy/policy.service';
 import { AiProviderRegistry } from '../ai/ai-provider.registry';
+import { AppError } from '../../shared/errors';
+import { Buffer } from 'node:buffer';
 
 export class VisionExtractor implements Extractor {
   name = 'vision-model' as const;
   version = '1.0';
-  private policyService = new PolicyService();
   private aiRegistry: AiProviderRegistry;
 
   constructor(private readonly env: Env) {
@@ -23,13 +22,7 @@ export class VisionExtractor implements Extractor {
   }
 
   private arrayBufferToBase64(buffer: ArrayBuffer): string {
-    let binary = '';
-    const bytes = new Uint8Array(buffer);
-    const len = bytes.byteLength;
-    for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i]!);
-    }
-    return btoa(binary);
+    return Buffer.from(buffer).toString('base64');
   }
 
   async extract(input: ExtractionInput): Promise<ExtractionResult> {
@@ -43,7 +36,7 @@ export class VisionExtractor implements Extractor {
         dataUrl,
         input.contentType,
         prompt,
-        input.privacyLevel as PrivacyLevel,
+        input.routing,
       );
 
       return {
@@ -59,15 +52,13 @@ export class VisionExtractor implements Extractor {
         modelName: result.model,
       };
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const err = error as any;
       return {
         extractorName: this.name,
         extractorVersion: this.version,
         completeness: 'failed',
         coverage: 'none',
         errorCode:
-          err?.code === 'NO_ELIGIBLE_PROVIDER'
+          error instanceof AppError && error.code === 'NO_ELIGIBLE_PROVIDER'
             ? 'POLICY_DENIED'
             : 'PROVIDER_FAILURE',
       };

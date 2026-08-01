@@ -25,22 +25,27 @@ export function itemRoutes() {
       throw new AppError(404, 'NOT_FOUND', 'Item not found');
     }
 
-    const extraction = await db
+    const extractionRows = await db
       .prepare(
-        `SELECT extractor_name, extractor_version,
+        `SELECT attachment_id, extractor_name, extractor_version,
                 extracted_text, image_description, confidence, page_count,
                 completeness, coverage, provider_name, model_name, error_code,
                 updated_at
          FROM extraction_records
-         WHERE item_id = ?1`,
+         WHERE item_id = ?1
+         ORDER BY updated_at DESC, attachment_id ASC`,
       )
       .bind(itemId)
-      .first();
+      .all();
+    const extractions = extractionRows.results ?? [];
 
     return context.json({
       data: {
         item,
-        extraction: extraction || null,
+        // Keep the singular field for existing clients while exposing every
+        // attachment result to newer clients.
+        extraction: extractions[0] ?? null,
+        extractions,
       },
       meta: { request_id: context.get('requestId') },
     });

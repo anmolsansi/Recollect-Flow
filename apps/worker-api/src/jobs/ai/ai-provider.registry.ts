@@ -146,9 +146,10 @@ export class AiProviderRegistry {
   ): AiProviderConfig | null {
     const availableProviders: PolicyAiProvider[] = [];
 
-    // Derive available providers from registry
-    for (const name of this.providers.keys()) {
+    // Only advertise providers that implement the requested operation.
+    for (const [name, provider] of this.providers.entries()) {
       if (['openrouter', 'gemini', 'cloudflare'].includes(name)) {
+        if (modality === 'image' && !provider.extractImage) continue;
         availableProviders.push(name as PolicyAiProvider);
       }
     }

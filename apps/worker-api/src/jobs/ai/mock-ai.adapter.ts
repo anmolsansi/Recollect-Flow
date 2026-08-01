@@ -7,6 +7,7 @@ import type {
   SummaryResult,
   ClassificationResult,
   ExtractResult,
+  ImageExtractResult,
 } from './ai.interface';
 
 export class MockAiAdapter implements AiProvider {
@@ -122,8 +123,7 @@ export class MockAiAdapter implements AiProvider {
     _contentType: string,
     _prompt: string,
     _config?: AiProviderConfig,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): Promise<AiEnrichmentResult<any>> {
+  ): Promise<AiEnrichmentResult<ImageExtractResult>> {
     return {
       result: {
         visible_text: 'Mock visible text from image',

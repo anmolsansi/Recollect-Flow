@@ -1,5 +1,13 @@
 import type { Env } from '../../env';
-import type { Extractor } from './extraction.types';
+import {
+  normalizeContentType,
+  signatureMatches,
+} from '../../attachments/attachment.validation';
+import type {
+  AttachmentExtractionInput,
+  AttachmentExtractionResult,
+  Extractor,
+} from './extraction.types';
 import { PdfExtractor } from './pdf.extractor';
 import { VisionExtractor } from './vision.extractor';
 import { extractionResultSchema } from './extraction.schema';
@@ -7,24 +15,32 @@ import { extractionResultSchema } from './extraction.schema';
 export class ExtractionService {
   private extractors: Extractor[];
 
-  constructor(
-    private readonly env: Env,
-    private readonly db: D1Database,
-  ) {
+  constructor(private readonly env: Env) {
     this.extractors = [new PdfExtractor(), new VisionExtractor(env)];
   }
 
   async extract(
-    attachmentId: string,
-    objectKey: string,
-    itemId: string,
-    contentType: string,
-    sizeBytes: number,
-    contentHash: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    policy: any,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): Promise<any> {
+    input: AttachmentExtractionInput,
+  ): Promise<AttachmentExtractionResult> {
+    const { attachmentId, objectKey, itemId, sizeBytes, contentHash, routing } =
+      input;
+    const declaredContentType = normalizeContentType(input.declaredContentType);
+    const detectedContentType = input.detectedContentType
+      ? normalizeContentType(input.detectedContentType)
+      : null;
+
+    if (detectedContentType && declaredContentType !== detectedContentType) {
+      return {
+        attachmentId,
+        extractorName: 'none',
+        extractorVersion: '1.0',
+        completeness: 'failed',
+        coverage: 'none',
+        errorCode: 'CONTENT_TYPE_MISMATCH',
+      };
+    }
+
+    const contentType = detectedContentType ?? declaredContentType;
     const extractor = this.extractors.find((e) => e.supports(contentType));
 
     if (!extractor) {
@@ -51,6 +67,25 @@ export class ExtractionService {
         };
       }
 
+      const configuredMaxBytes = Number(this.env.MAX_ATTACHMENT_BYTES);
+      if (
+        !Number.isSafeInteger(configuredMaxBytes) ||
+        configuredMaxBytes <= 0
+      ) {
+        throw new Error('MAX_ATTACHMENT_BYTES must be a positive integer');
+      }
+
+      if (sizeBytes > configuredMaxBytes || object.size > configuredMaxBytes) {
+        return {
+          attachmentId,
+          extractorName: extractor.name,
+          extractorVersion: extractor.version,
+          completeness: 'failed',
+          coverage: 'none',
+          errorCode: 'FILE_TOO_LARGE',
+        };
+      }
+
       if (object.size !== sizeBytes) {
         return {
           attachmentId,
@@ -62,22 +97,30 @@ export class ExtractionService {
         };
       }
 
-      const MAX_ATTACHMENT_BYTES = 100_000_000; // 100MB max limit
-      if (sizeBytes > MAX_ATTACHMENT_BYTES) {
+      const fileBuffer = await object.arrayBuffer();
+
+      if (!signatureMatches(fileBuffer, contentType)) {
         return {
           attachmentId,
           extractorName: extractor.name,
           extractorVersion: extractor.version,
           completeness: 'failed',
           coverage: 'none',
-          errorCode: 'FILE_TOO_LARGE',
+          errorCode: 'INVALID_FILE_SIGNATURE',
         };
       }
 
-      const fileBuffer = await object.arrayBuffer();
+      if (!contentHash) {
+        return {
+          attachmentId,
+          extractorName: extractor.name,
+          extractorVersion: extractor.version,
+          completeness: 'failed',
+          coverage: 'none',
+          errorCode: 'CHECKSUM_MISSING',
+        };
+      }
 
-      // Basic signature validation could be added here if needed
-      // Checksum validation
       const hashBuffer = await crypto.subtle.digest('SHA-256', fileBuffer);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const hashHex = hashArray
@@ -99,7 +142,7 @@ export class ExtractionService {
         itemId,
         contentType,
         fileBuffer,
-        privacyLevel: policy.privacy_level_snapshot || 'unknown',
+        routing,
       });
 
       return {
@@ -113,7 +156,7 @@ export class ExtractionService {
         extractorVersion: extractor.version,
         completeness: 'failed',
         coverage: 'none',
-        errorCode: 'PROVIDER_FAILURE',
+        errorCode: 'EXTRACTION_FAILED',
       };
     }
   }

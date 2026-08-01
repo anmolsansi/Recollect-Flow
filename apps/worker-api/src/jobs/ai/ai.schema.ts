@@ -115,8 +115,8 @@ export const ClassificationResultJsonSchema = {
 
 export const ImageExtractResultSchema = z
   .object({
-    visible_text: z.string(),
-    description: z.string(),
+    visible_text: z.string().max(250000),
+    description: z.string().max(10000),
     confidence: z.number().min(0).max(1),
   })
   .strict();
