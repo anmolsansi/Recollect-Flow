@@ -1,0 +1,22 @@
+name: Prettier Diff OPE-248
+
+on:
+  push:
+    branches:
+      - agent/ope-248-local-acceptance
+
+permissions:
+  contents: read
+
+jobs:
+  diff:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write apps/web/src/api.test.ts
+      - run: git diff -- apps/web/src/api.test.ts
