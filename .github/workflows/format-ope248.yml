@@ -1,0 +1,32 @@
+name: Format OPE-248
+
+on:
+  push:
+    branches:
+      - agent/ope-248-local-acceptance
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run format:write
+      - run: |
+          tar -czf ope248-formatted.tar.gz \
+            apps/web/src/api.test.ts \
+            apps/web/src/api.ts \
+            apps/web/src/App.tsx \
+            apps/worker-api/src/items/item.routes.ts \
+            packages/contracts/src/search.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ope248-formatted
+          path: ope248-formatted.tar.gz
