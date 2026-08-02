@@ -131,16 +131,24 @@ describe('EnrichService (D1 Integration)', () => {
   };
 
   it('successfully enriches an item and logs usage and audit', async () => {
-    await insertItem('item-1', { raw_text: 'Valid text to process' });
-    await insertJob('job-1', 'item-1');
+    await insertItem('00000000-0000-0000-0000-000000000001', {
+      raw_text: 'Valid text to process',
+    });
+    await insertJob(
+      '11111111-1111-1111-1111-111111111111',
+      '00000000-0000-0000-0000-000000000001',
+    );
 
     await enrichService.processEnrichmentJob(
-      { id: 'job-1', itemId: 'item-1' } as unknown as JobRecord,
+      {
+        id: '11111111-1111-1111-1111-111111111111',
+        itemId: '00000000-0000-0000-0000-000000000001',
+      } as unknown as JobRecord,
       'owner-1',
     );
 
     const item = await env.DB.prepare('SELECT * FROM items WHERE id = ?')
-      .bind('item-1')
+      .bind('00000000-0000-0000-0000-000000000001')
       .first();
     expect(item?.processing_status).toBe('complete');
     expect(item?.title).toBe('Mock Title');
@@ -148,7 +156,7 @@ describe('EnrichService (D1 Integration)', () => {
     const usage = await env.DB.prepare(
       'SELECT * FROM provider_usage WHERE item_id = ?',
     )
-      .bind('item-1')
+      .bind('00000000-0000-0000-0000-000000000001')
       .first();
     expect(usage?.provider).toBe('openrouter'); // Based on privacy_level = 'personal'
     expect(usage?.status).toBe('success');
@@ -156,31 +164,39 @@ describe('EnrichService (D1 Integration)', () => {
     const audit = await env.DB.prepare(
       'SELECT * FROM audit_events WHERE item_id = ?',
     )
-      .bind('item-1')
+      .bind('00000000-0000-0000-0000-000000000001')
       .first();
     expect(audit?.event_type).toBe('enrichment_completed');
 
     const job = await env.DB.prepare(
       'SELECT * FROM processing_jobs WHERE id = ?',
     )
-      .bind('job-1')
+      .bind('11111111-1111-1111-1111-111111111111')
       .first();
     expect(job?.status).toBe('complete');
   });
 
   it('fails gracefully when provider returns unparseable json', async () => {
-    await insertItem('item-2', { raw_text: 'TRIGGER_REPAIR_ERROR' });
-    await insertJob('job-2', 'item-2');
+    await insertItem('00000000-0000-0000-0000-000000000002', {
+      raw_text: 'TRIGGER_REPAIR_ERROR',
+    });
+    await insertJob(
+      '22222222-2222-2222-2222-222222222222',
+      '00000000-0000-0000-0000-000000000002',
+    );
 
     await enrichService.processEnrichmentJob(
-      { id: 'job-2', itemId: 'item-2' } as unknown as JobRecord,
+      {
+        id: '22222222-2222-2222-2222-222222222222',
+        itemId: '00000000-0000-0000-0000-000000000002',
+      } as unknown as JobRecord,
       'owner-1',
     );
 
     const job = await env.DB.prepare(
       'SELECT * FROM processing_jobs WHERE id = ?',
     )
-      .bind('job-2')
+      .bind('22222222-2222-2222-2222-222222222222')
       .first();
     // It should be set to pending to retry, since it's a retryable failure and attempts < maxAttempts
     expect(job?.status).toBe('pending');
@@ -189,18 +205,18 @@ describe('EnrichService (D1 Integration)', () => {
     const usage = await env.DB.prepare(
       'SELECT * FROM provider_usage WHERE item_id = ?',
     )
-      .bind('item-2')
+      .bind('00000000-0000-0000-0000-000000000002')
       .first();
     expect(usage?.status).toBe('failed');
     expect(usage?.error_code).toBe('JSON_PARSE_ERROR');
   });
 
   it('preserves manual field overrides', async () => {
-    await insertItem('item-3', {
+    await insertItem('00000000-0000-0000-0000-000000000003', {
       raw_text: 'Valid text to process',
       title: 'Manual User Title',
     });
-    await insertJob('job-3', 'item-3');
+    await insertJob('job-3', '00000000-0000-0000-0000-000000000003');
 
     // Create an override
     await env.DB.prepare(
@@ -209,7 +225,7 @@ describe('EnrichService (D1 Integration)', () => {
     )
       .bind(
         'override-1',
-        'item-3',
+        '00000000-0000-0000-0000-000000000003',
         'title',
         'Manual User Title',
         new Date().toISOString(),
@@ -218,12 +234,15 @@ describe('EnrichService (D1 Integration)', () => {
       .run();
 
     await enrichService.processEnrichmentJob(
-      { id: 'job-3', itemId: 'item-3' } as unknown as JobRecord,
+      {
+        id: 'job-3',
+        itemId: '00000000-0000-0000-0000-000000000003',
+      } as unknown as JobRecord,
       'owner-1',
     );
 
     const item = await env.DB.prepare('SELECT * FROM items WHERE id = ?')
-      .bind('item-3')
+      .bind('00000000-0000-0000-0000-000000000003')
       .first();
     // Should use the manual override, not the 'Mock Title' from AI
     expect(item?.title).toBe('Manual User Title');

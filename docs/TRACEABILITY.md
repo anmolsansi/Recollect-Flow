@@ -30,7 +30,6 @@
 | OPE-222 | Provider-independent AI enrichment pipeline                                    | queue tracking, resilient AI wrappers, parsing logic, models and integrations tests       |
 | OPE-223 | Multimodal extraction for PDF and images                                       | extraction records table, vision/pdf extractors, and repository integrations tests        |
 | OPE-225 | D1 FTS5 indexing and search API                                                | synced `items_fts` virtual table via sqlite triggers, search routes and integration tests |
-| OPE-248 | Web Inbox and item review interface                                            | React frontend via Vite, FTS-based search integration and `PATCH /items/:id` endpoint     |
 
 “Partial” is intentional: a requirement is complete only when every input/client/integration/acceptance condition is covered.
 

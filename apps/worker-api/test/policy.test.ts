@@ -175,20 +175,20 @@ describe('PATCH /api/v1/items/:id/privacy', () => {
     };
 
     const unauthorized = await app.request(
-      '/api/v1/items/item-1/privacy',
+      '/api/v1/items/00000000-0000-0000-0000-000000000001/privacy',
       { ...request, headers: { 'Content-Type': 'application/json' } },
       env,
     );
     expect(unauthorized.status).toBe(403);
 
     const response = await app.request(
-      '/api/v1/items/item-1/privacy',
+      '/api/v1/items/00000000-0000-0000-0000-000000000001/privacy',
       request,
       env,
     );
     expect(response.status).toBe(200);
     expect(changes).toHaveLength(1);
-    expect(changes[0]?.[0]).toBe('item-1');
+    expect(changes[0]?.[0]).toBe('00000000-0000-0000-0000-000000000001');
     expect(changes[0]?.[1]).toEqual({
       privacy_level: 'personal',
       derived_data_action: 'reprocess',
