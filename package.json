@@ -20,7 +20,7 @@
     "format": "prettier --check .",
     "format:write": "prettier --write .",
     "test": "vitest run --config vitest.node.config.ts && vitest run --config vitest.d1.config.ts",
-    "check": "npm run format && npm run lint && npm run typecheck && npm test && npm run contracts:check && npm run web:lint && npm run web:test && npm run web:build",
+    "check": "npm run format:write && npm run lint && npm run typecheck && npm test && npm run contracts:check && npm run web:lint && npm run web:test && npm run web:build",
     "db:migrate:local": "wrangler d1 migrations apply recollect-flow-prod --local",
     "db:migrate:remote": "wrangler d1 migrations apply recollect-flow-prod --remote"
   },
