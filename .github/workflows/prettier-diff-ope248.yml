@@ -1,4 +1,4 @@
-name: Prettier Diff OPE-248
+name: Apply OPE-248 Formatting
 
 on:
   push:
@@ -6,17 +6,26 @@ on:
       - agent/ope-248-local-acceptance
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  diff:
+  format:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: agent/ope-248-local-acceptance
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
       - run: npx prettier --write apps/web/src/api.test.ts
-      - run: git diff -- apps/web/src/api.test.ts
+      - name: Commit formatting
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/web/src/api.test.ts
+          git diff --cached --quiet || git commit -m "Format frontend API tests"
+          git push
