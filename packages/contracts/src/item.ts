@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { timestampSchema, uuidSchema } from './common.js';
+import { timestampSchema } from './common.js';
 
 export const lifecycleStatusSchema = z.enum([
   'Inbox',
