@@ -62,9 +62,7 @@ describe('web API client', () => {
       body: JSON.stringify({ edit_version: 1 }),
     });
 
-    expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      '/api/v1/items/item-1/delete',
-    );
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/items/item-1/delete');
   });
 
   it('exposes stable API error codes to the UI', async () => {
