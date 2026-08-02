@@ -4,6 +4,7 @@ import type { RouteDecision } from './policy.service';
 
 interface ItemRow {
   id: string;
+  edit_version: number;
 }
 
 export interface PolicyRepository {
@@ -12,7 +13,7 @@ export interface PolicyRepository {
     input: PrivacyChangeInput,
     decision: RouteDecision,
     now: string,
-  ): Promise<void>;
+  ): Promise<number>;
 }
 
 export class D1PolicyRepository implements PolicyRepository {
@@ -23,27 +24,33 @@ export class D1PolicyRepository implements PolicyRepository {
     input: PrivacyChangeInput,
     decision: RouteDecision,
     now: string,
-  ): Promise<void> {
+  ): Promise<number> {
     const item = await this.database
-      .prepare('SELECT id FROM items WHERE id = ?1 AND deleted_at IS NULL')
+      .prepare(
+        'SELECT id, edit_version FROM items WHERE id = ?1 AND deleted_at IS NULL',
+      )
       .bind(itemId)
       .first<ItemRow>();
     if (!item) throw new AppError(404, 'NOT_FOUND', 'Item not found.');
+    if (item.edit_version !== input.edit_version) {
+      throw new AppError(409, 'VERSION_CONFLICT', 'Item version conflict.');
+    }
 
     const statements: D1PreparedStatement[] = [
       this.database
         .prepare(
           `UPDATE items
-           SET privacy_level = ?1, title = NULL,
-               summary = NULL, suggested_action = NULL,
-               processing_status = ?2, updated_at = ?3
-           WHERE id = ?4`,
+           SET privacy_level = ?1, title = NULL, summary = NULL,
+               suggested_action = NULL, processing_status = ?2,
+               updated_at = ?3, edit_version = edit_version + 1
+           WHERE id = ?4 AND edit_version = ?5 AND deleted_at IS NULL`,
         )
         .bind(
           input.privacy_level,
           input.derived_data_action === 'reprocess' ? 'pending' : 'complete',
           now,
           itemId,
+          input.edit_version,
         ),
       this.database
         .prepare('DELETE FROM processing_jobs WHERE item_id = ?1')
@@ -51,8 +58,10 @@ export class D1PolicyRepository implements PolicyRepository {
       this.database
         .prepare(
           `INSERT INTO audit_events (
-            id, item_id, event_type, actor_type, details_json, created_at
-          ) VALUES (?1, ?2, 'privacy.changed', 'admin', ?3, ?4)`,
+             id, item_id, event_type, actor_type, details_json, created_at
+           )
+           SELECT ?1, ?2, 'privacy.changed', 'admin', ?3, ?4
+           FROM items WHERE id = ?2 AND updated_at = ?4`,
         )
         .bind(
           crypto.randomUUID(),
@@ -67,6 +76,8 @@ export class D1PolicyRepository implements PolicyRepository {
             zero_data_retention_required: decision.zeroDataRetentionRequired,
             data_collection_denied: decision.dataCollectionDenied,
             policy_version: decision.policyVersion,
+            prior_version: input.edit_version,
+            new_version: input.edit_version + 1,
           }),
           now,
         ),
@@ -77,14 +88,14 @@ export class D1PolicyRepository implements PolicyRepository {
         this.database
           .prepare(
             `INSERT INTO processing_jobs (
-              id, item_id, job_type, status, available_at, created_at, updated_at,
-              privacy_level_snapshot, provider_eligibility, policy_version,
-              credential_source, hosted_processing_consent,
-              zero_data_retention_required, data_collection_denied
-            ) VALUES (
-              ?1, ?2, 'enrich', 'pending', ?3, ?3, ?3, ?4, ?5, ?6,
-              ?7, ?8, ?9, ?10
-            )`,
+               id, item_id, job_type, status, available_at, created_at, updated_at,
+               privacy_level_snapshot, provider_eligibility, policy_version,
+               credential_source, hosted_processing_consent,
+               zero_data_retention_required, data_collection_denied
+             )
+             SELECT ?1, ?2, 'enrich', 'pending', ?3, ?3, ?3, ?4, ?5, ?6,
+                    ?7, ?8, ?9, ?10
+             FROM items WHERE id = ?2 AND updated_at = ?3`,
           )
           .bind(
             crypto.randomUUID(),
@@ -101,6 +112,10 @@ export class D1PolicyRepository implements PolicyRepository {
       );
     }
 
-    await this.database.batch(statements);
+    const results = await this.database.batch(statements);
+    if (results[0]?.meta.changes !== 1) {
+      throw new AppError(409, 'VERSION_CONFLICT', 'Item version conflict.');
+    }
+    return input.edit_version + 1;
   }
 }
