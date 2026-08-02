@@ -9,6 +9,7 @@ export const privacyLevelSchema = z.enum([
 
 export const privacyChangeSchema = z
   .object({
+    edit_version: z.number().int().min(1),
     privacy_level: privacyLevelSchema,
     derived_data_action: z.enum(['reprocess', 'purge']),
     ai_provider: z.enum(['openrouter', 'gemini']).optional(),

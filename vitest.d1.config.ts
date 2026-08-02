@@ -9,7 +9,12 @@ export default defineConfig({
     cloudflareTest(async () => ({
       main: './apps/worker-api/src/index.ts',
       miniflare: {
-        d1Databases: ['DB', 'MIGRATION_DB', 'OPE222_MIGRATION_DB'],
+        d1Databases: [
+          'DB',
+          'MIGRATION_DB',
+          'OPE222_MIGRATION_DB',
+          'OPE248_MIGRATION_DB',
+        ],
         r2Buckets: ['ATTACHMENTS'],
         bindings: {
           TEST_MIGRATIONS: await readD1Migrations('./migrations'),

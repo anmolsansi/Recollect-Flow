@@ -136,6 +136,7 @@ describe('PATCH /api/v1/items/:id/privacy', () => {
     const repository: PolicyRepository = {
       async changePrivacy(...args) {
         changes.push(args);
+        return args[1].edit_version + 1;
       },
     };
     const app = createApp(
@@ -164,6 +165,7 @@ describe('PATCH /api/v1/items/:id/privacy', () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        edit_version: 1,
         privacy_level: 'personal',
         derived_data_action: 'reprocess',
         ai_provider: 'openrouter',
@@ -190,6 +192,7 @@ describe('PATCH /api/v1/items/:id/privacy', () => {
     expect(changes).toHaveLength(1);
     expect(changes[0]?.[0]).toBe('00000000-0000-0000-0000-000000000001');
     expect(changes[0]?.[1]).toEqual({
+      edit_version: 1,
       privacy_level: 'personal',
       derived_data_action: 'reprocess',
       ai_provider: 'openrouter',

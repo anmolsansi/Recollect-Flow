@@ -6,6 +6,7 @@ declare global {
       TEST_MIGRATIONS?: D1Migration[];
       MIGRATION_DB?: D1Database;
       OPE222_MIGRATION_DB?: D1Database;
+      OPE248_MIGRATION_DB?: D1Database;
     }
   }
 }
