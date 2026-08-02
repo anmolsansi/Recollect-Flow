@@ -3,31 +3,16 @@ import { timestampSchema } from './common.js';
 
 export const searchRequestSchema = z
   .object({
-    q: z
-      .string()
-      .max(256)
-      .transform((val) => val.trim())
-      .optional(),
+    q: z.string().max(256).transform((value) => value.trim()).optional(),
     source: z.enum(['url', 'text', 'note', 'image', 'file']).optional(),
-    project: z
-      .string()
-      .transform((val) => val.trim())
-      .optional(),
+    project: z.string().transform((value) => value.trim()).optional(),
     lifecycle_status: z
-      .enum([
-        'Inbox',
-        'Reviewed',
-        'Actioned',
-        'Archived',
-        'Duplicate',
-        'Deleted',
-      ])
+      .enum(['Inbox', 'Reviewed', 'Actioned', 'Archived', 'Duplicate', 'Deleted'])
       .optional(),
-    privacy_level: z.enum(['Personal', 'Work', 'Public']).optional(),
-    topic: z
-      .string()
-      .transform((val) => val.trim())
+    privacy_level: z
+      .enum(['unknown', 'public', 'personal', 'sensitive'])
       .optional(),
+    topic: z.string().transform((value) => value.trim()).optional(),
     processing_status: z
       .enum(['pending', 'processing', 'complete', 'failed'])
       .optional(),
@@ -51,18 +36,17 @@ export const searchRequestSchema = z
         message: 'importance_min cannot be greater than importance_max',
       });
     }
-
-    if (query.captured_from && query.captured_to) {
-      if (
-        new Date(query.captured_from).getTime() >
+    if (
+      query.captured_from &&
+      query.captured_to &&
+      new Date(query.captured_from).getTime() >
         new Date(query.captured_to).getTime()
-      ) {
-        context.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['captured_from'],
-          message: 'captured_from cannot be after captured_to',
-        });
-      }
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['captured_from'],
+        message: 'captured_from cannot be after captured_to',
+      });
     }
   });
 
@@ -84,14 +68,13 @@ export const searchSnippetSchema = z
     truncated: z.boolean(),
   })
   .strict()
-  .superRefine((snippet, ctx) => {
+  .superRefine((snippet, context) => {
     const totalLength = snippet.segments.reduce(
       (total, segment) => total + segment.text.length,
       0,
     );
-
     if (totalLength > 150) {
-      ctx.addIssue({
+      context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['segments'],
         message: 'Snippet must not exceed 150 characters in total',
@@ -112,7 +95,7 @@ export const searchItemSchema = z.object({
   lifecycle_status: z.string(),
   processing_status: z.string(),
   privacy_level: z.string(),
-  captured_at: z.string(),
+  captured_at: timestampSchema,
   coverage: z.string().nullable().optional(),
   snippet: searchSnippetSchema.optional(),
 });
