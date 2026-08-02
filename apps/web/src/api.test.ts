@@ -46,12 +46,17 @@ describe('web API client', () => {
   });
 
   it('prefixes the API path exactly once', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(
-        JSON.stringify({ data: { ok: true }, meta: { request_id: 'request-3' } }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      ),
-    );
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            data: { ok: true },
+            meta: { request_id: 'request-3' },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        ),
+      );
     vi.stubGlobal('fetch', fetchMock);
 
     await fetchApi('/items/item-1/delete', {

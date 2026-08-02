@@ -3,16 +3,33 @@ import { timestampSchema } from './common.js';
 
 export const searchRequestSchema = z
   .object({
-    q: z.string().max(256).transform((value) => value.trim()).optional(),
+    q: z
+      .string()
+      .max(256)
+      .transform((value) => value.trim())
+      .optional(),
     source: z.enum(['url', 'text', 'note', 'image', 'file']).optional(),
-    project: z.string().transform((value) => value.trim()).optional(),
+    project: z
+      .string()
+      .transform((value) => value.trim())
+      .optional(),
     lifecycle_status: z
-      .enum(['Inbox', 'Reviewed', 'Actioned', 'Archived', 'Duplicate', 'Deleted'])
+      .enum([
+        'Inbox',
+        'Reviewed',
+        'Actioned',
+        'Archived',
+        'Duplicate',
+        'Deleted',
+      ])
       .optional(),
     privacy_level: z
       .enum(['unknown', 'public', 'personal', 'sensitive'])
       .optional(),
-    topic: z.string().transform((value) => value.trim()).optional(),
+    topic: z
+      .string()
+      .transform((value) => value.trim())
+      .optional(),
     processing_status: z
       .enum(['pending', 'processing', 'complete', 'failed'])
       .optional(),

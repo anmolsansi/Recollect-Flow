@@ -38,9 +38,7 @@ async function request<T>(
     credentials: 'include',
   });
   const body = (await response.json().catch(() => null)) as
-    | ApiEnvelope<T>
-    | { error?: { message?: string; code?: string } }
-    | null;
+    ApiEnvelope<T> | { error?: { message?: string; code?: string } } | null;
 
   if (!response.ok) {
     const errorBody = body as { error?: { message?: string; code?: string } };
