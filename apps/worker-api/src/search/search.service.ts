@@ -215,6 +215,18 @@ export async function executeSearch(
     params.push(input.project);
   }
 
+  if (input.privacy_level) {
+    conditions.push('i.privacy_level = ?');
+    params.push(input.privacy_level);
+  }
+
+  if (input.topic) {
+    conditions.push(
+      'EXISTS (SELECT 1 FROM json_each(i.topics_json) WHERE value = ?)',
+    );
+    params.push(input.topic);
+  }
+
   if (input.lifecycle_status) {
     conditions.push('i.lifecycle_status = ?');
     params.push(input.lifecycle_status);

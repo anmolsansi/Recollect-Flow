@@ -1,9 +1,10 @@
 import type { MiddlewareHandler } from 'hono';
+import { getSignedCookie } from 'hono/cookie';
 
 import type { AppContext } from '../env';
 import { AppError } from './errors';
 
-async function constantTimeEqual(
+export async function constantTimeEqual(
   left: string,
   right: string,
 ): Promise<boolean> {
@@ -66,10 +67,22 @@ export const requireAdminToken: MiddlewareHandler<AppContext> = async (
     ? await constantTimeEqual(provided, context.env.ADMIN_TOKEN)
     : false;
 
-  if (!adminMatch) {
-    throw new AppError(403, 'FORBIDDEN', 'A valid admin token is required.');
+  if (adminMatch) {
+    await next();
+    return;
   }
-  await next();
+
+  const cookieMatch = await getSignedCookie(
+    context,
+    context.env.ADMIN_TOKEN,
+    'admin_session',
+  );
+  if (cookieMatch === 'authenticated') {
+    await next();
+    return;
+  }
+
+  throw new AppError(403, 'FORBIDDEN', 'A valid admin token is required.');
 };
 
 export const requireLocalWorkerToken: MiddlewareHandler<AppContext> = async (

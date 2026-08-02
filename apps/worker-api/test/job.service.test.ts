@@ -11,7 +11,9 @@ describe('JobService with Real D1 Mock', () => {
     service = new JobService(db as D1Database);
   });
 
-  const insertTestItem = async (id: string = 'item-1') => {
+  const insertTestItem = async (
+    id: string = '00000000-0000-0000-0000-000000000001',
+  ) => {
     const now = new Date().toISOString();
     await db
       .prepare(
@@ -63,13 +65,27 @@ describe('JobService with Real D1 Mock', () => {
   };
 
   it('should lease jobs with a valid query and lock them', async () => {
-    await insertTestItem('item-1');
-    await insertTestItem('item-2');
+    await insertTestItem('00000000-0000-0000-0000-000000000001');
+    await insertTestItem('00000000-0000-0000-0000-000000000002');
     const now = new Date();
     const past = new Date(now.getTime() - 1000).toISOString();
 
-    await insertProcessingJob('job-1', 'item-1', 'enrich', 'pending', 0, past);
-    await insertProcessingJob('job-2', 'item-2', 'enrich', 'pending', 0, past);
+    await insertProcessingJob(
+      '11111111-1111-1111-1111-111111111111',
+      '00000000-0000-0000-0000-000000000001',
+      'enrich',
+      'pending',
+      0,
+      past,
+    );
+    await insertProcessingJob(
+      '22222222-2222-2222-2222-222222222222',
+      '00000000-0000-0000-0000-000000000002',
+      'enrich',
+      'pending',
+      0,
+      past,
+    );
 
     const jobs = await service.leaseProcessingJobs('enrich', 'worker-1', 5, 1);
     expect(jobs).toHaveLength(1);
@@ -84,13 +100,13 @@ describe('JobService with Real D1 Mock', () => {
   });
 
   it('should allow expired lease takeover', async () => {
-    await insertTestItem('item-1');
+    await insertTestItem('00000000-0000-0000-0000-000000000001');
     const now = new Date();
     const past = new Date(now.getTime() - 10000).toISOString();
 
     await insertProcessingJob(
-      'job-1',
-      'item-1',
+      '11111111-1111-1111-1111-111111111111',
+      '00000000-0000-0000-0000-000000000001',
       'enrich',
       'processing',
       0,
@@ -100,7 +116,7 @@ describe('JobService with Real D1 Mock', () => {
     // Manually expire the lease
     await db
       .prepare(
-        `UPDATE processing_jobs SET lease_expires_at = ?1, lease_owner = 'old-worker' WHERE id = 'job-1'`,
+        `UPDATE processing_jobs SET lease_expires_at = ?1, lease_owner = 'old-worker' WHERE id = '11111111-1111-1111-1111-111111111111'`,
       )
       .bind(past)
       .run();
@@ -116,11 +132,18 @@ describe('JobService with Real D1 Mock', () => {
   });
 
   it('should prevent old worker from completing after takeover', async () => {
-    await insertTestItem('item-1');
+    await insertTestItem('00000000-0000-0000-0000-000000000001');
     const now = new Date();
     const past = new Date(now.getTime() - 1000).toISOString();
 
-    await insertProcessingJob('job-1', 'item-1', 'enrich', 'pending', 0, past);
+    await insertProcessingJob(
+      '11111111-1111-1111-1111-111111111111',
+      '00000000-0000-0000-0000-000000000001',
+      'enrich',
+      'pending',
+      0,
+      past,
+    );
 
     // Worker 1 acquires lease
     await service.leaseProcessingJobs('enrich', 'worker-1', 5, 1);
@@ -128,7 +151,7 @@ describe('JobService with Real D1 Mock', () => {
     // Manually expire the lease
     await db
       .prepare(
-        `UPDATE processing_jobs SET lease_expires_at = ?1 WHERE id = 'job-1'`,
+        `UPDATE processing_jobs SET lease_expires_at = ?1 WHERE id = '11111111-1111-1111-1111-111111111111'`,
       )
       .bind(past)
       .run();
@@ -137,29 +160,41 @@ describe('JobService with Real D1 Mock', () => {
     await service.leaseProcessingJobs('enrich', 'worker-2', 5, 1);
 
     // Worker 1 tries to complete it
-    const success = await service.completeProcessingJob('job-1', 'worker-1');
+    const success = await service.completeProcessingJob(
+      '11111111-1111-1111-1111-111111111111',
+      'worker-1',
+    );
     expect(success).toBe(false); // Atomicity enforcement
 
     // Worker 2 can complete it
-    const success2 = await service.completeProcessingJob('job-1', 'worker-2');
+    const success2 = await service.completeProcessingJob(
+      '11111111-1111-1111-1111-111111111111',
+      'worker-2',
+    );
     expect(success2).toBe(true);
   });
 
   it('should support idempotent job creation (enqueueSyncAttempt)', async () => {
-    await insertTestItem('item-1');
+    await insertTestItem('00000000-0000-0000-0000-000000000001');
 
     // First creation
-    const created1 = await service.enqueueSyncAttempt('item-1', 'notion');
+    const created1 = await service.enqueueSyncAttempt(
+      '00000000-0000-0000-0000-000000000001',
+      'notion',
+    );
     expect(created1).toBe(true);
 
     // Second creation for same item/dest should be ignored
-    const created2 = await service.enqueueSyncAttempt('item-1', 'notion');
+    const created2 = await service.enqueueSyncAttempt(
+      '00000000-0000-0000-0000-000000000001',
+      'notion',
+    );
     expect(created2).toBe(false);
 
     const jobs = (
       await db
         .prepare(
-          `SELECT * FROM sync_attempts WHERE item_id = 'item-1' AND destination = 'notion'`,
+          `SELECT * FROM sync_attempts WHERE item_id = '00000000-0000-0000-0000-000000000001' AND destination = 'notion'`,
         )
         .all()
     ).results;
@@ -167,11 +202,18 @@ describe('JobService with Real D1 Mock', () => {
   });
 
   it('should fail job and calculate exponential backoff with jitter', async () => {
-    await insertTestItem('item-1');
+    await insertTestItem('00000000-0000-0000-0000-000000000001');
     const now = new Date();
     const past = new Date(now.getTime() - 1000).toISOString();
 
-    await insertSyncAttempt('sync-1', 'item-1', 'notion', 'pending', 0, past);
+    await insertSyncAttempt(
+      'sync-1',
+      '00000000-0000-0000-0000-000000000001',
+      'notion',
+      'pending',
+      0,
+      past,
+    );
 
     // Worker acquires
     await service.leaseSyncAttempts('notion', 'worker-1', 5, 1);
@@ -197,11 +239,18 @@ describe('JobService with Real D1 Mock', () => {
   });
 
   it('should accept exact Retry-After values', async () => {
-    await insertTestItem('item-1');
+    await insertTestItem('00000000-0000-0000-0000-000000000001');
     const now = new Date();
     const past = new Date(now.getTime() - 1000).toISOString();
 
-    await insertSyncAttempt('sync-1', 'item-1', 'notion', 'pending', 0, past);
+    await insertSyncAttempt(
+      'sync-1',
+      '00000000-0000-0000-0000-000000000001',
+      'notion',
+      'pending',
+      0,
+      past,
+    );
 
     // Worker acquires
     await service.leaseSyncAttempts('notion', 'worker-1', 5, 1);

@@ -57,9 +57,9 @@ describe('OPE-225 FTS5 search integration', () => {
         id, idempotency_key, source_type, source_app, privacy_level, processing_status,
         captured_at, created_at, updated_at, title, raw_text, summary
       ) VALUES 
-      ('search-item-1', 'sk1', 'url', 'web', 'public', 'complete', ?1, ?1, ?1, 'Multimodal test 1', 'Content for multimodal test', 'Summary 1'),
-      ('search-item-2', 'sk2', 'url', 'web', 'public', 'complete', ?2, ?2, ?2, 'Multimodal test 2', 'Different content with multimodal word again', 'Summary 2'),
-      ('search-item-3', 'sk3', 'text', 'web', 'public', 'complete', ?3, ?3, ?3, 'No title', 'This also has multimodal right here', 'Summary 3')
+      ('search00-0000-0000-0000-000000000001', 'sk1', 'url', 'web', 'public', 'complete', ?1, ?1, ?1, 'Multimodal test 1', 'Content for multimodal test', 'Summary 1'),
+      ('search00-0000-0000-0000-000000000002', 'sk2', 'url', 'web', 'public', 'complete', ?2, ?2, ?2, 'Multimodal test 2', 'Different content with multimodal word again', 'Summary 2'),
+      ('search-00000000-0000-0000-0000-000000000003', 'sk3', 'text', 'web', 'public', 'complete', ?3, ?3, ?3, 'No title', 'This also has multimodal right here', 'Summary 3')
     `,
     )
       .bind(
@@ -91,9 +91,9 @@ describe('OPE-225 FTS5 search integration', () => {
       ...page1.data.map((d) => d.id),
       ...page2.data.map((d) => d.id),
     ];
-    expect(ids).toContain('search-item-1');
-    expect(ids).toContain('search-item-2');
-    expect(ids).toContain('search-item-3');
+    expect(ids).toContain('search00-0000-0000-0000-000000000001');
+    expect(ids).toContain('search00-0000-0000-0000-000000000002');
+    expect(ids).toContain('search-00000000-0000-0000-0000-000000000003');
   });
 
   it('supports empty queries acting purely as metadata filters', async () => {
@@ -104,7 +104,7 @@ describe('OPE-225 FTS5 search integration', () => {
         id, idempotency_key, source_type, source_app, privacy_level, processing_status,
         captured_at, created_at, updated_at, project, title
       ) VALUES (
-        'filter-item-1', 'fk1', 'image', 'web', 'public', 'complete',
+        'filter-00000000-0000-0000-0000-000000000001', 'fk1', 'image', 'web', 'public', 'complete',
         ?1, ?1, ?1, 'OPE-225', 'Filter only test'
       )
     `,
@@ -119,7 +119,7 @@ describe('OPE-225 FTS5 search integration', () => {
 
     expect(res.data).toHaveLength(1);
     const item = res.data[0];
-    expect(item?.id).toBe('filter-item-1');
+    expect(item?.id).toBe('filter-00000000-0000-0000-0000-000000000001');
     if (!item) throw new Error('Expected the filter-only item');
     expect(hasHighlight(item.snippet)).toBe(false);
     expect(getSnippetText(item.snippet)).toContain('Filter only test');
@@ -133,7 +133,7 @@ describe('OPE-225 FTS5 search integration', () => {
         id, idempotency_key, source_type, source_app, privacy_level, processing_status,
         captured_at, created_at, updated_at, title
       ) VALUES (
-        'punct-item-1', 'pk1', 'url', 'web', 'public', 'complete',
+        'punct-00000000-0000-0000-0000-000000000001', 'pk1', 'url', 'web', 'public', 'complete',
         ?1, ?1, ?1, 'Learning Node.js, C++, and developer''s café today! 🚀'
       )
     `,
@@ -147,7 +147,9 @@ describe('OPE-225 FTS5 search integration', () => {
     });
 
     expect(res.data.length).toBeGreaterThanOrEqual(1);
-    const item = res.data.find((d) => d.id === 'punct-item-1');
+    const item = res.data.find(
+      (d) => d.id === 'punct-00000000-0000-0000-0000-000000000001',
+    );
     expect(item).toBeDefined();
 
     expect(hasHighlight(item!.snippet)).toBe(true);
@@ -161,7 +163,7 @@ describe('OPE-225 FTS5 search integration', () => {
       expect(
         punctuationResult.data.map((result) => result.id),
         query,
-      ).toContain('punct-item-1');
+      ).toContain('punct-00000000-0000-0000-0000-000000000001');
     }
   });
 
@@ -173,7 +175,7 @@ describe('OPE-225 FTS5 search integration', () => {
         id, idempotency_key, source_type, source_app, privacy_level, processing_status,
         captured_at, created_at, updated_at, title
       ) VALUES (
-        'del-item-1', 'dk1', 'url', 'web', 'public', 'complete',
+        'del-00000000-0000-0000-0000-000000000001', 'dk1', 'url', 'web', 'public', 'complete',
         ?1, ?1, ?1, 'Soft delete test content'
       )
     `,
@@ -182,16 +184,20 @@ describe('OPE-225 FTS5 search integration', () => {
       .run();
 
     let res = await executeSearch(env.DB, { q: 'Soft delete test', limit: 25 });
-    expect(res.data.map((d) => d.id)).toContain('del-item-1');
+    expect(res.data.map((d) => d.id)).toContain(
+      'del-00000000-0000-0000-0000-000000000001',
+    );
 
     await env.DB.prepare(
-      `UPDATE items SET deleted_at = ?1 WHERE id = 'del-item-1'`,
+      `UPDATE items SET deleted_at = ?1 WHERE id = 'del-00000000-0000-0000-0000-000000000001'`,
     )
       .bind(now)
       .run();
 
     res = await executeSearch(env.DB, { q: 'Soft delete test', limit: 25 });
-    expect(res.data.map((d) => d.id)).not.toContain('del-item-1');
+    expect(res.data.map((d) => d.id)).not.toContain(
+      'del-00000000-0000-0000-0000-000000000001',
+    );
   });
 
   it('rejects malformed cursors, invalid JSON, wrong versions, and query mismatches', async () => {
@@ -375,8 +381,8 @@ describe('OPE-225 FTS5 search integration', () => {
         id, idempotency_key, source_type, source_app, privacy_level, processing_status,
         captured_at, created_at, updated_at, title
       ) VALUES 
-      ('stable-item-1', 'sk11', 'url', 'web', 'public', 'complete', ?1, ?1, ?1, 'Stable traversal test'),
-      ('stable-item-2', 'sk22', 'url', 'web', 'public', 'complete', ?2, ?2, ?2, 'Stable traversal test')
+      ('stable00-0000-0000-0000-000000000001', 'sk11', 'url', 'web', 'public', 'complete', ?1, ?1, ?1, 'Stable traversal test'),
+      ('stable00-0000-0000-0000-000000000002', 'sk22', 'url', 'web', 'public', 'complete', ?2, ?2, ?2, 'Stable traversal test')
     `,
     )
       .bind(time1, time2)
@@ -386,7 +392,7 @@ describe('OPE-225 FTS5 search integration', () => {
       q: 'Stable traversal',
       limit: 1,
     });
-    expect(page1.data[0]?.id).toBe('stable-item-1');
+    expect(page1.data[0]?.id).toBe('stable00-0000-0000-0000-000000000001');
     const cursor = page1.meta.next_cursor!;
 
     // Insert a newer item after page1 was fetched
@@ -413,7 +419,7 @@ describe('OPE-225 FTS5 search integration', () => {
     // We should NOT see 'stable-item-new' because its captured_at is newer than our cutoff (which is implicitly set at page1 creation time via cursor.c)
     // Or if rank is involved, cutoff prevents fetching newer records that jumped ahead.
     const ids = page2.data.map((d) => d.id);
-    expect(ids).toContain('stable-item-2');
+    expect(ids).toContain('stable00-0000-0000-0000-000000000002');
     expect(ids).not.toContain('stable-item-new');
   });
 
@@ -550,7 +556,6 @@ describe('OPE-225 FTS5 search integration', () => {
       'ope225-search-owner',
       5,
       1,
-      new Date('2026-08-02T00:00:00.000Z'),
     );
     expect(job?.itemId).toBe(captureBody.data.capture_id);
     if (!job) throw new Error('Expected the capture enrichment job');

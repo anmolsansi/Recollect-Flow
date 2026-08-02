@@ -198,7 +198,7 @@ describe('OPE-222 acceptance evidence', () => {
          processing_status, raw_text, topics_json, captured_at, created_at,
          updated_at
        ) VALUES (
-         'ope222-migration-item', 'ope222-migration-key', 'url', 'test',
+         '00000000-2222-2222-2222-000000000000', 'ope222-migration-key', 'url', 'test',
          'public', 'complete', 'populated migration searchable', '{malformed',
          ?1, ?1, ?1
        )`,
@@ -212,8 +212,8 @@ describe('OPE-222 acceptance evidence', () => {
          updated_at, provider_eligibility, privacy_level_snapshot,
          policy_version, manual_retry_count
        ) VALUES (
-         'ope222-migration-job', 'ope222-migration-item', 'enrich', 'complete',
-         1, ?1, ?1, ?1, 'workers_ai', 'public', '2026-07-21.1', 2
+         '11111111-2222-2222-2222-000000000000', '00000000-2222-2222-2222-000000000000', 'enrich', 'complete',
+         1, ?1, ?1, ?1, 'cloudflare', 'public', '2026-07-21.1', 2
        )`,
       )
       .bind(now)
@@ -224,7 +224,7 @@ describe('OPE-222 acceptance evidence', () => {
          job_id, submission_id, input_hash, result_version, result_json,
          created_at
        ) VALUES (
-         'ope222-migration-job', 'ope222-submission', 'ope222-hash', '1',
+         '11111111-2222-2222-2222-000000000000', '99999999-2222-2222-2222-000000000000', 'ope222-hash', '1',
          '{"ok":true}', ?1
        )`,
       )
@@ -236,7 +236,7 @@ describe('OPE-222 acceptance evidence', () => {
     const migratedJob = await migrationDb
       .prepare(
         `SELECT provider_eligibility, policy_version, manual_retry_count
-       FROM processing_jobs WHERE id = 'ope222-migration-job'`,
+       FROM processing_jobs WHERE id = '11111111-2222-2222-2222-000000000000'`,
       )
       .first<{
         provider_eligibility: string;
@@ -252,7 +252,7 @@ describe('OPE-222 acceptance evidence', () => {
     const result = await migrationDb
       .prepare(
         `SELECT result_json FROM processing_job_results
-       WHERE job_id = 'ope222-migration-job'`,
+       WHERE job_id = '11111111-2222-2222-2222-000000000000'`,
       )
       .first<{ result_json: string }>();
     expect(result?.result_json).toBe('{"ok":true}');
@@ -263,7 +263,9 @@ describe('OPE-222 acceptance evidence', () => {
          WHERE item_search_fts MATCH 'populated* AND migration*'`,
       )
       .first<{ item_id: string }>();
-    expect(migratedSearchRow?.item_id).toBe('ope222-migration-item');
+    expect(migratedSearchRow?.item_id).toBe(
+      '00000000-2222-2222-2222-000000000000',
+    );
 
     const indexRows = await migrationDb
       .prepare(`PRAGMA index_list('processing_jobs')`)
@@ -276,7 +278,7 @@ describe('OPE-222 acceptance evidence', () => {
       migrationDb
         .prepare(
           `UPDATE processing_jobs SET manual_retry_count = 4
-         WHERE id = 'ope222-migration-job'`,
+         WHERE id = '11111111-2222-2222-2222-000000000000'`,
         )
         .run(),
     ).rejects.toThrow();

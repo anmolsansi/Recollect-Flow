@@ -13,6 +13,7 @@ import { errorResponse } from './shared/errors';
 import { shortcutRoutes } from './shortcut/shortcut.routes';
 import { itemRoutes } from './items/item.routes';
 import { searchRoutes } from './search/search.routes';
+import { authRoutes } from './auth/auth.routes';
 
 function requestId(value: string | undefined): string {
   return value && /^[A-Za-z0-9._:-]{1,100}$/.test(value)
@@ -73,6 +74,7 @@ export function createApp(
   app.route('/api/v1', jobRoutes());
   app.route('/api/v1', itemRoutes());
   app.route('/api/v1', searchRoutes());
+  app.route('/api/v1', authRoutes());
 
   app.notFound((context) =>
     context.json(

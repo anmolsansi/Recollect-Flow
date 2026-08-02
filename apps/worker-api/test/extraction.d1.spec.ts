@@ -121,7 +121,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
       `,
     )
       .bind(
-        `att-${id.split('-')[1]}`,
+        id.replace('00000000', '22222222'),
         id,
         'dummy-key',
         1000,
@@ -146,7 +146,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
       `,
     )
       .bind(
-        `job-${id}`,
+        id.replace('00000000', '11111111'),
         id,
         'extract',
         'pending',
@@ -167,16 +167,16 @@ describe('Extraction Pipeline (D1 Integration)', () => {
   };
 
   it('leases extract job and completes successfully, chaining enrich', async () => {
-    await insertItemAndJob('item-1');
+    await insertItemAndJob('00000000-0000-0000-0000-000000000001');
 
     const ownerId = 'owner-1';
     const jobs = await jobService.leaseProcessingJobs('extract', ownerId, 5, 1);
     expect(jobs.length).toBe(1);
-    expect(jobs[0]!.id).toBe('job-item-1');
+    expect(jobs[0]!.id).toBe('11111111-0000-0000-0000-000000000001');
 
     const results: AttachmentExtractionResult[] = [
       {
-        attachmentId: 'att-1',
+        attachmentId: '22222222-0000-0000-0000-000000000001',
         extractorName: 'unpdf',
         extractorVersion: '1.0',
         extractedText: 'Extracted PDF text',
@@ -189,7 +189,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
     await jobService.submitExtractionResults(
       jobs[0]!.id,
       ownerId,
-      'item-1',
+      '00000000-0000-0000-0000-000000000001',
       results,
       true,
     );
@@ -197,7 +197,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
     const job = await env.DB.prepare(
       'SELECT * FROM processing_jobs WHERE id = ?',
     )
-      .bind('job-item-1')
+      .bind('11111111-0000-0000-0000-000000000001')
       .first();
     expect(job).toBeDefined();
     expect(job!.status).toBe('complete');
@@ -205,7 +205,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
     const enrichJob = await env.DB.prepare(
       'SELECT * FROM processing_jobs WHERE item_id = ? AND job_type = ?',
     )
-      .bind('item-1', 'enrich')
+      .bind('00000000-0000-0000-0000-000000000001', 'enrich')
       .first();
     expect(enrichJob).toBeDefined();
     expect(enrichJob?.status).toBe('pending');
@@ -222,21 +222,21 @@ describe('Extraction Pipeline (D1 Integration)', () => {
     const records = await env.DB.prepare(
       'SELECT * FROM extraction_records WHERE item_id = ?',
     )
-      .bind('item-1')
+      .bind('00000000-0000-0000-0000-000000000001')
       .all();
     expect(records.results.length).toBe(1);
     expect(records.results[0]!.extracted_text).toBe('Extracted PDF text');
   });
 
   it('handles unsupported extraction outcome safely without enrich if no usable text', async () => {
-    await insertItemAndJob('item-2');
+    await insertItemAndJob('00000000-0000-0000-0000-000000000002');
 
     const ownerId = 'owner-2';
     const jobs = await jobService.leaseProcessingJobs('extract', ownerId, 5, 1);
 
     const results: AttachmentExtractionResult[] = [
       {
-        attachmentId: 'att-2',
+        attachmentId: '22222222-0000-0000-0000-000000000002',
         extractorName: 'unpdf',
         extractorVersion: '1.0',
         completeness: 'unsupported',
@@ -248,7 +248,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
     await jobService.submitExtractionResults(
       jobs[0]!.id,
       ownerId,
-      'item-2',
+      '00000000-0000-0000-0000-000000000002',
       results,
       false,
     );
@@ -256,7 +256,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
     const job = await env.DB.prepare(
       'SELECT * FROM processing_jobs WHERE id = ?',
     )
-      .bind('job-item-2')
+      .bind('11111111-0000-0000-0000-000000000002')
       .first();
     expect(job).toBeDefined();
     expect(job!.status).toBe('complete');
@@ -265,12 +265,12 @@ describe('Extraction Pipeline (D1 Integration)', () => {
     const enrichJob = await env.DB.prepare(
       'SELECT * FROM processing_jobs WHERE item_id = ? AND job_type = ?',
     )
-      .bind('item-2', 'enrich')
+      .bind('00000000-0000-0000-0000-000000000002', 'enrich')
       .first();
     expect(enrichJob).toBeNull();
 
     const response = await createApp().request(
-      '/api/v1/items/item-2',
+      '/api/v1/items/00000000-0000-0000-0000-000000000002',
       { headers: { Authorization: 'Bearer test-admin-token' } },
       env,
     );
@@ -286,12 +286,12 @@ describe('Extraction Pipeline (D1 Integration)', () => {
       };
     }>();
     expect(body.data.extraction).toMatchObject({
-      attachment_id: 'att-2',
+      attachment_id: '22222222-0000-0000-0000-000000000002',
       completeness: 'unsupported',
     });
     expect(body.data.extractions).toEqual([
       expect.objectContaining({
-        attachment_id: 'att-2',
+        attachment_id: '22222222-0000-0000-0000-000000000002',
         completeness: 'unsupported',
         error_code: 'PDF_ENCRYPTED',
       }),
@@ -389,14 +389,14 @@ describe('Extraction Pipeline (D1 Integration)', () => {
   });
 
   it('returns every attachment extraction while preserving the legacy singular field', async () => {
-    await insertItemAndJob('item-multi');
+    await insertItemAndJob('00000000-0000-0000-0000-000000000003');
     const now = new Date().toISOString();
     await env.DB.prepare(
       `INSERT INTO attachments (
          id, item_id, object_key, size_bytes, declared_content_type,
          file_name, status, expires_at, created_at, updated_at
        ) VALUES (
-         'att-multi-b', 'item-multi', 'dummy-key-b', 10, 'image/png',
+         '22222222-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000003', 'dummy-key-b', 10, 'image/png',
          'second.png', 'linked', ?1, ?2, ?2
        )`,
     )
@@ -413,10 +413,10 @@ describe('Extraction Pipeline (D1 Integration)', () => {
       await jobService.submitExtractionResults(
         job!.id,
         'owner-multi',
-        'item-multi',
+        '00000000-0000-0000-0000-000000000003',
         [
           {
-            attachmentId: 'att-multi',
+            attachmentId: '22222222-0000-0000-0000-000000000003',
             extractorName: 'unpdf',
             extractorVersion: '1.0',
             extractedText: 'PDF text',
@@ -424,7 +424,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
             coverage: 'full',
           },
           {
-            attachmentId: 'att-multi-b',
+            attachmentId: '22222222-0000-0000-0000-000000000004',
             extractorName: 'vision-model',
             extractorVersion: '1.0',
             imageDescription: 'Screenshot description',
@@ -438,7 +438,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
     ).toBe(true);
 
     const response = await createApp().request(
-      '/api/v1/items/item-multi',
+      '/api/v1/items/00000000-0000-0000-0000-000000000003',
       { headers: { Authorization: 'Bearer test-admin-token' } },
       env,
     );
@@ -450,12 +450,15 @@ describe('Extraction Pipeline (D1 Integration)', () => {
     }>();
     expect(
       body.data.extractions.map((row) => row.attachment_id).sort(),
-    ).toEqual(['att-multi', 'att-multi-b']);
+    ).toEqual([
+      '22222222-0000-0000-0000-000000000003',
+      '22222222-0000-0000-0000-000000000004',
+    ]);
     expect(body.data.extraction).toEqual(body.data.extractions[0]);
   });
 
   it('extracts a stored PDF through R2, the leased worker, D1, and enrichment chaining', async () => {
-    await insertItemAndJob('item-worker');
+    await insertItemAndJob('00000000-0000-0000-0000-000000000004');
     const bytes = buildPdf('Worker   pipeline   text');
     const objectKey = 'ope223/item-worker/document.pdf';
     await env.ATTACHMENTS.put(objectKey, bytes, {
@@ -465,7 +468,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
       `UPDATE attachments
        SET object_key = ?1, size_bytes = ?2, content_hash = ?3,
            detected_content_type = 'application/pdf'
-       WHERE id = 'att-worker'`,
+       WHERE id = '22222222-0000-0000-0000-000000000004'`,
     )
       .bind(objectKey, bytes.byteLength, await sha256(bytes))
       .run();
@@ -475,7 +478,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
     const record = await env.DB.prepare(
       `SELECT attachment_id, extracted_text, confidence, page_count,
               completeness, coverage, error_code
-       FROM extraction_records WHERE item_id = 'item-worker'`,
+       FROM extraction_records WHERE item_id = '00000000-0000-0000-0000-000000000004'`,
     ).first<{
       attachment_id: string;
       extracted_text: string | null;
@@ -486,7 +489,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
       error_code: string | null;
     }>();
     expect(record).toEqual({
-      attachment_id: 'att-worker',
+      attachment_id: '22222222-0000-0000-0000-000000000004',
       extracted_text: 'Worker pipeline text',
       confidence: 1,
       page_count: 1,
@@ -499,7 +502,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
       `SELECT job_type, status, privacy_level_snapshot, provider_eligibility,
               policy_version, credential_source, zero_data_retention_required,
               data_collection_denied
-       FROM processing_jobs WHERE item_id = 'item-worker'
+       FROM processing_jobs WHERE item_id = '00000000-0000-0000-0000-000000000004'
        ORDER BY job_type`,
     ).all();
     expect(jobs.results).toEqual([
@@ -518,7 +521,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
   });
 
   it('extracts a stored screenshot through policy routing and persists provider evidence', async () => {
-    await insertItemAndJob('item-image');
+    await insertItemAndJob('00000000-0000-0000-0000-000000000005');
     const bytes = new Uint8Array([
       0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00,
     ]).buffer;
@@ -531,7 +534,7 @@ describe('Extraction Pipeline (D1 Integration)', () => {
        SET object_key = ?1, size_bytes = ?2, content_hash = ?3,
            declared_content_type = 'image/png',
            detected_content_type = 'image/png', file_name = 'screenshot.png'
-       WHERE id = 'att-image'`,
+       WHERE id = '22222222-0000-0000-0000-000000000005'`,
     )
       .bind(objectKey, bytes.byteLength, await sha256(bytes))
       .run();
@@ -541,10 +544,10 @@ describe('Extraction Pipeline (D1 Integration)', () => {
     const record = await env.DB.prepare(
       `SELECT attachment_id, extracted_text, image_description, confidence,
               completeness, provider_name, model_name, error_code
-       FROM extraction_records WHERE item_id = 'item-image'`,
+       FROM extraction_records WHERE item_id = '00000000-0000-0000-0000-000000000005'`,
     ).first();
     expect(record).toEqual({
-      attachment_id: 'att-image',
+      attachment_id: '22222222-0000-0000-0000-000000000005',
       extracted_text: 'Mock visible text from image',
       image_description: 'Mock image description',
       confidence: 0.95,

@@ -397,15 +397,23 @@ describe('private attachment lifecycle', () => {
       expiresAt: '9999-01-01T00:00:00.000Z',
       createdAt: '2026-07-20T00:00:00.000Z',
     });
-    attachment.itemId = 'item-1';
+    attachment.itemId = '00000000-0000-0000-0000-000000000001';
     attachment.status = 'linked';
 
-    expect(await deleteItemAttachments(repository, r2.bucket, 'item-1')).toBe(
-      1,
-    );
+    expect(
+      await deleteItemAttachments(
+        repository,
+        r2.bucket,
+        '00000000-0000-0000-0000-000000000001',
+      ),
+    ).toBe(1);
     expect(repository.attachments.get(attachment.id)?.status).toBe('deleted');
-    expect(await deleteItemAttachments(repository, r2.bucket, 'item-1')).toBe(
-      0,
-    );
+    expect(
+      await deleteItemAttachments(
+        repository,
+        r2.bucket,
+        '00000000-0000-0000-0000-000000000001',
+      ),
+    ).toBe(0);
   });
 });

@@ -198,10 +198,16 @@ describe('migration upgrade safety', () => {
 
 describe('OPE-246 durable D1 jobs', () => {
   it('leases concurrently without duplicate ownership and safely recovers stale work', async () => {
-    await insertItem('item-1');
-    await insertItem('item-2');
-    await insertProcessingJob('job-1', 'item-1');
-    await insertProcessingJob('job-2', 'item-2');
+    await insertItem('00000000-0000-0000-0000-000000000001');
+    await insertItem('00000000-0000-0000-0000-000000000002');
+    await insertProcessingJob(
+      '11111111-1111-1111-1111-111111111111',
+      '00000000-0000-0000-0000-000000000001',
+    );
+    await insertProcessingJob(
+      '22222222-2222-2222-2222-222222222222',
+      '00000000-0000-0000-0000-000000000002',
+    );
     const jobs = new JobService(env.DB);
     const [first, second] = await Promise.all([
       jobs.leaseProcessingJobs('enrich', 'worker-one', 5, 1, T0),
@@ -234,21 +240,33 @@ describe('OPE-246 durable D1 jobs', () => {
   });
 
   it('heartbeats, releases, derives retry_wait, and honors exact retry timing', async () => {
-    await insertItem('item-1');
-    await insertProcessingJob('job-1', 'item-1');
+    await insertItem('00000000-0000-0000-0000-000000000001');
+    await insertProcessingJob(
+      '11111111-1111-1111-1111-111111111111',
+      '00000000-0000-0000-0000-000000000001',
+    );
     const jobs = new JobService(env.DB);
     await jobs.leaseProcessingJobs('enrich', 'worker-one', 2, 1, T0);
     expect(
-      await jobs.heartbeatProcessingJob('job-1', 'worker-one', 10, T0),
+      await jobs.heartbeatProcessingJob(
+        '11111111-1111-1111-1111-111111111111',
+        'worker-one',
+        10,
+        T0,
+      ),
     ).toBe(true);
-    expect(await jobs.releaseProcessingJob('job-1', 'worker-one', T0)).toBe(
-      true,
-    );
+    expect(
+      await jobs.releaseProcessingJob(
+        '11111111-1111-1111-1111-111111111111',
+        'worker-one',
+        T0,
+      ),
+    ).toBe(true);
     await jobs.leaseProcessingJobs('enrich', 'worker-one', 2, 1, T0);
     const retryAt = new Date(T0.getTime() + 60_000);
     expect(
       await jobs.failProcessingJob(
-        'job-1',
+        '11111111-1111-1111-1111-111111111111',
         'worker-one',
         'PROVIDER_UNAVAILABLE',
         true,
@@ -277,8 +295,11 @@ describe('OPE-246 durable D1 jobs', () => {
   });
 
   it('stores one idempotent result and rejects conflicting replay', async () => {
-    await insertItem('item-1');
-    await insertProcessingJob('job-1', 'item-1');
+    await insertItem('00000000-0000-0000-0000-000000000001');
+    await insertProcessingJob(
+      '11111111-1111-1111-1111-111111111111',
+      '00000000-0000-0000-0000-000000000001',
+    );
     const jobs = new JobService(env.DB);
     await jobs.leaseProcessingJobs('enrich', 'worker-one', 5, 1, T0);
     const input = {
@@ -288,35 +309,49 @@ describe('OPE-246 durable D1 jobs', () => {
       result: { summary: 'safe derived value' },
     };
     expect(
-      await jobs.submitProcessingResult('job-1', 'worker-one', input, T0),
+      await jobs.submitProcessingResult(
+        '11111111-1111-1111-1111-111111111111',
+        'worker-one',
+        input,
+        T0,
+      ),
     ).toEqual({ accepted: true, replayed: false });
     expect(
-      await jobs.submitProcessingResult('job-1', 'worker-one', input, T0),
+      await jobs.submitProcessingResult(
+        '11111111-1111-1111-1111-111111111111',
+        'worker-one',
+        input,
+        T0,
+      ),
     ).toEqual({ accepted: true, replayed: true });
     expect(
       await jobs.submitProcessingResult(
-        'job-1',
+        '11111111-1111-1111-1111-111111111111',
         'worker-one',
         { ...input, submissionId: '22222222-2222-4222-8222-222222222222' },
         T0,
       ),
     ).toEqual({ accepted: false, replayed: false });
     const results = await env.DB.prepare(
-      `SELECT * FROM processing_job_results WHERE job_id = 'job-1'`,
+      `SELECT * FROM processing_job_results WHERE job_id = '11111111-1111-1111-1111-111111111111'`,
     ).all();
     expect(results.results).toHaveLength(1);
   });
 
   it('keeps terminal failures bounded and policy-gates manual retries', async () => {
-    await insertItem('item-1');
-    await insertProcessingJob('job-1', 'item-1', {
-      attempts: 4,
-      provider: 'none',
-    });
+    await insertItem('00000000-0000-0000-0000-000000000001');
+    await insertProcessingJob(
+      '11111111-1111-1111-1111-111111111111',
+      '00000000-0000-0000-0000-000000000001',
+      {
+        attempts: 4,
+        provider: 'none',
+      },
+    );
     const jobs = new JobService(env.DB);
     await jobs.leaseProcessingJobs('enrich', 'worker-one', 5, 1, T0);
     await jobs.failProcessingJob(
-      'job-1',
+      '11111111-1111-1111-1111-111111111111',
       'worker-one',
       'PROVIDER_UNAVAILABLE',
       true,
@@ -325,12 +360,12 @@ describe('OPE-246 durable D1 jobs', () => {
     );
     expect(
       await env.DB.prepare(
-        `SELECT status FROM processing_jobs WHERE id = 'job-1'`,
+        `SELECT status FROM processing_jobs WHERE id = '11111111-1111-1111-1111-111111111111'`,
       ).first('status'),
     ).toBe('failed');
     await expect(
       new JobAdminService(env.DB).manuallyRetryProcessingJob(
-        'job-1',
+        '11111111-1111-1111-1111-111111111111',
         'admin:test',
         T0,
       ),
@@ -381,11 +416,14 @@ describe('OPE-246 durable D1 jobs', () => {
   });
 
   it('exposes authenticated admin and scoped local-worker routes', async () => {
-    await insertItem('item-1');
-    await insertProcessingJob('job-1', 'item-1');
+    await insertItem('00000000-0000-0000-0000-000000000001');
+    await insertProcessingJob(
+      '11111111-1111-1111-1111-111111111111',
+      '00000000-0000-0000-0000-000000000001',
+    );
     await env.DB.prepare(
       `UPDATE processing_jobs SET available_at = '1970-01-01T00:00:00.000Z'
-       WHERE id = 'job-1'`,
+       WHERE id = '11111111-1111-1111-1111-111111111111'`,
     ).run();
     const app = createApp();
     const unauthorized = await app.request('/api/v1/jobs', {}, env);
@@ -441,12 +479,12 @@ describe('OPE-246 durable D1 jobs', () => {
       data: { jobs: Array<Record<string, unknown>> };
     };
     expect(leasedBody.data.jobs[0]).toMatchObject({
-      id: 'job-1',
+      id: '11111111-1111-1111-1111-111111111111',
       leaseOwner: 'worker-one',
     });
 
     const rejectedFailure = await app.request(
-      '/api/v1/worker/jobs/job-1/fail',
+      '/api/v1/worker/jobs/11111111-1111-1111-1111-111111111111/fail',
       {
         method: 'POST',
         headers: {
@@ -465,7 +503,7 @@ describe('OPE-246 durable D1 jobs', () => {
     expect(rejectedFailure.status).toBe(422);
 
     const failed = await app.request(
-      '/api/v1/worker/jobs/job-1/fail',
+      '/api/v1/worker/jobs/11111111-1111-1111-1111-111111111111/fail',
       {
         method: 'POST',
         headers: {
@@ -484,7 +522,7 @@ describe('OPE-246 durable D1 jobs', () => {
     expect(failed.status).toBe(200);
     expect(await failed.json()).toMatchObject({
       data: {
-        job_id: 'job-1',
+        job_id: '11111111-1111-1111-1111-111111111111',
         status: 'retry_wait',
         retryable: true,
         retry_after_seconds: 60,
@@ -492,7 +530,7 @@ describe('OPE-246 durable D1 jobs', () => {
     });
     const failedRow = await env.DB.prepare(
       `SELECT status, attempts, last_error_code, available_at
-       FROM processing_jobs WHERE id = 'job-1'`,
+       FROM processing_jobs WHERE id = '11111111-1111-1111-1111-111111111111'`,
     ).first<{
       status: string;
       attempts: number;
@@ -541,15 +579,17 @@ describe('OPE-221 retry-safe Notion worker', () => {
   });
 
   it('reprocessing changes enqueue an update to the existing page', async () => {
-    await insertItem('item-1', { notionPageId: 'notion-page-1' });
+    await insertItem('00000000-0000-0000-0000-000000000001', {
+      notionPageId: 'notion-page-1',
+    });
     await env.DB.prepare(
-      `UPDATE items SET summary = 'new summary', updated_at = ?1 WHERE id = 'item-1'`,
+      `UPDATE items SET summary = 'new summary', updated_at = ?1 WHERE id = '00000000-0000-0000-0000-000000000001'`,
     )
       .bind(new Date(T0.getTime() + 1_000).toISOString())
       .run();
     expect(
       await env.DB.prepare(
-        `SELECT projection_version FROM items WHERE id = 'item-1'`,
+        `SELECT projection_version FROM items WHERE id = '00000000-0000-0000-0000-000000000001'`,
       ).first('projection_version'),
     ).toBe(2);
     const fetcher = vi
@@ -567,14 +607,14 @@ describe('OPE-221 retry-safe Notion worker', () => {
     expect(fetcher.mock.calls[0]?.[1]?.method).toBe('PATCH');
     expect(
       await env.DB.prepare(
-        `SELECT status FROM sync_attempts WHERE item_id = 'item-1'`,
+        `SELECT status FROM sync_attempts WHERE item_id = '00000000-0000-0000-0000-000000000001'`,
       ).first('status'),
     ).toBe('complete');
   });
 
   it('adopts the existing page after D1 persistence fails, avoiding a second create', async () => {
-    await insertItem('item-1');
-    await insertSyncAttempt('sync-1', 'item-1');
+    await insertItem('00000000-0000-0000-0000-000000000001');
+    await insertSyncAttempt('sync-1', '00000000-0000-0000-0000-000000000001');
     await env.DB.prepare(
       `CREATE TRIGGER fail_notion_page_persist
        BEFORE UPDATE OF notion_page_id ON items
@@ -623,7 +663,7 @@ describe('OPE-221 retry-safe Notion worker', () => {
     ).toBe(true);
     expect(
       await env.DB.prepare(
-        `SELECT notion_page_id FROM items WHERE id = 'item-1'`,
+        `SELECT notion_page_id FROM items WHERE id = '00000000-0000-0000-0000-000000000001'`,
       ).first('notion_page_id'),
     ).toBe('notion-page-1');
     expect(
@@ -638,8 +678,10 @@ describe('OPE-221 retry-safe Notion worker', () => {
   });
 
   it('records deleted pages and requires the explicit recreation workflow', async () => {
-    await insertItem('item-1', { notionPageId: 'deleted-page' });
-    await insertSyncAttempt('sync-1', 'item-1');
+    await insertItem('00000000-0000-0000-0000-000000000001', {
+      notionPageId: 'deleted-page',
+    });
+    await insertSyncAttempt('sync-1', '00000000-0000-0000-0000-000000000001');
     const fetcher = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(jsonResponse({}, 404));
@@ -655,7 +697,7 @@ describe('OPE-221 retry-safe Notion worker', () => {
     ).toBe('NOTION_PAGE_MISSING');
     expect(
       await env.DB.prepare(
-        `SELECT notion_missing_at FROM items WHERE id = 'item-1'`,
+        `SELECT notion_missing_at FROM items WHERE id = '00000000-0000-0000-0000-000000000001'`,
       ).first('notion_missing_at'),
     ).toBe(T0.toISOString());
     await expect(
@@ -667,21 +709,23 @@ describe('OPE-221 retry-safe Notion worker', () => {
     ).rejects.toMatchObject({ code: 'OWNER_APPROVAL_REQUIRED' });
     expect(
       await new JobAdminService(env.DB).approveNotionRecreation(
-        'item-1',
+        '00000000-0000-0000-0000-000000000001',
         'admin:test',
         T0,
       ),
     ).toBe(true);
     expect(
       await env.DB.prepare(
-        `SELECT notion_page_id FROM items WHERE id = 'item-1'`,
+        `SELECT notion_page_id FROM items WHERE id = '00000000-0000-0000-0000-000000000001'`,
       ).first('notion_page_id'),
     ).toBeNull();
   });
 
   it('persists Retry-After timing for 529 without leaking provider text', async () => {
-    await insertItem('item-1', { notionPageId: 'page-1' });
-    await insertSyncAttempt('sync-1', 'item-1');
+    await insertItem('00000000-0000-0000-0000-000000000001', {
+      notionPageId: 'page-1',
+    });
+    await insertSyncAttempt('sync-1', '00000000-0000-0000-0000-000000000001');
     const fetcher = vi.fn<typeof fetch>().mockResolvedValueOnce(
       jsonResponse({ message: 'sensitive provider response' }, 529, {
         'Retry-After': '7',
@@ -708,8 +752,10 @@ describe('OPE-221 retry-safe Notion worker', () => {
   });
 
   it('records invalid-property failures as terminal safe codes', async () => {
-    await insertItem('item-1', { notionPageId: 'page-1' });
-    await insertSyncAttempt('sync-1', 'item-1');
+    await insertItem('00000000-0000-0000-0000-000000000001', {
+      notionPageId: 'page-1',
+    });
+    await insertSyncAttempt('sync-1', '00000000-0000-0000-0000-000000000001');
     const fetcher = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(
@@ -731,8 +777,10 @@ describe('OPE-221 retry-safe Notion worker', () => {
   });
 
   it('turns outbound timeouts into retryable safe failures', async () => {
-    await insertItem('item-1', { notionPageId: 'page-1' });
-    await insertSyncAttempt('sync-1', 'item-1');
+    await insertItem('00000000-0000-0000-0000-000000000001', {
+      notionPageId: 'page-1',
+    });
+    await insertSyncAttempt('sync-1', '00000000-0000-0000-0000-000000000001');
     const fetcher = vi.fn<typeof fetch>((_url, init) => {
       return new Promise((_resolve, reject) => {
         init?.signal?.addEventListener('abort', () =>

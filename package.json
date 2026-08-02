@@ -3,15 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "apps/web",
+    "packages/contracts"
+  ],
   "scripts": {
-    "dev": "wrangler dev",
+    "dev:api": "wrangler dev",
+    "dev:web": "npm run dev -w apps/web",
+    "web:build": "npm run build -w apps/web",
+    "web:lint": "npm run lint -w apps/web",
+    "web:test": "npm run test -w apps/web",
+    "contracts:check": "npm run check -w packages/contracts",
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --check .",
     "format:write": "prettier --write .",
     "test": "vitest run --config vitest.node.config.ts && vitest run --config vitest.d1.config.ts",
-    "check": "npm run format && npm run lint && npm run typecheck && npm test",
+    "check": "npm run format && npm run lint && npm run typecheck && npm test && npm run contracts:check && npm run web:lint && npm run web:test && npm run web:build",
     "db:migrate:local": "wrangler d1 migrations apply recollect-flow-prod --local",
     "db:migrate:remote": "wrangler d1 migrations apply recollect-flow-prod --remote"
   },

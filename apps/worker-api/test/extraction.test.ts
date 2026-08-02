@@ -69,7 +69,7 @@ async function extractionInput(
   return {
     attachmentId: 'attachment-1',
     objectKey: 'attachment-key',
-    itemId: 'item-1',
+    itemId: '00000000-0000-0000-0000-000000000001',
     declaredContentType: 'application/pdf',
     detectedContentType: 'application/pdf',
     sizeBytes: bytes.byteLength,
