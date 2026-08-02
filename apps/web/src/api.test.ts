@@ -1,11 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  ApiError,
-  fetchApi,
-  fetchApiEnvelope,
-  getAdminSession,
-} from './api';
+import { fetchApi, fetchApiEnvelope, getAdminSession } from './api';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -83,7 +78,7 @@ describe('web API client', () => {
       ),
     );
 
-    await expect(fetchApi('/items/item-1')).rejects.toMatchObject<ApiError>({
+    await expect(fetchApi('/items/item-1')).rejects.toMatchObject({
       status: 409,
       code: 'VERSION_CONFLICT',
     });
