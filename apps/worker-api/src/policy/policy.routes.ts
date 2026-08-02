@@ -29,8 +29,7 @@ export function policyRoutes(
       throw new AppError(422, 'VALIDATION_ERROR', 'Validation failed.', fields);
     }
 
-    const policy = new PolicyService();
-    const decision = policy.route({
+    const decision = new PolicyService().route({
       privacyLevel: parsed.data.privacy_level,
       modality: 'text',
       requestedProvider: parsed.data.ai_provider,
@@ -39,7 +38,7 @@ export function policyRoutes(
       zeroDataRetentionEnforced: parsed.data.zero_data_retention_enforced,
       dataCollectionDenied: parsed.data.data_collection_denied,
     });
-    await repositoryFactory(context.env).changePrivacy(
+    const editVersion = await repositoryFactory(context.env).changePrivacy(
       context.req.param('id'),
       parsed.data,
       decision,
@@ -49,6 +48,7 @@ export function policyRoutes(
     return context.json({
       data: {
         item_id: context.req.param('id'),
+        edit_version: editVersion,
         privacy_level: parsed.data.privacy_level,
         derived_data_action: parsed.data.derived_data_action,
         provider_eligibility: decision.provider,
