@@ -173,20 +173,25 @@ export const itemUpdateSchema = z
 
 export type ItemUpdate = z.infer<typeof itemUpdateSchema>;
 
-export const itemDetailDataSchema = z.object({
-  item: itemResponseSchema,
-  attachments: z.array(attachmentResponseSchema),
-  extractions: z.array(extractionResponseSchema),
-  processing_jobs: z.array(processingJobResponseSchema),
-  sync_attempts: z.array(syncAttemptResponseSchema),
-  provenance: z.object({
-    capture_events: z.array(captureEventResponseSchema),
-    provider_usage: z.array(providerUsageResponseSchema),
-  }),
-  feedback: z.array(feedbackEventResponseSchema),
-  audit_history: z.array(auditEventResponseSchema),
-  field_overrides: z.array(fieldOverrideResponseSchema),
-});
+export const itemDetailDataSchema = z
+  .object({
+    item: itemResponseSchema,
+    attachments: z.array(attachmentResponseSchema),
+    extractions: z.array(extractionResponseSchema),
+    processing_jobs: z.array(processingJobResponseSchema),
+    sync_attempts: z.array(syncAttemptResponseSchema),
+    provenance: z.object({
+      capture_events: z.array(captureEventResponseSchema),
+      provider_usage: z.array(providerUsageResponseSchema),
+    }),
+    feedback: z.array(feedbackEventResponseSchema),
+    audit_history: z.array(auditEventResponseSchema),
+    field_overrides: z.array(fieldOverrideResponseSchema),
+  })
+  .transform((data) => ({
+    ...data,
+    extraction: data.extractions[0] ?? null,
+  }));
 
 export const itemDetailResponseSchema = z.object({
   data: itemDetailDataSchema,
