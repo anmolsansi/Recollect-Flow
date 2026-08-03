@@ -32,7 +32,9 @@ jobs:
       - name: Regenerate Worker environment types
         run: npx wrangler types
       - name: Format
-        run: npm run format:write
+        run: |
+          npm run format:write
+          npm run format:write
       - name: Validate
         run: |
           npm run check
