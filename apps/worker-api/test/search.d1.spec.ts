@@ -200,6 +200,37 @@ describe('OPE-225 FTS5 search integration', () => {
     );
   });
 
+  it('lists soft-deleted items through the Deleted lifecycle filter', async () => {
+    const now = new Date().toISOString();
+    await env.DB.prepare(
+      `
+      INSERT INTO items (
+        id, idempotency_key, source_type, source_app, privacy_level,
+        processing_status, lifecycle_status, deleted_at,
+        captured_at, created_at, updated_at, title
+      ) VALUES (
+        'deleted-filter-item', 'deleted-filter-key', 'url', 'web', 'public',
+        'complete', 'Deleted', ?1, ?1, ?1, ?1, 'Deleted filter test'
+      )
+    `,
+    )
+      .bind(now)
+      .run();
+
+    const deleted = await executeSearch(env.DB, {
+      lifecycle_status: 'Deleted',
+      limit: 25,
+    });
+    expect(deleted.data.map((item) => item.id)).toContain(
+      'deleted-filter-item',
+    );
+
+    const normal = await executeSearch(env.DB, { limit: 25 });
+    expect(normal.data.map((item) => item.id)).not.toContain(
+      'deleted-filter-item',
+    );
+  });
+
   it('rejects malformed cursors, invalid JSON, wrong versions, and query mismatches', async () => {
     await expect(
       executeSearch(env.DB, {
