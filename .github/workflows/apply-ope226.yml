@@ -33,8 +33,8 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          path = Path('apps/worker-api/src/digests/digest.renderer.ts')
-          source = path.read_text()
+          renderer_path = Path('apps/worker-api/src/digests/digest.renderer.ts')
+          renderer = renderer_path.read_text()
           marker = 'function invalidAiText(value: string): boolean {'
           helper = '''function containsControlCharacters(value: string): boolean {
             return Array.from(value).some((character) => {
@@ -50,14 +50,34 @@ jobs:
           }
 
           '''
-          if marker not in source:
+          if marker not in renderer:
               raise RuntimeError('Digest AI validation marker not found')
-          source = source.replace(marker, helper + marker, 1)
+          renderer = renderer.replace(marker, helper + marker, 1)
           control_regex = r'/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/u.test(value)'
-          if control_regex not in source:
+          if control_regex not in renderer:
               raise RuntimeError('Digest AI control regex not found')
-          source = source.replace(control_regex, 'containsControlCharacters(value)', 1)
-          path.write_text(source)
+          renderer = renderer.replace(
+              control_regex,
+              'containsControlCharacters(value)',
+              1,
+          )
+          renderer_path.write_text(renderer)
+
+          env_path = Path('apps/worker-api/src/env.ts')
+          env_source = env_path.read_text()
+          before = '''type ConfigurableAiVars =
+            | 'AI_PROVIDER_DEFAULT'
+            | 'AI_PROVIDERS_ENABLED'
+            | 'AI_PROVIDER_IMPLEMENTATIONS';'''
+          after = '''type ConfigurableAiVars =
+            | 'AI_PROVIDER_DEFAULT'
+            | 'AI_PROVIDERS_ENABLED'
+            | 'AI_PROVIDER_IMPLEMENTATIONS'
+            | 'DIGEST_AI_ENABLED'
+            | 'WEB_INBOX_BASE_URL';'''
+          if before not in env_source:
+              raise RuntimeError('Configurable environment marker not found')
+          env_path.write_text(env_source.replace(before, after, 1))
           PY
       - run: npm ci
       - name: Regenerate Worker environment types
