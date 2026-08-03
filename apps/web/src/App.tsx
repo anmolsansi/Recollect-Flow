@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   BrowserRouter,
   Link,
@@ -21,6 +21,13 @@ import {
   loginAdmin,
   logoutAdmin,
 } from './api';
+import {
+  FEEDBACK_TYPES,
+  feedbackConfirmation,
+  feedbackLabel,
+  latestFeedbackType,
+  runVersionedAction,
+} from './item-actions';
 import './index.css';
 
 type AuthState = 'checking' | 'authenticated' | 'unauthenticated';
@@ -290,6 +297,8 @@ function ItemDetail() {
   const [duplicateTarget, setDuplicateTarget] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const mutationLock = useRef(false);
 
   const load = async () => {
     setError('');
@@ -321,24 +330,94 @@ function ItemDetail() {
     return <main className="main-content">{error || 'Loading…'}</main>;
   }
 
-  const mutate = async <T,>(endpoint: string, options: RequestInit) => {
+  const selectedFeedback = latestFeedbackType(detail.feedback);
+
+  const mutate = async <T,>(
+    endpoint: string,
+    options: RequestInit,
+    successMessage?: string,
+  ): Promise<T | undefined> => {
+    if (mutationLock.current) return undefined;
+    mutationLock.current = true;
     setSaving(true);
     setError('');
+    setNotice('');
     try {
       const result = await fetchApi<T>(endpoint, options);
       await load();
+      if (successMessage) setNotice(successMessage);
       return result;
     } catch (mutationError) {
-      setError(messageFor(mutationError));
-      throw mutationError;
+      if (
+        mutationError instanceof ApiError &&
+        mutationError.code === 'VERSION_CONFLICT'
+      ) {
+        await load();
+        setError('The item changed and was refreshed. Retry the action.');
+      } else {
+        setError(messageFor(mutationError));
+      }
+      return undefined;
     } finally {
+      mutationLock.current = false;
+      setSaving(false);
+    }
+  };
+
+  const mutateVersioned = async <T,>(
+    endpoint: string,
+    payload: (editVersion: number) => Record<string, unknown>,
+    successMessage: string,
+  ): Promise<T | undefined> => {
+    if (mutationLock.current) return undefined;
+    if (changed) {
+      setError('Save or refresh your edits before running this action.');
+      return undefined;
+    }
+
+    mutationLock.current = true;
+    setSaving(true);
+    setError('');
+    setNotice('');
+    try {
+      const outcome = await runVersionedAction<T>({
+        loadLatestVersion: async () => {
+          const latest = await fetchApi<ItemDetailData>(`/items/${id}`);
+          return latest.item.edit_version;
+        },
+        execute: (editVersion) =>
+          fetchApi<T>(endpoint, {
+            method: 'POST',
+            body: JSON.stringify(payload(editVersion)),
+          }),
+        refresh: async () => {
+          await load();
+        },
+      });
+
+      if (outcome.ok) {
+        setNotice(successMessage);
+        return outcome.data;
+      }
+
+      setError(
+        outcome.conflict
+          ? 'The item changed and was refreshed. Retry the action.'
+          : messageFor(outcome.error),
+      );
+      return undefined;
+    } finally {
+      mutationLock.current = false;
       setSaving(false);
     }
   };
 
   const save = async () => {
+    if (mutationLock.current) return;
+    mutationLock.current = true;
     setSaving(true);
     setError('');
+    setNotice('');
     let version = original.edit_version;
     try {
       const topics = topicsText
@@ -400,9 +479,21 @@ function ItemDetail() {
       }
 
       await load();
+      setNotice('Changes saved.');
     } catch (saveError) {
-      setError(messageFor(saveError));
+      if (
+        saveError instanceof ApiError &&
+        saveError.code === 'VERSION_CONFLICT'
+      ) {
+        await load();
+        setError(
+          'The item changed and was refreshed. Review and retry your edit.',
+        );
+      } else {
+        setError(messageFor(saveError));
+      }
     } finally {
+      mutationLock.current = false;
       setSaving(false);
     }
   };
@@ -414,6 +505,7 @@ function ItemDetail() {
       </button>
       <h1>{draft.title || 'Untitled'}</h1>
       {error && <p style={{ color: 'var(--danger-color)' }}>{error}</p>}
+      {notice && <p role="status">{notice}</p>}
 
       <Section title="Review">
         <div style={{ display: 'grid', gap: 14 }}>
@@ -616,10 +708,13 @@ function ItemDetail() {
             {job.visibleStatus === 'failed' && (
               <button
                 className="btn btn-outline"
+                disabled={saving}
                 onClick={() =>
-                  void mutate(`/jobs/${job.id}/retry?kind=processing`, {
-                    method: 'POST',
-                  })
+                  void mutate(
+                    `/jobs/${job.id}/retry?kind=processing`,
+                    { method: 'POST' },
+                    'Processing job queued for retry.',
+                  )
                 }
               >
                 Retry
@@ -645,10 +740,13 @@ function ItemDetail() {
               attempt.lastErrorCode !== 'NOTION_PAGE_MISSING' && (
                 <button
                   className="btn btn-outline"
+                  disabled={saving}
                   onClick={() =>
-                    void mutate(`/jobs/${attempt.id}/retry?kind=sync`, {
-                      method: 'POST',
-                    })
+                    void mutate(
+                      `/jobs/${attempt.id}/retry?kind=sync`,
+                      { method: 'POST' },
+                      'Sync attempt queued for retry.',
+                    )
                   }
                 >
                   Retry
@@ -659,8 +757,13 @@ function ItemDetail() {
         {draft.notion_missing_at && (
           <button
             className="btn btn-outline"
+            disabled={saving}
             onClick={() =>
-              void mutate(`/items/${id}/notion/recreate`, { method: 'POST' })
+              void mutate(
+                `/items/${id}/notion/recreate`,
+                { method: 'POST' },
+                'Notion page recreation queued.',
+              )
             }
           >
             Recreate missing Notion page
@@ -670,27 +773,40 @@ function ItemDetail() {
 
       <Section title="Feedback">
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {(
-            ['useful', 'not_relevant', 'already_used', 'outdated'] as const
-          ).map((feedbackType) => (
-            <button
-              className="btn btn-outline"
-              key={feedbackType}
-              onClick={() =>
-                void mutate(`/items/${id}/feedback`, {
-                  method: 'POST',
-                  body: JSON.stringify({
-                    idempotency_key: crypto.randomUUID(),
-                    feedback_type: feedbackType,
-                    source_surface: 'web_item_detail',
-                  }),
-                })
-              }
-            >
-              {feedbackType.replaceAll('_', ' ')}
-            </button>
-          ))}
+          {FEEDBACK_TYPES.map((feedbackType) => {
+            const selected = selectedFeedback === feedbackType;
+            return (
+              <button
+                aria-pressed={selected}
+                className={selected ? 'btn btn-primary' : 'btn btn-outline'}
+                disabled={saving}
+                key={feedbackType}
+                onClick={() =>
+                  void mutate(
+                    `/items/${id}/feedback`,
+                    {
+                      method: 'POST',
+                      body: JSON.stringify({
+                        idempotency_key: crypto.randomUUID(),
+                        feedback_type: feedbackType,
+                        source_surface: 'web_item_detail',
+                      }),
+                    },
+                    feedbackConfirmation(feedbackType),
+                  )
+                }
+              >
+                {feedbackLabel(feedbackType)}
+              </button>
+            );
+          })}
         </div>
+        <p>
+          Current feedback:{' '}
+          <strong>
+            {selectedFeedback ? feedbackLabel(selectedFeedback) : 'none'}
+          </strong>
+        </p>
       </Section>
 
       <Section title="Duplicate handling">
@@ -703,15 +819,16 @@ function ItemDetail() {
         </Field>
         <button
           className="btn btn-outline"
-          disabled={!duplicateTarget || saving}
+          disabled={!duplicateTarget || saving || changed}
           onClick={() =>
-            void mutate(`/items/${id}/duplicate`, {
-              method: 'POST',
-              body: JSON.stringify({
-                edit_version: draft.edit_version,
+            void mutateVersioned(
+              `/items/${id}/duplicate`,
+              (editVersion) => ({
+                edit_version: editVersion,
                 duplicate_of: duplicateTarget,
               }),
-            })
+              'Item marked as a duplicate.',
+            )
           }
         >
           Mark duplicate
@@ -719,14 +836,17 @@ function ItemDetail() {
       </Section>
 
       <Section title="Recovery actions">
+        {changed && <p>Save or refresh edits before using recovery actions.</p>}
         {draft.deleted_at ? (
           <button
             className="btn btn-outline"
+            disabled={saving || changed}
             onClick={() =>
-              void mutate(`/items/${id}/restore`, {
-                method: 'POST',
-                body: JSON.stringify({ edit_version: draft.edit_version }),
-              })
+              void mutateVersioned(
+                `/items/${id}/restore`,
+                (editVersion) => ({ edit_version: editVersion }),
+                'Item restored.',
+              )
             }
           >
             Restore item
@@ -734,11 +854,13 @@ function ItemDetail() {
         ) : (
           <button
             className="btn btn-outline"
+            disabled={saving || changed}
             onClick={() =>
-              void mutate(`/items/${id}/delete`, {
-                method: 'POST',
-                body: JSON.stringify({ edit_version: draft.edit_version }),
-              })
+              void mutateVersioned(
+                `/items/${id}/delete`,
+                (editVersion) => ({ edit_version: editVersion }),
+                'Item moved to Deleted.',
+              )
             }
           >
             Soft delete

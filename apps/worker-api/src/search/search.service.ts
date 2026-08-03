@@ -195,7 +195,9 @@ export async function executeSearch(
   }
 
   const conditions = [
-    'i.deleted_at IS NULL',
+    input.lifecycle_status === 'Deleted'
+      ? 'i.deleted_at IS NOT NULL'
+      : 'i.deleted_at IS NULL',
     `i.privacy_level IN (${ADMIN_VISIBLE_PRIVACY_LEVELS.map(() => '?').join(', ')})`,
   ];
   const params: unknown[] = [...ADMIN_VISIBLE_PRIVACY_LEVELS];
