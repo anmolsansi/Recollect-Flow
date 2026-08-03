@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/ope-226-digests
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
