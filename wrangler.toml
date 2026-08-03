@@ -31,7 +31,7 @@ enabled = true
 head_sampling_rate = 0.01
 
 [secrets]
-required = ["CAPTURE_TOKEN", "ADMIN_TOKEN", "LOCAL_WORKER_TOKEN", "NOTION_ACCESS_TOKEN", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"]
+required = ["CAPTURE_TOKEN", "ADMIN_TOKEN", "LOCAL_WORKER_TOKEN", "NOTION_ACCESS_TOKEN", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID", "WEB_INBOX_BASE_URL"]
 
 [vars]
 NOTION_DATABASE_ID = "3a21b726-4ada-80a3-bfe1-ef808e3c293f"
@@ -40,6 +40,7 @@ UPLOAD_TTL_SECONDS = "3600"
 AI_PROVIDER_DEFAULT = "openrouter"
 AI_PROVIDERS_ENABLED = "openrouter,cloudflare"
 AI_PROVIDER_IMPLEMENTATIONS = '{"openrouter":"openrouter","cloudflare":"cloudflare"}'
+DIGEST_AI_ENABLED = "false"
 
 [triggers]
-crons = ["17 * * * *", "0 2 * * *"]
+crons = ["17 * * * *", "0 2 * * *", "15 2 * * 1"]

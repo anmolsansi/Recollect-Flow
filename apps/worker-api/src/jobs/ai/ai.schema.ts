@@ -16,16 +16,20 @@ export const ExtractResultSchema = z
 
 export const DigestSummaryResultSchema = z
   .object({
-    summary: z.string(),
-    topicGroups: z.array(
-      z.object({
-        topic: z.string(),
-        items: z.array(z.string()),
-      }),
-    ),
-    topItems: z.array(z.string()),
-    suggestedActions: z.array(z.string()),
-    dormantIdeas: z.array(z.string()).optional(),
+    summary: z.string().trim().min(1).max(500),
+    topicGroups: z
+      .array(
+        z
+          .object({
+            topic: z.string().trim().min(1).max(100),
+            items: z.array(z.string().trim().min(1).max(160)).max(5),
+          })
+          .strict(),
+      )
+      .max(10),
+    topItems: z.array(z.string().trim().min(1).max(160)).max(5),
+    suggestedActions: z.array(z.string().trim().min(1).max(500)).max(10),
+    dormantIdeas: z.array(z.string().trim().min(1).max(160)).max(10).optional(),
   })
   .strict();
 
@@ -57,22 +61,39 @@ export const DigestSummaryResultJsonSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    summary: { type: 'string' },
+    summary: { type: 'string', minLength: 1, maxLength: 500 },
     topicGroups: {
       type: 'array',
+      maxItems: 10,
       items: {
         type: 'object',
         additionalProperties: false,
         properties: {
-          topic: { type: 'string' },
-          items: { type: 'array', items: { type: 'string' } },
+          topic: { type: 'string', minLength: 1, maxLength: 100 },
+          items: {
+            type: 'array',
+            maxItems: 5,
+            items: { type: 'string', minLength: 1, maxLength: 160 },
+          },
         },
         required: ['topic', 'items'],
       },
     },
-    topItems: { type: 'array', items: { type: 'string' } },
-    suggestedActions: { type: 'array', items: { type: 'string' } },
-    dormantIdeas: { type: 'array', items: { type: 'string' } },
+    topItems: {
+      type: 'array',
+      maxItems: 5,
+      items: { type: 'string', minLength: 1, maxLength: 160 },
+    },
+    suggestedActions: {
+      type: 'array',
+      maxItems: 10,
+      items: { type: 'string', minLength: 1, maxLength: 500 },
+    },
+    dormantIdeas: {
+      type: 'array',
+      maxItems: 10,
+      items: { type: 'string', minLength: 1, maxLength: 160 },
+    },
   },
   required: ['summary', 'topicGroups', 'topItems', 'suggestedActions'],
 };

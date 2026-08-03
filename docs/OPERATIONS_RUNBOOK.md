@@ -164,3 +164,72 @@ If the D1 FTS5 `item_search_fts` index drifts from the `items` table, use the re
 ## Deployment and rollback
 
 Preview environment uses separate D1/R2/secrets/Notion resources. CI runs secret-free gates. Production deploy requires migration plan, compatibility assessment, smoke test, and owner-controlled secrets. Roll back code only when schema remains compatible; database rollback is manual and data-preserving. `migrations/` contains forward SQL only; rollback guidance stays under `docs/sql`.
+
+## Daily digest and weekly review operations
+
+### Schedule and period rules
+
+- Hourly background work: `17 * * * *` UTC.
+- Daily digest: `0 2 * * *` UTC, 07:30 Asia/Kolkata, for the previous completed
+  IST calendar day.
+- Weekly review: `15 2 * * 1` UTC, Monday 07:45 Asia/Kolkata, for the previous
+  completed Monday-to-Monday IST week.
+- Delayed invocations use the scheduled event timestamp, not wall-clock duration
+  subtraction. Repeated invocations converge on one period/version and one
+  destination claim.
+
+Set `WEB_INBOX_BASE_URL` to the authenticated Web Inbox origin before enabling
+production delivery. Local development uses `http://localhost:5173`. Keep
+`DIGEST_AI_ENABLED=false` until the optional wording path is explicitly approved;
+deterministic generation and delivery remain fully functional without AI.
+
+### Selection and privacy projection
+
+Daily output includes item count, public topic groups, ranked items, failed
+processing references and generic suggested actions. Weekly output adds repeated
+public themes, Inbox items at importance 70 or higher, public projects inactive
+for 30 days, items 7 days from the 90-day archive threshold, and an explicit note
+that contradictions are not evaluated until a source-backed relation exists.
+
+Before each send, every referenced item is re-read:
+
+- Public: neutral title/label and authenticated Web Inbox link.
+- Personal and Unknown: `Private item` and authenticated link.
+- Sensitive: `Private item due for review.` and authenticated link.
+- Deleted and Duplicate: omitted.
+
+Raw text, notes, summaries, excerpts, attachments, restricted topics, credentials
+and source URLs are never sent. Messages are plain text and deterministically
+bounded below Telegram's 4,096-character limit.
+
+### Delivery, retry and reconciliation
+
+Telegram delivery uses a lease and owner-checked finalization. HTTP 429 honors
+Telegram `retry_after`; definite network and 5xx failures use bounded backoff;
+401/403 and configuration errors fail terminally. A timeout or malformed success
+response becomes `unknown` because Telegram may have accepted the message.
+`unknown` is never automatically retried.
+
+Authenticated operator routes:
+
+- `POST /api/v1/digests/generate`
+- `GET /api/v1/digests/:id`
+- `POST /api/v1/digests/:id/regenerate`
+- `POST /api/v1/digests/:id/review`
+- `POST /api/v1/digests/:id/deliver`
+- `POST /api/v1/digest-deliveries/:id/retry`
+- `POST /api/v1/digest-deliveries/:id/reconcile`
+- `POST /api/v1/digest-deliveries/:id/cancel`
+
+Only definite `failed` deliveries can be retried. Reconcile an `unknown` result
+as `sent` with the observed Telegram message ID or as `failed` after checking the
+private destination. Empty periods are recorded as `skipped` and do not call
+Telegram.
+
+### Credential rotation and rollback
+
+Rotate the bot token with `@BotFather`, replace `TELEGRAM_BOT_TOKEN`, run `getMe`,
+verify `TELEGRAM_CHAT_ID` with `getChat`, and send one neutral message. Never log
+the token, chat ID or message text. To roll back delivery without affecting
+capture/search, remove or disable the two digest cron expressions while retaining
+the hourly cron. Existing runs and delivery evidence remain readable.

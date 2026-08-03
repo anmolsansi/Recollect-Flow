@@ -55,3 +55,15 @@
 ## Decision change control
 
 Changing a frozen decision requires a Contract Change Record: problem/evidence, chosen option, alternatives, affected API/data/security/UX/cost, migration/compatibility/rollback, requirement/ticket/test/docs/Linear updates, owner/architect approval, and effective version/date.
+
+## OPE-226 frozen digest decisions
+
+| ID      | Decision                                                                   | Reason                                                                                            |
+| ------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| ADR-024 | Digest item links target the authenticated Web Inbox item-detail route     | The owner can inspect the canonical item without depending on Notion or exposing source URLs.     |
+| ADR-025 | Ambiguous Telegram sends become `unknown` and require reconciliation       | Telegram has no idempotency key; automatic retry after a possible accepted send risks duplicates. |
+| ADR-026 | Scheduled periods use completed Asia/Kolkata calendar days and weeks       | Calendar boundaries remain correct across month, year and leap-day transitions.                   |
+| ADR-027 | Contradictions are not inferred until an explicit evidence relation exists | Keyword heuristics would create unsupported claims; weekly output states the limitation.          |
+
+The daily schedule is 07:30 IST (`0 2 * * *` UTC). The weekly schedule is Monday
+07:45 IST (`15 2 * * 1` UTC). The hourly processing schedule remains separate.

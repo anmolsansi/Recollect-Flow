@@ -1,19 +1,28 @@
 import { createApp } from './app';
 import { D1AttachmentRepository } from './attachments/attachment.repository';
 import { cleanupExpiredAttachments } from './attachments/attachment.service';
-import { processNotionSyncJobs } from './sync/sync.worker';
+import {
+  scheduledWorkForCron,
+  type ScheduledWork,
+} from './digests/digest-schedule';
+import { processScheduledDigest } from './digests/digest.worker';
 import { processEnrichJobs } from './jobs/enrich.worker';
 import { processExtractionJobs } from './jobs/extraction/extraction.worker';
+import { processNotionSyncJobs } from './sync/sync.worker';
 
 const app = createApp();
 
-export default {
-  fetch: app.fetch,
-  async scheduled(
-    _controller: ScheduledController,
-    env: Cloudflare.Env,
-    context: ExecutionContext,
-  ) {
+export function scheduledWork(cron: string): ScheduledWork {
+  return scheduledWorkForCron(cron);
+}
+
+export async function handleScheduled(
+  controller: ScheduledController,
+  env: Cloudflare.Env,
+  context: ExecutionContext,
+): Promise<void> {
+  const work = scheduledWorkForCron(controller.cron);
+  if (work === 'background') {
     context.waitUntil(
       cleanupExpiredAttachments(
         new D1AttachmentRepository(env.DB),
@@ -29,5 +38,24 @@ export default {
         env.NOTION_DATABASE_ID,
       ),
     );
-  },
+    return;
+  }
+  if (work === 'daily' || work === 'weekly') {
+    context.waitUntil(
+      processScheduledDigest(env, work, new Date(controller.scheduledTime)),
+    );
+    return;
+  }
+  console.warn(
+    JSON.stringify({
+      event: 'scheduled_cron_unrecognized',
+      cron: controller.cron,
+      scheduled_time: controller.scheduledTime,
+    }),
+  );
+}
+
+export default {
+  fetch: app.fetch,
+  scheduled: handleScheduled,
 };

@@ -130,3 +130,26 @@ Question/filter/privacy/corpus/index/prompt/context hash to validated answer; an
 ## Migration policy
 
 Wrangler migrations are forward-only under `migrations/`. Manual rollback scripts live under `docs/sql` so Wrangler cannot auto-apply them. Every schema change documents forward/backfill/compatibility/rollback/export impact, updates fixtures/tests, and preserves raw-source readability across versions.
+
+## OPE-226 digest persistence
+
+Migration `0019_add_digest_jobs.sql` implements three durable entities:
+
+- `digest_runs` stores the digest period, `Asia/Kolkata` boundaries, selector and
+  generation versions, canonical payload, deterministic content hash, optional
+  AI wording metadata, and review state. Regeneration creates a new generation
+  version; unchanged source state produces the same content hash.
+- `digest_deliveries` stores one destination claim per run, bounded attempts,
+  availability, lease ownership/expiry, safe error code, Telegram message ID,
+  and final `sent`, `failed`, `unknown`, or `skipped` evidence. `unknown` is not
+  automatically retried.
+- `digest_audit_events` records generation, review, queueing, retry,
+  reconciliation, cancellation, delivery and empty-period suppression without
+  message text or credentials.
+
+Daily selection contains eligible item IDs, public-only topic groups, ranked
+item IDs and failed-processing references. Weekly selection additionally stores
+public repeated themes, unreviewed items with `importance >= 70`, public projects
+inactive for 30 days, and Inbox items 7 days from the 90-day archive threshold.
+Deleted and Duplicate items are excluded. All referenced items are re-read before
+delivery so deletion or a stricter privacy classification takes effect immediately.

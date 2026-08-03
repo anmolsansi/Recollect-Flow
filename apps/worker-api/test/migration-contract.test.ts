@@ -61,6 +61,10 @@ const searchRebuildScript = readFileSync(
   new URL('../../../scripts/rebuild-item-search-index.sql', import.meta.url),
   'utf8',
 );
+const digestMigration = readFileSync(
+  new URL('../../../migrations/0019_add_digest_jobs.sql', import.meta.url),
+  'utf8',
+);
 
 describe('0001_initial migration contract', () => {
   it('creates every V1 durability table', () => {
@@ -213,6 +217,26 @@ describe('follow-up migration contracts', () => {
     expect(searchMigration).toContain('json_valid(NEW.topics_json)');
     expect(searchMigration).toContain('json_valid(NEW.people)');
     expect(searchMigration).toContain('json_valid(NEW.companies)');
+  });
+
+  it('adds durable, lease-protected and auditable digest delivery state', () => {
+    for (const table of [
+      'digest_runs',
+      'digest_deliveries',
+      'digest_audit_events',
+    ]) {
+      expect(digestMigration).toContain(`CREATE TABLE ${table}`);
+    }
+    expect(digestMigration).toContain(
+      'UNIQUE(digest_type, period_start, period_end, generation_version)',
+    );
+    expect(digestMigration).toContain('UNIQUE(digest_run_id, destination)');
+    expect(digestMigration).toContain("'unknown'");
+    expect(digestMigration).toContain('lease_owner');
+    expect(digestMigration).toContain('lease_expires_at');
+    expect(digestMigration).toContain('telegram_message_id');
+    expect(digestMigration).toContain('content_hash');
+    expect(digestMigration).toContain('review_status');
   });
 
   it('keeps the OPE-225 rebuild operational, repeatable and verifiable', () => {

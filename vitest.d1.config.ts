@@ -14,6 +14,7 @@ export default defineConfig({
           'MIGRATION_DB',
           'OPE222_MIGRATION_DB',
           'OPE248_MIGRATION_DB',
+          'OPE226_MIGRATION_DB',
         ],
         r2Buckets: ['ATTACHMENTS'],
         bindings: {
@@ -25,6 +26,8 @@ export default defineConfig({
           NOTION_DATABASE_ID: 'test-notion-database',
           TELEGRAM_BOT_TOKEN: 'test-telegram-token',
           TELEGRAM_CHAT_ID: 'test-telegram-chat',
+          WEB_INBOX_BASE_URL: 'https://inbox.example.test/',
+          DIGEST_AI_ENABLED: 'false',
           MAX_ATTACHMENT_BYTES: '25000000',
           UPLOAD_TTL_SECONDS: '3600',
           MOCK_AI_ENABLED: 'true',

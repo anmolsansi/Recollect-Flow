@@ -51,3 +51,13 @@
 ## Documentation completeness matrix
 
 All source PRD sections are covered: executive/product definition (`COMPLETE_PRODUCT_SPEC`), problems/principles/users/use cases (`COMPLETE_PRODUCT_SPEC`, `USE_CASES`), goals/metrics/scope/releases (`COMPLETE_PRODUCT_SPEC`, `RELEASE_ROADMAP`), UX/functional requirements (`USE_CASES`, `REQUIREMENTS_CATALOG`), Notion (`NOTION_INFORMATION_ARCHITECTURE`), architecture/data/API (`ARCHITECTURE`, `DATA_MODEL`, `API_SPEC`), extraction/RAG (`AI_AND_RAG_SPEC`), notifications (`USE_CASES`, Notion/requirements), security/cost/Instagram/operations/testing (`SECURITY`, `OPERATIONS`, `TESTING`), implementation/risks/launch/future (`RELEASE_ROADMAP`, `RISK_REGISTER`, `LAUNCH`), appendices (`PROMPTS_AND_SCHEMAS`, `OFFICIAL_SOURCES`, this traceability file).
+
+## OPE-226 digest trace
+
+| Requirements | Repository evidence                                                                 | Automated verification                                                         |
+| ------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| DIG-001      | `digests/digest.selector.ts`, deterministic renderer, authenticated item links      | Non-empty daily D1 test with count, topics, top items, failures and actions    |
+| DIG-002      | Weekly repeated themes, high-value Inbox, dormant-project and archive-warning rules | Weekly D1 fixture verifies every section and explicit contradiction limitation |
+| DIG-003      | Delivery-time privacy recheck and neutral restricted projections                    | Public/Personal/Unknown/Sensitive fixture plus privacy-change-before-send test |
+| DIG-004      | Versioned `digest_runs`, content hash, review/audit and admin actions               | Duplicate schedule convergence, deterministic regeneration and route tests     |
+| OPS-001/004  | Safe delivery states/errors, leases, IDs and metadata-only logs                     | 429, auth, 5xx, network, malformed response, timeout and lease tests           |
