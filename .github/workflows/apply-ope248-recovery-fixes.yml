@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/ope-248-recovery-ux-fixes
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
