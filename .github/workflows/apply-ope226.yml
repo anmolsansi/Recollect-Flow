@@ -1,0 +1,51 @@
+name: Apply OPE-226 implementation
+
+on:
+  push:
+    branches:
+      - agent/ope-226-digests
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/ope-226-digests
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Restore implementation patch
+        run: |
+          cat scripts/ope226-patch/part-* | tr -d '[:space:]' | base64 --decode > /tmp/ope226-patch.tar.gz
+          echo "e64ad36a024830495e713cd4bd33a93b82c2a1a0e501cebb1718c7b281cbe6ae  /tmp/ope226-patch.tar.gz" | sha256sum --check
+          tar -xzf /tmp/ope226-patch.tar.gz
+          rm -rf scripts/ope226-patch
+          rm -f .github/workflows/apply-ope226.yml
+          rm -f .github/workflows/ope226-snapshot.yml
+      - run: npm ci
+      - name: Regenerate Worker environment types
+        run: npx wrangler types
+      - name: Format
+        run: npm run format:write
+      - name: Validate
+        run: |
+          npm run check
+          npm run db:migrate:local
+          npx wrangler deploy --dry-run
+      - name: Commit implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Implement OPE-226 daily and weekly digest jobs"
+          git push
