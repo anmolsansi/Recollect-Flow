@@ -28,6 +28,37 @@ jobs:
           rm -rf scripts/ope226-patch
           rm -f .github/workflows/apply-ope226.yml
           rm -f .github/workflows/ope226-snapshot.yml
+      - name: Apply validation fixes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('apps/worker-api/src/digests/digest.renderer.ts')
+          source = path.read_text()
+          marker = 'function invalidAiText(value: string): boolean {'
+          helper = '''function containsControlCharacters(value: string): boolean {
+            return Array.from(value).some((character) => {
+              const code = character.charCodeAt(0);
+              return (
+                (code >= 0 && code <= 8) ||
+                code === 11 ||
+                code === 12 ||
+                (code >= 14 && code <= 31) ||
+                code === 127
+              );
+            });
+          }
+
+          '''
+          if marker not in source:
+              raise RuntimeError('Digest AI validation marker not found')
+          source = source.replace(marker, helper + marker, 1)
+          control_regex = r'/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/u.test(value)'
+          if control_regex not in source:
+              raise RuntimeError('Digest AI control regex not found')
+          source = source.replace(control_regex, 'containsControlCharacters(value)', 1)
+          path.write_text(source)
+          PY
       - run: npm ci
       - name: Regenerate Worker environment types
         run: npx wrangler types
