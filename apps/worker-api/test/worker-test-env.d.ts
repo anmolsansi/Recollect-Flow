@@ -7,6 +7,7 @@ declare global {
       MIGRATION_DB?: D1Database;
       OPE222_MIGRATION_DB?: D1Database;
       OPE248_MIGRATION_DB?: D1Database;
+      OPE226_MIGRATION_DB?: D1Database;
     }
   }
 }

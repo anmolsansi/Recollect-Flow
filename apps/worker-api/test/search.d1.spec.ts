@@ -587,6 +587,7 @@ describe('OPE-225 FTS5 search integration', () => {
       'ope225-search-owner',
       5,
       1,
+      new Date('2100-01-01T00:00:00.000Z'),
     );
     expect(job?.itemId).toBe(captureBody.data.capture_id);
     if (!job) throw new Error('Expected the capture enrichment job');

@@ -201,3 +201,16 @@ Vector/generation outage degrades to lexical retrieval or evidence-only results,
 ## Pagination, concurrency, and idempotency
 
 List/search endpoints use stable cursor pagination. Mutable resources expose an update/version token. Create/finalize/retry/digest/export operations accept idempotency semantics. Duplicate delivery must never produce duplicate canonical items, Notion pages, jobs, answer caches, or purge actions.
+
+## Digest administration
+
+All digest endpoints require the admin token or signed admin session.
+
+- `POST /api/v1/digests/generate` — `{ digest_type, scheduled_at?, deliver? }`.
+- `GET /api/v1/digests/:id` — run, delivery history and audit history.
+- `POST /api/v1/digests/:id/regenerate` — creates a new generation version.
+- `POST /api/v1/digests/:id/review` — records operator review.
+- `POST /api/v1/digests/:id/deliver` — queues a reviewed run.
+- `POST /api/v1/digest-deliveries/:id/retry` — definite failures only.
+- `POST /api/v1/digest-deliveries/:id/reconcile` — resolves `unknown` as sent or failed.
+- `POST /api/v1/digest-deliveries/:id/cancel` — cancels pending or failed delivery.

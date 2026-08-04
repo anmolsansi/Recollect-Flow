@@ -3,3 +3,6 @@ ADMIN_TOKEN="local-admin-token"
 NOTION_ACCESS_TOKEN="local-notion-access-token"
 TELEGRAM_BOT_TOKEN="local-telegram-bot-token"
 TELEGRAM_CHAT_ID="local-private-chat-id"
+
+WEB_INBOX_BASE_URL="http://localhost:5173"
+DIGEST_AI_ENABLED="false"

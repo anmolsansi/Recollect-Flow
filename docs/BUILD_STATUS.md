@@ -80,3 +80,17 @@
 This is not V1. Remaining slices include physical-iPhone Shortcut completion/device QA, reusable provider execution under OPE-222, Notion projection, extraction/enrichment execution, OPE-225 production migration/deployment smoke testing, resurfacing, observability dashboards, backup/export/deletion/recovery, and full production end-to-end acceptance.
 
 RAG is intentionally not started. It remains a V1.5 milestone gated by V1 acceptance and 100 useful captures.
+
+## OPE-226 implementation branch
+
+Branch `agent/ope-226-digests` implements local daily digest and weekly review
+infrastructure. It includes migration `0019`, Asia/Kolkata period calculation,
+deterministic selection/rendering, delivery-time privacy rechecks, optional AI
+wording with deterministic fallback, retry-safe Telegram delivery, operator
+review/regeneration/reconciliation routes, explicit cron routing, and migration,
+D1, privacy, scheduler and Telegram failure tests.
+
+Local/CI completion does not constitute production acceptance. Production still
+requires an authorized private Telegram destination, configured Web Inbox base
+URL, migration/deployment evidence, one neutral credential smoke test, and seven
+eligible consecutive daily deliveries.
