@@ -224,7 +224,16 @@ export async function executeSearch(
 
   if (input.topic) {
     conditions.push(
-      'EXISTS (SELECT 1 FROM json_each(i.topics_json) WHERE value = ?)',
+      `EXISTS (
+        SELECT 1
+        FROM json_each(
+          CASE
+            WHEN json_valid(i.topics_json) THEN i.topics_json
+            ELSE '[]'
+          END
+        )
+        WHERE value = ?
+      )`,
     );
     params.push(input.topic);
   }
