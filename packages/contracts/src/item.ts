@@ -48,6 +48,15 @@ export const itemResponseSchema = z
     why_it_matters: z.string().nullable().optional(),
     notion_page_id: z.string().nullable().optional(),
     notion_missing_at: timestampSchema.nullable().optional(),
+    notion_recovery: z.object({
+      eligible: z.boolean(),
+      reason: z.enum([
+        'eligible',
+        'item_deleted',
+        'projection_not_missing',
+        'projection_reference_missing',
+      ]),
+    }),
   })
   .passthrough();
 

@@ -1,4 +1,4 @@
-# Build status — 2026-08-02
+# Build status — 2026-08-08
 
 ## Completed and deployed
 
@@ -94,3 +94,16 @@ Local/CI completion does not constitute production acceptance. Production still
 requires an authorized private Telegram destination, configured Web Inbox base
 URL, migration/deployment evidence, one neutral credential smoke test, and seven
 eligible consecutive daily deliveries.
+
+## OPE-248 local acceptance
+
+The recovery-capable Web Inbox and authoritative item-review surface are locally
+acceptance-complete. The full gate passes 104 Node tests, 74 Worker-runtime D1
+tests and 9 Web tests. A fresh isolated D1 applied all 16 migrations, the Worker
+deployment dry run passed, and browser acceptance covered authentication,
+search, edit/lifecycle/privacy concurrency, immutable evidence, feedback,
+manual retry, Notion recreation, soft-delete/restore and mobile layout.
+
+Local acceptance does not constitute production acceptance. Deployment,
+representative production-item verification, and a real Notion outage/missing
+page rehearsal remain explicit release gates. See `tickets/OPE-248.md`.

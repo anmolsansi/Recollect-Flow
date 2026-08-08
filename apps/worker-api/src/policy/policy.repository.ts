@@ -40,10 +40,23 @@ export class D1PolicyRepository implements PolicyRepository {
       this.database
         .prepare(
           `UPDATE items
-           SET privacy_level = ?1, title = NULL, summary = NULL,
-               suggested_action = NULL, processing_status = ?2,
+           SET privacy_level = ?1,
+               title = CASE WHEN EXISTS (
+                 SELECT 1 FROM item_field_overrides
+                 WHERE item_id = ?4 AND field_name = 'title'
+               ) THEN title ELSE NULL END,
+               summary = CASE WHEN EXISTS (
+                 SELECT 1 FROM item_field_overrides
+                 WHERE item_id = ?4 AND field_name = 'summary'
+               ) THEN summary ELSE NULL END,
+               suggested_action = CASE WHEN EXISTS (
+                 SELECT 1 FROM item_field_overrides
+                 WHERE item_id = ?4 AND field_name = 'suggested_action'
+               ) THEN suggested_action ELSE NULL END,
+               processing_status = ?2,
                updated_at = ?3, edit_version = edit_version + 1
-           WHERE id = ?4 AND edit_version = ?5 AND deleted_at IS NULL`,
+           WHERE id = ?4 AND edit_version = ?5 AND deleted_at IS NULL
+           RETURNING edit_version`,
         )
         .bind(
           input.privacy_level,
@@ -112,10 +125,13 @@ export class D1PolicyRepository implements PolicyRepository {
       );
     }
 
-    const results = await this.database.batch(statements);
-    if (results[0]?.meta.changes !== 1) {
+    const results = await this.database.batch<{ edit_version: number }>(
+      statements,
+    );
+    const editVersion = results[0]?.results[0]?.edit_version;
+    if (typeof editVersion !== 'number') {
       throw new AppError(409, 'VERSION_CONFLICT', 'Item version conflict.');
     }
-    return input.edit_version + 1;
+    return editVersion;
   }
 }

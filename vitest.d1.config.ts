@@ -9,6 +9,7 @@ export default defineConfig({
     cloudflareTest(async () => ({
       main: './apps/worker-api/src/index.ts',
       miniflare: {
+        compatibilityDate: '2026-08-01',
         d1Databases: [
           'DB',
           'MIGRATION_DB',
