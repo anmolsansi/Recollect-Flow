@@ -19,22 +19,25 @@
 
 - OPE-225 D1 FTS5 `item_search_fts` index, synchronization triggers,
   admin-only search API, structural snippets, combinable filters, and stable
-  keyset pagination are implemented on `feature/ope-225-search`.
+  keyset pagination are locally acceptance-complete. Legacy malformed topic JSON
+  also remains safe when combined with the topic filter.
 - This local completion does not mean the production migration, deployment,
-  smoke test, PR merge, or Linear closure has occurred.
+  smoke test, or Linear closure has occurred.
 
 ## OPE-225 local acceptance evidence
 
-- **Full gate**: `npm run check` passes: 11 Node test files / 87 tests and
-  5 D1 test files / 47 tests, with formatting, lint, and typecheck green.
+- **Full gate**: `npm run check` passes: 15 Node test files / 104 tests,
+  10 workerd-backed D1 test files / 74 tests, and 2 Web test files / 9 tests,
+  with formatting, lint, typecheck, contracts, and the Web build green.
 - **Behavior evidence**: the D1 suite covers the real capture and search routes,
   all eight indexed fields, enrichment/reprocessing replacement, every privacy
   level under admin scope, rejected capture/local/invalid tokens, AI-independent
   search, combined filters, safe snippets, deletion/restoration, malformed
   legacy JSON, cursor rejection, and a 120-item tied traversal without duplicate
   or omitted IDs.
-- **Migration evidence**: the complete migration chain through
-  `0016_add_item_search_fts.sql` applies to an isolated fresh local D1. A
+- **Migration evidence**: all 16 migration files through
+  `0019_add_digest_jobs.sql`, including `0016_add_item_search_fts.sql`, apply to
+  an isolated fresh local D1. A
   populated-through-0015 fixture verifies backfill of an existing item, including
   malformed legacy topic JSON.
 - **Rebuild evidence**: `scripts/rebuild-item-search-index.sql` was run twice
@@ -46,7 +49,7 @@
   `SCAN fts VIRTUAL TABLE INDEX 0:M9`, then primary-key lookup on `items`; the
   implementation does not scan raw text with `LIKE`.
 - **Worker gates**: Wrangler 4.116.0 reports binding types current, dry-run bundle
-  success (2779.88 KiB / 642.08 KiB gzip), and a 53.6 ms local startup profile
+  success (2879.66 KiB / 662.25 KiB gzip), and an 80.1 ms local startup profile
   window.
 - **Accepted limitations**:
   - `C++` is currently indexed and searched as `C` because of the FTS5 `unicode61` tokenizer.
@@ -56,8 +59,7 @@
   - Page size may change between cursor requests.
   - Snippets are structured text segments; clients must render segment text as
     text rather than using `innerHTML`.
-- **Source state**: local working-tree changes after `428d0b0`; not yet
-  committed, pushed, deployed, or merged.
+- **Detailed evidence**: see `tickets/OPE-225.md`.
 
 ## Acceptance evidence
 
@@ -77,18 +79,22 @@
 
 ## Not complete
 
-This is not V1. Remaining slices include physical-iPhone Shortcut completion/device QA, reusable provider execution under OPE-222, Notion projection, extraction/enrichment execution, OPE-225 production migration/deployment smoke testing, resurfacing, observability dashboards, backup/export/deletion/recovery, and full production end-to-end acceptance.
+This is not V1. Remaining slices include physical-iPhone Shortcut completion/device QA, reusable provider execution under OPE-222, Notion projection, extraction/enrichment execution, OPE-225/OPE-226 production migration/deployment and live delivery evidence, resurfacing, observability dashboards, backup/export/deletion/recovery, and full production end-to-end acceptance.
 
 RAG is intentionally not started. It remains a V1.5 milestone gated by V1 acceptance and 100 useful captures.
 
-## OPE-226 implementation branch
+## OPE-226 local completion
 
-Branch `agent/ope-226-digests` implements local daily digest and weekly review
-infrastructure. It includes migration `0019`, Asia/Kolkata period calculation,
+The daily digest and weekly review infrastructure is locally acceptance-complete.
+It includes migration `0019`, Asia/Kolkata period calculation,
 deterministic selection/rendering, delivery-time privacy rechecks, optional AI
 wording with deterministic fallback, retry-safe Telegram delivery, operator
 review/regeneration/reconciliation routes, explicit cron routing, and migration,
 D1, privacy, scheduler and Telegram failure tests.
+
+The complete gate passes 104 Node tests, 74 workerd-backed D1 tests and 9 Web
+tests. Fresh local D1 migration, generated binding type checks, Worker deploy dry
+run, and startup profiling also pass. See `tickets/OPE-226.md`.
 
 Local/CI completion does not constitute production acceptance. Production still
 requires an authorized private Telegram destination, configured Web Inbox base

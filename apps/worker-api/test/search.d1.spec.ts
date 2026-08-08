@@ -703,6 +703,7 @@ describe('OPE-225 FTS5 search integration', () => {
   });
 
   it('handles malformed topics and returns bounded inert snippet segments', async () => {
+    const app = createApp();
     const now = new Date().toISOString();
     await env.DB.prepare(
       `INSERT INTO items (
@@ -727,6 +728,14 @@ describe('OPE-225 FTS5 search integration', () => {
     expect(item?.snippet.segments.length).toBeLessThanOrEqual(10);
     expect(getSnippetText(item!.snippet).length).toBeLessThanOrEqual(150);
     expect(getSnippetText(item!.snippet)).not.toMatch(/[\uE000-\uF8FF]/u);
+
+    const filtered = await app.request(
+      '/api/v1/search?topic=legacy-topic',
+      { headers: adminHeaders() },
+      env,
+    );
+    expect(filtered.status).toBe(200);
+    expect(searchResponseSchema.parse(await filtered.json()).data).toEqual([]);
   });
 
   it('removes, restores, and defensively hard-deletes indexed items', async () => {
