@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BrowserRouter,
   Link,
@@ -14,6 +14,7 @@ import type {
 } from '@recollect/contracts';
 
 import {
+  AUTH_REQUIRED_EVENT,
   ApiError,
   fetchApi,
   fetchApiEnvelope,
@@ -49,6 +50,10 @@ function messageFor(error: unknown): string {
     : 'An unexpected error occurred.';
 }
 
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === 'AbortError';
+}
+
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const [authState, setAuthState] = useState<AuthState>('checking');
   const [inputToken, setInputToken] = useState('');
@@ -58,6 +63,11 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
     getAdminSession()
       .then(() => setAuthState('authenticated'))
       .catch(() => setAuthState('unauthenticated'));
+
+    const requireAuthentication = () => setAuthState('unauthenticated');
+    window.addEventListener(AUTH_REQUIRED_EVENT, requireAuthentication);
+    return () =>
+      window.removeEventListener(AUTH_REQUIRED_EVENT, requireAuthentication);
   }, []);
 
   if (authState === 'checking') {
@@ -115,35 +125,51 @@ function Inbox() {
   const [nextCursor, setNextCursor] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const activeRequest = useRef<AbortController | null>(null);
 
-  const load = async (cursor?: string) => {
-    setLoading(true);
-    setError('');
-    try {
-      const params = new URLSearchParams({ limit: '25' });
-      if (query.trim()) params.set('q', query.trim());
-      if (topic.trim()) params.set('topic', topic.trim());
-      if (filter !== 'All') params.set('lifecycle_status', filter);
-      if (cursor) params.set('cursor', cursor);
+  const load = useCallback(
+    async (cursor?: string) => {
+      activeRequest.current?.abort();
+      const controller = new AbortController();
+      activeRequest.current = controller;
+      setLoading(true);
+      setError('');
+      try {
+        const params = new URLSearchParams({ limit: '25' });
+        if (query.trim()) params.set('q', query.trim());
+        if (topic.trim()) params.set('topic', topic.trim());
+        if (filter !== 'All') params.set('lifecycle_status', filter);
+        if (cursor) params.set('cursor', cursor);
 
-      const response = await fetchApiEnvelope<SearchItem[]>(
-        `/items?${params.toString()}`,
-      );
-      setItems((current) =>
-        cursor ? [...current, ...response.data] : response.data,
-      );
-      setNextCursor(response.meta.next_cursor);
-    } catch (loadError) {
-      setError(messageFor(loadError));
-    } finally {
-      setLoading(false);
-    }
-  };
+        const response = await fetchApiEnvelope<SearchItem[]>(
+          `/items?${params.toString()}`,
+          { signal: controller.signal },
+        );
+        setItems((current) =>
+          cursor ? [...current, ...response.data] : response.data,
+        );
+        setNextCursor(response.meta.next_cursor);
+      } catch (loadError) {
+        if (!isAbortError(loadError)) setError(messageFor(loadError));
+      } finally {
+        if (activeRequest.current === controller) {
+          activeRequest.current = null;
+          setLoading(false);
+        }
+      }
+    },
+    [filter, query, topic],
+  );
 
   useEffect(() => {
     const timeout = window.setTimeout(() => void load(), 250);
-    return () => window.clearTimeout(timeout);
-  }, [filter, query, topic]);
+    return () => {
+      window.clearTimeout(timeout);
+      const request = activeRequest.current;
+      activeRequest.current = null;
+      request?.abort();
+    };
+  }, [load]);
 
   return (
     <main className="main-content fade-in">
@@ -300,23 +326,30 @@ function ItemDetail() {
   const [notice, setNotice] = useState('');
   const mutationLock = useRef(false);
 
-  const load = async () => {
-    setError('');
-    try {
-      const response = await fetchApi<ItemDetailData>(`/items/${id}`);
-      setDetail(response);
-      setDraft(response.item);
-      setOriginal(response.item);
-      setTopicsText(response.item.topics.join(', '));
-      setDuplicateTarget(response.item.duplicate_of ?? '');
-    } catch (loadError) {
-      setError(messageFor(loadError));
-    }
-  };
+  const load = useCallback(
+    async (signal?: AbortSignal) => {
+      setError('');
+      try {
+        const response = await fetchApi<ItemDetailData>(`/items/${id}`, {
+          signal,
+        });
+        setDetail(response);
+        setDraft(response.item);
+        setOriginal(response.item);
+        setTopicsText(response.item.topics.join(', '));
+        setDuplicateTarget(response.item.duplicate_of ?? '');
+      } catch (loadError) {
+        if (!isAbortError(loadError)) setError(messageFor(loadError));
+      }
+    },
+    [id],
+  );
 
   useEffect(() => {
-    void load();
-  }, [id]);
+    const controller = new AbortController();
+    void load(controller.signal);
+    return () => controller.abort();
+  }, [load]);
 
   const changed = useMemo(() => {
     if (!draft || !original) return false;
@@ -601,8 +634,20 @@ function ItemDetail() {
                 })
               }
             >
-              {['Inbox', 'Reviewed', 'Actioned', 'Archived'].map((value) => (
-                <option key={value}>{value}</option>
+              {[
+                'Inbox',
+                'Reviewed',
+                'Actioned',
+                'Archived',
+                'Duplicate',
+                'Deleted',
+              ].map((value) => (
+                <option
+                  disabled={value === 'Duplicate' || value === 'Deleted'}
+                  key={value}
+                >
+                  {value}
+                </option>
               ))}
             </select>
           </Field>
@@ -737,7 +782,8 @@ function ItemDetail() {
               {attempt.lastErrorCode ? `(${attempt.lastErrorCode})` : ''}
             </span>
             {attempt.visibleStatus === 'failed' &&
-              attempt.lastErrorCode !== 'NOTION_PAGE_MISSING' && (
+              attempt.lastErrorCode !== 'NOTION_PAGE_MISSING' &&
+              attempt.lastErrorCode !== 'SUPERSEDED_BY_RECREATION' && (
                 <button
                   className="btn btn-outline"
                   disabled={saving}
@@ -754,7 +800,7 @@ function ItemDetail() {
               )}
           </div>
         ))}
-        {draft.notion_missing_at && (
+        {draft.notion_recovery.eligible && (
           <button
             className="btn btn-outline"
             disabled={saving}
@@ -768,6 +814,13 @@ function ItemDetail() {
           >
             Recreate missing Notion page
           </button>
+        )}
+        {draft.notion_missing_at && !draft.notion_recovery.eligible && (
+          <p>
+            Notion recovery is unavailable: the missing projection cannot be
+            safely identified. Preserve the source evidence and inspect the sync
+            history before retrying.
+          </p>
         )}
       </Section>
 

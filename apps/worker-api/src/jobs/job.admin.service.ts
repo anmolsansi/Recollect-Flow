@@ -67,6 +67,32 @@ interface RetrySyncRow {
   notion_missing_at: string | null;
 }
 
+export type NotionRecreationReason =
+  | 'eligible'
+  | 'item_deleted'
+  | 'projection_not_missing'
+  | 'projection_reference_missing';
+
+export interface NotionRecreationEligibility {
+  eligible: boolean;
+  reason: NotionRecreationReason;
+}
+
+export function notionRecreationEligibility(item: {
+  deleted_at: string | null;
+  notion_page_id: string | null;
+  notion_missing_at: string | null;
+}): NotionRecreationEligibility {
+  if (item.deleted_at) return { eligible: false, reason: 'item_deleted' };
+  if (!item.notion_missing_at) {
+    return { eligible: false, reason: 'projection_not_missing' };
+  }
+  if (!item.notion_page_id) {
+    return { eligible: false, reason: 'projection_reference_missing' };
+  }
+  return { eligible: true, reason: 'eligible' };
+}
+
 function boundedLimit(limit: number | undefined): number {
   const value = limit ?? 50;
   if (!Number.isInteger(value) || value < 1 || value > MAX_LIST_LIMIT) {
@@ -270,6 +296,7 @@ export class JobAdminService {
       .bind(jobId)
       .first<RetrySyncRow>();
     if (!job || job.status !== 'failed') return false;
+    if (job.last_error_code === 'SUPERSEDED_BY_RECREATION') return false;
     if (job.deleted_at) {
       throw new AppError(
         409,
@@ -313,13 +340,17 @@ export class JobAdminService {
     const nowIso = now.toISOString();
     const item = await this.db
       .prepare(
-        `SELECT id FROM items
-         WHERE id = ?1 AND deleted_at IS NULL
-           AND notion_page_id IS NOT NULL AND notion_missing_at IS NOT NULL`,
+        `SELECT id, deleted_at, notion_page_id, notion_missing_at
+         FROM items WHERE id = ?1`,
       )
       .bind(itemId)
-      .first<{ id: string }>();
-    if (!item) return false;
+      .first<{
+        id: string;
+        deleted_at: string | null;
+        notion_page_id: string | null;
+        notion_missing_at: string | null;
+      }>();
+    if (!item || !notionRecreationEligibility(item).eligible) return false;
     const attemptId = crypto.randomUUID();
     await this.db.batch([
       this.db

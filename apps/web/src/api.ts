@@ -1,4 +1,5 @@
 const API_BASE = '/api/v1';
+export const AUTH_REQUIRED_EVENT = 'recollect:auth-required';
 
 export interface ApiMeta {
   request_id: string;
@@ -42,6 +43,12 @@ async function request<T>(
 
   if (!response.ok) {
     const errorBody = body as { error?: { message?: string; code?: string } };
+    if (
+      (response.status === 401 || response.status === 403) &&
+      typeof globalThis.dispatchEvent === 'function'
+    ) {
+      globalThis.dispatchEvent(new Event(AUTH_REQUIRED_EVENT));
+    }
     throw new ApiError(
       errorBody?.error?.message ?? 'Request failed',
       response.status,

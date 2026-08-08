@@ -10,7 +10,10 @@ import {
 } from '@recollect/contracts';
 
 import type { AppContext } from '../env';
-import { JobAdminService } from '../jobs/job.admin.service';
+import {
+  JobAdminService,
+  notionRecreationEligibility,
+} from '../jobs/job.admin.service';
 import { searchSchema, searchResponseSchema } from '../search/search.schema';
 import { executeSearch } from '../search/search.service';
 import { requireAdminToken } from '../shared/auth';
@@ -34,6 +37,13 @@ function requestId(context: { get(key: 'requestId'): string | undefined }) {
 
 function validationError(message: string): never {
   throw new AppError(422, 'VALIDATION_ERROR', message);
+}
+
+function returnedEditVersion(
+  result: D1Result<{ edit_version: number }> | undefined,
+): number | null {
+  const version = result?.results[0]?.edit_version;
+  return typeof version === 'number' ? version : null;
 }
 
 async function itemVersion(
@@ -178,6 +188,11 @@ export function itemRoutes() {
           item: {
             ...item,
             topics: parseTopics(item.topics_json as string | null),
+            notion_recovery: notionRecreationEligibility({
+              deleted_at: item.deleted_at as string | null,
+              notion_page_id: item.notion_page_id as string | null,
+              notion_missing_at: item.notion_missing_at as string | null,
+            }),
           },
           attachments: attachments.results ?? [],
           extractions: extractions.results ?? [],
@@ -206,6 +221,14 @@ export function itemRoutes() {
 
     const { edit_version, ...fields } = parsed.data;
     if (Object.keys(fields).length === 0) {
+      const current = await itemVersion(db, itemId);
+      if (
+        !current ||
+        current.edit_version !== edit_version ||
+        current.deleted_at
+      ) {
+        await versionFailure(db, itemId, edit_version);
+      }
       return context.json({
         data: { item_id: itemId, edit_version },
         meta: { request_id: requestId(context) },
@@ -227,7 +250,8 @@ export function itemRoutes() {
         .prepare(
           `UPDATE items SET ${updates.join(', ')}
          WHERE id = ?${index} AND edit_version = ?${index + 1}
-           AND deleted_at IS NULL`,
+           AND deleted_at IS NULL
+         RETURNING edit_version`,
         )
         .bind(...values),
     ];
@@ -279,13 +303,14 @@ export function itemRoutes() {
         ),
     );
 
-    const results = await db.batch(statements);
-    if (results[0]?.meta.changes !== 1) {
+    const results = await db.batch<{ edit_version: number }>(statements);
+    const newVersion = returnedEditVersion(results[0]);
+    if (newVersion === null) {
       await versionFailure(db, itemId, edit_version);
     }
 
     return context.json({
-      data: { item_id: itemId, edit_version: edit_version + 1 },
+      data: { item_id: itemId, edit_version: newVersion },
       meta: { request_id: requestId(context) },
     });
   });
@@ -298,14 +323,15 @@ export function itemRoutes() {
     );
     if (!parsed.success) validationError('Invalid status payload');
     const now = new Date().toISOString();
-    const result = await db.batch([
+    const result = await db.batch<{ edit_version: number }>([
       db
         .prepare(
           `UPDATE items SET lifecycle_status = ?1, updated_at = ?2,
                 edit_version = edit_version + 1
          WHERE id = ?3 AND edit_version = ?4 AND deleted_at IS NULL
            AND lifecycle_status NOT IN ('Deleted', 'Duplicate')
-           AND lifecycle_status != ?1`,
+           AND lifecycle_status != ?1
+         RETURNING edit_version`,
         )
         .bind(
           parsed.data.lifecycle_status,
@@ -327,11 +353,12 @@ export function itemRoutes() {
           now,
         ),
     ]);
-    if (result[0]?.meta.changes !== 1) {
+    const newVersion = returnedEditVersion(result[0]);
+    if (newVersion === null) {
       await versionFailure(db, itemId, parsed.data.edit_version);
     }
     return context.json({
-      data: { item_id: itemId, edit_version: parsed.data.edit_version + 1 },
+      data: { item_id: itemId, edit_version: newVersion },
       meta: { request_id: requestId(context) },
     });
   });
@@ -358,12 +385,13 @@ export function itemRoutes() {
       throw new AppError(404, 'NOT_FOUND', 'Duplicate target not found');
 
     const now = new Date().toISOString();
-    const result = await db.batch([
+    const result = await db.batch<{ edit_version: number }>([
       db
         .prepare(
           `UPDATE items SET lifecycle_status = 'Duplicate', duplicate_of = ?1,
                 updated_at = ?2, edit_version = edit_version + 1
-         WHERE id = ?3 AND edit_version = ?4 AND deleted_at IS NULL`,
+         WHERE id = ?3 AND edit_version = ?4 AND deleted_at IS NULL
+         RETURNING edit_version`,
         )
         .bind(parsed.data.duplicate_of, now, itemId, parsed.data.edit_version),
       db
@@ -380,11 +408,12 @@ export function itemRoutes() {
           now,
         ),
     ]);
-    if (result[0]?.meta.changes !== 1) {
+    const newVersion = returnedEditVersion(result[0]);
+    if (newVersion === null) {
       await versionFailure(db, itemId, parsed.data.edit_version);
     }
     return context.json({
-      data: { item_id: itemId, edit_version: parsed.data.edit_version + 1 },
+      data: { item_id: itemId, edit_version: newVersion },
       meta: { request_id: requestId(context) },
     });
   });
@@ -396,10 +425,11 @@ export function itemRoutes() {
     );
     if (!parsed.success) validationError('Invalid feedback payload');
     const now = new Date().toISOString();
-    await context.env.DB.prepare(
+    const result = await context.env.DB.prepare(
       `INSERT OR IGNORE INTO item_feedback_events
          (id, item_id, idempotency_key, feedback_type, source_surface, created_at)
-       SELECT ?1, id, ?2, ?3, ?4, ?5 FROM items WHERE id = ?6`,
+       SELECT ?1, id, ?2, ?3, ?4, ?5 FROM items WHERE id = ?6
+       RETURNING item_id`,
     )
       .bind(
         crypto.randomUUID(),
@@ -409,7 +439,11 @@ export function itemRoutes() {
         now,
         itemId,
       )
-      .run();
+      .first<{ item_id: string }>();
+    if (!result) {
+      const item = await itemVersion(context.env.DB, itemId);
+      if (!item) throw new AppError(404, 'NOT_FOUND', 'Item not found');
+    }
     return context.json({
       data: { item_id: itemId, accepted: true },
       meta: { request_id: requestId(context) },
@@ -426,7 +460,7 @@ export function itemRoutes() {
       if (!parsed.success) validationError(`Invalid ${action} payload`);
       const now = new Date().toISOString();
       const deleting = action === 'delete';
-      const result = await db.batch([
+      const result = await db.batch<{ edit_version: number }>([
         db
           .prepare(
             deleting
@@ -434,12 +468,14 @@ export function itemRoutes() {
                  deleted_from_lifecycle_status = lifecycle_status,
                  lifecycle_status = 'Deleted', deleted_at = ?1,
                  updated_at = ?1, edit_version = edit_version + 1
-               WHERE id = ?2 AND edit_version = ?3 AND deleted_at IS NULL`
+               WHERE id = ?2 AND edit_version = ?3 AND deleted_at IS NULL
+               RETURNING edit_version`
               : `UPDATE items SET
                  lifecycle_status = COALESCE(deleted_from_lifecycle_status, 'Inbox'),
                  deleted_from_lifecycle_status = NULL, deleted_at = NULL,
                  updated_at = ?1, edit_version = edit_version + 1
-               WHERE id = ?2 AND edit_version = ?3 AND deleted_at IS NOT NULL`,
+               WHERE id = ?2 AND edit_version = ?3 AND deleted_at IS NOT NULL
+               RETURNING edit_version`,
           )
           .bind(now, itemId, parsed.data.edit_version),
         db
@@ -456,11 +492,12 @@ export function itemRoutes() {
             now,
           ),
       ]);
-      if (result[0]?.meta.changes !== 1) {
+      const newVersion = returnedEditVersion(result[0]);
+      if (newVersion === null) {
         await versionFailure(db, itemId, parsed.data.edit_version);
       }
       return context.json({
-        data: { item_id: itemId, edit_version: parsed.data.edit_version + 1 },
+        data: { item_id: itemId, edit_version: newVersion },
         meta: { request_id: requestId(context) },
       });
     });

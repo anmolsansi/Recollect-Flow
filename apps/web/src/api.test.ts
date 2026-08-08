@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchApi, fetchApiEnvelope, getAdminSession } from './api';
+import {
+  AUTH_REQUIRED_EVENT,
+  fetchApi,
+  fetchApiEnvelope,
+  getAdminSession,
+} from './api';
 
 const jsonHeaders = { 'Content-Type': 'application/json' };
 
@@ -80,6 +85,28 @@ describe('web API client', () => {
     await expect(fetchApi('/items/item-1')).rejects.toMatchObject({
       status: 409,
       code: 'VERSION_CONFLICT',
+    });
+  });
+
+  it('notifies the app when an authenticated session is rejected', async () => {
+    const dispatchEvent = vi.fn();
+    vi.stubGlobal('dispatchEvent', dispatchEvent);
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValue(
+          jsonResponse(
+            { error: { code: 'FORBIDDEN', message: 'Session expired' } },
+            403,
+          ),
+        ),
+    );
+
+    await expect(fetchApi('/items')).rejects.toMatchObject({ status: 403 });
+    expect(dispatchEvent).toHaveBeenCalledTimes(1);
+    expect(dispatchEvent.mock.calls[0]?.[0]).toMatchObject({
+      type: AUTH_REQUIRED_EVENT,
     });
   });
 });
