@@ -151,6 +151,116 @@ export class AiCapacityRepository {
     return snapshots;
   }
 
+  async tryApplyReservation(
+    reservation: CapacityReservation,
+    policies: readonly CapacityWindowPolicy[],
+    now: Date,
+  ): Promise<CapacityWindowSnapshot[] | null> {
+    await this.ensureWindows(policies, now);
+    const nowIso = now.toISOString();
+    const applied: CapacityWindowPolicy[] = [];
+    const snapshots: CapacityWindowSnapshot[] = [];
+
+    for (const policy of policies) {
+      const boundary = quotaWindowBoundary(policy, now);
+      const row = await this.db
+        .prepare(
+          `UPDATE ai_capacity_windows
+           SET request_reserved = request_reserved + ?1,
+               input_units_reserved = input_units_reserved + ?2,
+               output_units_reserved = output_units_reserved + ?3,
+               provider_units_reserved = provider_units_reserved + ?4,
+               updated_at = ?5
+           WHERE provider = ?6 AND scope_key = ?7 AND window_kind = ?8
+             AND window_start = ?9 AND window_end > ?5
+             AND (request_limit IS NULL OR request_consumed + request_reserved + ?1 <= request_limit)
+             AND (input_unit_limit IS NULL OR input_units_consumed + input_units_reserved + ?2 <= input_unit_limit)
+             AND (output_unit_limit IS NULL OR output_units_consumed + output_units_reserved + ?3 <= output_unit_limit)
+             AND (provider_unit_limit IS NULL OR provider_units_consumed + provider_units_reserved + ?4 <= provider_unit_limit)
+           RETURNING provider, scope_key, window_kind, window_start, window_end,
+                     request_limit, input_unit_limit, output_unit_limit,
+                     provider_unit_limit, request_reserved, input_units_reserved,
+                     output_units_reserved, provider_units_reserved,
+                     request_consumed, input_units_consumed, output_units_consumed,
+                     provider_units_consumed`,
+        )
+        .bind(
+          reservation.estimate.requests,
+          reservation.estimate.inputUnits,
+          reservation.estimate.outputUnits,
+          reservation.estimate.providerUnits,
+          nowIso,
+          policy.provider,
+          policy.scopeKey,
+          policy.windowKind,
+          boundary.start,
+        )
+        .first<CapacityWindowRow>();
+
+      if (!row) {
+        await this.releaseAppliedWindows(reservation, applied, now);
+        await this.db
+          .prepare(
+            `UPDATE ai_capacity_reservations
+             SET state = 'released', released_at = ?1, updated_at = ?1
+             WHERE id = ?2 AND state = 'active'`,
+          )
+          .bind(nowIso, reservation.id)
+          .run();
+        return null;
+      }
+
+      applied.push(policy);
+      snapshots.push(capacityWindowSnapshot(row));
+    }
+
+    await this.db
+      .prepare(
+        `UPDATE ai_capacity_reservations
+         SET capacity_applied = 1, updated_at = ?1
+         WHERE id = ?2 AND state = 'active'`,
+      )
+      .bind(nowIso, reservation.id)
+      .run();
+
+    return snapshots;
+  }
+
+  private async releaseAppliedWindows(
+    reservation: CapacityReservation,
+    policies: readonly CapacityWindowPolicy[],
+    now: Date,
+  ): Promise<void> {
+    if (policies.length === 0) return;
+    await this.db.batch(
+      policies.map((policy) => {
+        const boundary = quotaWindowBoundary(policy, now);
+        return this.db
+          .prepare(
+            `UPDATE ai_capacity_windows
+             SET request_reserved = MAX(0, request_reserved - ?1),
+                 input_units_reserved = MAX(0, input_units_reserved - ?2),
+                 output_units_reserved = MAX(0, output_units_reserved - ?3),
+                 provider_units_reserved = MAX(0, provider_units_reserved - ?4),
+                 updated_at = ?5
+             WHERE provider = ?6 AND scope_key = ?7 AND window_kind = ?8
+               AND window_start = ?9`,
+          )
+          .bind(
+            reservation.estimate.requests,
+            reservation.estimate.inputUnits,
+            reservation.estimate.outputUnits,
+            reservation.estimate.providerUnits,
+            now.toISOString(),
+            policy.provider,
+            policy.scopeKey,
+            policy.windowKind,
+            boundary.start,
+          );
+      }),
+    );
+  }
+
   async listActiveWindows(
     now: Date = new Date(),
   ): Promise<CapacityWindowSnapshot[]> {
