@@ -11,25 +11,22 @@ dryrun_exit=0
 > prettier --check .
 
 Checking formatting...
-[[33mwarn[39m] apps/worker-api/src/index.ts
-[[33mwarn[39m] apps/worker-api/src/jobs/ai/ai-provider.registry.ts
-[[33mwarn[39m] apps/worker-api/src/jobs/ai/capacity-status.service.ts
-[[33mwarn[39m] apps/worker-api/src/jobs/ai/capacity.estimate.ts
-[[33mwarn[39m] apps/worker-api/src/jobs/ai/capacity.repository.ts
-[[33mwarn[39m] apps/worker-api/src/jobs/ai/capacity.types.ts
-[[33mwarn[39m] apps/worker-api/src/jobs/ai/capacity.utilization.ts
-[[33mwarn[39m] apps/worker-api/src/jobs/ai/circuit-breaker.policy.ts
-[[33mwarn[39m] apps/worker-api/src/jobs/ai/circuit-breaker.repository.ts
-[[33mwarn[39m] apps/worker-api/src/jobs/ai/openrouter.adapter.ts
-[[33mwarn[39m] apps/worker-api/src/jobs/ai/workers-ai.adapter.ts
-[[33mwarn[39m] apps/worker-api/src/jobs/enrich.service.ts
-[[33mwarn[39m] apps/worker-api/test/capacity-registry.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/capacity-usage.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/capacity.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/capacity.policy.test.ts
-[[33mwarn[39m] apps/worker-api/test/circuit-breaker.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/provider-fallback.test.ts
-[[33mwarn[39m] Code style issues found in 18 files. Run Prettier with --write to fix.
+All matched files use Prettier code style!
+
+> recollect-flow@0.1.0 lint
+> eslint .
+
+
+/home/runner/work/Recollect-Flow/Recollect-Flow/apps/worker-api/test/capacity-registry.d1.spec.ts
+  48:5  error  '_text' is defined but never used    @typescript-eslint/no-unused-vars
+  49:5  error  '_config' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/runner/work/Recollect-Flow/Recollect-Flow/apps/worker-api/test/provider-fallback.test.ts
+  29:5  error  '_text' is defined but never used    @typescript-eslint/no-unused-vars
+  30:5  error  '_config' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 4 problems (4 errors, 0 warnings)
+
 === migration tail ===
 🌀 Executing on local database recollect-flow-prod (5fcba514-d0f7-45e7-a632-d4c59233af71) from .wrangler/state/v3/d1:
 🌀 To execute on your remote database, add a --remote flag to your wrangler command.
@@ -117,7 +114,7 @@ Checking formatting...
 ───────────────────────────────────────────────
 
 Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
-Total Upload: 2926.74 KiB / gzip: 671.39 KiB
+Total Upload: 2926.82 KiB / gzip: 671.41 KiB
 Your Worker has access to the following bindings:
 Binding                                                                                Resource                  
 env.DB (recollect-flow-prod)                                                           D1 Database               
