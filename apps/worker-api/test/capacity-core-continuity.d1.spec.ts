@@ -56,7 +56,7 @@ describe('OPE-227 AI-independent core continuity', () => {
 
     const capturedAt = new Date(current.getTime() - 1_000).toISOString();
     const service = new CaptureService(new D1CaptureRepository(env.DB));
-    const captured = await service.capture({
+    const saved = await service.save({
       idempotency_key: 'ope227-hard-quota-continuity',
       source_type: 'text',
       source_app: 'test',
@@ -65,19 +65,20 @@ describe('OPE-227 AI-independent core continuity', () => {
       captured_at: capturedAt,
       client: { name: 'vitest', version: '1.0' },
     });
+    const captureId = saved.capture.id;
 
     const stored = await env.DB.prepare(
       `SELECT id, raw_text, processing_status
        FROM items WHERE id = ?1`,
     )
-      .bind(captured.item.id)
+      .bind(captureId)
       .first<{
         id: string;
         raw_text: string;
         processing_status: string;
       }>();
     expect(stored).toMatchObject({
-      id: captured.item.id,
+      id: captureId,
       raw_text: 'OPE227 continuity zephyr searchable evidence',
     });
 
@@ -85,14 +86,14 @@ describe('OPE-227 AI-independent core continuity', () => {
       q: 'zephyr',
       limit: 25,
     });
-    expect(search.data.map((item) => item.id)).toContain(captured.item.id);
+    expect(search.data.map((item) => item.id)).toContain(captureId);
 
     const scheduled = await env.DB.prepare(
       `SELECT status, provider_eligibility
        FROM processing_jobs
        WHERE item_id = ?1 AND job_type = 'enrich'`,
     )
-      .bind(captured.item.id)
+      .bind(captureId)
       .first<{ status: string; provider_eligibility: string }>();
     expect(scheduled?.status).toBe('pending');
 
