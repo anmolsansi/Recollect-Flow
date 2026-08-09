@@ -153,3 +153,12 @@ public repeated themes, unreviewed items with `importance >= 70`, public project
 inactive for 30 days, and Inbox items 7 days from the 90-day archive threshold.
 Deleted and Duplicate items are excluded. All referenced items are re-read before
 delivery so deletion or a stricter privacy classification takes effect immediately.
+
+<!-- OPE-227 START -->
+
+## OPE-227 AI capacity state
+
+Migration `0020_add_ai_capacity_controls.sql` adds three durable D1 tables. `ai_capacity_windows` stores provider/scope/window hard limits plus reserved and consumed counters. `ai_capacity_reservations` stores bounded pre-call reservations, estimated versus actual request/input/output/provider units, expiry, and reconciliation state. `ai_circuit_breakers` stores provider+operation breaker state, qualifying failure count, next probe time, and the single half-open probe lease.
+
+Quota windows and reservations are operational metadata only; they never contain prompts or raw captured content. Reservation/window mutations use D1 transactional batches or conditional updates so concurrent Workers cannot both consume the final available unit and repeated reconciliation/release is idempotent.
+<!-- OPE-227 END -->

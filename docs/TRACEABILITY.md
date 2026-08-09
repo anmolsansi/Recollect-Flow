@@ -63,3 +63,16 @@ All source PRD sections are covered: executive/product definition (`COMPLETE_PRO
 | DIG-003      | Delivery-time privacy recheck and neutral restricted projections                    | Public/Personal/Unknown/Sensitive fixture plus privacy-change-before-send test |
 | DIG-004      | Versioned `digest_runs`, content hash, review/audit and admin actions               | Duplicate schedule convergence, deterministic regeneration and route tests     |
 | OPS-001/004  | Safe delivery states/errors, leases, IDs and metadata-only logs                     | 429, auth, 5xx, network, malformed response, timeout and lease tests           |
+
+<!-- OPE-227 START -->
+
+## OPE-227 traceability
+
+- Zero-cost V1 / ADR-011 + ADR-029 -> provider/model allowlist in `capacity.policy.ts` -> paid/unknown model rejection tests.
+- Provider/operation/window quota contract / ADR-028 -> migration `0020` + `capacity.repository.ts` -> final-unit concurrency, reset-boundary, shared text/vision, reconciliation and expiry tests.
+- Retry-preserving deferral / ADR-030 -> `capacity-job.service.ts` + enrichment integration -> capacity-deferral and manual-retry tests.
+- Provider outage recovery -> `circuit-breaker.repository.ts` -> open, single half-open probe, successful recovery and failed-probe tests.
+- Safe operator visibility -> `GET /api/v1/usage` -> admin-scope and content-exclusion tests.
+- Capture remains independent from AI -> capture/search continuity test with the OpenRouter request window hard-filled.
+
+<!-- OPE-227 END -->
