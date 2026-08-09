@@ -34,7 +34,7 @@ export class WorkersAiAdapter implements AiProvider {
     let rawResponse: string | null = null;
     try {
       const response = await this.env.AI.run(
-        model as '@cf/meta/llama-3-8b-instruct',
+        model as '@cf/meta/llama-3.1-8b-instruct-fp8-fast',
         {
           messages: [{ role: 'user', content: prompt }],
           response_format: {
@@ -61,7 +61,6 @@ export class WorkersAiAdapter implements AiProvider {
       }
       rawResponse = rawJson;
 
-      // Repair JSON attempt (simple regex matching if wrapped in backticks)
       let cleanedJson = rawJson.trim();
       if (cleanedJson.startsWith('```json')) {
         cleanedJson = cleanedJson
@@ -88,7 +87,6 @@ export class WorkersAiAdapter implements AiProvider {
         status: 'success',
       };
     } catch (error) {
-      // 1-time deterministic repair attempt
       if (attempt === 1 && rawResponse) {
         try {
           const repairPrompt = `Fix the following malformed JSON so it strictly matches the requested schema.\n\nBroken JSON:\n${rawResponse}`;
@@ -100,7 +98,7 @@ export class WorkersAiAdapter implements AiProvider {
             2,
           );
         } catch {
-          // ignore repair error and throw original or repair error wrapper
+          // Ignore repair error and throw the stable wrapper below.
         }
       }
 
@@ -131,7 +129,8 @@ export class WorkersAiAdapter implements AiProvider {
     jsonSchemaDefinition: object,
     config: AiProviderConfig,
   ): Promise<AiEnrichmentResult<T>> {
-    const model = config.model || '@cf/meta/llama-3-8b-instruct';
+    const model =
+      config.model || '@cf/meta/llama-3.1-8b-instruct-fp8-fast';
     return this.callAi(prompt, schema, jsonSchemaDefinition, model);
   }
 
