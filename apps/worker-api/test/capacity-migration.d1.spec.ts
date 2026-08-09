@@ -5,9 +5,11 @@ import { JobService } from '../src/jobs/job.service';
 
 describe('OPE-227 migration rehearsal', () => {
   it('upgrades a populated pre-0020 database without changing canonical data', async () => {
-    const database = env.OPE227_MIGRATION_DB!;
+    const database = (
+      env as unknown as { OPE227_MIGRATION_DB: D1Database }
+    ).OPE227_MIGRATION_DB;
     const migrations = env.TEST_MIGRATIONS!;
-    await applyD1Migrations(database, migrations.slice(0, -1));
+    await applyD1Migrations(database, migrations.slice(0, -2));
 
     const now = new Date('2026-08-09T20:30:00.000Z');
     await database
@@ -22,14 +24,16 @@ describe('OPE-227 migration rehearsal', () => {
       )
       .bind(now.toISOString())
       .run();
-    const jobId = await new JobService(database).enqueueProcessingJob(
-      'ope227-migration-item',
-      'enrich',
-      'ope227-migration-input',
-      now,
-    );
+    expect(
+      await new JobService(database).enqueueProcessingJob(
+        'ope227-migration-item',
+        'enrich',
+        'ope227-migration-input',
+        now,
+      ),
+    ).toBe(true);
 
-    await applyD1Migrations(database, migrations.slice(-1));
+    await applyD1Migrations(database, migrations.slice(-2, -1));
 
     const item = await database
       .prepare(
@@ -44,10 +48,13 @@ describe('OPE-227 migration rehearsal', () => {
     });
 
     const job = await database
-      .prepare('SELECT id, status FROM processing_jobs WHERE id = ?1')
-      .bind(jobId)
+      .prepare(
+        `SELECT id, status FROM processing_jobs
+         WHERE item_id = 'ope227-migration-item' AND job_type = 'enrich'`,
+      )
       .first<{ id: string; status: string }>();
-    expect(job).toEqual({ id: jobId, status: 'pending' });
+    expect(job?.status).toBe('pending');
+    expect(job?.id).toBeTruthy();
 
     for (const table of [
       'ai_capacity_windows',
