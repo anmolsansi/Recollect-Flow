@@ -145,13 +145,7 @@ export class AiCircuitBreakerRepository {
                    probe_lease_owner, probe_lease_expires_at, last_success_at,
                    last_failure_at, last_error_code`,
       )
-      .bind(
-        provider,
-        operation,
-        nowIso,
-        errorCode,
-        AI_CAPACITY_POLICY_VERSION,
-      )
+      .bind(provider, operation, nowIso, errorCode, AI_CAPACITY_POLICY_VERSION)
       .first<BreakerRow>();
     if (!counted) throw new Error('Failed to record provider circuit failure');
 
@@ -195,7 +189,8 @@ export class AiCircuitBreakerRepository {
       )
       .bind(provider, operation)
       .first<BreakerRow>();
-    if (!latest) throw new Error('Failed to read provider circuit failure state');
+    if (!latest)
+      throw new Error('Failed to read provider circuit failure state');
     return toSnapshot(latest);
   }
 }

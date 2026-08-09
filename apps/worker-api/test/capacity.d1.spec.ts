@@ -63,9 +63,9 @@ describe('OPE-227 D1 quota admission', () => {
       ),
     ]);
 
-    expect(contenders.filter((result) => result.status === 'fulfilled')).toHaveLength(
-      1,
-    );
+    expect(
+      contenders.filter((result) => result.status === 'fulfilled'),
+    ).toHaveLength(1);
     const rejected = contenders.find((result) => result.status === 'rejected');
     expect(rejected?.status).toBe('rejected');
     if (rejected?.status === 'rejected') {
@@ -151,9 +151,7 @@ describe('OPE-227 D1 quota admission', () => {
       now,
     );
 
-    expect(
-      await capacity.expire(new Date('2026-08-09T14:03:00.000Z')),
-    ).toBe(1);
+    expect(await capacity.expire(new Date('2026-08-09T14:03:00.000Z'))).toBe(1);
 
     const reservation = await env.DB.prepare(
       `SELECT state FROM ai_capacity_reservations WHERE id = ?1`,

@@ -135,8 +135,7 @@ export class WorkersAiAdapter implements AiProvider {
     jsonSchemaDefinition: object,
     config: AiProviderConfig,
   ): Promise<AiEnrichmentResult<T>> {
-    const model =
-      config.model || '@cf/meta/llama-3.1-8b-instruct-fp8-fast';
+    const model = config.model || '@cf/meta/llama-3.1-8b-instruct-fp8-fast';
     return this.callAi(prompt, schema, jsonSchemaDefinition, model);
   }
 

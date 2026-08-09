@@ -1,6 +1,7 @@
 import type { CapacityWindowSnapshot } from './capacity.types';
 
-export type CapacityWarningLevel = 'normal' | 'warning_70' | 'warning_90' | 'hard';
+export type CapacityWarningLevel =
+  'normal' | 'warning_70' | 'warning_90' | 'hard';
 
 export interface CapacityDimensionUsage {
   dimension: 'requests' | 'input_units' | 'output_units' | 'provider_units';
@@ -61,7 +62,10 @@ export function capacityDimensions(
 export function capacityWarningLevel(
   window: CapacityWindowSnapshot,
 ): CapacityWarningLevel {
-  const ratio = Math.max(0, ...capacityDimensions(window).map((entry) => entry.ratio));
+  const ratio = Math.max(
+    0,
+    ...capacityDimensions(window).map((entry) => entry.ratio),
+  );
   if (ratio >= 1) return 'hard';
   if (ratio >= 0.9) return 'warning_90';
   if (ratio >= 0.7) return 'warning_70';

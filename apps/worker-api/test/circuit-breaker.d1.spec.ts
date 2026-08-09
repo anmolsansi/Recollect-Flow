@@ -17,12 +17,24 @@ describe('OPE-227 provider circuit breaker', () => {
     const now = new Date('2026-08-09T16:00:00.000Z');
 
     expect(
-      (await breakers.recordFailure('openrouter', 'enrich', 'PROVIDER_HTTP_ERROR', now))
-        .state,
+      (
+        await breakers.recordFailure(
+          'openrouter',
+          'enrich',
+          'PROVIDER_HTTP_ERROR',
+          now,
+        )
+      ).state,
     ).toBe('closed');
     expect(
-      (await breakers.recordFailure('openrouter', 'enrich', 'PROVIDER_HTTP_ERROR', now))
-        .state,
+      (
+        await breakers.recordFailure(
+          'openrouter',
+          'enrich',
+          'PROVIDER_HTTP_ERROR',
+          now,
+        )
+      ).state,
     ).toBe('closed');
     const opened = await breakers.recordFailure(
       'openrouter',
@@ -50,18 +62,8 @@ describe('OPE-227 provider circuit breaker', () => {
 
     const probeAt = new Date('2026-08-09T17:05:00.000Z');
     const [first, second] = await Promise.all([
-      breakers.acquireHalfOpenProbe(
-        'openrouter',
-        'enrich',
-        'probe-a',
-        probeAt,
-      ),
-      breakers.acquireHalfOpenProbe(
-        'openrouter',
-        'enrich',
-        'probe-b',
-        probeAt,
-      ),
+      breakers.acquireHalfOpenProbe('openrouter', 'enrich', 'probe-a', probeAt),
+      breakers.acquireHalfOpenProbe('openrouter', 'enrich', 'probe-b', probeAt),
     ]);
 
     expect([first, second].filter(Boolean)).toHaveLength(1);

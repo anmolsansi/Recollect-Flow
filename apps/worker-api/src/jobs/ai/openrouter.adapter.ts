@@ -117,7 +117,8 @@ export class OpenRouterAdapter implements AiProvider {
       currentInputUnits =
         data.usage?.prompt_tokens || Math.max(1, Math.ceil(prompt.length / 4));
       currentOutputUnits =
-        data.usage?.completion_tokens || Math.max(1, Math.ceil(rawJson.length / 4));
+        data.usage?.completion_tokens ||
+        Math.max(1, Math.ceil(rawJson.length / 4));
 
       let cleanedJson = rawJson.trim();
       if (cleanedJson.startsWith('```json')) {
@@ -330,7 +331,8 @@ export class OpenRouterAdapter implements AiProvider {
         latencyMs: Date.now() - startTime,
         inputUnits: data.usage?.prompt_tokens || estimatedInput,
         outputUnits:
-          data.usage?.completion_tokens || Math.max(1, Math.ceil(rawJson.length / 4)),
+          data.usage?.completion_tokens ||
+          Math.max(1, Math.ceil(rawJson.length / 4)),
         requestCount: 1,
         status: 'success',
       };

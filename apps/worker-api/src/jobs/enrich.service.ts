@@ -262,10 +262,7 @@ export class EnrichService {
 
       return true;
     } catch (error) {
-      if (
-        error instanceof AppError &&
-        CAPACITY_DEFER_CODES.has(error.code)
-      ) {
+      if (error instanceof AppError && CAPACITY_DEFER_CODES.has(error.code)) {
         const now = new Date();
         await this.capacityJobService.deferProcessingJob(
           job.id,

@@ -74,7 +74,10 @@ describe('OPE-227 policy-approved fallback routing', () => {
     const registry = new AiProviderRegistry(fallbackEnv());
     registry.register(new FailingOpenRouterAdapter());
 
-    const result = await registry.extractData('normal public content', 'public');
+    const result = await registry.extractData(
+      'normal public content',
+      'public',
+    );
     expect(result.provider).toBe('gemini');
     expect(result.result.summary).toBe('Mock summary');
   });

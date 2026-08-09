@@ -81,7 +81,10 @@ describe('OPE-227 guarded provider registry', () => {
     const registry = new AiProviderRegistry(guardedEnv(), env.DB);
     registry.register(new SuccessfulProvider());
 
-    const result = await registry.extractData('guarded provider success', 'public');
+    const result = await registry.extractData(
+      'guarded provider success',
+      'public',
+    );
     expect(result.provider).toBe('openrouter');
 
     const reservation = await env.DB.prepare(

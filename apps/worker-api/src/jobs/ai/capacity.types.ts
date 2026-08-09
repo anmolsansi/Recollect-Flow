@@ -4,10 +4,7 @@ export type CapacityProvider = 'openrouter' | 'cloudflare' | 'gemini';
 export type CapacityOperation = 'enrich' | 'vision_extract' | 'digest';
 export type CapacityWindowKind = 'minute' | 'hour' | 'day' | 'custom';
 export type CapacityReservationState =
-  | 'active'
-  | 'reconciled'
-  | 'released'
-  | 'expired';
+  'active' | 'reconciled' | 'released' | 'expired';
 export type CircuitBreakerState = 'closed' | 'open' | 'half_open';
 
 export interface CapacityLimit {

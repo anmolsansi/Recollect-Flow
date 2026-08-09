@@ -82,11 +82,13 @@ export class AiCapacityStatusService {
         reason: row.last_error_code,
         count: row.count,
       })),
-      last_successful_provider_calls: (lastSuccess.results ?? []).map((row) => ({
-        provider: row.provider,
-        operation: row.operation,
-        at: row.created_at,
-      })),
+      last_successful_provider_calls: (lastSuccess.results ?? []).map(
+        (row) => ({
+          provider: row.provider,
+          operation: row.operation,
+          at: row.created_at,
+        }),
+      ),
     };
   }
 }

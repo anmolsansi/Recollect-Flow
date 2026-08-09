@@ -26,10 +26,7 @@ import type {
 import { MockAiAdapter } from './mock-ai.adapter';
 import { OpenRouterAdapter } from './openrouter.adapter';
 import { AiCapacityService } from './capacity.service';
-import type {
-  CapacityOperation,
-  CapacityProvider,
-} from './capacity.types';
+import type { CapacityOperation, CapacityProvider } from './capacity.types';
 import { isProviderFallbackEligible } from './provider-fallback';
 
 const POLICY_PROVIDERS = ['openrouter', 'gemini', 'cloudflare'] as const;
@@ -218,7 +215,9 @@ export class AiProviderRegistry {
       )
       .filter((provider) => {
         const adapter = this.providers.get(provider);
-        return Boolean(adapter && (modality !== 'image' || adapter.extractImage));
+        return Boolean(
+          adapter && (modality !== 'image' || adapter.extractImage),
+        );
       })
       .map((provider) => ({ provider }));
   }
@@ -328,10 +327,7 @@ export class AiProviderRegistry {
         );
       } catch (error) {
         lastError = error;
-        if (
-          index === plan.length - 1 ||
-          !isProviderFallbackEligible(error)
-        ) {
+        if (index === plan.length - 1 || !isProviderFallbackEligible(error)) {
           throw error;
         }
       }
@@ -391,16 +387,22 @@ export class AiProviderRegistry {
     routing: PrivacyLevel | AiRoutingContext,
   ): Promise<AiEnrichmentResult<ImageExtractResult>> {
     const plan = this.getProviderPlan(routing, 'image');
-    return this.runProviderPlan(plan, 'vision_extract', prompt, 1, (guarded) => {
-      const adapter = this.getAdapter(guarded.provider);
-      if (!adapter.extractImage) {
-        throw new AppError(
-          500,
-          'NO_ELIGIBLE_PROVIDER',
-          'Provider does not support image extraction',
-        );
-      }
-      return adapter.extractImage(dataUrl, contentType, prompt, guarded);
-    });
+    return this.runProviderPlan(
+      plan,
+      'vision_extract',
+      prompt,
+      1,
+      (guarded) => {
+        const adapter = this.getAdapter(guarded.provider);
+        if (!adapter.extractImage) {
+          throw new AppError(
+            500,
+            'NO_ELIGIBLE_PROVIDER',
+            'Provider does not support image extraction',
+          );
+        }
+        return adapter.extractImage(dataUrl, contentType, prompt, guarded);
+      },
+    );
   }
 }

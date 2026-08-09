@@ -2,10 +2,7 @@ import {
   CLOUDFLARE_NEURON_RATES,
   type CloudflareNeuronRate,
 } from './capacity.policy';
-import type {
-  CapacityEstimate,
-  CapacityProvider,
-} from './capacity.types';
+import type { CapacityEstimate, CapacityProvider } from './capacity.types';
 
 const DEFAULT_OUTPUT_TOKEN_RESERVE = 768;
 

@@ -42,7 +42,9 @@ interface CircuitBreakerRow {
   last_error_code: string | null;
 }
 
-function capacityWindowSnapshot(row: CapacityWindowRow): CapacityWindowSnapshot {
+function capacityWindowSnapshot(
+  row: CapacityWindowRow,
+): CapacityWindowSnapshot {
   return {
     provider: row.provider,
     scopeKey: row.scope_key,

@@ -22,9 +22,9 @@ describe('OPE-227 capacity policy', () => {
     expect(policy?.windows).toHaveLength(2);
     expect(policy?.windows[0]?.limit.requests).toBe(20);
     expect(policy?.windows[1]?.limit.requests).toBe(50);
-    expect(policy?.windows.every((window) => window.limit.inputUnits == null)).toBe(
-      true,
-    );
+    expect(
+      policy?.windows.every((window) => window.limit.inputUnits == null),
+    ).toBe(true);
     expect(
       policy?.windows.every((window) => window.limit.outputUnits == null),
     ).toBe(true);

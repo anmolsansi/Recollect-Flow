@@ -77,7 +77,10 @@ describe('OPE-227 usage API', () => {
     );
     expect(body.data.circuit_breakers).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ provider: 'openrouter', operation: 'enrich' }),
+        expect.objectContaining({
+          provider: 'openrouter',
+          operation: 'enrich',
+        }),
       ]),
     );
 
