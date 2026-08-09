@@ -1,4 +1,4 @@
-validated_sha=8ed75360412218d1ad201159eedcd870c5c6f949
+validated_sha=27e96499a4636b6a1a1b29ab7ec593d95ca0a468
 check_exit=2
 migrate_exit=0
 dryrun_exit=0
