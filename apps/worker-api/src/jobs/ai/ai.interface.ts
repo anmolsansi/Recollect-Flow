@@ -7,6 +7,7 @@ export interface AiEnrichmentResult<T> {
   latencyMs: number;
   inputUnits: number;
   outputUnits: number;
+  requestCount?: number;
   status: 'success' | 'failed';
   errorCode?: string;
 }
@@ -60,7 +61,6 @@ export interface AiProvider {
     config: AiProviderConfig,
   ): Promise<AiEnrichmentResult<T>>;
 
-  // High-level operations
   summarize(
     text: string,
     config?: AiProviderConfig,
