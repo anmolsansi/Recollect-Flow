@@ -1,4 +1,4 @@
-validated_sha=260f3cda6879d011a51eb90739320fd4e7f68b69
+validated_sha=f1b716f247871c0e47384c4987bb140e28d538ba
 check_exit=1
 migrate_exit=0
 dryrun_exit=0
@@ -12,21 +12,8 @@ dryrun_exit=0
 > prettier --check .
 
 Checking formatting...
-All matched files use Prettier code style!
-
-> recollect-flow@0.1.0 lint
-> eslint .
-
-
-/home/runner/work/Recollect-Flow/Recollect-Flow/apps/worker-api/src/recovery/notion-purge.service.ts
-  37:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
-
-/home/runner/work/Recollect-Flow/Recollect-Flow/apps/worker-api/src/recovery/purge-notion.service.ts
-  1:1  error  All imports in the declaration are only used as types. Use `import type`  @typescript-eslint/consistent-type-imports
-
-✖ 2 problems (2 errors, 0 warnings)
-  1 error and 0 warnings potentially fixable with the `--fix` option.
-
+[[33mwarn[39m] apps/worker-api/src/recovery/purge-notion.service.ts
+[[33mwarn[39m] Code style issues found in the above file. Run Prettier with --write to fix.
 === migration tail ===
 │ 0014_allow_cloudflare_provider.sql           │ ✅     │
 ├──────────────────────────────────────────────┼────────┤
@@ -134,7 +121,7 @@ All matched files use Prettier code style!
 ───────────────────────────────────────────────
 
 Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
-Total Upload: 3009.91 KiB / gzip: 687.23 KiB
+Total Upload: 3009.90 KiB / gzip: 687.23 KiB
 Your Worker has access to the following bindings:
 Binding                                                                                Resource                  
 env.DB (recollect-flow-prod)                                                           D1 Database               
