@@ -14,6 +14,7 @@ const PURGE_STEPS: readonly PurgeStepKind[] = [
   'finalize_receipt',
 ];
 const PURGE_RECEIPT_VERSION = '2026-08-10.1';
+const DEFAULT_STEP_LEASE_MINUTES = 5;
 
 interface PurgeWorkflowRow {
   id: string;
@@ -42,9 +43,24 @@ export interface PurgeStepRecord {
   kind: PurgeStepKind;
   state: PurgeStepState;
   attempts: number;
+  leaseOwner: string | null;
+  leaseExpiresAt: string | null;
   lastErrorCode: string | null;
   startedAt: string | null;
   completedAt: string | null;
+}
+
+interface PurgeStepRow {
+  id: string;
+  purge_workflow_id: string;
+  step_kind: PurgeStepKind;
+  state: PurgeStepState;
+  attempts: number;
+  lease_owner: string | null;
+  lease_expires_at: string | null;
+  last_error_code: string | null;
+  started_at: string | null;
+  completed_at: string | null;
 }
 
 function workflowRecord(row: PurgeWorkflowRow): PurgeWorkflowRecord {
@@ -58,6 +74,21 @@ function workflowRecord(row: PurgeWorkflowRow): PurgeWorkflowRecord {
     lastErrorCode: row.last_error_code,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+  };
+}
+
+function stepRecord(row: PurgeStepRow): PurgeStepRecord {
+  return {
+    id: row.id,
+    workflowId: row.purge_workflow_id,
+    kind: row.step_kind,
+    state: row.state,
+    attempts: row.attempts,
+    leaseOwner: row.lease_owner,
+    leaseExpiresAt: row.lease_expires_at,
+    lastErrorCode: row.last_error_code,
+    startedAt: row.started_at,
+    completedAt: row.completed_at,
   };
 }
 
@@ -183,7 +214,7 @@ export class PurgeRepository {
       .prepare(
         `UPDATE purge_workflows
          SET state = 'processing', last_error_code = NULL, updated_at = ?1
-         WHERE id = ?2 AND state IN ('queued', 'partial')`,
+         WHERE id = ?2 AND state IN ('queued', 'partial', 'processing')`,
       )
       .bind(nowIso, workflowId)
       .run();
@@ -221,51 +252,57 @@ export class PurgeRepository {
     return result.meta.changes === 1;
   }
 
+  async listRunnableWorkflows(limit = 10): Promise<PurgeWorkflowRecord[]> {
+    const result = await this.db
+      .prepare(
+        `SELECT id, item_id, state, confirmation_expires_at, confirmed_at,
+                completed_at, last_error_code, created_at, updated_at
+         FROM purge_workflows
+         WHERE state IN ('queued', 'processing', 'partial')
+         ORDER BY updated_at ASC LIMIT ?1`,
+      )
+      .bind(limit)
+      .all<PurgeWorkflowRow>();
+    return result.results.map(workflowRecord);
+  }
+
   async claimStep(
     workflowId: string,
     kind: PurgeStepKind,
+    ownerId: string,
     now: Date,
+    leaseMinutes = DEFAULT_STEP_LEASE_MINUTES,
   ): Promise<PurgeStepRecord | null> {
     const nowIso = now.toISOString();
+    const leaseExpiresAt = new Date(
+      now.getTime() + leaseMinutes * 60_000,
+    ).toISOString();
     const row = await this.db
       .prepare(
         `UPDATE purge_steps
          SET state = 'processing', attempts = attempts + 1,
-             started_at = COALESCE(started_at, ?1), last_error_code = NULL,
-             updated_at = ?1
-         WHERE purge_workflow_id = ?2 AND step_kind = ?3
-           AND state IN ('pending', 'failed')
+             lease_owner = ?1, lease_expires_at = ?2,
+             started_at = COALESCE(started_at, ?3), last_error_code = NULL,
+             updated_at = ?3
+         WHERE purge_workflow_id = ?4 AND step_kind = ?5
+           AND (
+             state IN ('pending', 'failed')
+             OR (state = 'processing' AND lease_expires_at IS NOT NULL
+                 AND lease_expires_at <= ?3)
+           )
          RETURNING id, purge_workflow_id, step_kind, state, attempts,
-                   last_error_code, started_at, completed_at`,
+                   lease_owner, lease_expires_at, last_error_code,
+                   started_at, completed_at`,
       )
-      .bind(nowIso, workflowId, kind)
-      .first<{
-        id: string;
-        purge_workflow_id: string;
-        step_kind: PurgeStepKind;
-        state: PurgeStepState;
-        attempts: number;
-        last_error_code: string | null;
-        started_at: string | null;
-        completed_at: string | null;
-      }>();
-    return row
-      ? {
-          id: row.id,
-          workflowId: row.purge_workflow_id,
-          kind: row.step_kind,
-          state: row.state,
-          attempts: row.attempts,
-          lastErrorCode: row.last_error_code,
-          startedAt: row.started_at,
-          completedAt: row.completed_at,
-        }
-      : null;
+      .bind(ownerId, leaseExpiresAt, nowIso, workflowId, kind)
+      .first<PurgeStepRow>();
+    return row ? stepRecord(row) : null;
   }
 
   async completeStep(
     workflowId: string,
     kind: PurgeStepKind,
+    ownerId: string,
     now: Date,
     skipped = false,
   ): Promise<boolean> {
@@ -274,11 +311,18 @@ export class PurgeRepository {
       .prepare(
         `UPDATE purge_steps
          SET state = ?1, completed_at = ?2, last_error_code = NULL,
-             updated_at = ?2
+             lease_owner = NULL, lease_expires_at = NULL, updated_at = ?2
          WHERE purge_workflow_id = ?3 AND step_kind = ?4
-           AND state = 'processing'`,
+           AND state = 'processing' AND lease_owner = ?5
+           AND lease_expires_at > ?2`,
       )
-      .bind(skipped ? 'skipped' : 'complete', nowIso, workflowId, kind)
+      .bind(
+        skipped ? 'skipped' : 'complete',
+        nowIso,
+        workflowId,
+        kind,
+        ownerId,
+      )
       .run();
     return result.meta.changes === 1;
   }
@@ -286,6 +330,7 @@ export class PurgeRepository {
   async failStep(
     workflowId: string,
     kind: PurgeStepKind,
+    ownerId: string,
     errorCode: string,
     now: Date,
   ): Promise<boolean> {
@@ -293,11 +338,12 @@ export class PurgeRepository {
     const result = await this.db
       .prepare(
         `UPDATE purge_steps
-         SET state = 'failed', last_error_code = ?1, updated_at = ?2
+         SET state = 'failed', last_error_code = ?1,
+             lease_owner = NULL, lease_expires_at = NULL, updated_at = ?2
          WHERE purge_workflow_id = ?3 AND step_kind = ?4
-           AND state = 'processing'`,
+           AND state = 'processing' AND lease_owner = ?5`,
       )
-      .bind(errorCode, nowIso, workflowId, kind)
+      .bind(errorCode, nowIso, workflowId, kind, ownerId)
       .run();
     return result.meta.changes === 1;
   }
@@ -357,6 +403,17 @@ export class PurgeRepository {
     };
   }
 
+  async hasReceipt(itemId: string, workflowId?: string): Promise<boolean> {
+    const row = await this.db
+      .prepare(
+        `SELECT item_id FROM purge_receipts
+         WHERE item_id = ?1 AND (?2 IS NULL OR purge_workflow_id = ?2)`,
+      )
+      .bind(itemId, workflowId ?? null)
+      .first();
+    return Boolean(row);
+  }
+
   async listReceipts(): Promise<PurgeReceiptRecord[]> {
     const result = await this.db
       .prepare(
@@ -396,7 +453,8 @@ export class PurgeRepository {
     const result = await this.db
       .prepare(
         `SELECT id, purge_workflow_id, step_kind, state, attempts,
-                last_error_code, started_at, completed_at
+                lease_owner, lease_expires_at, last_error_code,
+                started_at, completed_at
          FROM purge_steps
          WHERE purge_workflow_id = ?1
          ORDER BY CASE step_kind
@@ -408,25 +466,7 @@ export class PurgeRepository {
            ELSE 99 END`,
       )
       .bind(workflowId)
-      .all<{
-        id: string;
-        purge_workflow_id: string;
-        step_kind: PurgeStepKind;
-        state: PurgeStepState;
-        attempts: number;
-        last_error_code: string | null;
-        started_at: string | null;
-        completed_at: string | null;
-      }>();
-    return result.results.map((row) => ({
-      id: row.id,
-      workflowId: row.purge_workflow_id,
-      kind: row.step_kind,
-      state: row.state,
-      attempts: row.attempts,
-      lastErrorCode: row.last_error_code,
-      startedAt: row.started_at,
-      completedAt: row.completed_at,
-    }));
+      .all<PurgeStepRow>();
+    return result.results.map(stepRecord);
   }
 }
