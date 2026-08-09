@@ -134,7 +134,10 @@ export class AiProviderRegistry {
     db?: D1Database,
   ) {
     this.policyService = new PolicyService();
-    this.capacityService = db ? new AiCapacityService(env, db) : null;
+    const capacityDb = db ?? env.DB;
+    this.capacityService = capacityDb
+      ? new AiCapacityService(env, capacityDb)
+      : null;
 
     const implementations = parseImplementations(
       this.env.AI_PROVIDER_IMPLEMENTATIONS,
