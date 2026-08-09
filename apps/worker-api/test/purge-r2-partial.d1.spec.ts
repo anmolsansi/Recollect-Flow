@@ -31,27 +31,23 @@ async function reset(): Promise<void> {
   await env.ATTACHMENTS.delete(OBJECT_KEY);
   const now = '2026-08-10T02:30:00.000Z';
   await env.DB.batch([
-    env.DB
-      .prepare(
-        `INSERT INTO items (
+    env.DB.prepare(
+      `INSERT INTO items (
            id, idempotency_key, source_type, source_app, privacy_level,
            processing_status, lifecycle_status, edit_version, deleted_at,
            captured_at, created_at, updated_at, raw_text
          ) VALUES (?1, 'ope228-partial-r2-key', 'file', 'test', 'public',
                    'complete', 'Deleted', 4, ?2, ?2, ?2, ?2,
                    'canonical data must remain when R2 delete fails')`,
-      )
-      .bind(ITEM_ID, now),
-    env.DB
-      .prepare(
-        `INSERT INTO attachments (
+    ).bind(ITEM_ID, now),
+    env.DB.prepare(
+      `INSERT INTO attachments (
            id, item_id, object_key, status, file_name,
            declared_content_type, size_bytes, expires_at,
            linked_at, created_at, updated_at
          ) VALUES (?1, ?2, ?3, 'linked', 'proof.txt',
                    'text/plain', 13, '2026-09-10T00:00:00.000Z', ?4, ?4, ?4)`,
-      )
-      .bind(ATTACHMENT_ID, ITEM_ID, OBJECT_KEY, now),
+    ).bind(ATTACHMENT_ID, ITEM_ID, OBJECT_KEY, now),
   ]);
   await env.ATTACHMENTS.put(OBJECT_KEY, 'private bytes');
 }
@@ -105,9 +101,9 @@ describe('OPE-228 R2 partial purge recovery', () => {
     expect(
       steps.find((step) => step.kind === 'archive_notion_projection')?.state,
     ).toBe('pending');
-    expect(steps.find((step) => step.kind === 'delete_d1_item_data')?.state).toBe(
-      'pending',
-    );
+    expect(
+      steps.find((step) => step.kind === 'delete_d1_item_data')?.state,
+    ).toBe('pending');
 
     expect(
       await env.DB.prepare('SELECT raw_text FROM items WHERE id = ?1')
