@@ -135,6 +135,8 @@ export function getProviderCapacityPolicy(
   }
 
   if (provider === 'cloudflare') {
+    const rateClass =
+      operation === 'vision_extract' ? 'image-to-text' : 'text-generation';
     const perMinute = operation === 'vision_extract' ? 720 : 300;
     return {
       provider,
@@ -143,7 +145,7 @@ export function getProviderCapacityPolicy(
       windows: [
         requestWindow(
           provider,
-          `${CLOUDFLARE_FREE_SCOPE}:${operation}`,
+          `${CLOUDFLARE_FREE_SCOPE}:${rateClass}`,
           'minute',
           MINUTE_MS,
           perMinute,
