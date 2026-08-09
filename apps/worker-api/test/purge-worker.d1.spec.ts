@@ -36,27 +36,23 @@ async function reset(): Promise<void> {
 
   const now = '2026-08-10T01:00:00.000Z';
   await env.DB.batch([
-    env.DB
-      .prepare(
-        `INSERT INTO items (
+    env.DB.prepare(
+      `INSERT INTO items (
            id, idempotency_key, source_type, source_app, privacy_level,
            processing_status, lifecycle_status, edit_version, deleted_at,
            captured_at, created_at, updated_at, raw_text, user_note, summary
          ) VALUES (?1, 'ope228-worker-happy-key', 'file', 'test', 'public',
                    'complete', 'Deleted', 2, ?2, ?2, ?2, ?2,
                    'private source to purge', 'owner reason', 'derived summary')`,
-      )
-      .bind(ITEM_ID, now),
-    env.DB
-      .prepare(
-        `INSERT INTO attachments (
+    ).bind(ITEM_ID, now),
+    env.DB.prepare(
+      `INSERT INTO attachments (
            id, item_id, object_key, status, file_name,
            declared_content_type, size_bytes, expires_at,
            linked_at, created_at, updated_at
          ) VALUES (?1, ?2, ?3, 'linked', 'private.txt',
                    'text/plain', 16, '2026-09-10T00:00:00.000Z', ?4, ?4, ?4)`,
-      )
-      .bind(ATTACHMENT_ID, ITEM_ID, OBJECT_KEY, now),
+    ).bind(ATTACHMENT_ID, ITEM_ID, OBJECT_KEY, now),
   ]);
   await env.ATTACHMENTS.put(OBJECT_KEY, 'private bytes');
 }
@@ -104,14 +100,12 @@ describe('OPE-228 purge worker', () => {
 
     expect(await env.ATTACHMENTS.get(OBJECT_KEY)).toBeNull();
     expect(
-      await env.DB
-        .prepare('SELECT id FROM attachments WHERE id = ?1')
+      await env.DB.prepare('SELECT id FROM attachments WHERE id = ?1')
         .bind(ATTACHMENT_ID)
         .first(),
     ).toBeNull();
     expect(
-      await env.DB
-        .prepare('SELECT id FROM items WHERE id = ?1')
+      await env.DB.prepare('SELECT id FROM items WHERE id = ?1')
         .bind(ITEM_ID)
         .first(),
     ).toBeNull();
@@ -119,12 +113,11 @@ describe('OPE-228 purge worker', () => {
       true,
     );
 
-    const receipt = await env.DB
-      .prepare(
-        `SELECT item_id, purge_workflow_id, receipt_version, purged_at,
+    const receipt = await env.DB.prepare(
+      `SELECT item_id, purge_workflow_id, receipt_version, purged_at,
                 backup_retention_until
          FROM purge_receipts WHERE item_id = ?1`,
-      )
+    )
       .bind(ITEM_ID)
       .first<Record<string, unknown>>();
     expect(receipt).toMatchObject({
