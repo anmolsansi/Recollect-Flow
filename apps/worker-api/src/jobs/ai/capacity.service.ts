@@ -143,60 +143,75 @@ export class AiCapacityService {
       }
     }
 
-    const reserveCalls = Math.max(1, Math.floor(requestReserve));
-    const estimate = estimateCapacityForPrompt(provider, model, prompt);
-    estimate.requests = reserveCalls;
-    if (reserveCalls > 1) {
-      estimate.inputUnits *= reserveCalls;
-      estimate.outputUnits *= reserveCalls;
-      estimate.providerUnits = estimateProviderUnits(
+    try {
+      const reserveCalls = Math.max(1, Math.floor(requestReserve));
+      const estimate = estimateCapacityForPrompt(provider, model, prompt);
+      estimate.requests = reserveCalls;
+      if (reserveCalls > 1) {
+        estimate.inputUnits *= reserveCalls;
+        estimate.outputUnits *= reserveCalls;
+        estimate.providerUnits = estimateProviderUnits(
+          provider,
+          model,
+          estimate.inputUnits,
+          estimate.outputUnits,
+        );
+      }
+      const windowKeys = policy.windows.map(
+        (window) => quotaWindowBoundary(window, now).key,
+      );
+      const reservation = {
+        id: crypto.randomUUID(),
         provider,
+        operation,
         model,
-        estimate.inputUnits,
-        estimate.outputUnits,
-      );
-    }
-    const windowKeys = policy.windows.map(
-      (window) => quotaWindowBoundary(window, now).key,
-    );
-    const reservation = {
-      id: crypto.randomUUID(),
-      provider,
-      operation,
-      model,
-      scopeKey: `${provider}:${operation}`,
-      estimate,
-      windowKeys,
-      expiresAt: new Date(now.getTime() + RESERVATION_TTL_MS).toISOString(),
-    };
+        scopeKey: `${provider}:${operation}`,
+        estimate,
+        windowKeys,
+        expiresAt: new Date(now.getTime() + RESERVATION_TTL_MS).toISOString(),
+      };
 
-    await this.repository.createReservationIntent(reservation, now);
-    const windows = await this.repository.tryApplyReservation(
-      reservation,
-      policy.windows,
-      now,
-    );
-    if (!windows) {
-      const snapshots = await this.repository.ensureWindows(policy.windows, now);
-      const blocked = snapshots.filter((window) =>
-        blocksEstimate(window, estimate),
+      await this.repository.createReservationIntent(reservation, now);
+      const windows = await this.repository.tryApplyReservation(
+        reservation,
+        policy.windows,
+        now,
       );
-      const availableAt = new Date(
-        Math.max(
-          ...(blocked.length ? blocked : snapshots).map((window) =>
-            new Date(window.windowEnd).getTime(),
+      if (!windows) {
+        const snapshots = await this.repository.ensureWindows(
+          policy.windows,
+          now,
+        );
+        const blocked = snapshots.filter((window) =>
+          blocksEstimate(window, estimate),
+        );
+        const availableAt = new Date(
+          Math.max(
+            ...(blocked.length ? blocked : snapshots).map((window) =>
+              new Date(window.windowEnd).getTime(),
+            ),
           ),
-        ),
-      ).toISOString();
-      throw new AppError(
-        503,
-        'QUOTA_PAUSED',
-        'The approved free-tier quota is temporarily exhausted.',
-        { available_at: availableAt },
-      );
-    }
+        ).toISOString();
+        throw new AppError(
+          503,
+          'QUOTA_PAUSED',
+          'The approved free-tier quota is temporarily exhausted.',
+          { available_at: availableAt },
+        );
+      }
 
-    return { reservation, windows, probeOwnerId };
+      return { reservation, windows, probeOwnerId };
+    } catch (error) {
+      if (probeOwnerId) {
+        await this.breakers.releaseHalfOpenProbe(
+          provider,
+          operation,
+          probeOwnerId,
+          now,
+        );
+      }
+      throw error;
+    }
   }
 
   async completeSuccess(
