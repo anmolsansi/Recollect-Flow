@@ -14,6 +14,11 @@ CREATE TABLE backup_artifacts (
   failure_code TEXT
 );
 
+CREATE INDEX idx_backup_artifacts_retention
+  ON backup_artifacts(state, expires_at);
+CREATE INDEX idx_backup_artifacts_created
+  ON backup_artifacts(created_at DESC);
+
 CREATE TABLE purge_workflows (
   id TEXT PRIMARY KEY,
   item_id TEXT NOT NULL,
@@ -27,6 +32,12 @@ CREATE TABLE purge_workflows (
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
+
+CREATE UNIQUE INDEX idx_purge_workflows_one_active_per_item
+  ON purge_workflows(item_id)
+  WHERE state IN ('confirmation_pending', 'queued', 'processing', 'partial');
+CREATE INDEX idx_purge_workflows_state_updated
+  ON purge_workflows(state, updated_at);
 
 CREATE TABLE purge_steps (
   id TEXT PRIMARY KEY,
@@ -42,6 +53,9 @@ CREATE TABLE purge_steps (
   UNIQUE (purge_workflow_id, step_kind)
 );
 
+CREATE INDEX idx_purge_steps_workflow_state
+  ON purge_steps(purge_workflow_id, state, step_kind);
+
 CREATE TABLE purge_receipts (
   item_id TEXT PRIMARY KEY,
   purge_workflow_id TEXT NOT NULL UNIQUE REFERENCES purge_workflows(id) ON DELETE RESTRICT,
@@ -50,6 +64,9 @@ CREATE TABLE purge_receipts (
   backup_retention_until TEXT,
   created_at TEXT NOT NULL
 );
+
+CREATE INDEX idx_purge_receipts_purged_at
+  ON purge_receipts(purged_at DESC);
 
 CREATE TABLE restore_runs (
   id TEXT PRIMARY KEY,
@@ -64,6 +81,9 @@ CREATE TABLE restore_runs (
   completed_at TEXT
 );
 
+CREATE INDEX idx_restore_runs_started
+  ON restore_runs(started_at DESC);
+
 CREATE TABLE integrity_runs (
   id TEXT PRIMARY KEY,
   state TEXT NOT NULL CHECK (state IN ('running', 'complete', 'failed')),
@@ -72,6 +92,9 @@ CREATE TABLE integrity_runs (
   started_at TEXT NOT NULL,
   completed_at TEXT
 );
+
+CREATE INDEX idx_integrity_runs_started
+  ON integrity_runs(started_at DESC);
 
 CREATE TABLE integrity_findings (
   id TEXT PRIMARY KEY,
@@ -84,3 +107,6 @@ CREATE TABLE integrity_findings (
   details_json TEXT NOT NULL DEFAULT '{}',
   created_at TEXT NOT NULL
 );
+
+CREATE INDEX idx_integrity_findings_run
+  ON integrity_findings(integrity_run_id, severity, finding_type);
