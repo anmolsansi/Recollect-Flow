@@ -1,4 +1,4 @@
-validated_sha=392790f4b65a9bf8668144cb7f1aca5955a13fa7
+validated_sha=c1bc9ac6a6e19bf596807390bc22f7c993c38a17
 check_exit=1
 migrate_exit=0
 dryrun_exit=0
@@ -16,7 +16,8 @@ Checking formatting...
 [[33mwarn[39m] apps/worker-api/test/capacity-migration.d1.spec.ts
 [[33mwarn[39m] apps/worker-api/test/notion-source-of-truth.d1.spec.ts
 [[33mwarn[39m] apps/worker-api/test/recovery-migration.d1.spec.ts
-[[33mwarn[39m] Code style issues found in 4 files. Run Prettier with --write to fix.
+[[33mwarn[39m] docs/OPERATIONS.md
+[[33mwarn[39m] Code style issues found in 5 files. Run Prettier with --write to fix.
 === migration tail ===
 │ 0014_allow_cloudflare_provider.sql           │ ✅     │
 ├──────────────────────────────────────────────┼────────┤
