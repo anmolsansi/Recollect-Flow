@@ -18,12 +18,10 @@ export interface ReconciledUsage {
 export class AiCapacityAccounting {
   constructor(private readonly db: D1Database) {}
 
-  async reconcileReservation(
+  private async getReservation(
     reservationId: string,
-    actual: ReconciledUsage,
-    now: Date = new Date(),
-  ): Promise<boolean> {
-    const reservation = await this.db
+  ): Promise<ReservationAccountingRow | null> {
+    return this.db
       .prepare(
         `SELECT id, request_units, estimated_input_units, estimated_output_units,
                 estimated_provider_units, capacity_applied, state, window_keys_json
@@ -32,6 +30,56 @@ export class AiCapacityAccounting {
       )
       .bind(reservationId)
       .first<ReservationAccountingRow>();
+  }
+
+  async releaseReservation(
+    reservationId: string,
+    now: Date = new Date(),
+  ): Promise<boolean> {
+    const reservation = await this.getReservation(reservationId);
+    if (!reservation || reservation.state !== 'active') return false;
+
+    const nowIso = now.toISOString();
+    if (reservation.capacity_applied === 1) {
+      await this.db
+        .prepare(
+          `UPDATE ai_capacity_windows
+           SET request_reserved = MAX(0, request_reserved - ?1),
+               input_units_reserved = MAX(0, input_units_reserved - ?2),
+               output_units_reserved = MAX(0, output_units_reserved - ?3),
+               provider_units_reserved = MAX(0, provider_units_reserved - ?4),
+               updated_at = ?5
+           WHERE (provider || ':' || scope_key || ':' || window_kind || ':' || window_start)
+                 IN (SELECT value FROM json_each(?6))`,
+        )
+        .bind(
+          reservation.request_units,
+          reservation.estimated_input_units,
+          reservation.estimated_output_units,
+          reservation.estimated_provider_units,
+          nowIso,
+          reservation.window_keys_json,
+        )
+        .run();
+    }
+
+    const result = await this.db
+      .prepare(
+        `UPDATE ai_capacity_reservations
+         SET state = 'released', released_at = ?1, updated_at = ?1
+         WHERE id = ?2 AND state = 'active'`,
+      )
+      .bind(nowIso, reservationId)
+      .run();
+    return result.meta.changes === 1;
+  }
+
+  async reconcileReservation(
+    reservationId: string,
+    actual: ReconciledUsage,
+    now: Date = new Date(),
+  ): Promise<boolean> {
+    const reservation = await this.getReservation(reservationId);
 
     if (
       !reservation ||
