@@ -1,127 +1,127 @@
-check_exit=1
+check_exit=0
 migrate_exit=0
 dryrun_exit=0
 === check tail ===
-[22m[39m{"event":"http_request_completed","request_id":"aa9d1be2-249f-4c41-85f4-2c05b9398b0e","method":"POST","path":"/api/v1/items/feedback-item/feedback","status":200,"duration_ms":3}
+[22m[39m{"event":"http_request_completed","request_id":"7fbc62a8-6091-4c6b-ac5b-12a8f28a0a82","method":"POST","path":"/api/test/extraction/pdf","status":404,"duration_ms":0}
 
-[90mstdout[2m | apps/worker-api/test/items.d1.spec.ts[2m > [22m[2mOPE-248 item review and recovery routes[2m > [22m[2mrecords feedback idempotently and rejects missing items
-[22m[39m{"event":"http_request_completed","request_id":"4f937370-90d2-4979-ad97-05a5704d71d4","method":"POST","path":"/api/v1/items/missing-item/feedback","status":404,"duration_ms":3}
-
-[90mstdout[2m | apps/worker-api/test/items.d1.spec.ts[2m > [22m[2mOPE-248 item review and recovery routes[2m > [22m[2mshows a failed processing job and allows an eligible manual retry
-[22m[39m{"event":"http_request_completed","request_id":"81c07304-bb2d-4702-a2dc-ff485f40ecf9","method":"GET","path":"/api/v1/items/retry-item","status":200,"duration_ms":14}
-
-[90mstdout[2m | apps/worker-api/test/items.d1.spec.ts[2m > [22m[2mOPE-248 item review and recovery routes[2m > [22m[2mshows a failed processing job and allows an eligible manual retry
-[22m[39m{"event":"http_request_completed","request_id":"3b669a25-a4e2-49f7-a116-ba6c7a5e2674","method":"POST","path":"/api/v1/jobs/failed-job/retry","status":200,"duration_ms":4}
-
-[90mstdout[2m | apps/worker-api/test/items.d1.spec.ts[2m > [22m[2mOPE-248 item review and recovery routes[2m > [22m[2mqueues Notion recreation only when the detail contract marks it eligible
-[22m[39m{"event":"http_request_completed","request_id":"e1031b74-d4bf-4ef0-aa4b-3ac456f91afe","method":"POST","path":"/api/v1/items/recovery-item/notion/recreate","status":200,"duration_ms":11}
-
-[90mstdout[2m | apps/worker-api/test/extraction.d1.spec.ts[2m > [22m[2mExtraction Pipeline (D1 Integration)[2m > [22m[2mreturns every attachment extraction while preserving the legacy singular field
-[22m[39m{"event":"http_request_completed","request_id":"1cdfac38-8be8-44b5-95f6-8111545b1da2","method":"GET","path":"/api/v1/items/00000000-0000-0000-0000-000000000003","status":200,"duration_ms":17}
-
-[90mstdout[2m | apps/worker-api/test/items.d1.spec.ts[2m > [22m[2mOPE-248 item review and recovery routes[2m > [22m[2mqueues Notion recreation only when the detail contract marks it eligible
-[22m[39m{"event":"http_request_completed","request_id":"a4c3d3b5-a9b5-44ae-8f15-8544f7c48273","method":"POST","path":"/api/v1/jobs/superseded-sync/retry","status":409,"duration_ms":4}
-
-[90mstdout[2m | apps/worker-api/test/items.d1.spec.ts[2m > [22m[2mOPE-248 item review and recovery routes[2m > [22m[2mqueues Notion recreation only when the detail contract marks it eligible
-[22m[39m{"event":"http_request_completed","request_id":"1c58a6b9-1282-409f-9f73-ecc06b933781","method":"GET","path":"/api/v1/items/ineligible-item","status":200,"duration_ms":13}
-
-[90mstdout[2m | apps/worker-api/test/items.d1.spec.ts[2m > [22m[2mOPE-248 item review and recovery routes[2m > [22m[2mqueues Notion recreation only when the detail contract marks it eligible
-[22m[39m{"event":"http_request_completed","request_id":"5ee8d743-a4c4-4ef0-bb10-66f52388742e","method":"POST","path":"/api/v1/items/ineligible-item/notion/recreate","status":409,"duration_ms":2}
-
- [32m✓[39m apps/worker-api/test/items.d1.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 338[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/enrich.d1.spec.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 300[2mms[22m[39m
-[90mstdout[2m | apps/worker-api/test/extraction.d1.spec.ts[2m > [22m[2mExtraction Pipeline (D1 Integration)[2m > [22m[2mdoes not expose test-only extraction endpoints in the deployed app
-[22m[39m{"event":"http_request_completed","request_id":"a1d51404-0fd3-49bd-bb30-77f9ce5f6b6c","method":"POST","path":"/api/test/extraction/pdf","status":404,"duration_ms":0}
-
- [32m✓[39m apps/worker-api/test/extraction.d1.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 2449[2mms[22m[39m
-     [33m[2m✓[22m[39m extracts a stored PDF through R2, the leased worker, D1, and enrichment chaining [33m 2106[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/e2e.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 195[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/extraction.d1.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 2388[2mms[22m[39m
+     [33m[2m✓[22m[39m extracts a stored PDF through R2, the leased worker, D1, and enrichment chaining [33m 2034[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/e2e.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 204[2mms[22m[39m
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
-[22m[39m{"event":"http_request_completed","request_id":"b070d18c-4092-4272-9b8f-c9b245cc015d","method":"POST","path":"/api/v1/digests/generate","status":403,"duration_ms":1}
+[22m[39m{"event":"http_request_completed","request_id":"b8fdb85e-7f9f-4c0a-9b3f-5d90d6347f36","method":"POST","path":"/api/v1/digests/generate","status":403,"duration_ms":1}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
-[22m[39m{"event":"http_request_completed","request_id":"da2b5ffd-88d0-4a8b-ae34-e26894e2d831","method":"POST","path":"/api/v1/digests/generate","status":200,"duration_ms":21}
+[22m[39m{"event":"http_request_completed","request_id":"e152afe0-3804-4a6e-8195-a20bb1836b51","method":"POST","path":"/api/v1/digests/generate","status":200,"duration_ms":16}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
-[22m[39m{"event":"http_request_completed","request_id":"f4bc4188-301f-4c4f-93aa-c9e171659f4e","method":"POST","path":"/api/v1/digests/84d1d8cc-c865-4e51-9d72-923bf6c30196/deliver","status":409,"duration_ms":2}
+[22m[39m{"event":"http_request_completed","request_id":"47f06f60-3677-4de6-ab51-0d38bf06cd77","method":"POST","path":"/api/v1/digests/fbf45dcf-9e85-43a5-870c-883968a086ef/deliver","status":409,"duration_ms":2}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
-[22m[39m{"event":"http_request_completed","request_id":"a6498bc4-f207-42c5-bc26-70862ce3ad90","method":"POST","path":"/api/v1/digests/84d1d8cc-c865-4e51-9d72-923bf6c30196/review","status":200,"duration_ms":4}
+[22m[39m{"event":"http_request_completed","request_id":"b343cf48-cc25-4bfa-be56-e8f136935f4e","method":"POST","path":"/api/v1/digests/fbf45dcf-9e85-43a5-870c-883968a086ef/review","status":200,"duration_ms":6}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
-[22m[39m{"event":"http_request_completed","request_id":"3303da02-76e0-4f4f-9954-110ef1a53a92","method":"POST","path":"/api/v1/digests/84d1d8cc-c865-4e51-9d72-923bf6c30196/deliver","status":200,"duration_ms":10}
+[22m[39m{"event":"http_request_completed","request_id":"8f971aac-23fd-463a-b239-555f80de13d4","method":"POST","path":"/api/v1/digests/fbf45dcf-9e85-43a5-870c-883968a086ef/deliver","status":200,"duration_ms":8}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
-[22m[39m{"event":"http_request_completed","request_id":"21495222-5f4d-462b-a2d4-87a789eeb051","method":"GET","path":"/api/v1/digests/84d1d8cc-c865-4e51-9d72-923bf6c30196","status":200,"duration_ms":5}
+[22m[39m{"event":"http_request_completed","request_id":"5436f273-33a0-4525-a38b-bac94d3dbedc","method":"GET","path":"/api/v1/digests/fbf45dcf-9e85-43a5-870c-883968a086ef","status":200,"duration_ms":5}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mdoes not allow an admin generation request to bypass review and queue delivery
-[22m[39m{"event":"http_request_completed","request_id":"926cbd2e-3bd0-4d25-82e0-67a18b6df079","method":"POST","path":"/api/v1/digests/generate","status":422,"duration_ms":3}
+[22m[39m{"event":"http_request_completed","request_id":"38d6e9a3-9d95-467e-9e8c-62da6895385c","method":"POST","path":"/api/v1/digests/generate","status":422,"duration_ms":1}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires reconciliation instead of retrying unknown delivery state
-[22m[39m{"event":"http_request_completed","request_id":"9d3a1baf-f610-460b-a851-627d9f439ce2","method":"POST","path":"/api/v1/digests/generate","status":200,"duration_ms":13}
+[22m[39m{"event":"http_request_completed","request_id":"62e52232-f71d-4e7f-a073-80c11a33c7de","method":"POST","path":"/api/v1/digests/generate","status":200,"duration_ms":11}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires reconciliation instead of retrying unknown delivery state
-[22m[39m{"event":"http_request_completed","request_id":"9515eebe-0b2c-461b-915b-a8e3e82b47a4","method":"POST","path":"/api/v1/digests/399f9744-f385-4864-98d7-75e4f43cac58/review","status":200,"duration_ms":4}
+[22m[39m{"event":"http_request_completed","request_id":"b9b9781b-cf27-4e11-97d5-862b1e9b5d3a","method":"POST","path":"/api/v1/digests/65538ecc-e192-41a1-aaca-eccb08f6c742/review","status":200,"duration_ms":5}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires reconciliation instead of retrying unknown delivery state
-[22m[39m{"event":"http_request_completed","request_id":"22868821-9bea-4650-89e7-ba6965737e4d","method":"POST","path":"/api/v1/digests/399f9744-f385-4864-98d7-75e4f43cac58/deliver","status":200,"duration_ms":7}
+[22m[39m{"event":"http_request_completed","request_id":"951d60d9-edde-4e4c-b1ca-546669742386","method":"POST","path":"/api/v1/digests/65538ecc-e192-41a1-aaca-eccb08f6c742/deliver","status":200,"duration_ms":8}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires reconciliation instead of retrying unknown delivery state
-[22m[39m{"event":"http_request_completed","request_id":"e3c88e96-8fed-4e5c-b5f9-3b70cbcb4e92","method":"POST","path":"/api/v1/digest-deliveries/99b7efcc-ec40-4173-a417-d0b482f60672/retry","status":409,"duration_ms":3}
+[22m[39m{"event":"http_request_completed","request_id":"59b720a3-1d33-42d8-b99f-6bde408158c2","method":"POST","path":"/api/v1/digest-deliveries/ea7fc9b1-240c-4c20-bc13-7343bd0367bb/retry","status":409,"duration_ms":3}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires reconciliation instead of retrying unknown delivery state
-[22m[39m{"event":"http_request_completed","request_id":"236116e7-adf7-4c54-a187-0b21a243eb1b","method":"POST","path":"/api/v1/digest-deliveries/99b7efcc-ec40-4173-a417-d0b482f60672/reconcile","status":200,"duration_ms":5}
+[22m[39m{"event":"http_request_completed","request_id":"0c732a36-52e6-4e39-9566-a8ee70b15337","method":"POST","path":"/api/v1/digest-deliveries/ea7fc9b1-240c-4c20-bc13-7343bd0367bb/reconcile","status":200,"duration_ms":5}
 
- [32m✓[39m apps/worker-api/test/digest-routes.d1.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 208[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/capacity-registry.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 212[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/capacity.d1.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 883[2mms[22m[39m
-     [33m[2m✓[22m[39m allows exactly one concurrent worker to consume the final minute unit [33m 402[2mms[22m[39m
-     [33m[2m✓[22m[39m admits work into a fresh minute window exactly after reset [33m 333[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/circuit-breaker.d1.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 117[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/digest-routes.d1.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 196[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/capacity-registry.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 214[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/capacity.d1.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 923[2mms[22m[39m
+     [33m[2m✓[22m[39m allows exactly one concurrent worker to consume the final minute unit [33m 433[2mms[22m[39m
+     [33m[2m✓[22m[39m admits work into a fresh minute window exactly after reset [33m 349[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/circuit-breaker.d1.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 135[2mms[22m[39m
 [90mstdout[2m | apps/worker-api/test/capacity-usage.d1.spec.ts[2m > [22m[2mOPE-227 usage API[2m > [22m[2mrejects unauthenticated and capture-scoped callers
-[22m[39m{"event":"http_request_completed","request_id":"af48437b-3bef-49d6-9a25-058396c77c2a","method":"GET","path":"/api/v1/usage","status":403,"duration_ms":2}
+[22m[39m{"event":"http_request_completed","request_id":"80a5e1bb-73a2-4575-84d5-a536351d2454","method":"GET","path":"/api/v1/usage","status":403,"duration_ms":1}
 
 [90mstdout[2m | apps/worker-api/test/capacity-usage.d1.spec.ts[2m > [22m[2mOPE-227 usage API[2m > [22m[2mrejects unauthenticated and capture-scoped callers
-[22m[39m{"event":"http_request_completed","request_id":"43089511-cc4b-40da-936e-c723c941e620","method":"GET","path":"/api/v1/usage","status":403,"duration_ms":1}
+[22m[39m{"event":"http_request_completed","request_id":"68a5a084-4f8b-486b-b957-2e37b7219943","method":"GET","path":"/api/v1/usage","status":403,"duration_ms":0}
 
- [31m❯[39m apps/worker-api/test/capacity-job.d1.spec.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 116[2mms[22m[39m
-[31m     [31m×[31m returns a leased job to pending without consuming another attempt[39m[32m 24[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/capacity-job.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 126[2mms[22m[39m
 [90mstdout[2m | apps/worker-api/test/capacity-usage.d1.spec.ts[2m > [22m[2mOPE-227 usage API[2m > [22m[2mreturns safe quota and breaker metadata to the admin only
-[22m[39m{"event":"http_request_completed","request_id":"6c14da65-57d8-42a5-94f4-53ae2c6797a3","method":"GET","path":"/api/v1/usage","status":200,"duration_ms":7}
+[22m[39m{"event":"http_request_completed","request_id":"8461efd0-6910-45e4-b269-87a57f64c77d","method":"GET","path":"/api/v1/usage","status":200,"duration_ms":5}
 
- [32m✓[39m apps/worker-api/test/capacity-usage.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 148[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/item-review-migration.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 73[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/digest-migration.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 75[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/capacity-usage.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 152[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/item-review-migration.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 91[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/digest-migration.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 72[2mms[22m[39m
 
-[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
-
-[41m[1m FAIL [22m[49m apps/worker-api/test/capacity-job.d1.spec.ts[2m > [22mOPE-227 capacity job deferral[2m > [22mreturns a leased job to pending without consuming another attempt
-[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
-
-[32m- Expected[39m
-[31m+ Received[39m
-
-[32m- 1[39m
-[31m+ 0[39m
-
-[36m [2m❯[22m apps/worker-api/test/capacity-job.d1.spec.ts:[2m47:30[22m[39m
-    [90m 45|[39m     )[33m;[39m
-    [90m 46|[39m     [34mexpect[39m(leased)[33m.[39m[34mtoBeDefined[39m()[33m;[39m
-    [90m 47|[39m     [34mexpect[39m(leased[33m?.[39mattempts)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
-    [90m   |[39m                              [31m^[39m
-    [90m 48|[39m
-    [90m 49|[39m     [35mconst[39m deferredUntil [33m=[39m [35mnew[39m [33mDate[39m([32m'2026-08-09T21:00:00.000Z'[39m)[33m;[39m
-
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+[2m Test Files [22m [1m[32m15 passed[39m[22m[90m (15)[39m
+[2m      Tests [22m [1m[32m87 passed[39m[22m[90m (87)[39m
+[2m   Start at [22m 15:48:35
+[2m   Duration [22m 11.71s[2m (transform 2.32s, setup 0ms, import 14.45s, tests 7.27s, environment 4ms)[22m
 
 
-[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m14 passed[39m[22m[90m (15)[39m
-[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m86 passed[39m[22m[90m (87)[39m
-[2m   Start at [22m 15:45:45
-[2m   Duration [22m 12.35s[2m (transform 2.62s, setup 0ms, import 15.73s, tests 7.22s, environment 5ms)[22m
+> recollect-flow@0.1.0 contracts:check
+> npm run check -w packages/contracts
 
 
-::error file=/home/runner/work/Recollect-Flow/Recollect-Flow/apps/worker-api/test/capacity-job.d1.spec.ts,title=apps/worker-api/test/capacity-job.d1.spec.ts > OPE-227 capacity job deferral > returns a leased job to pending without consuming another attempt,line=47,column=30::AssertionError: expected +0 to be 1 // Object.is equality%0A%0A- Expected%0A+ Received%0A%0A- 1%0A+ 0%0A%0A ❯ apps/worker-api/test/capacity-job.d1.spec.ts:47:30%0A%0A
+> @recollect/contracts@0.1.0 check
+> tsc --noEmit
+
+
+> recollect-flow@0.1.0 web:lint
+> npm run lint -w apps/web
+
+
+> web@0.0.0 lint
+> oxlint
+
+Found 0 warnings and 0 errors.
+Finished in 12ms on 7 files with 104 rules using 4 threads.
+
+> recollect-flow@0.1.0 web:test
+> npm run test -w apps/web
+
+
+> web@0.0.0 test
+> vitest run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/home/runner/work/Recollect-Flow/Recollect-Flow/apps/web[39m
+
+ [32m✓[39m src/item-actions.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/api.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m9 passed[39m[22m[90m (9)[39m
+[2m   Start at [22m 15:48:50
+[2m   Duration [22m 217ms[2m (transform 62ms, setup 0ms, import 95ms, tests 46ms, environment 0ms)[22m
+
+
+> recollect-flow@0.1.0 web:build
+> npm run build -w apps/web
+
+
+> web@0.0.0 build
+> tsc -b && vite build
+
+[36mvite v8.2.0 [32mbuilding client environment for production...[36m[39m
+[2Ktransforming...✓ 26 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.45 kB │ gzip:  0.29 kB
+dist/assets/index--UVWKVvu.css    3.74 kB │ gzip:  1.34 kB
+dist/assets/index-CuFr4vVv.js   245.17 kB │ gzip: 77.83 kB
+
+[32m✓ built in 144ms[39m
 === migration tail ===
 🌀 Executing on local database recollect-flow-prod (5fcba514-d0f7-45e7-a632-d4c59233af71) from .wrangler/state/v3/d1:
 🌀 To execute on your remote database, add a --remote flag to your wrangler command.
