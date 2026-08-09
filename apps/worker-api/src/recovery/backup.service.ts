@@ -1,4 +1,5 @@
 import { sha256 } from '../captures/hash';
+import { AppError } from '../shared/errors';
 import { BackupRepository } from './backup.repository';
 import {
   hostedBackupExpiresAt,
@@ -80,6 +81,56 @@ export class BackupService {
       }
       throw error;
     }
+  }
+
+  async readHostedBackup(id: string): Promise<{
+    artifact: BackupArtifactRecord;
+    content: string;
+  }> {
+    const artifact = await this.repository.find(id);
+    if (!artifact) {
+      throw new AppError(404, 'NOT_FOUND', 'Hosted backup not found.');
+    }
+    if (
+      artifact.state !== 'complete' ||
+      new Date(artifact.expiresAt).getTime() <= this.now().getTime()
+    ) {
+      throw new AppError(
+        409,
+        'BACKUP_NOT_AVAILABLE',
+        'The hosted backup is not a verified unexpired artifact.',
+      );
+    }
+    if (!artifact.sha256 || artifact.sizeBytes === null) {
+      throw new AppError(
+        409,
+        'BACKUP_VERIFICATION_INCOMPLETE',
+        'The hosted backup has incomplete verification metadata.',
+      );
+    }
+
+    const stored = await this.bucket.get(artifact.objectKey);
+    if (!stored) {
+      throw new AppError(
+        503,
+        'BACKUP_OBJECT_MISSING',
+        'The verified hosted backup object is missing.',
+      );
+    }
+    const content = await stored.text();
+    const digest = await sha256(content);
+    if (
+      digest !== artifact.sha256 ||
+      encodedSize(content) !== artifact.sizeBytes ||
+      (stored.customMetadata?.sha256 && stored.customMetadata.sha256 !== digest)
+    ) {
+      throw new AppError(
+        503,
+        'BACKUP_VERIFICATION_MISMATCH',
+        'The hosted backup failed retrieval-time verification.',
+      );
+    }
+    return { artifact, content };
   }
 
   async listHostedBackups(limit = 50): Promise<BackupArtifactRecord[]> {
