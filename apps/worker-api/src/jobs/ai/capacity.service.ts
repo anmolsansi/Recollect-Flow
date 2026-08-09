@@ -95,6 +95,8 @@ export class AiCapacityService {
     requestReserve = 1,
     now: Date = new Date(),
   ): Promise<CapacityAdmission> {
+    await this.accounting.expireReservations(now);
+
     const policy = getProviderCapacityPolicy(
       this.env,
       provider,
