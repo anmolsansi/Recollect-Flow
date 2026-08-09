@@ -16,23 +16,23 @@
 
 ## Current implemented trace
 
-| Linear  | Requirements currently evidenced                                               | Repository evidence                                                                       |
-| ------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| OPE-213 | Product scope decisions                                                        | `COMPLETE_PRODUCT_SPEC.md`, `DECISIONS.md`                                                |
-| OPE-214 | Cloudflare account, bindings, secrets, migration, and provider smoke tests     | `tickets/OPE-214.md`, `wrangler.toml`, generated binding types                            |
-| OPE-215 | Foundation/CI/docs shell                                                       | configuration, CI, README, `repo_context.md`                                              |
-| OPE-216 | Core item/attachment/job/sync/provider/audit schema                            | `migrations/0001_initial.sql`, migration tests                                            |
-| OPE-217 | CAP-002/004 partial, ING-001/002 partial, SEC-001/002 partial, JOB-001 partial | capture route/service/repository tests and live D1 replay                                 |
-| OPE-218 | ING-002 cross-key canonical reuse and event preservation                       | capture event/deduplication migrations, repository/service and tests                      |
-| OPE-224 | AI provider privacy routing, fail-closed defaults and override lifecycle       | approved policy `2026-07-21.1`, consent/ZDR-stamped jobs, routes, migration and tests     |
-| OPE-249 | Private attachment durability and lifecycle                                    | R2 upload/finalize/link/download/cleanup routes, migrations and tests                     |
-| OPE-219 | Shortcut client contract and offline/retry design                              | build sheet, Mac Share Sheet template and device QA matrix; physical-device gate pending  |
-| OPE-222 | Provider-independent AI enrichment pipeline                                    | queue tracking, resilient AI wrappers, parsing logic, models and integrations tests       |
-| OPE-223 | Multimodal extraction for PDF and images                                       | extraction records table, vision/pdf extractors, and repository integrations tests        |
-| OPE-225 | D1 FTS5 indexing and search API                                                | `tickets/OPE-225.md`, synced `item_search_fts`, search routes and D1 acceptance tests     |
-| OPE-226 | Daily digest and weekly review jobs                                            | `tickets/OPE-226.md`, digest scheduler/selector/renderer/delivery routes and D1 tests     |
-| OPE-248 | Recovery-capable Web Inbox and item review                                     | `tickets/OPE-248.md`, item/retry/privacy routes, React Inbox/detail, D1 and browser tests |
-| OPE-227 | Zero-cost AI quota admission and circuit breakers                              | migration `0020`, capacity/breaker services, usage API, concurrency and recovery tests    |
+| Linear  | Requirements currently evidenced                                               | Repository evidence                                                                            |
+| ------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| OPE-213 | Product scope decisions                                                        | `COMPLETE_PRODUCT_SPEC.md`, `DECISIONS.md`                                                     |
+| OPE-214 | Cloudflare account, bindings, secrets, migration, and provider smoke tests     | `tickets/OPE-214.md`, `wrangler.toml`, generated binding types                                 |
+| OPE-215 | Foundation/CI/docs shell                                                       | configuration, CI, README, `repo_context.md`                                                   |
+| OPE-216 | Core item/attachment/job/sync/provider/audit schema                            | `migrations/0001_initial.sql`, migration tests                                                 |
+| OPE-217 | CAP-002/004 partial, ING-001/002 partial, SEC-001/002 partial, JOB-001 partial | capture route/service/repository tests and live D1 replay                                      |
+| OPE-218 | ING-002 cross-key canonical reuse and event preservation                       | capture event/deduplication migrations, repository/service and tests                           |
+| OPE-224 | AI provider privacy routing, fail-closed defaults and override lifecycle       | approved policy `2026-07-21.1`, consent/ZDR-stamped jobs, routes, migration and tests          |
+| OPE-249 | Private attachment durability and lifecycle                                    | R2 upload/finalize/link/download/cleanup routes, migrations and tests                          |
+| OPE-219 | Shortcut client contract and offline/retry design                              | build sheet, Mac Share Sheet template and device QA matrix; physical-device gate pending       |
+| OPE-222 | Provider-independent AI enrichment pipeline                                    | queue tracking, resilient AI wrappers, parsing logic, models and integrations tests            |
+| OPE-223 | Multimodal extraction for PDF and images                                       | extraction records table, vision/pdf extractors, and repository integrations tests             |
+| OPE-225 | D1 FTS5 indexing and search API                                                | `tickets/OPE-225.md`, synced `item_search_fts`, search routes and D1 acceptance tests          |
+| OPE-226 | Daily digest and weekly review jobs                                            | `tickets/OPE-226.md`, digest scheduler/selector/renderer/delivery routes and D1 tests          |
+| OPE-248 | Recovery-capable Web Inbox and item review                                     | `tickets/OPE-248.md`, item/retry/privacy routes, React Inbox/detail, D1 and browser tests      |
+| OPE-227 | Zero-cost AI quota admission and circuit breakers                              | migration `0020`, capacity/breaker services, usage API, concurrency and recovery tests         |
 | OPE-228 | Portable export, hosted backup, explicit purge, restore, integrity checks      | migration `0021`, recovery routes/services, purge ledger, round-trip and partial-failure tests |
 
 “Partial” is intentional: a requirement is complete only when every input/client/integration/acceptance condition is covered.
