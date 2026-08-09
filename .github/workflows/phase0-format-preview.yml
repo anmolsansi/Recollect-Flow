@@ -1,0 +1,28 @@
+name: Phase 0 format preview
+
+on:
+  pull_request:
+
+jobs:
+  format-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format Phase 0 docs
+        run: npx prettier --write docs/DECISIONS.md docs/repo_context.md docs/tickets/PHASE-0-HARDENING-READINESS.md
+      - name: Show formatted files
+        run: |
+          echo '===DECISIONS_START==='
+          cat docs/DECISIONS.md
+          echo '===DECISIONS_END==='
+          echo '===REPO_CONTEXT_START==='
+          cat docs/repo_context.md
+          echo '===REPO_CONTEXT_END==='
+          echo '===PHASE0_START==='
+          cat docs/tickets/PHASE-0-HARDENING-READINESS.md
+          echo '===PHASE0_END==='
