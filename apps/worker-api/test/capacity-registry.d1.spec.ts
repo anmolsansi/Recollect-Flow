@@ -8,6 +8,8 @@ import type {
   ExtractResult,
 } from '../src/jobs/ai/ai.interface';
 import { AiProviderRegistry } from '../src/jobs/ai/ai-provider.registry';
+import { getProviderCapacityPolicy } from '../src/jobs/ai/capacity.policy';
+import { AiCapacityRepository } from '../src/jobs/ai/capacity.repository';
 import { MockAiAdapter } from '../src/jobs/ai/mock-ai.adapter';
 import { AppError } from '../src/shared/errors';
 
@@ -24,6 +26,8 @@ function guardedEnv(): Env {
 }
 
 class SuccessfulProvider extends MockAiAdapter {
+  calls = 0;
+
   constructor() {
     super('openrouter');
   }
@@ -32,6 +36,7 @@ class SuccessfulProvider extends MockAiAdapter {
     text: string,
     config?: AiProviderConfig,
   ): Promise<AiEnrichmentResult<ExtractResult>> {
+    this.calls += 1;
     const result = await super.extractData(text, config);
     return { ...result, model: 'openrouter/free', requestCount: 1 };
   }
@@ -106,6 +111,36 @@ describe('OPE-227 guarded provider registry', () => {
        ORDER BY window_start DESC LIMIT 1`,
     ).first<{ request_reserved: number; request_consumed: number }>();
     expect(minute).toEqual({ request_reserved: 0, request_consumed: 1 });
+  });
+
+  it('stops at the hard quota before invoking the provider', async () => {
+    const runtimeEnv = guardedEnv();
+    const now = new Date();
+    const policy = getProviderCapacityPolicy(
+      runtimeEnv,
+      'openrouter',
+      'enrich',
+      'openrouter/free',
+    );
+    expect(policy).not.toBeNull();
+    await new AiCapacityRepository(env.DB).ensureWindows(policy!.windows, now);
+    await env.DB.prepare(
+      `UPDATE ai_capacity_windows
+       SET request_consumed = request_limit, request_reserved = 0
+       WHERE provider = 'openrouter' AND window_end > ?1
+         AND request_limit IS NOT NULL`,
+    )
+      .bind(now.toISOString())
+      .run();
+
+    const registry = new AiProviderRegistry(runtimeEnv, env.DB);
+    const provider = new SuccessfulProvider();
+    registry.register(provider);
+
+    await expect(
+      registry.extractData('must never reach provider', 'public'),
+    ).rejects.toMatchObject({ code: 'QUOTA_PAUSED' });
+    expect(provider.calls).toBe(0);
   });
 
   it('opens the breaker and prevents a fourth provider call', async () => {
