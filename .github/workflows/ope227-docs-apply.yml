@@ -1,0 +1,66 @@
+name: OPE-227 docs apply
+
+on:
+  push:
+    branches:
+      - agent/ope-227-capacity-controls
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/ope-227-capacity-controls
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Update OPE-227 repository contracts
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          sections = {
+              Path('docs/API.md'): '''## OPE-227 AI capacity status\n\n`GET /api/v1/usage` is admin-only. It returns safe capacity metadata: policy version, current quota windows, consumed/reserved/remaining dimensions, 70%/90%/hard utilization states, circuit-breaker state and next probe time, capacity-deferred job counts, and last successful provider-operation timestamps. It must not return prompts, raw item content, provider responses, credentials, or token values.\n\nHosted AI execution remains behind the existing privacy policy. OPE-227 adds a mandatory zero-cost capacity admission step before non-mock enrichment, vision extraction, or optional digest wording. Capacity errors use stable codes including `QUOTA_PAUSED`, `PROVIDER_UNAVAILABLE`, and `NO_ELIGIBLE_PROVIDER`.\n''',
+              Path('docs/DATA_MODEL.md'): '''## OPE-227 AI capacity state\n\nMigration `0020_add_ai_capacity_controls.sql` adds three durable D1 tables. `ai_capacity_windows` stores provider/scope/window hard limits plus reserved and consumed counters. `ai_capacity_reservations` stores bounded pre-call reservations, estimated versus actual request/input/output/provider units, expiry, and reconciliation state. `ai_circuit_breakers` stores provider+operation breaker state, qualifying failure count, next probe time, and the single half-open probe lease.\n\nQuota windows and reservations are operational metadata only; they never contain prompts or raw captured content. Reservation/window mutations use D1 transactional batches or conditional updates so concurrent Workers cannot both consume the final available unit and repeated reconciliation/release is idempotent.\n''',
+              Path('docs/OPERATIONS.md'): '''## OPE-227 zero-cost AI capacity operations\n\nV1 fails closed to explicitly approved free-tier provider/model combinations. OpenRouter uses one shared free-model request pool across text and vision, with the configured account tier defaulting to the conservative standard tier. Cloudflare Workers AI is guarded by an operator-configurable daily Neuron ceiling that cannot exceed the approved free allocation. Unknown/paid model identifiers are rejected before a network call.\n\nCapacity utilization is interpreted as: below 70% normal, at least 70% warning, at least 90% high warning, and 100% hard stop. A hard stop does not block capture, D1 persistence, FTS search, review, or Notion processing that does not require a new hosted AI call. Capacity-deferred AI jobs remain `pending` with future `available_at` and do not consume their terminal processing retry allowance. Manual retry never bypasses capacity admission.\n\nProvider circuit breakers are scoped by provider and operation. Three consecutive qualifying provider failures open the breaker. Cooldown starts at five minutes and increases exponentially up to one hour. At probe time only one Worker may hold the 60-second half-open probe lease. A successful probe closes/resets the breaker; a failed probe reopens it. Privacy rejection, quota exhaustion, invalid input, owner-disabled providers, and zero-cost guard rejection are not counted as provider outages.\n\nOperator checks: inspect `GET /api/v1/usage`; confirm no hard-window exhaustion before forcing retries; verify `next_probe_at` before outage recovery; use the standard/qualified OpenRouter tier only after revalidating the account condition; and revalidate provider free-tier limits/model availability before production release or provider-policy changes.\n''',
+              Path('docs/TRACEABILITY.md'): '''## OPE-227 traceability\n\n- Zero-cost V1 / ADR-011 + ADR-029 -> provider/model allowlist in `capacity.policy.ts` -> paid/unknown model rejection tests.\n- Provider/operation/window quota contract / ADR-028 -> migration `0020` + `capacity.repository.ts` -> final-unit concurrency, reset-boundary, shared text/vision, reconciliation and expiry tests.\n- Retry-preserving deferral / ADR-030 -> `capacity-job.service.ts` + enrichment integration -> capacity-deferral and manual-retry tests.\n- Provider outage recovery -> `circuit-breaker.repository.ts` -> open, single half-open probe, successful recovery and failed-probe tests.\n- Safe operator visibility -> `GET /api/v1/usage` -> admin-scope and content-exclusion tests.\n- Capture remains independent from AI -> capture/search continuity test with the OpenRouter request window hard-filled.\n''',
+              Path('docs/BUILD_STATUS.md'): '''## OPE-227 capacity-control implementation checkpoint\n\nOPE-227 is implemented on `agent/ope-227-capacity-controls` pending final local acceptance evidence. The branch adds migration `0020`, atomic free-tier quota reservations/reconciliation, zero-cost provider/model guards, provider/operation circuit breakers with single half-open probes, policy-derived fallback routing, retry-preserving capacity deferral, hourly reservation cleanup, and the admin-only `/api/v1/usage` surface. Production migration/deployment is not part of this branch work and must remain approval-gated.\n''',
+          }
+
+          risk_candidates = [Path('docs/RISK_REGISTER.md'), Path('docs/RISKS.md')]
+          risk_path = next((p for p in risk_candidates if p.exists()), risk_candidates[0])
+          sections[risk_path] = '''## OPE-227 capacity-control risks\n\n- **Provider limits change without notice:** operational quota/model data can become stale. Mitigation: fail closed, version the policy, and revalidate authoritative provider documentation before release/provider changes.\n- **Concurrent Workers oversubscribe the last unit:** mitigation is D1 atomic multi-window reservation and concurrency acceptance tests.\n- **Worker dies after reservation:** mitigation is bounded reservation expiry plus hourly cleanup and admission-time reclamation.\n- **Retry loops burn free requests:** structured repair reserves worst-case request count up front and reconciles actual requests; capacity deferral does not create rapid retries.\n- **Provider outage causes retry storm:** provider+operation circuit breaker, one half-open probe, exponential cooldown.\n- **Fallback weakens privacy:** fallback candidates come only from `PolicyService.fallbackProviders`; OPE-227 does not invent a new hosted privacy route.\n- **Paid model is enabled by configuration:** zero-cost allowlist rejects unknown/non-free identifiers before network execution.\n- **Operator endpoint leaks content:** `/api/v1/usage` exposes bounded metadata only and has dedicated authorization/content-exclusion tests.\n'''
+
+          start = '<!-- OPE-227 START -->'
+          end = '<!-- OPE-227 END -->'
+          for path, body in sections.items():
+              path.parent.mkdir(parents=True, exist_ok=True)
+              existing = path.read_text() if path.exists() else f'# {path.stem.replace("_", " ").title()}\n'
+              block = f'\n{start}\n{body.rstrip()}\n{end}\n'
+              pattern = re.compile(r'\n?<!-- OPE-227 START -->.*?<!-- OPE-227 END -->\n?', re.S)
+              if pattern.search(existing):
+                  updated = pattern.sub(block, existing).rstrip() + '\n'
+              else:
+                  updated = existing.rstrip() + '\n' + block
+              path.write_text(updated)
+          PY
+          npx prettier --write docs/API.md docs/DATA_MODEL.md docs/OPERATIONS.md docs/TRACEABILITY.md docs/BUILD_STATUS.md docs/RISK_REGISTER.md docs/RISKS.md 2>/dev/null || true
+      - name: Commit documentation changes when needed
+        run: |
+          if git diff --quiet; then
+            echo 'OPE-227 documentation already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs
+          git commit -m 'docs(ope-227): document capacity controls and operations'
+          git push origin HEAD:agent/ope-227-capacity-controls
