@@ -24,10 +24,20 @@ import type {
 } from '../../policy/policy.service';
 import { MockAiAdapter } from './mock-ai.adapter';
 import { OpenRouterAdapter } from './openrouter.adapter';
+import { AiCapacityService } from './capacity.service';
+import type {
+  CapacityOperation,
+  CapacityProvider,
+} from './capacity.types';
 
 const POLICY_PROVIDERS = ['openrouter', 'gemini', 'cloudflare'] as const;
 type ConfiguredProvider = (typeof POLICY_PROVIDERS)[number];
 type ProviderImplementation = 'openrouter' | 'cloudflare' | 'mock';
+
+const DEFAULT_MODELS: Record<'openrouter' | 'cloudflare', string> = {
+  openrouter: 'openrouter/free',
+  cloudflare: '@cf/meta/llama-3.1-8b-instruct-fp8-fast',
+};
 
 export interface AiRoutingContext {
   privacyLevel: PrivacyLevel;
@@ -97,12 +107,34 @@ function parseEnabledProviders(
   return providers as ConfiguredProvider[];
 }
 
+function providerCallUsage(error: unknown) {
+  if (!error || typeof error !== 'object') return {};
+  const source = error as {
+    requestCount?: unknown;
+    inputUnits?: unknown;
+    outputUnits?: unknown;
+  };
+  return {
+    requests:
+      typeof source.requestCount === 'number' ? source.requestCount : undefined,
+    inputUnits:
+      typeof source.inputUnits === 'number' ? source.inputUnits : undefined,
+    outputUnits:
+      typeof source.outputUnits === 'number' ? source.outputUnits : undefined,
+  };
+}
+
 export class AiProviderRegistry {
   private providers = new Map<string, AiProvider>();
   private policyService: PolicyService;
+  private capacityService: AiCapacityService | null;
 
-  constructor(private readonly env: Env) {
+  constructor(
+    private readonly env: Env,
+    db?: D1Database,
+  ) {
     this.policyService = new PolicyService();
+    this.capacityService = db ? new AiCapacityService(env, db) : null;
 
     const implementations = parseImplementations(
       this.env.AI_PROVIDER_IMPLEMENTATIONS,
@@ -146,7 +178,6 @@ export class AiProviderRegistry {
   ): AiProviderConfig | null {
     const availableProviders: PolicyAiProvider[] = [];
 
-    // Only advertise providers that implement the requested operation.
     for (const [name, provider] of this.providers.entries()) {
       if (['openrouter', 'gemini', 'cloudflare'].includes(name)) {
         if (modality === 'image' && !provider.extractImage) continue;
@@ -186,6 +217,64 @@ export class AiProviderRegistry {
     return provider;
   }
 
+  private modelFor(provider: string): string {
+    if (provider === 'openrouter' || provider === 'cloudflare') {
+      return DEFAULT_MODELS[provider];
+    }
+    throw new AppError(
+      503,
+      'ZERO_COST_GUARD_REJECTED',
+      'No approved zero-cost model is configured for this provider.',
+    );
+  }
+
+  private async runWithCapacity<T>(
+    config: AiProviderConfig,
+    operation: CapacityOperation,
+    capacityPrompt: string,
+    requestReserve: number,
+    execute: (config: AiProviderConfig) => Promise<AiEnrichmentResult<T>>,
+  ): Promise<AiEnrichmentResult<T>> {
+    if (this.env.MOCK_AI_ENABLED === 'true') {
+      return execute(config);
+    }
+    if (!this.capacityService) {
+      throw new AppError(
+        500,
+        'CAPACITY_GUARD_REQUIRED',
+        'Non-mock AI execution requires the D1-backed capacity guard.',
+      );
+    }
+
+    const provider = config.provider as CapacityProvider;
+    const model = config.model ?? this.modelFor(provider);
+    const guardedConfig = { ...config, model };
+    const admission = await this.capacityService.admit(
+      provider,
+      operation,
+      model,
+      capacityPrompt,
+      requestReserve,
+    );
+
+    try {
+      const result = await execute(guardedConfig);
+      await this.capacityService.completeSuccess(admission, {
+        requests: result.requestCount ?? 1,
+        inputUnits: result.inputUnits,
+        outputUnits: result.outputUnits,
+      });
+      return result;
+    } catch (error) {
+      await this.capacityService.completeFailure(
+        admission,
+        error,
+        providerCallUsage(error),
+      );
+      throw error;
+    }
+  }
+
   async summarize(
     text: string,
     privacyLevel: PrivacyLevel,
@@ -197,7 +286,10 @@ export class AiProviderRegistry {
         'NO_ELIGIBLE_PROVIDER',
         'No eligible AI provider for this privacy level',
       );
-    return this.getAdapter(config.provider).summarize(text, config);
+    const prompt = `Summarize the following text and extract key topics.\n\n${text}`;
+    return this.runWithCapacity(config, 'enrich', prompt, 2, (guarded) =>
+      this.getAdapter(guarded.provider).summarize(text, guarded),
+    );
   }
 
   async classify(
@@ -211,7 +303,10 @@ export class AiProviderRegistry {
         'NO_ELIGIBLE_PROVIDER',
         'No eligible AI provider for this privacy level',
       );
-    return this.getAdapter(config.provider).classify(text, config);
+    const prompt = `Classify the following text and assign an importance score from 0 to 100.\n\n${text}`;
+    return this.runWithCapacity(config, 'enrich', prompt, 2, (guarded) =>
+      this.getAdapter(guarded.provider).classify(text, guarded),
+    );
   }
 
   async extractData(
@@ -225,7 +320,10 @@ export class AiProviderRegistry {
         'NO_ELIGIBLE_PROVIDER',
         'No eligible AI provider for this privacy level',
       );
-    return this.getAdapter(config.provider).extractData(text, config);
+    const prompt = `Analyze the following text and extract structured information according to the requested schema. Provide a title, summary, topics, people, companies, project suggestion, importance score (0-100), why it matters, and a suggested action.\n\n${text}`;
+    return this.runWithCapacity(config, 'enrich', prompt, 2, (guarded) =>
+      this.getAdapter(guarded.provider).extractData(text, guarded),
+    );
   }
 
   async generateDigestSummary(prompt: string, privacyLevel: PrivacyLevel) {
@@ -236,11 +334,13 @@ export class AiProviderRegistry {
         'NO_ELIGIBLE_PROVIDER',
         'No eligible AI provider for this privacy level',
       );
-    return this.getAdapter(config.provider).extractStructured(
-      prompt,
-      DigestSummaryResultSchema,
-      DigestSummaryResultJsonSchema,
-      config,
+    return this.runWithCapacity(config, 'digest', prompt, 2, (guarded) =>
+      this.getAdapter(guarded.provider).extractStructured(
+        prompt,
+        DigestSummaryResultSchema,
+        DigestSummaryResultJsonSchema,
+        guarded,
+      ),
     );
   }
 
@@ -265,6 +365,8 @@ export class AiProviderRegistry {
         'Provider does not support image extraction',
       );
     }
-    return adapter.extractImage(dataUrl, contentType, prompt, config);
+    return this.runWithCapacity(config, 'vision_extract', prompt, 1, (guarded) =>
+      adapter.extractImage!(dataUrl, contentType, prompt, guarded),
+    );
   }
 }
