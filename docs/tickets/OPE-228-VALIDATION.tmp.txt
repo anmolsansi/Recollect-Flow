@@ -1,5 +1,5 @@
-validated_sha=f1b716f247871c0e47384c4987bb140e28d538ba
-check_exit=1
+validated_sha=ae79728292b7c8adec2e8c61caf0e1665a70aab6
+check_exit=2
 migrate_exit=0
 dryrun_exit=0
 === check tail ===
@@ -12,8 +12,19 @@ dryrun_exit=0
 > prettier --check .
 
 Checking formatting...
-[[33mwarn[39m] apps/worker-api/src/recovery/purge-notion.service.ts
-[[33mwarn[39m] Code style issues found in the above file. Run Prettier with --write to fix.
+All matched files use Prettier code style!
+
+> recollect-flow@0.1.0 lint
+> eslint .
+
+
+> recollect-flow@0.1.0 typecheck
+> tsc --noEmit
+
+apps/worker-api/test/capacity-core-continuity.d1.spec.ts(59,36): error TS2339: Property 'capture' does not exist on type 'CaptureService'.
+apps/worker-api/test/capacity-jobservice-deferral.d1.spec.ts(54,9): error TS2345: Argument of type 'boolean' is not assignable to parameter of type 'string'.
+apps/worker-api/test/capacity-migration.d1.spec.ts(8,26): error TS2551: Property 'OPE227_MIGRATION_DB' does not exist on type 'Env'. Did you mean 'OPE222_MIGRATION_DB'?
+apps/worker-api/test/manual-retry-capacity.d1.spec.ts(98,9): error TS2345: Argument of type 'boolean' is not assignable to parameter of type 'string'.
 === migration tail ===
 │ 0014_allow_cloudflare_provider.sql           │ ✅     │
 ├──────────────────────────────────────────────┼────────┤
