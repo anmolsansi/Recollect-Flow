@@ -45,6 +45,8 @@ CREATE TABLE purge_steps (
   step_kind TEXT NOT NULL CHECK (step_kind IN ('freeze_jobs', 'delete_r2_attachments', 'archive_notion_projection', 'delete_d1_item_data', 'finalize_receipt')),
   state TEXT NOT NULL DEFAULT 'pending' CHECK (state IN ('pending', 'processing', 'complete', 'failed', 'skipped')),
   attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+  lease_owner TEXT,
+  lease_expires_at TEXT,
   last_error_code TEXT,
   started_at TEXT,
   completed_at TEXT,
@@ -55,6 +57,8 @@ CREATE TABLE purge_steps (
 
 CREATE INDEX idx_purge_steps_workflow_state
   ON purge_steps(purge_workflow_id, state, step_kind);
+CREATE INDEX idx_purge_steps_lease
+  ON purge_steps(state, lease_expires_at);
 
 CREATE TABLE purge_receipts (
   item_id TEXT PRIMARY KEY,
