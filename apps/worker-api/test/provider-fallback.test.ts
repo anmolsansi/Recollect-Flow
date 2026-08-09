@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 import type { Env } from '../src/env';
 import type {
   AiEnrichmentResult,
-  AiProviderConfig,
   ExtractResult,
 } from '../src/jobs/ai/ai.interface';
 import { AiProviderRegistry } from '../src/jobs/ai/ai-provider.registry';
@@ -25,10 +24,7 @@ class FailingOpenRouterAdapter extends MockAiAdapter {
     super('openrouter');
   }
 
-  override async extractData(
-    _text: string,
-    _config?: AiProviderConfig,
-  ): Promise<AiEnrichmentResult<ExtractResult>> {
+  override async extractData(): Promise<AiEnrichmentResult<ExtractResult>> {
     throw Object.assign(
       new AppError(503, 'PROVIDER_HTTP_ERROR', 'Synthetic provider outage'),
       {
