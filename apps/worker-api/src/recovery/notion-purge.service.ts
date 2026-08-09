@@ -34,7 +34,7 @@ export class NotionPurgeService {
         },
         body: JSON.stringify({ archived: true }),
       });
-    } catch (error) {
+    } catch {
       if (controller.signal.aborted) {
         throw new NotionPurgeError('NOTION_PURGE_TIMEOUT', true);
       }
