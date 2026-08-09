@@ -3,9 +3,11 @@ import {
   type CapacityOperation,
   type CapacityProvider,
   type CapacityReservation,
+  type CapacityWindowPolicy,
   type CapacityWindowSnapshot,
   type CircuitBreakerSnapshot,
 } from './capacity.types';
+import { quotaWindowBoundary } from './capacity.window';
 
 interface CapacityWindowRow {
   provider: CapacityProvider;
@@ -80,7 +82,78 @@ function breakerSnapshot(row: CircuitBreakerRow): CircuitBreakerSnapshot {
 export class AiCapacityRepository {
   constructor(private readonly db: D1Database) {}
 
-  async listActiveWindows(now: Date = new Date()): Promise<CapacityWindowSnapshot[]> {
+  async ensureWindows(
+    policies: readonly CapacityWindowPolicy[],
+    now: Date,
+  ): Promise<CapacityWindowSnapshot[]> {
+    if (policies.length === 0) return [];
+    const nowIso = now.toISOString();
+    await this.db.batch(
+      policies.map((policy) => {
+        const boundary = quotaWindowBoundary(policy, now);
+        return this.db
+          .prepare(
+            `INSERT INTO ai_capacity_windows (
+               provider, scope_key, window_kind, window_start, window_end,
+               request_limit, input_unit_limit, output_unit_limit,
+               provider_unit_limit, policy_version, created_at, updated_at
+             ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?11)
+             ON CONFLICT(provider, scope_key, window_kind, window_start)
+             DO UPDATE SET
+               window_end = excluded.window_end,
+               request_limit = excluded.request_limit,
+               input_unit_limit = excluded.input_unit_limit,
+               output_unit_limit = excluded.output_unit_limit,
+               provider_unit_limit = excluded.provider_unit_limit,
+               policy_version = excluded.policy_version,
+               updated_at = excluded.updated_at`,
+          )
+          .bind(
+            policy.provider,
+            policy.scopeKey,
+            policy.windowKind,
+            boundary.start,
+            boundary.end,
+            policy.limit.requests ?? null,
+            policy.limit.inputUnits ?? null,
+            policy.limit.outputUnits ?? null,
+            policy.limit.providerUnits ?? null,
+            AI_CAPACITY_POLICY_VERSION,
+            nowIso,
+          );
+      }),
+    );
+
+    const snapshots: CapacityWindowSnapshot[] = [];
+    for (const policy of policies) {
+      const boundary = quotaWindowBoundary(policy, now);
+      const row = await this.db
+        .prepare(
+          `SELECT provider, scope_key, window_kind, window_start, window_end,
+                  request_limit, input_unit_limit, output_unit_limit,
+                  provider_unit_limit, request_reserved, input_units_reserved,
+                  output_units_reserved, provider_units_reserved,
+                  request_consumed, input_units_consumed, output_units_consumed,
+                  provider_units_consumed
+           FROM ai_capacity_windows
+           WHERE provider = ?1 AND scope_key = ?2 AND window_kind = ?3
+             AND window_start = ?4`,
+        )
+        .bind(
+          policy.provider,
+          policy.scopeKey,
+          policy.windowKind,
+          boundary.start,
+        )
+        .first<CapacityWindowRow>();
+      if (row) snapshots.push(capacityWindowSnapshot(row));
+    }
+    return snapshots;
+  }
+
+  async listActiveWindows(
+    now: Date = new Date(),
+  ): Promise<CapacityWindowSnapshot[]> {
     const result = await this.db
       .prepare(
         `SELECT provider, scope_key, window_kind, window_start, window_end,
@@ -127,7 +200,10 @@ export class AiCapacityRepository {
     return row ? breakerSnapshot(row) : null;
   }
 
-  async insertReservation(reservation: CapacityReservation, now: Date): Promise<void> {
+  async insertReservation(
+    reservation: CapacityReservation,
+    now: Date,
+  ): Promise<void> {
     await this.db
       .prepare(
         `INSERT INTO ai_capacity_reservations (
