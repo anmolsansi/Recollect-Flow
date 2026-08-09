@@ -1,4 +1,4 @@
-validated_sha=73339cfa48f589e43be3c2754b39da86c08e6761
+validated_sha=6092ee03cdd2d11ca35ede28097f90e95be161e0
 check_exit=1
 migrate_exit=0
 dryrun_exit=0
@@ -122,7 +122,7 @@ Checking formatting...
 ───────────────────────────────────────────────
 
 Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
-Total Upload: 2926.82 KiB / gzip: 671.41 KiB
+Total Upload: 2927.37 KiB / gzip: 671.56 KiB
 Your Worker has access to the following bindings:
 Binding                                                                                Resource                  
 env.DB (recollect-flow-prod)                                                           D1 Database               
