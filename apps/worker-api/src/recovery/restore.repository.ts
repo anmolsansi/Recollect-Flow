@@ -118,8 +118,21 @@ export class RestoreRepository {
     });
   }
 
-  async restoreItemShell(item: PortableItemExport): Promise<void> {
-    await this.insertRecord('items', { ...item.item, duplicate_of: null });
+  async restoreItemShell(
+    item: PortableItemExport,
+    validItemIds: ReadonlySet<string>,
+  ): Promise<void> {
+    const duplicateOf = item.item.duplicate_of;
+    const duplicateTargetIsAvailable =
+      typeof duplicateOf === 'string' && validItemIds.has(duplicateOf);
+    await this.insertRecord('items', {
+      ...item.item,
+      duplicate_of: duplicateTargetIsAvailable ? duplicateOf : null,
+      lifecycle_status:
+        item.item.lifecycle_status === 'Duplicate' && !duplicateTargetIsAvailable
+          ? 'Inbox'
+          : item.item.lifecycle_status,
+    });
   }
 
   async restoreItemChildren(
@@ -169,21 +182,17 @@ export class RestoreRepository {
     }
   }
 
-  async restoreDeferredReferences(item: PortableItemExport): Promise<void> {
-    const itemId = item.item.id;
-    if (typeof itemId !== 'string') throw new Error('RESTORE_ITEM_ID_INVALID');
-    const duplicateOf = item.item.duplicate_of;
-    if (typeof duplicateOf === 'string' && duplicateOf) {
-      await this.db
-        .prepare('UPDATE items SET duplicate_of = ?1 WHERE id = ?2')
-        .bind(duplicateOf, itemId)
-        .run();
-    }
-
+  async restoreDeferredReferences(
+    item: PortableItemExport,
+    validItemIds: ReadonlySet<string>,
+  ): Promise<void> {
     for (const capture of item.captureEvents) {
       if (typeof capture.id !== 'string') continue;
       const duplicate =
-        typeof capture.duplicate_of === 'string' ? capture.duplicate_of : null;
+        typeof capture.duplicate_of === 'string' &&
+        validItemIds.has(capture.duplicate_of)
+          ? capture.duplicate_of
+          : null;
       const attachment =
         typeof capture.attachment_id === 'string' ? capture.attachment_id : null;
       if (!duplicate && !attachment) continue;
