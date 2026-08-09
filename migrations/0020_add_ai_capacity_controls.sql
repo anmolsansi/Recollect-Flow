@@ -38,6 +38,7 @@ CREATE TABLE ai_capacity_reservations (
   estimated_input_units INTEGER NOT NULL DEFAULT 0 CHECK (estimated_input_units >= 0),
   estimated_output_units INTEGER NOT NULL DEFAULT 0 CHECK (estimated_output_units >= 0),
   estimated_provider_units INTEGER NOT NULL DEFAULT 0 CHECK (estimated_provider_units >= 0),
+  actual_request_units INTEGER CHECK (actual_request_units IS NULL OR actual_request_units >= 0),
   actual_input_units INTEGER CHECK (actual_input_units IS NULL OR actual_input_units >= 0),
   actual_output_units INTEGER CHECK (actual_output_units IS NULL OR actual_output_units >= 0),
   actual_provider_units INTEGER CHECK (actual_provider_units IS NULL OR actual_provider_units >= 0),
