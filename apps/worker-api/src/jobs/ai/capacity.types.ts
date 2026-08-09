@@ -14,6 +14,7 @@ export interface CapacityLimit {
   requests?: number;
   inputUnits?: number;
   outputUnits?: number;
+  providerUnits?: number;
 }
 
 export interface CapacityWindowPolicy {
@@ -36,6 +37,7 @@ export interface CapacityEstimate {
   requests: number;
   inputUnits: number;
   outputUnits: number;
+  providerUnits: number;
 }
 
 export interface CapacityReservation {
@@ -58,12 +60,15 @@ export interface CapacityWindowSnapshot {
   requestLimit: number | null;
   inputUnitLimit: number | null;
   outputUnitLimit: number | null;
+  providerUnitLimit: number | null;
   requestReserved: number;
   inputUnitsReserved: number;
   outputUnitsReserved: number;
+  providerUnitsReserved: number;
   requestConsumed: number;
   inputUnitsConsumed: number;
   outputUnitsConsumed: number;
+  providerUnitsConsumed: number;
 }
 
 export interface CircuitBreakerSnapshot {
