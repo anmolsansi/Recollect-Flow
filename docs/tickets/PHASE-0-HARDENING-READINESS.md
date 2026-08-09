@@ -30,13 +30,13 @@ For OPE-227 design, the owner-approved baseline dated 2026-08-09 models OpenRout
 
 This is operational quota data, not a timeless architecture constant. OPE-227 must revalidate provider limits from authoritative provider documentation before release or provider-policy changes.
 
-## Exit criteria
+## Exit evidence
 
-- [x] Current repository/Linear dependency state audited.
-- [x] `docs/repo_context.md` refreshed from the July foundation-only snapshot.
-- [x] Six owner/architect decisions frozen in `docs/DECISIONS.md`.
-- [x] OPE-227 and OPE-228 readiness boundaries documented.
-- [ ] Repository CI green for this documentation branch.
-- [ ] Phase 0 PR merged to `main`.
+- Current repository/Linear dependency state audited.
+- `docs/repo_context.md` refreshed from the July foundation-only snapshot.
+- Six owner/architect decisions frozen in `docs/DECISIONS.md`.
+- OPE-227 and OPE-228 readiness boundaries documented.
+- PR #19 repository CI run 83 passed `npm run check` and `npm run db:migrate:local` before merge.
+- PR #19 is the Phase 0 merge vehicle; merging it into `main` completes the Phase 0 documentation/architecture gate.
 
 After merge, OPE-227 must start from a fresh branch based on the new `main`.
