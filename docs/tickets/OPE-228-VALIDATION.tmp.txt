@@ -1,4 +1,4 @@
-validated_sha=90196edb52333b5a22b005d7d974e4ee0dadec76
+validated_sha=f4c30fc7735919011237a4e9b8b8eadfc3ca6752
 check_exit=2
 migrate_exit=0
 dryrun_exit=0
@@ -21,7 +21,6 @@ All matched files use Prettier code style!
 > recollect-flow@0.1.0 typecheck
 > tsc --noEmit
 
-apps/worker-api/test/capacity-jobservice-deferral.d1.spec.ts(54,9): error TS2345: Argument of type 'boolean' is not assignable to parameter of type 'string'.
 apps/worker-api/test/capacity-migration.d1.spec.ts(8,26): error TS2551: Property 'OPE227_MIGRATION_DB' does not exist on type 'Env'. Did you mean 'OPE222_MIGRATION_DB'?
 apps/worker-api/test/manual-retry-capacity.d1.spec.ts(98,9): error TS2345: Argument of type 'boolean' is not assignable to parameter of type 'string'.
 === migration tail ===
