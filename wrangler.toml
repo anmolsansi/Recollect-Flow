@@ -40,6 +40,8 @@ UPLOAD_TTL_SECONDS = "3600"
 AI_PROVIDER_DEFAULT = "openrouter"
 AI_PROVIDERS_ENABLED = "openrouter,cloudflare"
 AI_PROVIDER_IMPLEMENTATIONS = '{"openrouter":"openrouter","cloudflare":"cloudflare"}'
+OPENROUTER_FREE_ACCOUNT_TIER = "standard"
+CLOUDFLARE_AI_FREE_DAILY_NEURONS = "10000"
 DIGEST_AI_ENABLED = "false"
 
 [triggers]
