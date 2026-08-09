@@ -157,7 +157,11 @@ describe('OPE-228 portable restore round trip', () => {
       topics_json: '["backup","restore"]',
     });
 
-    const search = await executeSearch(env.DB, { q: 'zephyr', limit: 10 });
+    const search = await executeSearch(env.DB, {
+      q: 'zephyr',
+      limit: 10,
+      captured_to: '2026-08-11T00:00:00.000Z',
+    });
     expect(search.data.map((entry) => entry.id)).toContain(ITEM_ID);
 
     expect(
