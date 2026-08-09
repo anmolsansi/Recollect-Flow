@@ -200,7 +200,7 @@ export class AiCapacityRepository {
     return row ? breakerSnapshot(row) : null;
   }
 
-  async insertReservation(
+  async createReservationIntent(
     reservation: CapacityReservation,
     now: Date,
   ): Promise<void> {
@@ -209,8 +209,8 @@ export class AiCapacityRepository {
         `INSERT INTO ai_capacity_reservations (
            id, provider, operation, model, scope_key, request_units,
            estimated_input_units, estimated_output_units, estimated_provider_units,
-           state, window_keys_json, expires_at, created_at, updated_at
-         ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 'active', ?10, ?11, ?12, ?12)`,
+           capacity_applied, state, window_keys_json, expires_at, created_at, updated_at
+         ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 0, 'active', ?10, ?11, ?12, ?12)`,
       )
       .bind(
         reservation.id,
