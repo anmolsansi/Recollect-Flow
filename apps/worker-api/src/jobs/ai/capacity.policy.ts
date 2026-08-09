@@ -27,9 +27,9 @@ export interface CloudflareNeuronRate {
 export const CLOUDFLARE_NEURON_RATES: Readonly<
   Record<string, CloudflareNeuronRate>
 > = {
-  '@cf/meta/llama-3-8b-instruct': {
-    inputPerMillion: 25_608,
-    outputPerMillion: 75_147,
+  '@cf/meta/llama-3.1-8b-instruct-fp8-fast': {
+    inputPerMillion: 4_119,
+    outputPerMillion: 34_868,
   },
   '@cf/meta/llama-3.2-1b-instruct': {
     inputPerMillion: 2_457,
@@ -58,8 +58,6 @@ function openRouterDailyLimit(env: Env): number {
 
 function cloudflareDailyNeuronLimit(env: Env): number {
   const configured = positiveInteger(env.CLOUDFLARE_AI_FREE_DAILY_NEURONS);
-  // A configured value may only make the local guard stricter, never raise it
-  // above the published free allocation.
   return Math.min(configured ?? 10_000, 10_000);
 }
 
@@ -95,7 +93,8 @@ export function isOpenRouterFreeModel(model: string): boolean {
 
 export function isCloudflareZeroCostModel(model: string): boolean {
   return (
-    model.startsWith('@cf/') && !CLOUDFLARE_PAID_REQUIRED_MODELS.has(model)
+    !CLOUDFLARE_PAID_REQUIRED_MODELS.has(model) &&
+    Object.hasOwn(CLOUDFLARE_NEURON_RATES, model)
   );
 }
 
@@ -105,8 +104,6 @@ export function assertZeroCostModel(
 ): boolean {
   if (provider === 'openrouter') return isOpenRouterFreeModel(model);
   if (provider === 'cloudflare') return isCloudflareZeroCostModel(model);
-  // Gemini execution is not implemented in this repository. Keep it fail-closed
-  // until a provider/model free-tier contract is explicitly added.
   return false;
 }
 
