@@ -25,6 +25,15 @@ interface PurgeWorkflowRow {
   updated_at: string;
 }
 
+export interface PendingPurgeConfirmation {
+  workflowId: string;
+  itemId: string;
+  state: PurgeState;
+  confirmationDigest: string;
+  confirmationExpiresAt: string;
+  requestedEditVersion: number;
+}
+
 export interface PurgeStepRecord {
   id: string;
   workflowId: string;
@@ -97,6 +106,73 @@ export class PurgeRepository {
     const workflow = await this.findWorkflow(workflowId);
     if (!workflow) throw new Error('Failed to persist purge workflow');
     return workflow;
+  }
+
+  async findPendingConfirmation(
+    workflowId: string,
+  ): Promise<PendingPurgeConfirmation | null> {
+    const row = await this.db
+      .prepare(
+        `SELECT id, item_id, state, confirmation_digest,
+                confirmation_expires_at, requested_edit_version
+         FROM purge_workflows WHERE id = ?1`,
+      )
+      .bind(workflowId)
+      .first<{
+        id: string;
+        item_id: string;
+        state: PurgeState;
+        confirmation_digest: string;
+        confirmation_expires_at: string;
+        requested_edit_version: number;
+      }>();
+    return row
+      ? {
+          workflowId: row.id,
+          itemId: row.item_id,
+          state: row.state,
+          confirmationDigest: row.confirmation_digest,
+          confirmationExpiresAt: row.confirmation_expires_at,
+          requestedEditVersion: row.requested_edit_version,
+        }
+      : null;
+  }
+
+  async confirm(
+    workflowId: string,
+    confirmationDigest: string,
+    now: Date,
+  ): Promise<boolean> {
+    const nowIso = now.toISOString();
+    const result = await this.db
+      .prepare(
+        `UPDATE purge_workflows
+         SET state = 'queued', confirmed_at = ?1, updated_at = ?1,
+             last_error_code = NULL
+         WHERE id = ?2 AND state = 'confirmation_pending'
+           AND confirmation_digest = ?3 AND confirmation_expires_at > ?1`,
+      )
+      .bind(nowIso, workflowId, confirmationDigest)
+      .run();
+    return result.meta.changes === 1;
+  }
+
+  async cancelExpiredConfirmation(
+    workflowId: string,
+    now: Date,
+  ): Promise<boolean> {
+    const nowIso = now.toISOString();
+    const result = await this.db
+      .prepare(
+        `UPDATE purge_workflows
+         SET state = 'cancelled', last_error_code = 'PURGE_CONFIRMATION_EXPIRED',
+             updated_at = ?1
+         WHERE id = ?2 AND state = 'confirmation_pending'
+           AND confirmation_expires_at <= ?1`,
+      )
+      .bind(nowIso, workflowId)
+      .run();
+    return result.meta.changes === 1;
   }
 
   async findWorkflow(id: string): Promise<PurgeWorkflowRecord | null> {
