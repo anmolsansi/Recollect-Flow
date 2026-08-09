@@ -62,7 +62,8 @@ describe('OPE-228 purge confirmation contract', () => {
       new Date('2026-08-10T00:01:00.000Z'),
     );
     expect(
-      (await new PurgeRepository(env.DB).findWorkflow(request.workflowId))?.state,
+      (await new PurgeRepository(env.DB).findWorkflow(request.workflowId))
+        ?.state,
     ).toBe('queued');
   });
 
@@ -79,7 +80,8 @@ describe('OPE-228 purge confirmation contract', () => {
       ),
     ).rejects.toMatchObject({ code: 'PURGE_CONFIRMATION_MISMATCH' });
     expect(
-      (await new PurgeRepository(env.DB).findWorkflow(request.workflowId))?.state,
+      (await new PurgeRepository(env.DB).findWorkflow(request.workflowId))
+        ?.state,
     ).toBe('confirmation_pending');
   });
 
@@ -96,7 +98,8 @@ describe('OPE-228 purge confirmation contract', () => {
       ),
     ).rejects.toMatchObject({ code: 'PURGE_CONFIRMATION_EXPIRED' });
     expect(
-      (await new PurgeRepository(env.DB).findWorkflow(request.workflowId))?.state,
+      (await new PurgeRepository(env.DB).findWorkflow(request.workflowId))
+        ?.state,
     ).toBe('cancelled');
   });
 

@@ -3,11 +3,7 @@ export const HOSTED_BACKUP_RETENTION_DAYS = 30;
 export const PURGE_CONFIRMATION_TTL_MINUTES = 15;
 
 export type BackupState =
-  | 'creating'
-  | 'verifying'
-  | 'complete'
-  | 'failed'
-  | 'expired';
+  'creating' | 'verifying' | 'complete' | 'failed' | 'expired';
 
 export type PurgeState =
   | 'confirmation_pending'
@@ -18,11 +14,7 @@ export type PurgeState =
   | 'cancelled';
 
 export type PurgeStepState =
-  | 'pending'
-  | 'processing'
-  | 'complete'
-  | 'failed'
-  | 'skipped';
+  'pending' | 'processing' | 'complete' | 'failed' | 'skipped';
 
 export type PurgeStepKind =
   | 'freeze_jobs'
@@ -32,11 +24,7 @@ export type PurgeStepKind =
   | 'finalize_receipt';
 
 export type RestoreState =
-  | 'validating'
-  | 'restoring'
-  | 'verifying'
-  | 'complete'
-  | 'failed';
+  'validating' | 'restoring' | 'verifying' | 'complete' | 'failed';
 
 export type IntegrityRunState = 'running' | 'complete' | 'failed';
 

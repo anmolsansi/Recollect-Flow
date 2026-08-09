@@ -1,9 +1,7 @@
 import { NotionPurgeService } from './notion-purge.service';
 
 export type NotionPurgeDisposition =
-  | 'archived'
-  | 'already_missing'
-  | 'not_linked';
+  'archived' | 'already_missing' | 'not_linked';
 
 export class PurgeNotionProjectionService {
   constructor(

@@ -90,7 +90,9 @@ describe('OPE-228 purge worker', () => {
         .bind(ITEM_ID)
         .first(),
     ).toBeNull();
-    expect(await repository.hasReceipt(ITEM_ID, requested.workflowId)).toBe(true);
+    expect(await repository.hasReceipt(ITEM_ID, requested.workflowId)).toBe(
+      true,
+    );
 
     const receipt = await env.DB.prepare(
       `SELECT item_id, purge_workflow_id, receipt_version, purged_at,

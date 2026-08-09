@@ -41,7 +41,10 @@ describe('OPE-227 AI-independent core continuity', () => {
       'openrouter/free',
     );
     expect(policy).not.toBeNull();
-    await new AiCapacityRepository(env.DB).ensureWindows(policy!.windows, current);
+    await new AiCapacityRepository(env.DB).ensureWindows(
+      policy!.windows,
+      current,
+    );
     await env.DB.prepare(
       `UPDATE ai_capacity_windows
        SET request_consumed = request_limit, request_reserved = 0

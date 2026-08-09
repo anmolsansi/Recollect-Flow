@@ -7,9 +7,9 @@ import {
 
 describe('OPE-228 hosted backup retention', () => {
   it('expires exactly thirty days after creation', () => {
-    expect(
-      hostedBackupExpiresAt(new Date('2026-08-10T00:00:00.000Z')),
-    ).toBe('2026-09-09T00:00:00.000Z');
+    expect(hostedBackupExpiresAt(new Date('2026-08-10T00:00:00.000Z'))).toBe(
+      '2026-09-09T00:00:00.000Z',
+    );
   });
 
   it('uses a unique immutable backup namespace', () => {

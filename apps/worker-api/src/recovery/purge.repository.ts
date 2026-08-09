@@ -226,7 +226,10 @@ export class PurgeRepository {
     return result.meta.changes === 1;
   }
 
-  async markWorkflowProcessing(workflowId: string, now: Date): Promise<boolean> {
+  async markWorkflowProcessing(
+    workflowId: string,
+    now: Date,
+  ): Promise<boolean> {
     const nowIso = now.toISOString();
     const result = await this.db
       .prepare(
@@ -334,13 +337,7 @@ export class PurgeRepository {
            AND state = 'processing' AND lease_owner = ?5
            AND lease_expires_at > ?2`,
       )
-      .bind(
-        skipped ? 'skipped' : 'complete',
-        nowIso,
-        workflowId,
-        kind,
-        ownerId,
-      )
+      .bind(skipped ? 'skipped' : 'complete', nowIso, workflowId, kind, ownerId)
       .run();
     return result.meta.changes === 1;
   }
@@ -389,13 +386,7 @@ export class PurgeRepository {
          ) VALUES (?1, ?2, ?3, ?4, ?5, ?4)
          ON CONFLICT(item_id) DO NOTHING`,
       )
-      .bind(
-        itemId,
-        workflowId,
-        PURGE_RECEIPT_VERSION,
-        nowIso,
-        retentionUntil,
-      )
+      .bind(itemId, workflowId, PURGE_RECEIPT_VERSION, nowIso, retentionUntil)
       .run();
     const receipt = await this.findReceipt(itemId);
     if (!receipt) throw new Error('Failed to persist purge receipt');

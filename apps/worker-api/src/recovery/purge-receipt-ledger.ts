@@ -8,7 +8,8 @@ function receiptObjectKey(itemId: string): string {
 }
 
 function parseReceipt(value: unknown): PurgeReceiptRecord {
-  if (!value || typeof value !== 'object') throw new Error('PURGE_LEDGER_INVALID');
+  if (!value || typeof value !== 'object')
+    throw new Error('PURGE_LEDGER_INVALID');
   const source = value as Record<string, unknown>;
   if (
     typeof source.itemId !== 'string' ||

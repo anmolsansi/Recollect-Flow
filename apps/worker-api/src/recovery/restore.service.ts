@@ -95,11 +95,10 @@ export class RestoreService {
         new PurgeRepository(this.db).listReceipts(),
         loadPurgeReceiptLedger(this.bucket),
       ]);
-      const plan = buildRestorePlan(
-        envelope,
-        currentReceipts,
-        [...hostedReceipts, ...(options.receiptOverlay ?? [])],
-      );
+      const plan = buildRestorePlan(envelope, currentReceipts, [
+        ...hostedReceipts,
+        ...(options.receiptOverlay ?? []),
+      ]);
       validateRestorePlan(plan);
       await runRepository.update(run.id, 'validating', {
         skippedPurgedCount: plan.skippedPurgedItemIds.length,

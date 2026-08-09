@@ -22,14 +22,17 @@ export class NotionIntegrityService {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
     try {
-      const response = await this.fetcher(`${NOTION_API_BASE_URL}/pages/${pageId}`, {
-        method: 'GET',
-        signal: controller.signal,
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-          'Notion-Version': NOTION_VERSION,
+      const response = await this.fetcher(
+        `${NOTION_API_BASE_URL}/pages/${pageId}`,
+        {
+          method: 'GET',
+          signal: controller.signal,
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+            'Notion-Version': NOTION_VERSION,
+          },
         },
-      });
+      );
       if (response.ok) return 'present';
       if (response.status === 404) return 'missing';
       if (response.status === 429 || response.status === 529) {

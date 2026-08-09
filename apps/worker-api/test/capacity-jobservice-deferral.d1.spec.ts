@@ -75,6 +75,8 @@ describe('OPE-227 generic processing capacity deferral', () => {
     expect(row?.attempts).toBe(0);
     expect(row?.last_error_code).toBe('QUOTA_PAUSED');
     expect(row?.lease_owner).toBeNull();
-    expect(new Date(row!.available_at).getTime()).toBeGreaterThan(now.getTime());
+    expect(new Date(row!.available_at).getTime()).toBeGreaterThan(
+      now.getTime(),
+    );
   });
 });

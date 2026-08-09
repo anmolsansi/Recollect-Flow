@@ -82,9 +82,9 @@ describe('OPE-228 partial purge recovery', () => {
     expect(
       steps.find((step) => step.kind === 'archive_notion_projection')?.state,
     ).toBe('failed');
-    expect(steps.find((step) => step.kind === 'delete_d1_item_data')?.state).toBe(
-      'pending',
-    );
+    expect(
+      steps.find((step) => step.kind === 'delete_d1_item_data')?.state,
+    ).toBe('pending');
 
     const item = await env.DB.prepare(
       'SELECT id, raw_text, deleted_at FROM items WHERE id = ?1',

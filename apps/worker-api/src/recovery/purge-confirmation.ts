@@ -1,7 +1,10 @@
 import { sha256 } from '../captures/hash';
 import { PURGE_CONFIRMATION_TTL_MINUTES } from './recovery.types';
 
-export function purgeConfirmationPhrase(itemId: string, workflowId: string): string {
+export function purgeConfirmationPhrase(
+  itemId: string,
+  workflowId: string,
+): string {
   return `PURGE ${itemId} ${workflowId}`;
 }
 

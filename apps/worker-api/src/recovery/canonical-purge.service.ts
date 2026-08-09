@@ -14,9 +14,9 @@ export class CanonicalPurgeService {
       .all<{ id: string; canonical_payload_json: string }>();
     const affected = (runs.results ?? []).filter((run) => {
       try {
-        return referencedItemIds(parseDigestPayload(run.canonical_payload_json)).includes(
-          itemId,
-        );
+        return referencedItemIds(
+          parseDigestPayload(run.canonical_payload_json),
+        ).includes(itemId);
       } catch {
         return run.canonical_payload_json.includes(itemId);
       }
@@ -64,7 +64,9 @@ export class CanonicalPurgeService {
         )
         .bind(nowIso, itemId),
       this.db
-        .prepare('UPDATE capture_events SET duplicate_of = NULL WHERE duplicate_of = ?1')
+        .prepare(
+          'UPDATE capture_events SET duplicate_of = NULL WHERE duplicate_of = ?1',
+        )
         .bind(itemId),
       this.db
         .prepare(
@@ -96,8 +98,12 @@ export class CanonicalPurgeService {
       this.db
         .prepare('DELETE FROM item_deduplication_keys WHERE item_id = ?1')
         .bind(itemId),
-      this.db.prepare('DELETE FROM attachments WHERE item_id = ?1').bind(itemId),
-      this.db.prepare('DELETE FROM capture_events WHERE item_id = ?1').bind(itemId),
+      this.db
+        .prepare('DELETE FROM attachments WHERE item_id = ?1')
+        .bind(itemId),
+      this.db
+        .prepare('DELETE FROM capture_events WHERE item_id = ?1')
+        .bind(itemId),
       this.db
         .prepare(
           `INSERT INTO purge_receipts (

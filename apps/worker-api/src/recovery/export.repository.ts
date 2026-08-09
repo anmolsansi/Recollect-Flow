@@ -48,8 +48,12 @@ export class ExportRepository {
       this.rows('SELECT * FROM items ORDER BY captured_at ASC, id ASC'),
       this.rows('SELECT * FROM capture_events ORDER BY created_at ASC, id ASC'),
       this.rows('SELECT * FROM attachments ORDER BY created_at ASC, id ASC'),
-      this.rows('SELECT * FROM extraction_records ORDER BY created_at ASC, id ASC'),
-      this.rows('SELECT * FROM processing_jobs ORDER BY created_at ASC, id ASC'),
+      this.rows(
+        'SELECT * FROM extraction_records ORDER BY created_at ASC, id ASC',
+      ),
+      this.rows(
+        'SELECT * FROM processing_jobs ORDER BY created_at ASC, id ASC',
+      ),
       this.rows(
         `SELECT r.*, j.item_id AS __item_id
          FROM processing_job_results r

@@ -54,7 +54,8 @@ export class PurgeService {
 
     const workflowId = crypto.randomUUID();
     const confirmationPhrase = purgeConfirmationPhrase(itemId, workflowId);
-    const confirmationDigest = await purgeConfirmationDigest(confirmationPhrase);
+    const confirmationDigest =
+      await purgeConfirmationDigest(confirmationPhrase);
     const confirmationExpiresAt = purgeConfirmationExpiry(now);
     await this.repository.createConfirmation(
       workflowId,

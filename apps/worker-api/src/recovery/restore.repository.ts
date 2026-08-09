@@ -41,7 +41,10 @@ function resetProcessingLease(
   };
 }
 
-function resetSyncLease(record: PortableRecord, nowIso: string): PortableRecord {
+function resetSyncLease(
+  record: PortableRecord,
+  nowIso: string,
+): PortableRecord {
   if (record.status !== 'processing') return record;
   return {
     ...record,
@@ -129,7 +132,8 @@ export class RestoreRepository {
       ...item.item,
       duplicate_of: null,
       lifecycle_status:
-        item.item.lifecycle_status === 'Duplicate' && !duplicateTargetIsAvailable
+        item.item.lifecycle_status === 'Duplicate' &&
+        !duplicateTargetIsAvailable
           ? 'Inbox'
           : item.item.lifecycle_status,
     });
@@ -207,7 +211,9 @@ export class RestoreRepository {
           ? capture.duplicate_of
           : null;
       const attachment =
-        typeof capture.attachment_id === 'string' ? capture.attachment_id : null;
+        typeof capture.attachment_id === 'string'
+          ? capture.attachment_id
+          : null;
       if (!duplicate && !attachment) continue;
       await this.db
         .prepare(

@@ -67,7 +67,8 @@ describe('OPE-228 hosted backup workflow', () => {
 
   it('fails the backup attempt without deleting live canonical data', async () => {
     const failingBucket = {
-      put: (...args: Parameters<R2Bucket['put']>) => env.ATTACHMENTS.put(...args),
+      put: (...args: Parameters<R2Bucket['put']>) =>
+        env.ATTACHMENTS.put(...args),
       get: async () => null,
       delete: (...args: Parameters<R2Bucket['delete']>) =>
         env.ATTACHMENTS.delete(...args),

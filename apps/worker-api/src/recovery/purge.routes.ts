@@ -18,38 +18,46 @@ const confirmSchema = z
 export function purgeRoutes() {
   const router = new Hono<AppContext>();
 
-  router.post('/items/:id/purge-request', requireAdminToken, async (context) => {
-    const parsed = requestSchema.safeParse(
-      await context.req.json().catch(() => ({})),
-    );
-    if (!parsed.success) {
-      throw new AppError(422, 'VALIDATION_ERROR', 'Invalid purge request.');
-    }
-    const request = await new PurgeService(context.env.DB).requestPurge(
-      context.req.param('id'),
-      parsed.data.edit_version,
-    );
-    return context.json(
-      {
-        data: {
-          purge_workflow_id: request.workflowId,
-          item_id: request.itemId,
-          state: 'confirmation_pending',
-          confirmation: request.confirmationPhrase,
-          confirmation_expires_at: request.confirmationExpiresAt,
+  router.post(
+    '/items/:id/purge-request',
+    requireAdminToken,
+    async (context) => {
+      const parsed = requestSchema.safeParse(
+        await context.req.json().catch(() => ({})),
+      );
+      if (!parsed.success) {
+        throw new AppError(422, 'VALIDATION_ERROR', 'Invalid purge request.');
+      }
+      const request = await new PurgeService(context.env.DB).requestPurge(
+        context.req.param('id'),
+        parsed.data.edit_version,
+      );
+      return context.json(
+        {
+          data: {
+            purge_workflow_id: request.workflowId,
+            item_id: request.itemId,
+            state: 'confirmation_pending',
+            confirmation: request.confirmationPhrase,
+            confirmation_expires_at: request.confirmationExpiresAt,
+          },
+          meta: { request_id: context.get('requestId') },
         },
-        meta: { request_id: context.get('requestId') },
-      },
-      201,
-    );
-  });
+        201,
+      );
+    },
+  );
 
   router.post('/purges/:id/confirm', requireAdminToken, async (context) => {
     const parsed = confirmSchema.safeParse(
       await context.req.json().catch(() => ({})),
     );
     if (!parsed.success) {
-      throw new AppError(422, 'VALIDATION_ERROR', 'Invalid purge confirmation.');
+      throw new AppError(
+        422,
+        'VALIDATION_ERROR',
+        'Invalid purge confirmation.',
+      );
     }
     await new PurgeService(context.env.DB).confirmPurge(
       context.req.param('id'),
@@ -64,7 +72,8 @@ export function purgeRoutes() {
   router.post('/purges/:id/run', requireAdminToken, async (context) => {
     const repository = new PurgeRepository(context.env.DB);
     const before = await repository.findWorkflow(context.req.param('id'));
-    if (!before) throw new AppError(404, 'NOT_FOUND', 'Purge workflow not found.');
+    if (!before)
+      throw new AppError(404, 'NOT_FOUND', 'Purge workflow not found.');
     if (!['queued', 'processing', 'partial'].includes(before.state)) {
       throw new AppError(
         409,
@@ -84,7 +93,8 @@ export function purgeRoutes() {
   router.get('/purges/:id', requireAdminToken, async (context) => {
     const repository = new PurgeRepository(context.env.DB);
     const workflow = await repository.findWorkflow(context.req.param('id'));
-    if (!workflow) throw new AppError(404, 'NOT_FOUND', 'Purge workflow not found.');
+    if (!workflow)
+      throw new AppError(404, 'NOT_FOUND', 'Purge workflow not found.');
     const steps = await repository.listSteps(workflow.id);
     return context.json({
       data: { workflow, steps },

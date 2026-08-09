@@ -218,7 +218,8 @@ export class IntegrityService {
       const incompleteVerification =
         backup.state === 'complete' &&
         (!backup.sha256 || backup.size_bytes === null || !backup.verified_at);
-      const overdue = backup.state === 'complete' && backup.expires_at <= nowIso;
+      const overdue =
+        backup.state === 'complete' && backup.expires_at <= nowIso;
       await this.repository.addFinding(
         runId,
         {

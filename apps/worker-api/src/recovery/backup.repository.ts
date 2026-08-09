@@ -92,10 +92,7 @@ export class BackupRepository {
     return result.meta.changes === 1;
   }
 
-  async findExpired(
-    now: Date,
-    limit = 100,
-  ): Promise<BackupArtifactRecord[]> {
+  async findExpired(now: Date, limit = 100): Promise<BackupArtifactRecord[]> {
     const result = await this.db
       .prepare(
         `SELECT id, object_key, state, schema_version, sha256, size_bytes,

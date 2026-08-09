@@ -10,7 +10,11 @@ export function restoreRoutes() {
 
   router.post('/restore', requireAdminToken, async (context) => {
     const dryRunRaw = context.req.query('dry_run');
-    if (dryRunRaw !== undefined && dryRunRaw !== 'true' && dryRunRaw !== 'false') {
+    if (
+      dryRunRaw !== undefined &&
+      dryRunRaw !== 'true' &&
+      dryRunRaw !== 'false'
+    ) {
       throw new AppError(
         422,
         'VALIDATION_ERROR',

@@ -117,13 +117,7 @@ async function runWorkflow(
       }
     } catch (error) {
       const code = safeStepError(error);
-      await repository.failStep(
-        workflow.id,
-        stepKind,
-        ownerId,
-        code,
-        now(),
-      );
+      await repository.failStep(workflow.id, stepKind, ownerId, code, now());
       await repository.markWorkflowPartial(workflow.id, code, now());
       break;
     }
@@ -147,7 +141,10 @@ export async function processPurgeWorkflow(
 ): Promise<void> {
   const repository = new PurgeRepository(env.DB);
   const workflow = await repository.findWorkflow(workflowId);
-  if (!workflow || !['queued', 'processing', 'partial'].includes(workflow.state)) {
+  if (
+    !workflow ||
+    !['queued', 'processing', 'partial'].includes(workflow.state)
+  ) {
     return;
   }
   await runWorkflow(env, workflow, options);

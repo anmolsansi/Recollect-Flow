@@ -9,7 +9,9 @@ import { RestoreService } from '../src/recovery/restore.service';
 
 const ITEM_ID = 'ope228-prepurge-backup-item';
 
-async function clearCanonicalAndRecovery(keepReceiptObjects = false): Promise<void> {
+async function clearCanonicalAndRecovery(
+  keepReceiptObjects = false,
+): Promise<void> {
   await env.DB.batch([
     env.DB.prepare('DELETE FROM purge_steps'),
     env.DB.prepare('DELETE FROM purge_receipts'),
@@ -32,7 +34,9 @@ async function clearCanonicalAndRecovery(keepReceiptObjects = false): Promise<vo
     env.DB.prepare('DELETE FROM items'),
   ]);
   if (!keepReceiptObjects) {
-    const objects = await env.ATTACHMENTS.list({ prefix: 'purge-receipts/v1/' });
+    const objects = await env.ATTACHMENTS.list({
+      prefix: 'purge-receipts/v1/',
+    });
     if (objects.objects.length) {
       await env.ATTACHMENTS.delete(objects.objects.map((object) => object.key));
     }
@@ -114,7 +118,9 @@ describe('OPE-228 purge-aware restore', () => {
         .first(),
     ).toBeNull();
     expect(
-      await env.DB.prepare('SELECT item_id FROM purge_receipts WHERE item_id = ?1')
+      await env.DB.prepare(
+        'SELECT item_id FROM purge_receipts WHERE item_id = ?1',
+      )
         .bind(ITEM_ID)
         .first(),
     ).not.toBeNull();

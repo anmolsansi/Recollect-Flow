@@ -64,10 +64,7 @@ export class BackupService {
         throw new Error('BACKUP_VERIFICATION_MISMATCH');
       }
 
-      const complete = await this.repository.markComplete(
-        backupId,
-        this.now(),
-      );
+      const complete = await this.repository.markComplete(backupId, this.now());
       if (!complete) throw new Error('BACKUP_STATE_CONFLICT');
       return (await this.repository.find(backupId))!;
     } catch (error) {

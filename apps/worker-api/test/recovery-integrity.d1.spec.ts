@@ -21,47 +21,39 @@ async function reset(): Promise<void> {
 
   const now = '2026-08-10T05:00:00.000Z';
   await env.DB.batch([
-    env.DB
-      .prepare(
-        `INSERT INTO items (
+    env.DB.prepare(
+      `INSERT INTO items (
            id, idempotency_key, source_type, source_app, privacy_level,
            processing_status, lifecycle_status, notion_page_id,
            captured_at, created_at, updated_at, raw_text
          ) VALUES (?1, 'ope228-integrity-key', 'text', 'test', 'public',
                    'complete', 'Inbox', 'missing-notion-page', ?2, ?2, ?2,
                    'canonical content must survive integrity scan')`,
-      )
-      .bind(ITEM_ID, now),
-    env.DB
-      .prepare(
-        `INSERT INTO attachments (
+    ).bind(ITEM_ID, now),
+    env.DB.prepare(
+      `INSERT INTO attachments (
            id, item_id, object_key, status, file_name,
            declared_content_type, size_bytes, expires_at,
            linked_at, created_at, updated_at
          ) VALUES ('ope228-integrity-attachment', ?1,
                    'attachments/ope228-missing-object', 'linked', 'proof.txt',
                    'text/plain', 12, '2026-09-10T00:00:00.000Z', ?2, ?2, ?2)`,
-      )
-      .bind(ITEM_ID, now),
-    env.DB
-      .prepare(
-        `INSERT INTO purge_workflows (
+    ).bind(ITEM_ID, now),
+    env.DB.prepare(
+      `INSERT INTO purge_workflows (
            id, item_id, state, confirmation_digest, confirmation_expires_at,
            requested_edit_version, confirmed_at, last_error_code,
            created_at, updated_at
          ) VALUES ('ope228-partial-integrity-purge', ?1, 'partial', 'digest',
                    '2026-08-10T06:00:00.000Z', 1, ?2,
                    'NOTION_PURGE_PROVIDER_UNAVAILABLE', ?2, ?2)`,
-      )
-      .bind(ITEM_ID, now),
-    env.DB
-      .prepare(
-        `INSERT INTO backup_artifacts (
+    ).bind(ITEM_ID, now),
+    env.DB.prepare(
+      `INSERT INTO backup_artifacts (
            id, object_key, state, schema_version, created_at, expires_at
          ) VALUES ('ope228-incomplete-backup', 'backups/v1/incomplete.json',
                    'complete', '2026-08-10.1', ?1, '2026-09-09T05:00:00.000Z')`,
-      )
-      .bind(now),
+    ).bind(now),
   ]);
 }
 

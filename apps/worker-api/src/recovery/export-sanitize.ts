@@ -6,7 +6,9 @@ export function sanitizePortableValue(value: unknown): unknown {
   if (!value || typeof value !== 'object') return value;
 
   const result: Record<string, unknown> = {};
-  for (const [key, nested] of Object.entries(value as Record<string, unknown>)) {
+  for (const [key, nested] of Object.entries(
+    value as Record<string, unknown>,
+  )) {
     if (SENSITIVE_KEY.test(key)) continue;
     result[key] = sanitizePortableValue(nested);
   }

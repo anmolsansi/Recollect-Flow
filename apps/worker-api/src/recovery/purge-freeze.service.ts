@@ -1,7 +1,10 @@
 export class PurgeFreezeService {
   constructor(private readonly db: D1Database) {}
 
-  async freezeItemWork(itemId: string, now: Date): Promise<{
+  async freezeItemWork(
+    itemId: string,
+    now: Date,
+  ): Promise<{
     processingJobs: number;
     syncAttempts: number;
   }> {
