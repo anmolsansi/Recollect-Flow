@@ -42,3 +42,18 @@
 ## Kill, pivot, or simplify
 
 Simplify if fewer than five useful items/week after four weeks, old save destinations remain dominant despite fixes, weekly review/search produce no useful recollections, or maintenance exceeds value. Do not respond by adding speculative AI. The fallback is a smaller Share-to-Notion/Telegram workflow with exportable storage.
+
+<!-- OPE-227 START -->
+
+## OPE-227 capacity-control risks
+
+- **Provider limits change without notice:** operational quota/model data can become stale. Mitigation: fail closed, version the policy, and revalidate authoritative provider documentation before release/provider changes.
+- **Concurrent Workers oversubscribe the last unit:** mitigation is D1 atomic multi-window reservation and concurrency acceptance tests.
+- **Worker dies after reservation:** mitigation is bounded reservation expiry plus hourly cleanup and admission-time reclamation.
+- **Retry loops burn free requests:** structured repair reserves worst-case request count up front and reconciles actual requests; capacity deferral does not create rapid retries.
+- **Provider outage causes retry storm:** provider+operation circuit breaker, one half-open probe, exponential cooldown.
+- **Fallback weakens privacy:** fallback candidates come only from `PolicyService.fallbackProviders`; OPE-227 does not invent a new hosted privacy route.
+- **Paid model is enabled by configuration:** zero-cost allowlist rejects unknown/non-free identifiers before network execution.
+- **Operator endpoint leaks content:** `/api/v1/usage` exposes bounded metadata only and has dedicated authorization/content-exclusion tests.
+
+<!-- OPE-227 END -->

@@ -16,6 +16,7 @@ export default defineConfig({
           'OPE222_MIGRATION_DB',
           'OPE248_MIGRATION_DB',
           'OPE226_MIGRATION_DB',
+          'OPE227_MIGRATION_DB',
         ],
         r2Buckets: ['ATTACHMENTS'],
         bindings: {

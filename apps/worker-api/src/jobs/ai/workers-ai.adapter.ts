@@ -29,12 +29,17 @@ export class WorkersAiAdapter implements AiProvider {
     jsonSchemaDefinition: object,
     model: string,
     attempt = 1,
+    priorInputUnits = 0,
+    priorOutputUnits = 0,
   ): Promise<AiEnrichmentResult<T>> {
     const startTime = Date.now();
+    const currentInputUnits = Math.max(1, Math.ceil(prompt.length / 4));
+    let currentOutputUnits = 0;
     let rawResponse: string | null = null;
+
     try {
       const response = await this.env.AI.run(
-        model as '@cf/meta/llama-3-8b-instruct',
+        model as '@cf/meta/llama-3.1-8b-instruct-fp8-fast',
         {
           messages: [{ role: 'user', content: prompt }],
           response_format: {
@@ -43,8 +48,6 @@ export class WorkersAiAdapter implements AiProvider {
           },
         },
       );
-
-      const latencyMs = Date.now() - startTime;
 
       const rawJson =
         typeof response === 'object' &&
@@ -60,8 +63,8 @@ export class WorkersAiAdapter implements AiProvider {
         );
       }
       rawResponse = rawJson;
+      currentOutputUnits = Math.max(1, Math.ceil(rawResponse.length / 4));
 
-      // Repair JSON attempt (simple regex matching if wrapped in backticks)
       let cleanedJson = rawJson.trim();
       if (cleanedJson.startsWith('```json')) {
         cleanedJson = cleanedJson
@@ -82,26 +85,24 @@ export class WorkersAiAdapter implements AiProvider {
         result: validated,
         provider: this.name,
         model,
-        latencyMs,
-        inputUnits: Math.max(1, Math.ceil(prompt.length / 4)),
-        outputUnits: Math.max(1, Math.ceil(rawResponse.length / 4)),
+        latencyMs: Date.now() - startTime,
+        inputUnits: priorInputUnits + currentInputUnits,
+        outputUnits: priorOutputUnits + currentOutputUnits,
+        requestCount: attempt,
         status: 'success',
       };
     } catch (error) {
-      // 1-time deterministic repair attempt
       if (attempt === 1 && rawResponse) {
-        try {
-          const repairPrompt = `Fix the following malformed JSON so it strictly matches the requested schema.\n\nBroken JSON:\n${rawResponse}`;
-          return await this.callAi(
-            repairPrompt,
-            schema,
-            jsonSchemaDefinition,
-            model,
-            2,
-          );
-        } catch {
-          // ignore repair error and throw original or repair error wrapper
-        }
+        const repairPrompt = `Fix the following malformed JSON so it strictly matches the requested schema.\n\nBroken JSON:\n${rawResponse}`;
+        return this.callAi(
+          repairPrompt,
+          schema,
+          jsonSchemaDefinition,
+          model,
+          2,
+          priorInputUnits + currentInputUnits,
+          priorOutputUnits + currentOutputUnits,
+        );
       }
 
       const latencyMs = Date.now() - startTime;
@@ -111,6 +112,9 @@ export class WorkersAiAdapter implements AiProvider {
           provider: this.name,
           model,
           latencyMs,
+          inputUnits: priorInputUnits + currentInputUnits,
+          outputUnits: priorOutputUnits + currentOutputUnits,
+          requestCount: attempt,
           status: 'failed',
           errorCode:
             error instanceof SyntaxError
@@ -131,7 +135,7 @@ export class WorkersAiAdapter implements AiProvider {
     jsonSchemaDefinition: object,
     config: AiProviderConfig,
   ): Promise<AiEnrichmentResult<T>> {
-    const model = config.model || '@cf/meta/llama-3-8b-instruct';
+    const model = config.model || '@cf/meta/llama-3.1-8b-instruct-fp8-fast';
     return this.callAi(prompt, schema, jsonSchemaDefinition, model);
   }
 
@@ -180,6 +184,7 @@ export class WorkersAiAdapter implements AiProvider {
   ): Promise<AiEnrichmentResult<number[]>> {
     const model = config?.model || '@cf/baai/bge-small-en-v1.5';
     const startTime = Date.now();
+    const inputUnits = Math.max(1, Math.ceil(text.length / 4));
     try {
       const response = (await this.env.AI.run(
         model as '@cf/baai/bge-small-en-v1.5',
@@ -200,8 +205,9 @@ export class WorkersAiAdapter implements AiProvider {
         provider: this.name,
         model,
         latencyMs: Date.now() - startTime,
-        inputUnits: Math.max(1, Math.ceil(text.length / 4)),
+        inputUnits,
         outputUnits: Math.max(1, vector.length),
+        requestCount: 1,
         status: 'success',
       };
     } catch (error) {
@@ -216,6 +222,9 @@ export class WorkersAiAdapter implements AiProvider {
           provider: this.name,
           model,
           latencyMs,
+          inputUnits,
+          outputUnits: 0,
+          requestCount: 1,
           status: 'failed',
           errorCode: (error as Error).message,
         },

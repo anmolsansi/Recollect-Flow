@@ -113,3 +113,10 @@ manual retry, Notion recreation, soft-delete/restore and mobile layout.
 Local acceptance does not constitute production acceptance. Deployment,
 representative production-item verification, and a real Notion outage/missing
 page rehearsal remain explicit release gates. See `tickets/OPE-248.md`.
+
+<!-- OPE-227 START -->
+
+## OPE-227 capacity-control implementation checkpoint
+
+OPE-227 is implemented on `agent/ope-227-capacity-controls` pending final local acceptance evidence. The branch adds migration `0020`, atomic free-tier quota reservations/reconciliation, zero-cost provider/model guards, provider/operation circuit breakers with single half-open probes, policy-derived fallback routing, retry-preserving capacity deferral, hourly reservation cleanup, and the admin-only `/api/v1/usage` surface. Production migration/deployment is not part of this branch work and must remain approval-gated.
+<!-- OPE-227 END -->
