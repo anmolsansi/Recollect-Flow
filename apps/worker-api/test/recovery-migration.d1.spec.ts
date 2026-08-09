@@ -5,9 +5,9 @@ import { JobService } from '../src/jobs/job.service';
 
 describe('OPE-228 recovery migration rehearsal', () => {
   it('adds recovery workflow tables without changing populated canonical data', async () => {
-    const database = (
-      env as unknown as { OPE228_MIGRATION_DB: D1Database }
-    ).OPE228_MIGRATION_DB;
+    const database = (env as unknown as {
+      OPE228_MIGRATION_DB: D1Database;
+    }).OPE228_MIGRATION_DB;
     const migrations = env.TEST_MIGRATIONS!;
     await applyD1Migrations(database, migrations.slice(0, -1));
 
