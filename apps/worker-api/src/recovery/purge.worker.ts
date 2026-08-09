@@ -4,6 +4,7 @@ import { NotionPurgeError, NotionPurgeService } from './notion-purge.service';
 import { PurgeAttachmentService } from './purge-attachment.service';
 import { PurgeFreezeService } from './purge-freeze.service';
 import { PurgeNotionProjectionService } from './purge-notion.service';
+import { mirrorPurgeReceipt } from './purge-receipt-ledger';
 import { PurgeRepository } from './purge.repository';
 import type { PurgeStepKind, PurgeWorkflowRecord } from './recovery.types';
 
@@ -92,9 +93,11 @@ async function runWorkflow(
           }
         }
       } else if (stepKind === 'finalize_receipt') {
-        if (!(await repository.hasReceipt(workflow.itemId, workflow.id))) {
+        const receipt = await repository.findReceipt(workflow.itemId);
+        if (!receipt || receipt.purgeRequestId !== workflow.id) {
           throw new Error('PURGE_RECEIPT_MISSING');
         }
+        await mirrorPurgeReceipt(env.ATTACHMENTS, receipt);
       }
 
       const completed = await repository.completeStep(
