@@ -6,6 +6,7 @@ import {
 } from './capacity.types';
 import {
   CIRCUIT_BREAKER_FAILURE_THRESHOLD,
+  CIRCUIT_BREAKER_PROBE_LEASE_MS,
   circuitOpenUntil,
 } from './circuit-breaker.policy';
 
@@ -39,6 +40,34 @@ function toSnapshot(row: BreakerRow): CircuitBreakerSnapshot {
 
 export class AiCircuitBreakerRepository {
   constructor(private readonly db: D1Database) {}
+
+  async acquireHalfOpenProbe(
+    provider: CapacityProvider,
+    operation: CapacityOperation,
+    ownerId: string,
+    now: Date = new Date(),
+  ): Promise<CircuitBreakerSnapshot | null> {
+    const nowIso = now.toISOString();
+    const leaseExpiresAt = new Date(
+      now.getTime() + CIRCUIT_BREAKER_PROBE_LEASE_MS,
+    ).toISOString();
+    const row = await this.db
+      .prepare(
+        `UPDATE ai_circuit_breakers
+         SET state = 'half_open', probe_lease_owner = ?1,
+             probe_lease_expires_at = ?2, updated_at = ?3
+         WHERE provider = ?4 AND operation = ?5
+           AND state IN ('open', 'half_open')
+           AND next_probe_at IS NOT NULL AND next_probe_at <= ?3
+           AND (probe_lease_expires_at IS NULL OR probe_lease_expires_at <= ?3)
+         RETURNING provider, operation, state, consecutive_failures, next_probe_at,
+                   probe_lease_owner, probe_lease_expires_at, last_success_at,
+                   last_failure_at, last_error_code`,
+      )
+      .bind(ownerId, leaseExpiresAt, nowIso, provider, operation)
+      .first<BreakerRow>();
+    return row ? toSnapshot(row) : null;
+  }
 
   async recordFailure(
     provider: CapacityProvider,
