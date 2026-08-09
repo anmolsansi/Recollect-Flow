@@ -1,4 +1,4 @@
-validated_sha=af6e99d45c71e5c6fa8c48ccbb3bec486f125603
+validated_sha=73339cfa48f589e43be3c2754b39da86c08e6761
 check_exit=1
 migrate_exit=0
 dryrun_exit=0
@@ -12,8 +12,9 @@ dryrun_exit=0
 > prettier --check .
 
 Checking formatting...
+[[33mwarn[39m] apps/worker-api/test/capacity-core-continuity.d1.spec.ts
 [[33mwarn[39m] apps/worker-api/test/manual-retry-capacity.d1.spec.ts
-[[33mwarn[39m] Code style issues found in the above file. Run Prettier with --write to fix.
+[[33mwarn[39m] Code style issues found in 2 files. Run Prettier with --write to fix.
 === migration tail ===
 │ 0008_add_sync_available_at.sql               │ ✅     │
 ├──────────────────────────────────────────────┼────────┤
