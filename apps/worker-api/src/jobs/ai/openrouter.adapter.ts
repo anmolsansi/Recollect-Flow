@@ -52,6 +52,8 @@ export class OpenRouterAdapter implements AiProvider {
     jsonSchemaDefinition: object,
     model: string,
     attempt = 1,
+    priorInputUnits = 0,
+    priorOutputUnits = 0,
   ): Promise<AiEnrichmentResult<T>> {
     const apiKey = this.env.OPENROUTER_API_KEY;
     if (!apiKey) {
@@ -64,7 +66,8 @@ export class OpenRouterAdapter implements AiProvider {
 
     const startTime = Date.now();
     let rawResponse: string | null = null;
-    let repairAttempted = false;
+    let currentInputUnits = Math.max(1, Math.ceil(prompt.length / 4));
+    let currentOutputUnits = 0;
 
     try {
       const response = await fetch(
@@ -111,9 +114,10 @@ export class OpenRouterAdapter implements AiProvider {
 
       const rawJson = data.choices[0].message.content;
       rawResponse = rawJson;
-
-      const inputUnits = data.usage?.prompt_tokens || 0;
-      const outputUnits = data.usage?.completion_tokens || 0;
+      currentInputUnits =
+        data.usage?.prompt_tokens || Math.max(1, Math.ceil(prompt.length / 4));
+      currentOutputUnits =
+        data.usage?.completion_tokens || Math.max(1, Math.ceil(rawJson.length / 4));
 
       let cleanedJson = rawJson.trim();
       if (cleanedJson.startsWith('```json')) {
@@ -136,26 +140,23 @@ export class OpenRouterAdapter implements AiProvider {
         provider: this.name,
         model,
         latencyMs: Date.now() - startTime,
-        inputUnits,
-        outputUnits,
+        inputUnits: priorInputUnits + currentInputUnits,
+        outputUnits: priorOutputUnits + currentOutputUnits,
         requestCount: attempt,
         status: 'success',
       };
     } catch (error) {
       if (attempt === 1 && rawResponse) {
-        repairAttempted = true;
-        try {
-          const repairPrompt = `Fix the following malformed JSON so it strictly matches the requested schema.\n\nBroken JSON:\n${rawResponse}`;
-          return await this.callAi(
-            repairPrompt,
-            schema,
-            jsonSchemaDefinition,
-            model,
-            2,
-          );
-        } catch {
-          // Ignore repair error and throw the stable wrapper below.
-        }
+        const repairPrompt = `Fix the following malformed JSON so it strictly matches the requested schema.\n\nBroken JSON:\n${rawResponse}`;
+        return this.callAi(
+          repairPrompt,
+          schema,
+          jsonSchemaDefinition,
+          model,
+          2,
+          priorInputUnits + currentInputUnits,
+          priorOutputUnits + currentOutputUnits,
+        );
       }
 
       const latencyMs = Date.now() - startTime;
@@ -169,7 +170,9 @@ export class OpenRouterAdapter implements AiProvider {
           provider: this.name,
           model,
           latencyMs,
-          requestCount: repairAttempted ? 2 : attempt,
+          inputUnits: priorInputUnits + currentInputUnits,
+          outputUnits: priorOutputUnits + currentOutputUnits,
+          requestCount: attempt,
           status: 'failed',
           errorCode:
             error instanceof SyntaxError
@@ -257,6 +260,7 @@ export class OpenRouterAdapter implements AiProvider {
 
     const modelName = config?.model || OPENROUTER_FREE_MODEL;
     const startTime = Date.now();
+    const estimatedInput = Math.max(1, Math.ceil(prompt.length / 4));
 
     try {
       const response = await fetch(
@@ -324,8 +328,9 @@ export class OpenRouterAdapter implements AiProvider {
         provider: this.name,
         model: modelName,
         latencyMs: Date.now() - startTime,
-        inputUnits: data.usage?.prompt_tokens || 0,
-        outputUnits: data.usage?.completion_tokens || 0,
+        inputUnits: data.usage?.prompt_tokens || estimatedInput,
+        outputUnits:
+          data.usage?.completion_tokens || Math.max(1, Math.ceil(rawJson.length / 4)),
         requestCount: 1,
         status: 'success',
       };
@@ -340,6 +345,8 @@ export class OpenRouterAdapter implements AiProvider {
           provider: this.name,
           model: modelName,
           latencyMs: Date.now() - startTime,
+          inputUnits: estimatedInput,
+          outputUnits: 0,
           requestCount: 1,
           status: 'failed',
           errorCode: error instanceof AppError ? error.code : 'UNKNOWN_ERROR',
