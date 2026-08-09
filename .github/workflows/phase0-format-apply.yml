@@ -1,0 +1,35 @@
+name: Phase 0 format apply
+
+on:
+  push:
+    branches:
+      - agent/phase-0-context-decisions
+
+permissions:
+  contents: write
+
+jobs:
+  format-apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/phase-0-context-decisions
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Apply Prettier
+        run: npx prettier --write docs/DECISIONS.md docs/repo_context.md docs/tickets/PHASE-0-HARDENING-READINESS.md
+      - name: Commit formatting
+        run: |
+          if git diff --quiet; then
+            echo 'No formatting changes required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/DECISIONS.md docs/repo_context.md docs/tickets/PHASE-0-HARDENING-READINESS.md
+          git commit -m 'Format Phase 0 documentation'
+          git push origin HEAD:agent/phase-0-context-decisions
