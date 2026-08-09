@@ -143,8 +143,19 @@ export class AiCapacityService {
       }
     }
 
+    const reserveCalls = Math.max(1, Math.floor(requestReserve));
     const estimate = estimateCapacityForPrompt(provider, model, prompt);
-    estimate.requests = Math.max(1, Math.floor(requestReserve));
+    estimate.requests = reserveCalls;
+    if (reserveCalls > 1) {
+      estimate.inputUnits *= reserveCalls;
+      estimate.outputUnits *= reserveCalls;
+      estimate.providerUnits = estimateProviderUnits(
+        provider,
+        model,
+        estimate.inputUnits,
+        estimate.outputUnits,
+      );
+    }
     const windowKeys = policy.windows.map(
       (window) => quotaWindowBoundary(window, now).key,
     );
