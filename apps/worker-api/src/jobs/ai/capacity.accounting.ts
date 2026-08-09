@@ -32,6 +32,33 @@ export class AiCapacityAccounting {
       .first<ReservationAccountingRow>();
   }
 
+  private async removeReservedCapacity(
+    reservation: ReservationAccountingRow,
+    nowIso: string,
+  ): Promise<void> {
+    if (reservation.capacity_applied !== 1) return;
+    await this.db
+      .prepare(
+        `UPDATE ai_capacity_windows
+         SET request_reserved = MAX(0, request_reserved - ?1),
+             input_units_reserved = MAX(0, input_units_reserved - ?2),
+             output_units_reserved = MAX(0, output_units_reserved - ?3),
+             provider_units_reserved = MAX(0, provider_units_reserved - ?4),
+             updated_at = ?5
+         WHERE (provider || ':' || scope_key || ':' || window_kind || ':' || window_start)
+               IN (SELECT value FROM json_each(?6))`,
+      )
+      .bind(
+        reservation.request_units,
+        reservation.estimated_input_units,
+        reservation.estimated_output_units,
+        reservation.estimated_provider_units,
+        nowIso,
+        reservation.window_keys_json,
+      )
+      .run();
+  }
+
   async releaseReservation(
     reservationId: string,
     now: Date = new Date(),
@@ -40,28 +67,7 @@ export class AiCapacityAccounting {
     if (!reservation || reservation.state !== 'active') return false;
 
     const nowIso = now.toISOString();
-    if (reservation.capacity_applied === 1) {
-      await this.db
-        .prepare(
-          `UPDATE ai_capacity_windows
-           SET request_reserved = MAX(0, request_reserved - ?1),
-               input_units_reserved = MAX(0, input_units_reserved - ?2),
-               output_units_reserved = MAX(0, output_units_reserved - ?3),
-               provider_units_reserved = MAX(0, provider_units_reserved - ?4),
-               updated_at = ?5
-           WHERE (provider || ':' || scope_key || ':' || window_kind || ':' || window_start)
-                 IN (SELECT value FROM json_each(?6))`,
-        )
-        .bind(
-          reservation.request_units,
-          reservation.estimated_input_units,
-          reservation.estimated_output_units,
-          reservation.estimated_provider_units,
-          nowIso,
-          reservation.window_keys_json,
-        )
-        .run();
-    }
+    await this.removeReservedCapacity(reservation, nowIso);
 
     const result = await this.db
       .prepare(
@@ -72,6 +78,39 @@ export class AiCapacityAccounting {
       .bind(nowIso, reservationId)
       .run();
     return result.meta.changes === 1;
+  }
+
+  async expireReservations(
+    now: Date = new Date(),
+    limit = 100,
+  ): Promise<number> {
+    const nowIso = now.toISOString();
+    const result = await this.db
+      .prepare(
+        `SELECT id, request_units, estimated_input_units, estimated_output_units,
+                estimated_provider_units, capacity_applied, state, window_keys_json
+         FROM ai_capacity_reservations
+         WHERE state = 'active' AND expires_at <= ?1
+         ORDER BY expires_at ASC
+         LIMIT ?2`,
+      )
+      .bind(nowIso, limit)
+      .all<ReservationAccountingRow>();
+
+    let expired = 0;
+    for (const reservation of result.results ?? []) {
+      await this.removeReservedCapacity(reservation, nowIso);
+      const update = await this.db
+        .prepare(
+          `UPDATE ai_capacity_reservations
+           SET state = 'expired', released_at = ?1, updated_at = ?1
+           WHERE id = ?2 AND state = 'active'`,
+        )
+        .bind(nowIso, reservation.id)
+        .run();
+      expired += update.meta.changes;
+    }
+    return expired;
   }
 
   async reconcileReservation(
