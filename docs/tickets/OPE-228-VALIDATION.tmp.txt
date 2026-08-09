@@ -1,133 +1,133 @@
-validated_sha=3a162bb81e12790d5936fb7e0ec17e9ae0dddffa
+validated_sha=cb2189eae5ce42734457e3eea9a205f92eebf3e8
 check_exit=0
 migrate_exit=0
 dryrun_exit=0
 === check tail ===
-[22m[39m{"event":"http_request_completed","request_id":"5906e23c-69da-432a-8f29-0d1d2a9ba714","method":"POST","path":"/api/v1/items/recovery-item/notion/recreate","status":200,"duration_ms":3}
+[90mstdout[2m | apps/worker-api/test/items.d1.spec.ts[2m > [22m[2mOPE-248 item review and recovery routes[2m > [22m[2mqueues Notion recreation only when the detail contract marks it eligible
+[22m[39m{"event":"http_request_completed","request_id":"ef4d5df2-d06c-4e49-bb6a-5c4e9d5902f4","method":"POST","path":"/api/v1/jobs/superseded-sync/retry","status":409,"duration_ms":2}
 
 [90mstdout[2m | apps/worker-api/test/items.d1.spec.ts[2m > [22m[2mOPE-248 item review and recovery routes[2m > [22m[2mqueues Notion recreation only when the detail contract marks it eligible
-[22m[39m{"event":"http_request_completed","request_id":"3e62c4d3-26c7-410c-a20b-9adabe4bdd11","method":"POST","path":"/api/v1/jobs/superseded-sync/retry","status":409,"duration_ms":2}
+[22m[39m{"event":"http_request_completed","request_id":"ee57344a-8890-497f-ae41-5fefc08f66fb","method":"GET","path":"/api/v1/items/ineligible-item","status":200,"duration_ms":43}
 
 [90mstdout[2m | apps/worker-api/test/items.d1.spec.ts[2m > [22m[2mOPE-248 item review and recovery routes[2m > [22m[2mqueues Notion recreation only when the detail contract marks it eligible
-[22m[39m{"event":"http_request_completed","request_id":"b2d1777c-ca4a-43cc-9d44-3b0b687f75ac","method":"GET","path":"/api/v1/items/ineligible-item","status":200,"duration_ms":12}
+[22m[39m{"event":"http_request_completed","request_id":"dc77aab8-1727-4e31-8455-76ea570f379a","method":"POST","path":"/api/v1/items/ineligible-item/notion/recreate","status":409,"duration_ms":1}
 
-[90mstdout[2m | apps/worker-api/test/items.d1.spec.ts[2m > [22m[2mOPE-248 item review and recovery routes[2m > [22m[2mqueues Notion recreation only when the detail contract marks it eligible
-[22m[39m{"event":"http_request_completed","request_id":"115722cb-194c-4ee9-91d0-554c93810892","method":"POST","path":"/api/v1/items/ineligible-item/notion/recreate","status":409,"duration_ms":1}
-
- [32m✓[39m apps/worker-api/test/items.d1.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 328[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/enrich.d1.spec.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 258[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/items.d1.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 303[2mms[22m[39m
 [90mstdout[2m | apps/worker-api/test/extraction.d1.spec.ts[2m > [22m[2mExtraction Pipeline (D1 Integration)[2m > [22m[2mdoes not expose test-only extraction endpoints in the deployed app
-[22m[39m{"event":"http_request_completed","request_id":"bca3122a-8039-45c1-91a6-18ef43c9e6e8","method":"POST","path":"/api/test/extraction/pdf","status":404,"duration_ms":0}
+[22m[39m{"event":"http_request_completed","request_id":"332b27c8-43e6-46bb-9d30-f40365cc8a55","method":"POST","path":"/api/test/extraction/pdf","status":404,"duration_ms":0}
 
- [32m✓[39m apps/worker-api/test/extraction.d1.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 2329[2mms[22m[39m
-     [33m[2m✓[22m[39m extracts a stored PDF through R2, the leased worker, D1, and enrichment chaining [33m 1997[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/e2e.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 189[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/extraction.d1.spec.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 1892[2mms[22m[39m
+     [33m[2m✓[22m[39m extracts a stored PDF through R2, the leased worker, D1, and enrichment chaining [33m 1608[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/enrich.d1.spec.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 394[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/e2e.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 273[2mms[22m[39m
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
-[22m[39m{"event":"http_request_completed","request_id":"92c5bc26-3266-4fab-a0cf-23f26f7e1798","method":"POST","path":"/api/v1/digests/generate","status":403,"duration_ms":0}
-
-[90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
-[22m[39m{"event":"http_request_completed","request_id":"b88845bb-391d-4e69-b365-ce2cad9715ea","method":"POST","path":"/api/v1/digests/generate","status":200,"duration_ms":15}
+[22m[39m{"event":"http_request_completed","request_id":"c7e4f119-5778-4362-9f4c-d6f86210958e","method":"POST","path":"/api/v1/digests/generate","status":403,"duration_ms":0}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
-[22m[39m{"event":"http_request_completed","request_id":"7d0d1520-f731-46b5-be74-85a0e309b55b","method":"POST","path":"/api/v1/digests/6a798e42-4d01-4acf-bde2-6a48bc94521c/deliver","status":409,"duration_ms":3}
+[22m[39m{"event":"http_request_completed","request_id":"21a99b2c-f5cf-4b8f-a325-86e622f1f01a","method":"POST","path":"/api/v1/digests/generate","status":200,"duration_ms":13}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
-[22m[39m{"event":"http_request_completed","request_id":"8de6c6db-4575-40ae-aded-ef00a9dfffac","method":"POST","path":"/api/v1/digests/6a798e42-4d01-4acf-bde2-6a48bc94521c/review","status":200,"duration_ms":4}
+[22m[39m{"event":"http_request_completed","request_id":"05111156-c945-423a-8d8c-15b8c9177b74","method":"POST","path":"/api/v1/digests/f4e77f83-3690-40ee-9d73-f4cf3d5fbbb9/deliver","status":409,"duration_ms":2}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
-[22m[39m{"event":"http_request_completed","request_id":"11cd7f5d-f726-49b2-b83b-e13fbd74ab07","method":"POST","path":"/api/v1/digests/6a798e42-4d01-4acf-bde2-6a48bc94521c/deliver","status":200,"duration_ms":7}
+[22m[39m{"event":"http_request_completed","request_id":"b3a06449-bb55-4f89-b690-a7cc2b08cadb","method":"POST","path":"/api/v1/digests/f4e77f83-3690-40ee-9d73-f4cf3d5fbbb9/review","status":200,"duration_ms":4}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
-[22m[39m{"event":"http_request_completed","request_id":"09315cbb-3da5-4b44-8014-19480f3f172d","method":"GET","path":"/api/v1/digests/6a798e42-4d01-4acf-bde2-6a48bc94521c","status":200,"duration_ms":3}
+[22m[39m{"event":"http_request_completed","request_id":"9098abf6-3713-41da-a8ff-9a33f99f3f0e","method":"POST","path":"/api/v1/digests/f4e77f83-3690-40ee-9d73-f4cf3d5fbbb9/deliver","status":200,"duration_ms":6}
+
+[90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires admin access and supports generate, review, queue and inspect
+[22m[39m{"event":"http_request_completed","request_id":"92b43b28-3d4d-4d3c-b99b-dc780ffcc9d8","method":"GET","path":"/api/v1/digests/f4e77f83-3690-40ee-9d73-f4cf3d5fbbb9","status":200,"duration_ms":3}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mdoes not allow an admin generation request to bypass review and queue delivery
-[22m[39m{"event":"http_request_completed","request_id":"9803aabf-b4a7-412d-98ca-30a118297b94","method":"POST","path":"/api/v1/digests/generate","status":422,"duration_ms":1}
+[22m[39m{"event":"http_request_completed","request_id":"31da0d9f-a5ac-418e-8f01-a715e295ee57","method":"POST","path":"/api/v1/digests/generate","status":422,"duration_ms":1}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires reconciliation instead of retrying unknown delivery state
-[22m[39m{"event":"http_request_completed","request_id":"fd7fed5b-3d8b-4b08-b5e8-4337fdb7aade","method":"POST","path":"/api/v1/digests/generate","status":200,"duration_ms":9}
+[22m[39m{"event":"http_request_completed","request_id":"7fdb581a-f051-497f-a432-c67e1f5b215e","method":"POST","path":"/api/v1/digests/generate","status":200,"duration_ms":8}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires reconciliation instead of retrying unknown delivery state
-[22m[39m{"event":"http_request_completed","request_id":"dd7e670c-8c02-4180-b3a6-690e33e562fe","method":"POST","path":"/api/v1/digests/2952e46d-29bc-4d69-a320-407890a3a29c/review","status":200,"duration_ms":5}
+[22m[39m{"event":"http_request_completed","request_id":"889e0813-f9a6-458b-a94b-bdb9367a6e81","method":"POST","path":"/api/v1/digests/b6ef0796-938e-4988-a0bb-46fa17f7ee39/review","status":200,"duration_ms":3}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires reconciliation instead of retrying unknown delivery state
-[22m[39m{"event":"http_request_completed","request_id":"91c3972f-82f0-4680-ad4d-5166c73b6317","method":"POST","path":"/api/v1/digests/2952e46d-29bc-4d69-a320-407890a3a29c/deliver","status":200,"duration_ms":6}
+[22m[39m{"event":"http_request_completed","request_id":"b711df54-958e-4530-bfb1-5742c411f3d5","method":"POST","path":"/api/v1/digests/b6ef0796-938e-4988-a0bb-46fa17f7ee39/deliver","status":200,"duration_ms":14}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires reconciliation instead of retrying unknown delivery state
-[22m[39m{"event":"http_request_completed","request_id":"0e97dd7a-2dd1-4405-856e-20944f8e97c4","method":"POST","path":"/api/v1/digest-deliveries/d74c4316-9b89-4a94-bf0d-7403adabe6cb/retry","status":409,"duration_ms":5}
+[22m[39m{"event":"http_request_completed","request_id":"c2f8f752-aa3b-46a2-9adf-772802088248","method":"POST","path":"/api/v1/digest-deliveries/d0f775c2-30c2-4e25-ae80-b3e38bfefd22/retry","status":409,"duration_ms":2}
 
 [90mstdout[2m | apps/worker-api/test/digest-routes.d1.spec.ts[2m > [22m[2mdigest administrative routes[2m > [22m[2mrequires reconciliation instead of retrying unknown delivery state
-[22m[39m{"event":"http_request_completed","request_id":"c31edfc6-9973-429e-9dd6-c92c21606e18","method":"POST","path":"/api/v1/digest-deliveries/d74c4316-9b89-4a94-bf0d-7403adabe6cb/reconcile","status":200,"duration_ms":5}
+[22m[39m{"event":"http_request_completed","request_id":"7f06fa88-3f6a-4923-bc22-d59dbd5c3fa1","method":"POST","path":"/api/v1/digest-deliveries/d0f775c2-30c2-4e25-ae80-b3e38bfefd22/reconcile","status":200,"duration_ms":4}
 
- [32m✓[39m apps/worker-api/test/digest-routes.d1.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 193[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/capacity.d1.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 1083[2mms[22m[39m
-     [33m[2m✓[22m[39m allows exactly one concurrent worker to consume the final minute unit [33m 377[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/restore-roundtrip.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 181[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/capacity-registry.d1.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 189[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/manual-retry-capacity.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 138[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/backup-recovery.d1.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 207[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/circuit-breaker.d1.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 121[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/purge-confirmation.d1.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 147[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/restore-purge-ledger.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 227[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/purge-worker.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 152[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/recovery-integrity.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 134[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/digest-routes.d1.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 159[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/restore-roundtrip.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 178[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/manual-retry-capacity.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 492[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/capacity-registry.d1.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 581[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/capacity.d1.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 2090[2mms[22m[39m
+     [33m[2m✓[22m[39m allows exactly one concurrent worker to consume the final minute unit [33m 393[2mms[22m[39m
+     [33m[2m✓[22m[39m shares one OpenRouter minute pool between text and vision [33m 1246[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/purge-r2-partial.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 139[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/purge-worker.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 158[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/backup-recovery.d1.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 200[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/circuit-breaker.d1.spec.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 117[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/purge-confirmation.d1.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 141[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/restore-purge-ledger.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 213[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/recovery-integrity.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 114[2mms[22m[39m
  [32m✓[39m apps/worker-api/test/purge-partial.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 134[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/capacity-core-continuity.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 107[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/capacity-job.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 116[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/backup-cleanup.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 129[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/recovery-migration.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 95[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/capacity-core-continuity.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 129[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/backup-cleanup.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 95[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/capacity-job.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 102[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/recovery-migration.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 122[2mms[22m[39m
 [90mstdout[2m | apps/worker-api/test/capacity-usage.d1.spec.ts[2m > [22m[2mOPE-227 usage API[2m > [22m[2mrejects unauthenticated and capture-scoped callers
-[22m[39m{"event":"http_request_completed","request_id":"328c67fa-bfc9-433e-a9c7-419a95e913fa","method":"GET","path":"/api/v1/usage","status":403,"duration_ms":0}
+[22m[39m{"event":"http_request_completed","request_id":"0a430b25-3f83-4418-91b0-6af2bc897143","method":"GET","path":"/api/v1/usage","status":403,"duration_ms":1}
 
 [90mstdout[2m | apps/worker-api/test/capacity-usage.d1.spec.ts[2m > [22m[2mOPE-227 usage API[2m > [22m[2mrejects unauthenticated and capture-scoped callers
-[22m[39m{"event":"http_request_completed","request_id":"6852fc91-59fb-4dbf-8677-5e6a6dc46292","method":"GET","path":"/api/v1/usage","status":403,"duration_ms":0}
+[22m[39m{"event":"http_request_completed","request_id":"fe13abcc-95f0-47d1-ba22-89c5c5562570","method":"GET","path":"/api/v1/usage","status":403,"duration_ms":0}
 
- [32m✓[39m apps/worker-api/test/capacity-jobservice-deferral.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 108[2mms[22m[39m
 [90mstdout[2m | apps/worker-api/test/capacity-usage.d1.spec.ts[2m > [22m[2mOPE-227 usage API[2m > [22m[2mreturns safe quota and breaker metadata to the admin only
-[22m[39m{"event":"http_request_completed","request_id":"332cc24c-1a10-4b6f-b51e-3a048553bc0a","method":"GET","path":"/api/v1/usage","status":200,"duration_ms":5}
+[22m[39m{"event":"http_request_completed","request_id":"8f89ab05-7881-4ef5-adfe-19f33f23465f","method":"GET","path":"/api/v1/usage","status":200,"duration_ms":5}
 
- [32m✓[39m apps/worker-api/test/capacity-usage.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 137[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/capacity-accounting.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 134[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/capacity-migration.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 135[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/notion-source-of-truth.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 138[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/purge-step-lease.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 92[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/capacity-usage.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 155[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/capacity-jobservice-deferral.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 97[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/capacity-accounting.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 160[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/capacity-migration.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 88[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/notion-source-of-truth.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 104[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/purge-step-lease.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 96[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/item-review-migration.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 75[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/digest-migration.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 71[2mms[22m[39m
 [90mstdout[2m | apps/worker-api/test/recovery-auth.d1.spec.ts[2m > [22m[2mOPE-228 recovery authorization[2m > [22m[2mrejects anonymous callers before recovery work starts
-[22m[39m{"event":"http_request_completed","request_id":"7764d41d-6a7b-4c6a-a125-07d3f8ec65fc","method":"GET","path":"/api/v1/export","status":403,"duration_ms":1}
-
-[90mstdout[2m | apps/worker-api/test/recovery-auth.d1.spec.ts[2m > [22m[2mOPE-228 recovery authorization[2m > [22m[2mrejects anonymous callers before recovery work starts
-[22m[39m{"event":"http_request_completed","request_id":"8d52c875-2a32-4cd2-8dd0-12ef34849889","method":"POST","path":"/api/v1/backups","status":403,"duration_ms":0}
-
-[90mstdout[2m | apps/worker-api/test/recovery-auth.d1.spec.ts[2m > [22m[2mOPE-228 recovery authorization[2m > [22m[2mrejects anonymous callers before recovery work starts
-[22m[39m{"event":"http_request_completed","request_id":"6dfe2e33-49ce-4a45-85be-e8709e79d911","method":"POST","path":"/api/v1/items/missing-item/purge-request","status":403,"duration_ms":0}
+[22m[39m{"event":"http_request_completed","request_id":"28413ffb-6772-4ae0-baf6-9b1851c26f41","method":"GET","path":"/api/v1/export","status":403,"duration_ms":0}
 
 [90mstdout[2m | apps/worker-api/test/recovery-auth.d1.spec.ts[2m > [22m[2mOPE-228 recovery authorization[2m > [22m[2mrejects anonymous callers before recovery work starts
-[22m[39m{"event":"http_request_completed","request_id":"f474967c-da21-44e5-a3c6-d75655e58f29","method":"POST","path":"/api/v1/restore","status":403,"duration_ms":0}
+[22m[39m{"event":"http_request_completed","request_id":"49271f49-c2b7-426f-a47a-22557c58996b","method":"POST","path":"/api/v1/backups","status":403,"duration_ms":0}
 
 [90mstdout[2m | apps/worker-api/test/recovery-auth.d1.spec.ts[2m > [22m[2mOPE-228 recovery authorization[2m > [22m[2mrejects anonymous callers before recovery work starts
-[22m[39m{"event":"http_request_completed","request_id":"ccc5395f-9cbf-41ec-9cee-59f6714e2d55","method":"POST","path":"/api/v1/integrity-checks","status":403,"duration_ms":0}
+[22m[39m{"event":"http_request_completed","request_id":"0c156ef0-e26c-4684-ab45-8fcf57fc7246","method":"POST","path":"/api/v1/items/missing-item/purge-request","status":403,"duration_ms":0}
+
+[90mstdout[2m | apps/worker-api/test/recovery-auth.d1.spec.ts[2m > [22m[2mOPE-228 recovery authorization[2m > [22m[2mrejects anonymous callers before recovery work starts
+[22m[39m{"event":"http_request_completed","request_id":"08dd80ca-9eac-42bb-8746-c9dda7f22616","method":"POST","path":"/api/v1/restore","status":403,"duration_ms":0}
+
+[90mstdout[2m | apps/worker-api/test/recovery-auth.d1.spec.ts[2m > [22m[2mOPE-228 recovery authorization[2m > [22m[2mrejects anonymous callers before recovery work starts
+[22m[39m{"event":"http_request_completed","request_id":"8637f826-6651-42e7-9ef7-b2030dc14e6d","method":"POST","path":"/api/v1/integrity-checks","status":403,"duration_ms":0}
 
 [90mstdout[2m | apps/worker-api/test/recovery-auth.d1.spec.ts[2m > [22m[2mOPE-228 recovery authorization[2m > [22m[2mdoes not let a capture-scoped token access recovery operations
-[22m[39m{"event":"http_request_completed","request_id":"7df0d536-99c5-4d44-8483-cf9e707c2145","method":"GET","path":"/api/v1/export","status":403,"duration_ms":1}
+[22m[39m{"event":"http_request_completed","request_id":"9e78c210-5b2d-430b-84a5-045e73338a01","method":"GET","path":"/api/v1/export","status":403,"duration_ms":0}
 
 [90mstdout[2m | apps/worker-api/test/recovery-auth.d1.spec.ts[2m > [22m[2mOPE-228 recovery authorization[2m > [22m[2mdoes not let a capture-scoped token access recovery operations
-[22m[39m{"event":"http_request_completed","request_id":"171c3764-f46c-4c6f-9140-ee04cf0882c9","method":"POST","path":"/api/v1/backups","status":403,"duration_ms":0}
+[22m[39m{"event":"http_request_completed","request_id":"fc036b93-9744-4641-a484-bf11b1c475aa","method":"POST","path":"/api/v1/backups","status":403,"duration_ms":0}
 
 [90mstdout[2m | apps/worker-api/test/recovery-auth.d1.spec.ts[2m > [22m[2mOPE-228 recovery authorization[2m > [22m[2mdoes not let a capture-scoped token access recovery operations
-[22m[39m{"event":"http_request_completed","request_id":"f6246e4a-6ce7-47f8-b95f-cf32652eeb68","method":"POST","path":"/api/v1/items/missing-item/purge-request","status":403,"duration_ms":0}
+[22m[39m{"event":"http_request_completed","request_id":"a4028aea-c39a-4a27-b750-6ddbde6b8977","method":"POST","path":"/api/v1/items/missing-item/purge-request","status":403,"duration_ms":0}
 
 [90mstdout[2m | apps/worker-api/test/recovery-auth.d1.spec.ts[2m > [22m[2mOPE-228 recovery authorization[2m > [22m[2mdoes not let a capture-scoped token access recovery operations
-[22m[39m{"event":"http_request_completed","request_id":"b07ae438-b835-44cd-b42a-bd1a42193264","method":"POST","path":"/api/v1/restore","status":403,"duration_ms":0}
+[22m[39m{"event":"http_request_completed","request_id":"c1b49225-8fa6-4420-9a6e-6fbb994fe74f","method":"POST","path":"/api/v1/restore","status":403,"duration_ms":0}
 
 [90mstdout[2m | apps/worker-api/test/recovery-auth.d1.spec.ts[2m > [22m[2mOPE-228 recovery authorization[2m > [22m[2mdoes not let a capture-scoped token access recovery operations
-[22m[39m{"event":"http_request_completed","request_id":"1ed6e771-49d8-44a7-a0b4-29ed0097bbca","method":"POST","path":"/api/v1/integrity-checks","status":403,"duration_ms":1}
+[22m[39m{"event":"http_request_completed","request_id":"9843575f-9692-457a-a507-993f05c8c5c3","method":"POST","path":"/api/v1/integrity-checks","status":403,"duration_ms":0}
 
- [32m✓[39m apps/worker-api/test/recovery-auth.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 102[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/item-review-migration.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 92[2mms[22m[39m
- [32m✓[39m apps/worker-api/test/digest-migration.d1.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 69[2mms[22m[39m
+ [32m✓[39m apps/worker-api/test/recovery-auth.d1.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 82[2mms[22m[39m
 
-[2m Test Files [22m [1m[32m32 passed[39m[22m[90m (32)[39m
-[2m      Tests [22m [1m[32m114 passed[39m[22m[90m (114)[39m
-[2m   Start at [22m 20:55:36
-[2m   Duration [22m 22.90s[2m (transform 3.00s, setup 0ms, import 33.33s, tests 9.49s, environment 4ms)[22m
+[2m Test Files [22m [1m[32m33 passed[39m[22m[90m (33)[39m
+[2m      Tests [22m [1m[32m115 passed[39m[22m[90m (115)[39m
+[2m   Start at [22m 21:09:47
+[2m   Duration [22m 18.16s[2m (transform 2.13s, setup 0ms, import 21.55s, tests 10.96s, environment 2ms)[22m
 
 
 > recollect-flow@0.1.0 contracts:check
@@ -146,7 +146,7 @@ dryrun_exit=0
 > oxlint
 
 Found 0 warnings and 0 errors.
-Finished in 10ms on 7 files with 104 rules using 4 threads.
+Finished in 9ms on 7 files with 104 rules using 4 threads.
 
 > recollect-flow@0.1.0 web:test
 > npm run test -w apps/web
@@ -159,12 +159,12 @@ Finished in 10ms on 7 files with 104 rules using 4 threads.
 [1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/home/runner/work/Recollect-Flow/Recollect-Flow/apps/web[39m
 
  [32m✓[39m src/item-actions.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
- [32m✓[39m src/api.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m src/api.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 28[2mms[22m[39m
 
 [2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
 [2m      Tests [22m [1m[32m9 passed[39m[22m[90m (9)[39m
-[2m   Start at [22m 20:56:02
-[2m   Duration [22m 212ms[2m (transform 65ms, setup 0ms, import 92ms, tests 44ms, environment 0ms)[22m
+[2m   Start at [22m 21:10:07
+[2m   Duration [22m 158ms[2m (transform 44ms, setup 0ms, import 66ms, tests 35ms, environment 0ms)[22m
 
 
 > recollect-flow@0.1.0 web:build
@@ -182,7 +182,7 @@ dist/index.html                   0.45 kB │ gzip:  0.29 kB
 dist/assets/index--UVWKVvu.css    3.74 kB │ gzip:  1.34 kB
 dist/assets/index-CuFr4vVv.js   245.17 kB │ gzip: 77.83 kB
 
-[32m✓ built in 151ms[39m
+[32m✓ built in 121ms[39m
 === migration tail ===
 │ 0014_allow_cloudflare_provider.sql           │ ✅     │
 ├──────────────────────────────────────────────┼────────┤
