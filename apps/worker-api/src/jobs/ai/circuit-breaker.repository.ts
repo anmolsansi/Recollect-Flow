@@ -69,6 +69,38 @@ export class AiCircuitBreakerRepository {
     return row ? toSnapshot(row) : null;
   }
 
+  async recordSuccess(
+    provider: CapacityProvider,
+    operation: CapacityOperation,
+    probeOwnerId: string | null = null,
+    now: Date = new Date(),
+  ): Promise<boolean> {
+    const nowIso = now.toISOString();
+    const result = await this.db
+      .prepare(
+        `UPDATE ai_circuit_breakers
+         SET state = 'closed', consecutive_failures = 0, opened_at = NULL,
+             next_probe_at = NULL, probe_lease_owner = NULL,
+             probe_lease_expires_at = NULL, last_success_at = ?1,
+             last_error_code = NULL, policy_version = ?2, updated_at = ?1
+         WHERE provider = ?3 AND operation = ?4
+           AND (
+             state = 'closed'
+             OR (state = 'half_open' AND probe_lease_owner = ?5
+                 AND probe_lease_expires_at > ?1)
+           )`,
+      )
+      .bind(
+        nowIso,
+        AI_CAPACITY_POLICY_VERSION,
+        provider,
+        operation,
+        probeOwnerId,
+      )
+      .run();
+    return result.meta.changes === 1;
+  }
+
   async recordFailure(
     provider: CapacityProvider,
     operation: CapacityOperation,
