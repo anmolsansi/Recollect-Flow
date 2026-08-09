@@ -175,6 +175,131 @@ export class PurgeRepository {
     return result.meta.changes === 1;
   }
 
+  async markWorkflowProcessing(workflowId: string, now: Date): Promise<boolean> {
+    const nowIso = now.toISOString();
+    const result = await this.db
+      .prepare(
+        `UPDATE purge_workflows
+         SET state = 'processing', last_error_code = NULL, updated_at = ?1
+         WHERE id = ?2 AND state IN ('queued', 'partial')`,
+      )
+      .bind(nowIso, workflowId)
+      .run();
+    return result.meta.changes === 1;
+  }
+
+  async markWorkflowPartial(
+    workflowId: string,
+    errorCode: string,
+    now: Date,
+  ): Promise<boolean> {
+    const nowIso = now.toISOString();
+    const result = await this.db
+      .prepare(
+        `UPDATE purge_workflows
+         SET state = 'partial', last_error_code = ?1, updated_at = ?2
+         WHERE id = ?3 AND state = 'processing'`,
+      )
+      .bind(errorCode, nowIso, workflowId)
+      .run();
+    return result.meta.changes === 1;
+  }
+
+  async markWorkflowComplete(workflowId: string, now: Date): Promise<boolean> {
+    const nowIso = now.toISOString();
+    const result = await this.db
+      .prepare(
+        `UPDATE purge_workflows
+         SET state = 'complete', last_error_code = NULL,
+             completed_at = ?1, updated_at = ?1
+         WHERE id = ?2 AND state = 'processing'`,
+      )
+      .bind(nowIso, workflowId)
+      .run();
+    return result.meta.changes === 1;
+  }
+
+  async claimStep(
+    workflowId: string,
+    kind: PurgeStepKind,
+    now: Date,
+  ): Promise<PurgeStepRecord | null> {
+    const nowIso = now.toISOString();
+    const row = await this.db
+      .prepare(
+        `UPDATE purge_steps
+         SET state = 'processing', attempts = attempts + 1,
+             started_at = COALESCE(started_at, ?1), last_error_code = NULL,
+             updated_at = ?1
+         WHERE purge_workflow_id = ?2 AND step_kind = ?3
+           AND state IN ('pending', 'failed')
+         RETURNING id, purge_workflow_id, step_kind, state, attempts,
+                   last_error_code, started_at, completed_at`,
+      )
+      .bind(nowIso, workflowId, kind)
+      .first<{
+        id: string;
+        purge_workflow_id: string;
+        step_kind: PurgeStepKind;
+        state: PurgeStepState;
+        attempts: number;
+        last_error_code: string | null;
+        started_at: string | null;
+        completed_at: string | null;
+      }>();
+    return row
+      ? {
+          id: row.id,
+          workflowId: row.purge_workflow_id,
+          kind: row.step_kind,
+          state: row.state,
+          attempts: row.attempts,
+          lastErrorCode: row.last_error_code,
+          startedAt: row.started_at,
+          completedAt: row.completed_at,
+        }
+      : null;
+  }
+
+  async completeStep(
+    workflowId: string,
+    kind: PurgeStepKind,
+    now: Date,
+    skipped = false,
+  ): Promise<boolean> {
+    const nowIso = now.toISOString();
+    const result = await this.db
+      .prepare(
+        `UPDATE purge_steps
+         SET state = ?1, completed_at = ?2, last_error_code = NULL,
+             updated_at = ?2
+         WHERE purge_workflow_id = ?3 AND step_kind = ?4
+           AND state = 'processing'`,
+      )
+      .bind(skipped ? 'skipped' : 'complete', nowIso, workflowId, kind)
+      .run();
+    return result.meta.changes === 1;
+  }
+
+  async failStep(
+    workflowId: string,
+    kind: PurgeStepKind,
+    errorCode: string,
+    now: Date,
+  ): Promise<boolean> {
+    const nowIso = now.toISOString();
+    const result = await this.db
+      .prepare(
+        `UPDATE purge_steps
+         SET state = 'failed', last_error_code = ?1, updated_at = ?2
+         WHERE purge_workflow_id = ?3 AND step_kind = ?4
+           AND state = 'processing'`,
+      )
+      .bind(errorCode, nowIso, workflowId, kind)
+      .run();
+    return result.meta.changes === 1;
+  }
+
   async findWorkflow(id: string): Promise<PurgeWorkflowRecord | null> {
     const row = await this.db
       .prepare(
