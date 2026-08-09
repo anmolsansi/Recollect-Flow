@@ -18,6 +18,7 @@ import { digestRoutes } from './digests/digest.routes';
 import { capacityRoutes } from './jobs/ai/capacity.routes';
 import { backupRoutes } from './recovery/backup.routes';
 import { exportRoutes } from './recovery/export.routes';
+import { integrityRoutes } from './recovery/integrity.routes';
 import { purgeRoutes } from './recovery/purge.routes';
 import { restoreRoutes } from './recovery/restore.routes';
 
@@ -87,6 +88,7 @@ export function createApp(
   app.route('/api/v1', backupRoutes());
   app.route('/api/v1', purgeRoutes());
   app.route('/api/v1', restoreRoutes());
+  app.route('/api/v1', integrityRoutes());
 
   app.notFound((context) =>
     context.json(
