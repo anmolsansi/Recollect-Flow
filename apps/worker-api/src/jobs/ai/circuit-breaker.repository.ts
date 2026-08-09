@@ -108,37 +108,15 @@ export class AiCircuitBreakerRepository {
     now: Date = new Date(),
   ): Promise<CircuitBreakerSnapshot> {
     const nowIso = now.toISOString();
-    const current = await this.db
-      .prepare(
-        `SELECT consecutive_failures
-         FROM ai_circuit_breakers
-         WHERE provider = ?1 AND operation = ?2`,
-      )
-      .bind(provider, operation)
-      .first<{ consecutive_failures: number }>();
-    const nextFailures = (current?.consecutive_failures ?? 0) + 1;
-    const shouldOpen = nextFailures >= CIRCUIT_BREAKER_FAILURE_THRESHOLD;
-    const nextProbeAt = shouldOpen
-      ? circuitOpenUntil(nextFailures, now).toISOString()
-      : null;
-
-    const row = await this.db
+    const counted = await this.db
       .prepare(
         `INSERT INTO ai_circuit_breakers (
-           provider, operation, state, consecutive_failures, opened_at,
-           next_probe_at, last_failure_at, last_error_code, policy_version,
+           provider, operation, state, consecutive_failures,
+           last_failure_at, last_error_code, policy_version,
            created_at, updated_at
-         ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?5, ?7, ?8, ?5, ?5)
+         ) VALUES (?1, ?2, 'closed', 1, ?3, ?4, ?5, ?3, ?3)
          ON CONFLICT(provider, operation) DO UPDATE SET
-           state = excluded.state,
-           consecutive_failures = excluded.consecutive_failures,
-           opened_at = CASE
-             WHEN excluded.state = 'open' THEN COALESCE(ai_circuit_breakers.opened_at, excluded.opened_at)
-             ELSE ai_circuit_breakers.opened_at
-           END,
-           next_probe_at = excluded.next_probe_at,
-           probe_lease_owner = NULL,
-           probe_lease_expires_at = NULL,
+           consecutive_failures = ai_circuit_breakers.consecutive_failures + 1,
            last_failure_at = excluded.last_failure_at,
            last_error_code = excluded.last_error_code,
            policy_version = excluded.policy_version,
@@ -150,15 +128,54 @@ export class AiCircuitBreakerRepository {
       .bind(
         provider,
         operation,
-        shouldOpen ? 'open' : 'closed',
-        nextFailures,
         nowIso,
-        nextProbeAt,
         errorCode,
         AI_CAPACITY_POLICY_VERSION,
       )
       .first<BreakerRow>();
-    if (!row) throw new Error('Failed to record provider circuit failure');
-    return toSnapshot(row);
+    if (!counted) throw new Error('Failed to record provider circuit failure');
+
+    if (counted.consecutive_failures < CIRCUIT_BREAKER_FAILURE_THRESHOLD) {
+      return toSnapshot(counted);
+    }
+
+    const nextProbeAt = circuitOpenUntil(
+      counted.consecutive_failures,
+      now,
+    ).toISOString();
+    const opened = await this.db
+      .prepare(
+        `UPDATE ai_circuit_breakers
+         SET state = 'open', opened_at = COALESCE(opened_at, ?1),
+             next_probe_at = ?2, probe_lease_owner = NULL,
+             probe_lease_expires_at = NULL, updated_at = ?1
+         WHERE provider = ?3 AND operation = ?4
+           AND consecutive_failures = ?5
+         RETURNING provider, operation, state, consecutive_failures, next_probe_at,
+                   probe_lease_owner, probe_lease_expires_at, last_success_at,
+                   last_failure_at, last_error_code`,
+      )
+      .bind(
+        nowIso,
+        nextProbeAt,
+        provider,
+        operation,
+        counted.consecutive_failures,
+      )
+      .first<BreakerRow>();
+
+    if (opened) return toSnapshot(opened);
+    const latest = await this.db
+      .prepare(
+        `SELECT provider, operation, state, consecutive_failures, next_probe_at,
+                probe_lease_owner, probe_lease_expires_at, last_success_at,
+                last_failure_at, last_error_code
+         FROM ai_circuit_breakers
+         WHERE provider = ?1 AND operation = ?2`,
+      )
+      .bind(provider, operation)
+      .first<BreakerRow>();
+    if (!latest) throw new Error('Failed to read provider circuit failure state');
+    return toSnapshot(latest);
   }
 }
