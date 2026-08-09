@@ -19,6 +19,7 @@ import { capacityRoutes } from './jobs/ai/capacity.routes';
 import { backupRoutes } from './recovery/backup.routes';
 import { exportRoutes } from './recovery/export.routes';
 import { purgeRoutes } from './recovery/purge.routes';
+import { restoreRoutes } from './recovery/restore.routes';
 
 function requestId(value: string | undefined): string {
   return value && /^[A-Za-z0-9._:-]{1,100}$/.test(value)
@@ -85,6 +86,7 @@ export function createApp(
   app.route('/api/v1', exportRoutes());
   app.route('/api/v1', backupRoutes());
   app.route('/api/v1', purgeRoutes());
+  app.route('/api/v1', restoreRoutes());
 
   app.notFound((context) =>
     context.json(
