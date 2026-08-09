@@ -143,4 +143,5 @@ For a recovery incident, use this order:
 6. only then decide whether production requires a new deployment/database switch or an explicitly authorized D1 Time Travel restore;
 7. run integrity checks again after recovery;
 8. retain incident evidence and purge receipts, but never place credentials or raw secret material in recovery notes.
+
 <!-- OPE-228 END -->

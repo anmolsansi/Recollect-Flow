@@ -28,28 +28,24 @@ async function reset(): Promise<void> {
     .run();
 
   await env.DB.batch([
-    env.DB
-      .prepare(
-        `INSERT INTO backup_artifacts (
+    env.DB.prepare(
+      `INSERT INTO backup_artifacts (
            id, object_key, state, schema_version, sha256, size_bytes,
            created_at, verified_at, expires_at
          ) VALUES (
            'expired-backup', 'backups/v1/expired-backup.json', 'complete',
            '2026-08-10.1', 'hash-expired', 2, ?1, ?1, ?2
          )`,
-      )
-      .bind(createdAt, '2026-08-09T09:00:00.000Z'),
-    env.DB
-      .prepare(
-        `INSERT INTO backup_artifacts (
+    ).bind(createdAt, '2026-08-09T09:00:00.000Z'),
+    env.DB.prepare(
+      `INSERT INTO backup_artifacts (
            id, object_key, state, schema_version, sha256, size_bytes,
            created_at, verified_at, expires_at
          ) VALUES (
            'future-backup', 'backups/v1/future-backup.json', 'complete',
            '2026-08-10.1', 'hash-future', 2, ?1, ?1, ?2
          )`,
-      )
-      .bind(createdAt, '2026-08-11T09:00:00.000Z'),
+    ).bind(createdAt, '2026-08-11T09:00:00.000Z'),
   ]);
   await env.ATTACHMENTS.put('backups/v1/expired-backup.json', '{}');
   await env.ATTACHMENTS.put('backups/v1/future-backup.json', '{}');

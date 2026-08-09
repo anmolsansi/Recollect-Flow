@@ -49,9 +49,9 @@ describe('OPE-228 source-of-truth deletion policy', () => {
       },
     ).run();
 
-    expect(
-      result.findings.map((finding) => finding.finding_type),
-    ).toContain('notion_projection_missing');
+    expect(result.findings.map((finding) => finding.finding_type)).toContain(
+      'notion_projection_missing',
+    );
     expect(
       await env.DB.prepare(
         'SELECT COUNT(*) AS count FROM purge_workflows WHERE item_id = ?1',
@@ -60,7 +60,9 @@ describe('OPE-228 source-of-truth deletion policy', () => {
         .first<{ count: number }>(),
     ).toEqual({ count: 0 });
     expect(
-      await env.DB.prepare('SELECT raw_text, deleted_at FROM items WHERE id = ?1')
+      await env.DB.prepare(
+        'SELECT raw_text, deleted_at FROM items WHERE id = ?1',
+      )
         .bind(ITEM_ID)
         .first<{ raw_text: string; deleted_at: string | null }>(),
     ).toEqual({ raw_text: 'D1 remains canonical', deleted_at: null });
