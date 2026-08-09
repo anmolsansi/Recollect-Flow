@@ -1,4 +1,4 @@
-import type { PortableItemExport } from './export.types';
+import type { PortableItemExport, PortableRecord } from './export.types';
 import type { PurgeReceiptRecord } from './recovery.types';
 
 const RESTORABLE_TABLES = new Set([
@@ -23,6 +23,34 @@ interface TableInfoRow {
 
 function quoteIdentifier(value: string): string {
   return `"${value.replaceAll('"', '""')}"`;
+}
+
+function resetProcessingLease(
+  record: PortableRecord,
+  nowIso: string,
+): PortableRecord {
+  if (record.status !== 'processing') return record;
+  return {
+    ...record,
+    status: 'pending',
+    available_at: nowIso,
+    lease_owner: null,
+    lease_expires_at: null,
+    heartbeat_at: null,
+    last_error_code: 'RESTORE_LEASE_RESET',
+  };
+}
+
+function resetSyncLease(record: PortableRecord, nowIso: string): PortableRecord {
+  if (record.status !== 'processing') return record;
+  return {
+    ...record,
+    status: 'pending',
+    available_at: nowIso,
+    lease_owner: null,
+    lease_expires_at: null,
+    last_error_code: 'RESTORE_LEASE_RESET',
+  };
 }
 
 export class RestoreRepository {
@@ -92,5 +120,81 @@ export class RestoreRepository {
 
   async restoreItemShell(item: PortableItemExport): Promise<void> {
     await this.insertRecord('items', { ...item.item, duplicate_of: null });
+  }
+
+  async restoreItemChildren(
+    item: PortableItemExport,
+    now: Date,
+  ): Promise<void> {
+    const nowIso = now.toISOString();
+    for (const attachment of item.attachments) {
+      await this.insertRecord('attachments', attachment);
+    }
+    for (const capture of item.captureEvents) {
+      await this.insertRecord('capture_events', {
+        ...capture,
+        duplicate_of: null,
+        attachment_id: null,
+      });
+    }
+    for (const key of item.deduplicationKeys) {
+      await this.insertRecord('item_deduplication_keys', key);
+    }
+    for (const job of item.processingJobs) {
+      await this.insertRecord(
+        'processing_jobs',
+        resetProcessingLease(job, nowIso),
+      );
+    }
+    for (const result of item.processingJobResults) {
+      await this.insertRecord('processing_job_results', result);
+    }
+    for (const sync of item.syncAttempts) {
+      await this.insertRecord('sync_attempts', resetSyncLease(sync, nowIso));
+    }
+    for (const usage of item.providerUsage) {
+      await this.insertRecord('provider_usage', usage);
+    }
+    for (const override of item.fieldOverrides) {
+      await this.insertRecord('item_field_overrides', override);
+    }
+    for (const feedback of item.feedbackEvents) {
+      await this.insertRecord('item_feedback_events', feedback);
+    }
+    for (const audit of item.auditEvents) {
+      await this.insertRecord('audit_events', audit);
+    }
+    for (const extraction of item.extractions) {
+      await this.insertRecord('extraction_records', extraction);
+    }
+  }
+
+  async restoreDeferredReferences(item: PortableItemExport): Promise<void> {
+    const itemId = item.item.id;
+    if (typeof itemId !== 'string') throw new Error('RESTORE_ITEM_ID_INVALID');
+    const duplicateOf = item.item.duplicate_of;
+    if (typeof duplicateOf === 'string' && duplicateOf) {
+      await this.db
+        .prepare('UPDATE items SET duplicate_of = ?1 WHERE id = ?2')
+        .bind(duplicateOf, itemId)
+        .run();
+    }
+
+    for (const capture of item.captureEvents) {
+      if (typeof capture.id !== 'string') continue;
+      const duplicate =
+        typeof capture.duplicate_of === 'string' ? capture.duplicate_of : null;
+      const attachment =
+        typeof capture.attachment_id === 'string' ? capture.attachment_id : null;
+      if (!duplicate && !attachment) continue;
+      await this.db
+        .prepare(
+          `UPDATE capture_events
+           SET duplicate_of = ?1, attachment_id = ?2
+           WHERE id = ?3`,
+        )
+        .bind(duplicate, attachment, capture.id)
+        .run();
+    }
   }
 }
