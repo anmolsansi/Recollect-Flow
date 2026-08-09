@@ -92,6 +92,36 @@ export class BackupRepository {
     return result.meta.changes === 1;
   }
 
+  async findExpired(
+    now: Date,
+    limit = 100,
+  ): Promise<BackupArtifactRecord[]> {
+    const result = await this.db
+      .prepare(
+        `SELECT id, object_key, state, schema_version, sha256, size_bytes,
+                created_at, verified_at, expires_at, failure_code
+         FROM backup_artifacts
+         WHERE state = 'complete' AND expires_at <= ?1
+         ORDER BY expires_at ASC LIMIT ?2`,
+      )
+      .bind(now.toISOString(), limit)
+      .all<BackupArtifactRow>();
+    return result.results.map(record);
+  }
+
+  async markExpired(id: string, now: Date): Promise<boolean> {
+    const nowIso = now.toISOString();
+    const result = await this.db
+      .prepare(
+        `UPDATE backup_artifacts
+         SET state = 'expired', expired_at = ?1
+         WHERE id = ?2 AND state = 'complete' AND expires_at <= ?1`,
+      )
+      .bind(nowIso, id)
+      .run();
+    return result.meta.changes === 1;
+  }
+
   async find(id: string): Promise<BackupArtifactRecord | null> {
     const row = await this.db
       .prepare(
