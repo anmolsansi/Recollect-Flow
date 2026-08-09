@@ -127,7 +127,7 @@ export class RestoreRepository {
       typeof duplicateOf === 'string' && validItemIds.has(duplicateOf);
     await this.insertRecord('items', {
       ...item.item,
-      duplicate_of: duplicateTargetIsAvailable ? duplicateOf : null,
+      duplicate_of: null,
       lifecycle_status:
         item.item.lifecycle_status === 'Duplicate' && !duplicateTargetIsAvailable
           ? 'Inbox'
@@ -186,6 +186,19 @@ export class RestoreRepository {
     item: PortableItemExport,
     validItemIds: ReadonlySet<string>,
   ): Promise<void> {
+    const itemId = item.item.id;
+    const duplicateOf = item.item.duplicate_of;
+    if (
+      typeof itemId === 'string' &&
+      typeof duplicateOf === 'string' &&
+      validItemIds.has(duplicateOf)
+    ) {
+      await this.db
+        .prepare('UPDATE items SET duplicate_of = ?1 WHERE id = ?2')
+        .bind(duplicateOf, itemId)
+        .run();
+    }
+
     for (const capture of item.captureEvents) {
       if (typeof capture.id !== 'string') continue;
       const duplicate =
