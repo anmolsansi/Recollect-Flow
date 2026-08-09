@@ -1,0 +1,171 @@
+validated_sha=a0f37b0fc6c4a01de3a0604f236b098b87ac06ba
+check_exit=1
+migrate_exit=0
+dryrun_exit=0
+=== check tail ===
+
+> recollect-flow@0.1.0 check
+> npm run format && npm run lint && npm run typecheck && npm test && npm run contracts:check && npm run web:lint && npm run web:test && npm run web:build
+
+
+> recollect-flow@0.1.0 format
+> prettier --check .
+
+Checking formatting...
+[[33mwarn[39m] apps/worker-api/src/recovery/backup.repository.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/backup.service.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/canonical-purge.service.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/export-sanitize.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/export.repository.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/export.service.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/integrity.service.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/notion-integrity.service.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/purge-confirmation.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/purge-freeze.service.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/purge-notion.service.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/purge-receipt-ledger.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/purge.repository.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/purge.routes.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/purge.service.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/purge.worker.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/recovery.types.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/restore.repository.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/restore.routes.ts
+[[33mwarn[39m] apps/worker-api/src/recovery/restore.service.ts
+[[33mwarn[39m] apps/worker-api/test/backup-recovery.d1.spec.ts
+[[33mwarn[39m] apps/worker-api/test/backup-retention.test.ts
+[[33mwarn[39m] apps/worker-api/test/capacity-core-continuity.d1.spec.ts
+[[33mwarn[39m] apps/worker-api/test/capacity-jobservice-deferral.d1.spec.ts
+[[33mwarn[39m] apps/worker-api/test/manual-retry-capacity.d1.spec.ts
+[[33mwarn[39m] apps/worker-api/test/purge-confirmation.d1.spec.ts
+[[33mwarn[39m] apps/worker-api/test/purge-partial.d1.spec.ts
+[[33mwarn[39m] apps/worker-api/test/purge-worker.d1.spec.ts
+[[33mwarn[39m] apps/worker-api/test/recovery-integrity.d1.spec.ts
+[[33mwarn[39m] apps/worker-api/test/restore-purge-ledger.d1.spec.ts
+[[33mwarn[39m] apps/worker-api/test/restore-roundtrip.d1.spec.ts
+[[33mwarn[39m] docs/tickets/OPE-228.md
+[[33mwarn[39m] Code style issues found in 32 files. Run Prettier with --write to fix.
+=== migration tail ===
+│ 0014_allow_cloudflare_provider.sql           │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0015_add_extraction_records.sql              │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0016_add_item_search_fts.sql                 │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0017_add_item_review_contract.sql            │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0018_add_item_duplicate_target.sql           │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0019_add_digest_jobs.sql                     │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0020_add_ai_capacity_controls.sql            │ 🕒️    │
+├──────────────────────────────────────────────┼────────┤
+│ 0021_add_recovery_workflows.sql              │ 🕒️    │
+└──────────────────────────────────────────────┴────────┘
+🌀 Executing on local database recollect-flow-prod (5fcba514-d0f7-45e7-a632-d4c59233af71) from .wrangler/state/v3/d1:
+🌀 To execute on your remote database, add a --remote flag to your wrangler command.
+🚣 8 commands executed successfully.
+┌──────────────────────────────────────────────┬────────┐
+│ name                                         │ status │
+├──────────────────────────────────────────────┼────────┤
+│ 0001_initial.sql                             │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0002_add_duplicate_of.sql                    │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0003_add_attachments_table.sql               │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0004_add_policy_routing.sql                  │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0005_update_hosted_ai_policy.sql             │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0006_add_capture_request_fingerprint.sql     │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0007_add_job_leases.sql                      │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0008_add_sync_available_at.sql               │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0009_complete_jobs_and_notion_projection.sql │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0010_add_enrichment_fields.sql               │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0014_allow_cloudflare_provider.sql           │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0015_add_extraction_records.sql              │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0016_add_item_search_fts.sql                 │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0017_add_item_review_contract.sql            │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0018_add_item_duplicate_target.sql           │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0019_add_digest_jobs.sql                     │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0020_add_ai_capacity_controls.sql            │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0021_add_recovery_workflows.sql              │ 🕒️    │
+└──────────────────────────────────────────────┴────────┘
+🌀 Executing on local database recollect-flow-prod (5fcba514-d0f7-45e7-a632-d4c59233af71) from .wrangler/state/v3/d1:
+🌀 To execute on your remote database, add a --remote flag to your wrangler command.
+🚣 18 commands executed successfully.
+┌──────────────────────────────────────────────┬────────┐
+│ name                                         │ status │
+├──────────────────────────────────────────────┼────────┤
+│ 0001_initial.sql                             │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0002_add_duplicate_of.sql                    │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0003_add_attachments_table.sql               │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0004_add_policy_routing.sql                  │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0005_update_hosted_ai_policy.sql             │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0006_add_capture_request_fingerprint.sql     │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0007_add_job_leases.sql                      │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0008_add_sync_available_at.sql               │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0009_complete_jobs_and_notion_projection.sql │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0010_add_enrichment_fields.sql               │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0014_allow_cloudflare_provider.sql           │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0015_add_extraction_records.sql              │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0016_add_item_search_fts.sql                 │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0017_add_item_review_contract.sql            │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0018_add_item_duplicate_target.sql           │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0019_add_digest_jobs.sql                     │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0020_add_ai_capacity_controls.sql            │ ✅     │
+├──────────────────────────────────────────────┼────────┤
+│ 0021_add_recovery_workflows.sql              │ ✅     │
+└──────────────────────────────────────────────┴────────┘
+=== dry-run tail ===
+
+ ⛅️ wrangler 4.116.0 (update available 4.120.0)
+───────────────────────────────────────────────
+
+Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
+Total Upload: 3009.86 KiB / gzip: 687.16 KiB
+Your Worker has access to the following bindings:
+Binding                                                                                Resource                  
+env.DB (recollect-flow-prod)                                                           D1 Database               
+env.ATTACHMENTS (recollect-flow-attachments-prod)                                      R2 Bucket                 
+env.AI                                                                                 AI                        
+env.NOTION_DATABASE_ID ("3a21b726-4ada-80a3-bfe1-ef808e3c293f")                        Environment Variable      
+env.MAX_ATTACHMENT_BYTES ("25000000")                                                  Environment Variable      
+env.UPLOAD_TTL_SECONDS ("3600")                                                        Environment Variable      
+env.AI_PROVIDER_DEFAULT ("openrouter")                                                 Environment Variable      
+env.AI_PROVIDERS_ENABLED ("openrouter,cloudflare")                                     Environment Variable      
+env.AI_PROVIDER_IMPLEMENTATIONS ("{"openrouter":"openrouter","cloudflar...")           Environment Variable      
+env.OPENROUTER_FREE_ACCOUNT_TIER ("standard")                                          Environment Variable      
+env.CLOUDFLARE_AI_FREE_DAILY_NEURONS ("10000")                                         Environment Variable      
+env.DIGEST_AI_ENABLED ("false")                                                        Environment Variable      
+
+--dry-run: exiting now.
