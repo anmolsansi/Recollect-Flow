@@ -1,0 +1,62 @@
+name: OPE-228 validation report
+
+on:
+  push:
+    branches:
+      - agent/ope-228-backup-export-recovery
+    paths-ignore:
+      - docs/tickets/OPE-228-VALIDATION.tmp.txt
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ope228-validation-report
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/ope-228-backup-export-recovery
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Run validation and publish branch-local report
+        shell: bash
+        run: |
+          VALIDATED_SHA="$(git rev-parse HEAD)"
+          set +e
+          npm run check > /tmp/ope228-check.log 2>&1
+          CHECK_EXIT=$?
+          npm run db:migrate:local > /tmp/ope228-migrate.log 2>&1
+          MIGRATE_EXIT=$?
+          npx wrangler deploy --dry-run > /tmp/ope228-dryrun.log 2>&1
+          DRYRUN_EXIT=$?
+          set -e
+
+          {
+            echo "validated_sha=${VALIDATED_SHA}"
+            echo "check_exit=${CHECK_EXIT}"
+            echo "migrate_exit=${MIGRATE_EXIT}"
+            echo "dryrun_exit=${DRYRUN_EXIT}"
+            echo "=== check tail ==="
+            tail -n 180 /tmp/ope228-check.log
+            echo "=== migration tail ==="
+            tail -n 100 /tmp/ope228-migrate.log
+            echo "=== dry-run tail ==="
+            tail -n 100 /tmp/ope228-dryrun.log
+          } > docs/tickets/OPE-228-VALIDATION.tmp.txt
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/tickets/OPE-228-VALIDATION.tmp.txt
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m 'ci(ope-228): refresh validation report'
+          git push origin HEAD:agent/ope-228-backup-export-recovery
