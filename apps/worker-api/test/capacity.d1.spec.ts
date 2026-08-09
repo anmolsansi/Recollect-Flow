@@ -97,6 +97,67 @@ describe('OPE-227 D1 quota admission', () => {
     }
   });
 
+  it('shares one OpenRouter minute pool between text and vision', async () => {
+    const capacity = service();
+    const now = new Date('2026-08-09T12:30:10.000Z');
+    const admissions = [];
+
+    for (let index = 0; index < 10; index += 1) {
+      admissions.push(
+        await capacity.admit(
+          'openrouter',
+          'enrich',
+          OPENROUTER_MODEL,
+          `text-${index}`,
+          1,
+          now,
+        ),
+      );
+      admissions.push(
+        await capacity.admit(
+          'openrouter',
+          'vision_extract',
+          OPENROUTER_MODEL,
+          `vision-${index}`,
+          1,
+          now,
+        ),
+      );
+    }
+
+    await expect(
+      capacity.admit(
+        'openrouter',
+        'vision_extract',
+        OPENROUTER_MODEL,
+        'twenty-first shared request',
+        1,
+        now,
+      ),
+    ).rejects.toMatchObject({ code: 'QUOTA_PAUSED' });
+
+    const minuteRows = await env.DB.prepare(
+      `SELECT scope_key, request_reserved, request_limit
+       FROM ai_capacity_windows
+       WHERE provider = 'openrouter' AND window_kind = 'minute'`,
+    ).all<{
+      scope_key: string;
+      request_reserved: number;
+      request_limit: number;
+    }>();
+    expect(minuteRows.results).toEqual([
+      {
+        scope_key: 'free-model-account-pool',
+        request_reserved: 20,
+        request_limit: 20,
+      },
+    ]);
+
+    for (const admission of admissions) {
+      await capacity.release(admission.reservation.id, now);
+    }
+  });
+
   it('reconciles a two-request reservation to the actual one request used', async () => {
     const capacity = service();
     const now = new Date('2026-08-09T13:00:00.000Z');
