@@ -1,4 +1,4 @@
-validated_sha=a0f37b0fc6c4a01de3a0604f236b098b87ac06ba
+validated_sha=260f3cda6879d011a51eb90739320fd4e7f68b69
 check_exit=1
 migrate_exit=0
 dryrun_exit=0
@@ -12,39 +12,21 @@ dryrun_exit=0
 > prettier --check .
 
 Checking formatting...
-[[33mwarn[39m] apps/worker-api/src/recovery/backup.repository.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/backup.service.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/canonical-purge.service.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/export-sanitize.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/export.repository.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/export.service.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/integrity.service.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/notion-integrity.service.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/purge-confirmation.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/purge-freeze.service.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/purge-notion.service.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/purge-receipt-ledger.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/purge.repository.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/purge.routes.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/purge.service.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/purge.worker.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/recovery.types.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/restore.repository.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/restore.routes.ts
-[[33mwarn[39m] apps/worker-api/src/recovery/restore.service.ts
-[[33mwarn[39m] apps/worker-api/test/backup-recovery.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/backup-retention.test.ts
-[[33mwarn[39m] apps/worker-api/test/capacity-core-continuity.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/capacity-jobservice-deferral.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/manual-retry-capacity.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/purge-confirmation.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/purge-partial.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/purge-worker.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/recovery-integrity.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/restore-purge-ledger.d1.spec.ts
-[[33mwarn[39m] apps/worker-api/test/restore-roundtrip.d1.spec.ts
-[[33mwarn[39m] docs/tickets/OPE-228.md
-[[33mwarn[39m] Code style issues found in 32 files. Run Prettier with --write to fix.
+All matched files use Prettier code style!
+
+> recollect-flow@0.1.0 lint
+> eslint .
+
+
+/home/runner/work/Recollect-Flow/Recollect-Flow/apps/worker-api/src/recovery/notion-purge.service.ts
+  37:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/runner/work/Recollect-Flow/Recollect-Flow/apps/worker-api/src/recovery/purge-notion.service.ts
+  1:1  error  All imports in the declaration are only used as types. Use `import type`  @typescript-eslint/consistent-type-imports
+
+✖ 2 problems (2 errors, 0 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+
 === migration tail ===
 │ 0014_allow_cloudflare_provider.sql           │ ✅     │
 ├──────────────────────────────────────────────┼────────┤
@@ -152,7 +134,7 @@ Checking formatting...
 ───────────────────────────────────────────────
 
 Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
-Total Upload: 3009.86 KiB / gzip: 687.16 KiB
+Total Upload: 3009.91 KiB / gzip: 687.23 KiB
 Your Worker has access to the following bindings:
 Binding                                                                                Resource                  
 env.DB (recollect-flow-prod)                                                           D1 Database               
