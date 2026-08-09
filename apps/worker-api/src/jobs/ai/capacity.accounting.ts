@@ -10,6 +10,7 @@ interface ReservationAccountingRow {
 }
 
 export interface ReconciledUsage {
+  requests?: number;
   inputUnits?: number;
   outputUnits?: number;
   providerUnits?: number;
@@ -128,6 +129,13 @@ export class AiCapacityAccounting {
       return false;
     }
 
+    const requests = Math.max(
+      0,
+      Math.min(
+        reservation.request_units,
+        Math.floor(actual.requests ?? reservation.request_units),
+      ),
+    );
     const inputUnits = Math.max(
       0,
       Math.floor(actual.inputUnits ?? reservation.estimated_input_units),
@@ -149,19 +157,20 @@ export class AiCapacityAccounting {
              input_units_reserved = MAX(0, input_units_reserved - ?2),
              output_units_reserved = MAX(0, output_units_reserved - ?3),
              provider_units_reserved = MAX(0, provider_units_reserved - ?4),
-             request_consumed = request_consumed + ?1,
-             input_units_consumed = input_units_consumed + ?5,
-             output_units_consumed = output_units_consumed + ?6,
-             provider_units_consumed = provider_units_consumed + ?7,
-             updated_at = ?8
+             request_consumed = request_consumed + ?5,
+             input_units_consumed = input_units_consumed + ?6,
+             output_units_consumed = output_units_consumed + ?7,
+             provider_units_consumed = provider_units_consumed + ?8,
+             updated_at = ?9
          WHERE (provider || ':' || scope_key || ':' || window_kind || ':' || window_start)
-               IN (SELECT value FROM json_each(?9))`,
+               IN (SELECT value FROM json_each(?10))`,
       )
       .bind(
         reservation.request_units,
         reservation.estimated_input_units,
         reservation.estimated_output_units,
         reservation.estimated_provider_units,
+        requests,
         inputUnits,
         outputUnits,
         providerUnits,
