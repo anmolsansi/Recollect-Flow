@@ -69,6 +69,26 @@ export class AiCircuitBreakerRepository {
     return row ? toSnapshot(row) : null;
   }
 
+  async releaseHalfOpenProbe(
+    provider: CapacityProvider,
+    operation: CapacityOperation,
+    ownerId: string,
+    now: Date = new Date(),
+  ): Promise<boolean> {
+    const nowIso = now.toISOString();
+    const result = await this.db
+      .prepare(
+        `UPDATE ai_circuit_breakers
+         SET state = 'open', probe_lease_owner = NULL,
+             probe_lease_expires_at = NULL, updated_at = ?1
+         WHERE provider = ?2 AND operation = ?3
+           AND state = 'half_open' AND probe_lease_owner = ?4`,
+      )
+      .bind(nowIso, provider, operation, ownerId)
+      .run();
+    return result.meta.changes === 1;
+  }
+
   async recordSuccess(
     provider: CapacityProvider,
     operation: CapacityOperation,
