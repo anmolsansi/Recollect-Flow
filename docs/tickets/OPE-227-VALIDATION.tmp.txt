@@ -1,5 +1,5 @@
-validated_sha=994e20b50a5bc690063ff709dcdcbecb4649ff2f
-check_exit=1
+validated_sha=335ad95aa44c464bac089398fd1dcbe48b942986
+check_exit=2
 migrate_exit=0
 dryrun_exit=0
 === check tail ===
@@ -12,9 +12,17 @@ dryrun_exit=0
 > prettier --check .
 
 Checking formatting...
+[[31merror[39m] .github/workflows/ope227-breaker-atomic-apply.yml: SyntaxError: Unexpected flow-map-end token in YAML stream: "}" (118:3)
+[[31merror[39m]   116 |     if (!row) throw new Error('Failed to record provider circuit failure');
+[[31merror[39m]   117 |     return toSnapshot(row);
+[[31merror[39m] > 118 |   }
+[[31merror[39m]       |   ^
+[[31merror[39m]   119 | '''
+[[31merror[39m]   120 |
+[[31merror[39m]   121 |           pattern = re.compile(
 [[33mwarn[39m] apps/worker-api/test/capacity-core-continuity.d1.spec.ts
 [[33mwarn[39m] apps/worker-api/test/manual-retry-capacity.d1.spec.ts
-[[33mwarn[39m] Code style issues found in 2 files. Run Prettier with --write to fix.
+Error occurred when checking code style in the above file.
 === migration tail ===
 │ 0008_add_sync_available_at.sql               │ ✅     │
 ├──────────────────────────────────────────────┼────────┤
