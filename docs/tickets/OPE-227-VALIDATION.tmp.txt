@@ -1,5 +1,5 @@
-validated_sha=8095e7c4469288b6e85479e7d8c3a27dcd0dbcad
-check_exit=2
+validated_sha=af6e99d45c71e5c6fa8c48ccbb3bec486f125603
+check_exit=1
 migrate_exit=0
 dryrun_exit=0
 === check tail ===
@@ -12,16 +12,8 @@ dryrun_exit=0
 > prettier --check .
 
 Checking formatting...
-All matched files use Prettier code style!
-
-> recollect-flow@0.1.0 lint
-> eslint .
-
-
-> recollect-flow@0.1.0 typecheck
-> tsc --noEmit
-
-apps/worker-api/test/capacity-migration.d1.spec.ts(8,26): error TS2551: Property 'OPE227_MIGRATION_DB' does not exist on type 'Env'. Did you mean 'OPE222_MIGRATION_DB'?
+[[33mwarn[39m] apps/worker-api/test/manual-retry-capacity.d1.spec.ts
+[[33mwarn[39m] Code style issues found in the above file. Run Prettier with --write to fix.
 === migration tail ===
 │ 0008_add_sync_available_at.sql               │ ✅     │
 ├──────────────────────────────────────────────┼────────┤
