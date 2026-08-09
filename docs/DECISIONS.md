@@ -2,37 +2,37 @@
 
 ## Frozen decisions
 
-| ID      | Decision                                                   | Rationale                                                               |
-| ------- | ---------------------------------------------------------- | ----------------------------------------------------------------------- |
-| ADR-001 | Cloudflare D1 is the system of record                      | Relational, indexed, portable authority independent of Notion/providers |
-| ADR-002 | Private R2 stores attachment bytes                         | Keeps files out of D1 with opaque private access                        |
-| ADR-003 | Notion is a review projection                              | Familiar UI without capture/data dependence                             |
-| ADR-004 | Apple Shortcut is the first mobile client                  | Fastest Share Sheet proof without App Store                             |
-| ADR-005 | Capture never depends on AI                                | Provider/quota/Mac/Notion failure cannot lose source                    |
-| ADR-006 | V1 search is D1 FTS5 plus filters                          | Exact, inexpensive, explainable recall first                            |
-| ADR-007 | `/api/v1` is the canonical route prefix                    | Versioned API contract aligned with repository standards                |
-| ADR-008 | Separate capture/admin/local-worker credentials            | Least privilege and independent rotation                                |
-| ADR-009 | Raw source and user reason are immutable evidence          | Derived edits/retries cannot rewrite truth                              |
-| ADR-010 | Provider adapters and structured validation are mandatory  | Replaceability, privacy, quota, and correctness                         |
-| ADR-011 | No implicit payment method or overage                      | $0 policy must fail closed                                              |
-| ADR-012 | Instagram is URL/coverage-first; no scraper promise        | Platform/access/rights reality and honest UX                            |
-| ADR-013 | Deletion is grace then explicit purge                      | Recovery plus complete cross-system cleanup                             |
-| ADR-014 | RAG is V1.5 and separately accepted                        | Avoid fluent answers before useful reliable corpus                      |
-| ADR-015 | RAG uses hybrid retrieval and exact citations              | Exact recall plus semantic help with traceability                       |
-| ADR-016 | Restricted RAG uses local or retrieval-only path           | Privacy takes priority over completeness                                |
-| ADR-017 | Every conversation turn retrieves fresh evidence           | Prevent model history becoming evidence                                 |
-| ADR-018 | Wrangler migrations directory is forward-only              | Wrangler applies every SQL file found there                             |
-| ADR-019 | Project uses Notion Select for V1                          | Simpler schema mapping until knowledge graph is needed                  |
-| ADR-020 | Retry waiting is exposed as derived `retry_wait`           | Avoids redundant state; `pending` + `available_at > now` computes it    |
-| ADR-021 | Deleted Notion pages require owner approval for recreation | Prevents zombie sync loops and respects human deletion intent           |
-| ADR-022 | Notion human-owned fields are create-only in V1            | Preserves edits without an ambiguous timestamp-wins conflict policy     |
-| ADR-023 | Privacy is D1/admin-owned and never imported from Notion   | A display edit cannot silently authorize hosted processing              |
-| ADR-028 | AI quota enforcement is provider/operation/window specific | Published free limits differ by provider and operation; hard guards must mirror the actual constrained dimensions |
-| ADR-029 | V1 AI execution is free-tier allowlist only                | Configuration alone must never opt the owner into paid processing       |
-| ADR-030 | Capacity deferrals do not consume terminal retry allowance | Quota exhaustion or an open breaker is not an item-processing failure   |
-| ADR-031 | Hosted verified backups are immutable with 30-day retention | Keeps backup checksums trustworthy while bounding residual deleted data |
-| ADR-032 | Only RecollectFlow/D1 can initiate canonical purge         | Notion remains a projection and cannot trigger irreversible source deletion |
-| ADR-033 | Routine token rotation uses bounded current/next overlap   | Allows safe client cutover without indefinite dual-token exposure       |
+| ID      | Decision                                                    | Rationale                                                                                                         |
+| ------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| ADR-001 | Cloudflare D1 is the system of record                       | Relational, indexed, portable authority independent of Notion/providers                                           |
+| ADR-002 | Private R2 stores attachment bytes                          | Keeps files out of D1 with opaque private access                                                                  |
+| ADR-003 | Notion is a review projection                               | Familiar UI without capture/data dependence                                                                       |
+| ADR-004 | Apple Shortcut is the first mobile client                   | Fastest Share Sheet proof without App Store                                                                       |
+| ADR-005 | Capture never depends on AI                                 | Provider/quota/Mac/Notion failure cannot lose source                                                              |
+| ADR-006 | V1 search is D1 FTS5 plus filters                           | Exact, inexpensive, explainable recall first                                                                      |
+| ADR-007 | `/api/v1` is the canonical route prefix                     | Versioned API contract aligned with repository standards                                                          |
+| ADR-008 | Separate capture/admin/local-worker credentials             | Least privilege and independent rotation                                                                          |
+| ADR-009 | Raw source and user reason are immutable evidence           | Derived edits/retries cannot rewrite truth                                                                        |
+| ADR-010 | Provider adapters and structured validation are mandatory   | Replaceability, privacy, quota, and correctness                                                                   |
+| ADR-011 | No implicit payment method or overage                       | $0 policy must fail closed                                                                                        |
+| ADR-012 | Instagram is URL/coverage-first; no scraper promise         | Platform/access/rights reality and honest UX                                                                      |
+| ADR-013 | Deletion is grace then explicit purge                       | Recovery plus complete cross-system cleanup                                                                       |
+| ADR-014 | RAG is V1.5 and separately accepted                         | Avoid fluent answers before useful reliable corpus                                                                |
+| ADR-015 | RAG uses hybrid retrieval and exact citations               | Exact recall plus semantic help with traceability                                                                 |
+| ADR-016 | Restricted RAG uses local or retrieval-only path            | Privacy takes priority over completeness                                                                          |
+| ADR-017 | Every conversation turn retrieves fresh evidence            | Prevent model history becoming evidence                                                                           |
+| ADR-018 | Wrangler migrations directory is forward-only               | Wrangler applies every SQL file found there                                                                       |
+| ADR-019 | Project uses Notion Select for V1                           | Simpler schema mapping until knowledge graph is needed                                                            |
+| ADR-020 | Retry waiting is exposed as derived `retry_wait`            | Avoids redundant state; `pending` + `available_at > now` computes it                                              |
+| ADR-021 | Deleted Notion pages require owner approval for recreation  | Prevents zombie sync loops and respects human deletion intent                                                     |
+| ADR-022 | Notion human-owned fields are create-only in V1             | Preserves edits without an ambiguous timestamp-wins conflict policy                                               |
+| ADR-023 | Privacy is D1/admin-owned and never imported from Notion    | A display edit cannot silently authorize hosted processing                                                        |
+| ADR-028 | AI quota enforcement is provider/operation/window specific  | Published free limits differ by provider and operation; hard guards must mirror the actual constrained dimensions |
+| ADR-029 | V1 AI execution is free-tier allowlist only                 | Configuration alone must never opt the owner into paid processing                                                 |
+| ADR-030 | Capacity deferrals do not consume terminal retry allowance  | Quota exhaustion or an open breaker is not an item-processing failure                                             |
+| ADR-031 | Hosted verified backups are immutable with 30-day retention | Keeps backup checksums trustworthy while bounding residual deleted data                                           |
+| ADR-032 | Only RecollectFlow/D1 can initiate canonical purge          | Notion remains a projection and cannot trigger irreversible source deletion                                       |
+| ADR-033 | Routine token rotation uses bounded current/next overlap    | Allows safe client cutover without indefinite dual-token exposure                                                 |
 
 ## Conditional decisions
 
