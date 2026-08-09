@@ -44,10 +44,7 @@ class FailingProvider extends MockAiAdapter {
     super('openrouter');
   }
 
-  override async extractData(
-    _text: string,
-    _config?: AiProviderConfig,
-  ): Promise<AiEnrichmentResult<ExtractResult>> {
+  override async extractData(): Promise<AiEnrichmentResult<ExtractResult>> {
     this.calls += 1;
     throw Object.assign(
       new AppError(503, 'PROVIDER_HTTP_ERROR', 'Synthetic OpenRouter outage'),
