@@ -33,12 +33,11 @@ export class AiCapacityAccounting {
       .first<ReservationAccountingRow>();
   }
 
-  private async removeReservedCapacity(
+  private releaseWindowStatement(
     reservation: ReservationAccountingRow,
     nowIso: string,
-  ): Promise<void> {
-    if (reservation.capacity_applied !== 1) return;
-    await this.db
+  ) {
+    return this.db
       .prepare(
         `UPDATE ai_capacity_windows
          SET request_reserved = MAX(0, request_reserved - ?1),
@@ -47,7 +46,11 @@ export class AiCapacityAccounting {
              provider_units_reserved = MAX(0, provider_units_reserved - ?4),
              updated_at = ?5
          WHERE (provider || ':' || scope_key || ':' || window_kind || ':' || window_start)
-               IN (SELECT value FROM json_each(?6))`,
+               IN (SELECT value FROM json_each(?6))
+           AND EXISTS (
+             SELECT 1 FROM ai_capacity_reservations r
+             WHERE r.id = ?7 AND r.state = 'active' AND r.capacity_applied = 1
+           )`,
       )
       .bind(
         reservation.request_units,
@@ -56,8 +59,26 @@ export class AiCapacityAccounting {
         reservation.estimated_provider_units,
         nowIso,
         reservation.window_keys_json,
-      )
-      .run();
+        reservation.id,
+      );
+  }
+
+  private async finishReservationWithoutConsumption(
+    reservation: ReservationAccountingRow,
+    state: 'released' | 'expired',
+    nowIso: string,
+  ): Promise<boolean> {
+    const batch = await this.db.batch([
+      this.releaseWindowStatement(reservation, nowIso),
+      this.db
+        .prepare(
+          `UPDATE ai_capacity_reservations
+           SET state = ?1, released_at = ?2, updated_at = ?2
+           WHERE id = ?3 AND state = 'active'`,
+        )
+        .bind(state, nowIso, reservation.id),
+    ]);
+    return batch[1]?.meta.changes === 1;
   }
 
   async releaseReservation(
@@ -66,19 +87,11 @@ export class AiCapacityAccounting {
   ): Promise<boolean> {
     const reservation = await this.getReservation(reservationId);
     if (!reservation || reservation.state !== 'active') return false;
-
-    const nowIso = now.toISOString();
-    await this.removeReservedCapacity(reservation, nowIso);
-
-    const result = await this.db
-      .prepare(
-        `UPDATE ai_capacity_reservations
-         SET state = 'released', released_at = ?1, updated_at = ?1
-         WHERE id = ?2 AND state = 'active'`,
-      )
-      .bind(nowIso, reservationId)
-      .run();
-    return result.meta.changes === 1;
+    return this.finishReservationWithoutConsumption(
+      reservation,
+      'released',
+      now.toISOString(),
+    );
   }
 
   async expireReservations(
@@ -100,16 +113,23 @@ export class AiCapacityAccounting {
 
     let expired = 0;
     for (const reservation of result.results ?? []) {
-      await this.removeReservedCapacity(reservation, nowIso);
-      const update = await this.db
+      const stillExpired = await this.db
         .prepare(
-          `UPDATE ai_capacity_reservations
-           SET state = 'expired', released_at = ?1, updated_at = ?1
-           WHERE id = ?2 AND state = 'active'`,
+          `SELECT id FROM ai_capacity_reservations
+           WHERE id = ?1 AND state = 'active' AND expires_at <= ?2`,
         )
-        .bind(nowIso, reservation.id)
-        .run();
-      expired += update.meta.changes;
+        .bind(reservation.id, nowIso)
+        .first<{ id: string }>();
+      if (!stillExpired) continue;
+      if (
+        await this.finishReservationWithoutConsumption(
+          reservation,
+          'expired',
+          nowIso,
+        )
+      ) {
+        expired += 1;
+      }
     }
     return expired;
   }
@@ -150,55 +170,57 @@ export class AiCapacityAccounting {
     );
     const nowIso = now.toISOString();
 
-    const updatedWindows = await this.db
-      .prepare(
-        `UPDATE ai_capacity_windows
-         SET request_reserved = MAX(0, request_reserved - ?1),
-             input_units_reserved = MAX(0, input_units_reserved - ?2),
-             output_units_reserved = MAX(0, output_units_reserved - ?3),
-             provider_units_reserved = MAX(0, provider_units_reserved - ?4),
-             request_consumed = request_consumed + ?5,
-             input_units_consumed = input_units_consumed + ?6,
-             output_units_consumed = output_units_consumed + ?7,
-             provider_units_consumed = provider_units_consumed + ?8,
-             updated_at = ?9
-         WHERE (provider || ':' || scope_key || ':' || window_kind || ':' || window_start)
-               IN (SELECT value FROM json_each(?10))`,
-      )
-      .bind(
-        reservation.request_units,
-        reservation.estimated_input_units,
-        reservation.estimated_output_units,
-        reservation.estimated_provider_units,
-        requests,
-        inputUnits,
-        outputUnits,
-        providerUnits,
-        nowIso,
-        reservation.window_keys_json,
-      )
-      .run();
+    const batch = await this.db.batch([
+      this.db
+        .prepare(
+          `UPDATE ai_capacity_windows
+           SET request_reserved = MAX(0, request_reserved - ?1),
+               input_units_reserved = MAX(0, input_units_reserved - ?2),
+               output_units_reserved = MAX(0, output_units_reserved - ?3),
+               provider_units_reserved = MAX(0, provider_units_reserved - ?4),
+               request_consumed = request_consumed + ?5,
+               input_units_consumed = input_units_consumed + ?6,
+               output_units_consumed = output_units_consumed + ?7,
+               provider_units_consumed = provider_units_consumed + ?8,
+               updated_at = ?9
+           WHERE (provider || ':' || scope_key || ':' || window_kind || ':' || window_start)
+                 IN (SELECT value FROM json_each(?10))
+             AND EXISTS (
+               SELECT 1 FROM ai_capacity_reservations r
+               WHERE r.id = ?11 AND r.state = 'active' AND r.capacity_applied = 1
+             )`,
+        )
+        .bind(
+          reservation.request_units,
+          reservation.estimated_input_units,
+          reservation.estimated_output_units,
+          reservation.estimated_provider_units,
+          requests,
+          inputUnits,
+          outputUnits,
+          providerUnits,
+          nowIso,
+          reservation.window_keys_json,
+          reservationId,
+        ),
+      this.db
+        .prepare(
+          `UPDATE ai_capacity_reservations
+           SET state = 'reconciled', actual_request_units = ?1,
+               actual_input_units = ?2, actual_output_units = ?3,
+               actual_provider_units = ?4, reconciled_at = ?5, updated_at = ?5
+           WHERE id = ?6 AND state = 'active' AND capacity_applied = 1`,
+        )
+        .bind(
+          requests,
+          inputUnits,
+          outputUnits,
+          providerUnits,
+          nowIso,
+          reservationId,
+        ),
+    ]);
 
-    if (updatedWindows.meta.changes === 0) return false;
-
-    const updatedReservation = await this.db
-      .prepare(
-        `UPDATE ai_capacity_reservations
-         SET state = 'reconciled', actual_request_units = ?1,
-             actual_input_units = ?2, actual_output_units = ?3,
-             actual_provider_units = ?4, reconciled_at = ?5, updated_at = ?5
-         WHERE id = ?6 AND state = 'active' AND capacity_applied = 1`,
-      )
-      .bind(
-        requests,
-        inputUnits,
-        outputUnits,
-        providerUnits,
-        nowIso,
-        reservationId,
-      )
-      .run();
-
-    return updatedReservation.meta.changes === 1;
+    return batch[1]?.meta.changes === 1;
   }
 }
