@@ -1,5 +1,5 @@
-validated_sha=f4c30fc7735919011237a4e9b8b8eadfc3ca6752
-check_exit=2
+validated_sha=8d5c5f2be2b2a4ad5a2626f0b1971fb169641b22
+check_exit=1
 migrate_exit=0
 dryrun_exit=0
 === check tail ===
@@ -12,17 +12,9 @@ dryrun_exit=0
 > prettier --check .
 
 Checking formatting...
-All matched files use Prettier code style!
-
-> recollect-flow@0.1.0 lint
-> eslint .
-
-
-> recollect-flow@0.1.0 typecheck
-> tsc --noEmit
-
-apps/worker-api/test/capacity-migration.d1.spec.ts(8,26): error TS2551: Property 'OPE227_MIGRATION_DB' does not exist on type 'Env'. Did you mean 'OPE222_MIGRATION_DB'?
-apps/worker-api/test/manual-retry-capacity.d1.spec.ts(98,9): error TS2345: Argument of type 'boolean' is not assignable to parameter of type 'string'.
+[[33mwarn[39m] apps/worker-api/test/capacity-migration.d1.spec.ts
+[[33mwarn[39m] apps/worker-api/test/recovery-migration.d1.spec.ts
+[[33mwarn[39m] Code style issues found in 2 files. Run Prettier with --write to fix.
 === migration tail ===
 │ 0014_allow_cloudflare_provider.sql           │ ✅     │
 ├──────────────────────────────────────────────┼────────┤
