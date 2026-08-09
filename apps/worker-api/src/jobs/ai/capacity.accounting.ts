@@ -184,12 +184,19 @@ export class AiCapacityAccounting {
     const updatedReservation = await this.db
       .prepare(
         `UPDATE ai_capacity_reservations
-         SET state = 'reconciled', actual_input_units = ?1,
-             actual_output_units = ?2, actual_provider_units = ?3,
-             reconciled_at = ?4, updated_at = ?4
-         WHERE id = ?5 AND state = 'active' AND capacity_applied = 1`,
+         SET state = 'reconciled', actual_request_units = ?1,
+             actual_input_units = ?2, actual_output_units = ?3,
+             actual_provider_units = ?4, reconciled_at = ?5, updated_at = ?5
+         WHERE id = ?6 AND state = 'active' AND capacity_applied = 1`,
       )
-      .bind(inputUnits, outputUnits, providerUnits, nowIso, reservationId)
+      .bind(
+        requests,
+        inputUnits,
+        outputUnits,
+        providerUnits,
+        nowIso,
+        reservationId,
+      )
       .run();
 
     return updatedReservation.meta.changes === 1;
