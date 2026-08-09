@@ -1,0 +1,20 @@
+name: OPE-227 branch CI
+
+on:
+  push:
+    branches:
+      - agent/ope-227-capacity-controls
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run db:migrate:local
+      - run: npx wrangler deploy --dry-run
