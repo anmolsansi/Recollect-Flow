@@ -65,13 +65,13 @@ export class PurgeRepository {
   constructor(private readonly db: D1Database) {}
 
   async createConfirmation(
+    workflowId: string,
     itemId: string,
     requestedEditVersion: number,
     confirmationDigest: string,
     confirmationExpiresAt: string,
     now: Date,
   ): Promise<PurgeWorkflowRecord> {
-    const workflowId = crypto.randomUUID();
     const nowIso = now.toISOString();
     const statements: D1PreparedStatement[] = [
       this.db
