@@ -50,6 +50,28 @@ Period/config version, deterministic selection hash, delivery status/channel, re
 
 Export schema version, manifest/checksum/counts, object location/expiry/status. Deletion request captures grace/purge state, explicit confirmation, affected derived systems, completion evidence.
 
+### BackupArtifact
+
+OPE-228 hosted-backup registry. Stores an immutable private R2 object key, portable schema version, lifecycle (`creating|verifying|complete|failed|expired`), SHA-256, byte size, creation/verification/expiry timestamps, and a stable non-content failure code. A row may become `complete` only after R2 read-back verification. Normal hosted retention is 30 days.
+
+### PurgeWorkflow / PurgeStep
+
+Permanent deletion is not represented by `items.deleted_at` alone. A PurgeWorkflow records the item ID, confirmation digest/expiry, requested item edit version, confirmation/completion timestamps, state (`confirmation_pending|queued|processing|partial|complete|cancelled`), and stable failure code. It intentionally does not FK to `items`, because workflow evidence survives canonical deletion.
+
+Each workflow owns exactly one ordered PurgeStep for `freeze_jobs`, `delete_r2_attachments`, `archive_notion_projection`, `delete_d1_item_data`, and `finalize_receipt`. Steps persist attempts, state, lease owner/expiry, timestamps, and safe failure code. Leases make destructive work recoverable after Worker termination without allowing concurrent healthy owners to execute the same step.
+
+### PurgeReceipt
+
+Standalone non-content anti-resurrection ledger keyed by purged item ID. Stores purge workflow ID, receipt version, purge timestamp, and the newest applicable hosted-backup retention boundary. It deliberately has no FK to PurgeWorkflow or Item so it can be imported independently into a clean disaster-recovery D1. A corresponding hashed private R2 receipt under `purge-receipts/v1/` provides a ledger newer than an old backup snapshot.
+
+### RestoreRun
+
+Records portable restore lifecycle (`validating|restoring|verifying|complete|failed`), schema version, dry-run flag, source item count, restored count, purge-ledger skip count, safe failure code, and timestamps. Restore is a clean-target operation; a RestoreRun is operational evidence rather than canonical user content.
+
+### IntegrityRun / IntegrityFinding
+
+Read-only recovery scan. IntegrityRun records state/count/timestamps. IntegrityFinding records a safe finding type/severity plus optional item ID, attachment ID, external reference, and non-content details. Findings cover missing attachment objects, attachment link-state drift, missing Notion projections, incomplete purge workflows, and backup verification/retention drift. Findings never confer deletion authority.
+
 ## Item lifecycle
 
 User lifecycle: `Inbox → Reviewed → Actioned|Archived`; any active state may become `Duplicate` or `Deleted`; Deleted may be restored during grace or progress to Purged.
@@ -83,6 +105,9 @@ Every processing job snapshots policy version, eligible provider, credential sou
   `unicode61` tokenizer for lexical search independent of AI embeddings and is
   synchronized from canonical `items` rows by insert, relevant-update, and
   delete triggers. `items` remains the source of truth for privacy and deletion.
+- OPE-228 indexes backup retention, active purge workflows, purge-step leases,
+  receipt timestamps, and restore/integrity run chronology. These operational
+  tables contain identifiers and safe state, not backup payload bytes.
 - Avoid unindexed broad scans because D1 pricing counts rows read.
 
 ## Duplicate model
@@ -91,11 +116,13 @@ Idempotency replay is the same request and returns its existing CaptureEvent and
 
 ## Deletion and retention
 
-1. Soft delete hides item and begins configurable grace period.
-2. Restore may cancel purge during grace.
-3. Confirmed purge removes R2 bytes, derived content, FTS/vector records, chunks, citations/caches, Notion projection, and content-bearing events according to policy.
-4. Minimal non-content tombstone metadata may remain for audit unless full purge is requested and legally/policy permitted.
-5. Every purge is idempotent and produces completion evidence.
+1. Soft delete hides an item and remains reversible until the owner explicitly requests and separately confirms permanent purge.
+2. Purge request is bound to the current soft-deleted item `edit_version` and a short-lived confirmation phrase. Restoration/editing invalidates the pending confirmation.
+3. Confirmed purge freezes outstanding item work, deletes private R2 attachment objects, archives the downstream Notion projection, removes content-bearing canonical/derived D1 rows, and removes digest artifacts that reference the purged item.
+4. The D1 purge receipt is inserted atomically in the same D1 batch that deletes the item, preventing a crash between canonical deletion and tombstone creation.
+5. The final purge step mirrors that non-content receipt into private R2. If the mirror fails, the D1 item remains deleted but the workflow is `partial` and receipt finalization is retryable.
+6. Hosted portable backups expire after 30 days. Purge receipts outlive that retention boundary. Owner-downloaded/offline exports are outside remote deletion control and must be managed separately by the owner.
+7. Restore merges the newest export, current-D1, and private-R2 purge ledgers before item insertion. A matching receipt causes the older item record to be skipped rather than resurrected.
 
 ## Conditional RAG entities
 
@@ -118,47 +145,3 @@ Question, filters, privacy/provider mode, corpus/index versions, status; every c
 ### Conversation / Turn
 
 Owner, privacy/filter defaults, timestamps; each turn references its own fresh retrieval run. Prior answer text is never evidence.
-
-### RagAnswer / AnswerCitation
-
-Retrieval run, conversation/turn, answer state/JSON, provider/model/prompt/context hash/versions; citations map answer block and stable citation ID to exact chunk/item/span.
-
-### AnswerCache
-
-Question/filter/privacy/corpus/index/prompt/context hash to validated answer; any source edit/delete/restriction, index switch, or policy change invalidates affected entries.
-
-## Migration policy
-
-Wrangler migrations are forward-only under `migrations/`. Manual rollback scripts live under `docs/sql` so Wrangler cannot auto-apply them. Every schema change documents forward/backfill/compatibility/rollback/export impact, updates fixtures/tests, and preserves raw-source readability across versions.
-
-## OPE-226 digest persistence
-
-Migration `0019_add_digest_jobs.sql` implements three durable entities:
-
-- `digest_runs` stores the digest period, `Asia/Kolkata` boundaries, selector and
-  generation versions, canonical payload, deterministic content hash, optional
-  AI wording metadata, and review state. Regeneration creates a new generation
-  version; unchanged source state produces the same content hash.
-- `digest_deliveries` stores one destination claim per run, bounded attempts,
-  availability, lease ownership/expiry, safe error code, Telegram message ID,
-  and final `sent`, `failed`, `unknown`, or `skipped` evidence. `unknown` is not
-  automatically retried.
-- `digest_audit_events` records generation, review, queueing, retry,
-  reconciliation, cancellation, delivery and empty-period suppression without
-  message text or credentials.
-
-Daily selection contains eligible item IDs, public-only topic groups, ranked
-item IDs and failed-processing references. Weekly selection additionally stores
-public repeated themes, unreviewed items with `importance >= 70`, public projects
-inactive for 30 days, and Inbox items 7 days from the 90-day archive threshold.
-Deleted and Duplicate items are excluded. All referenced items are re-read before
-delivery so deletion or a stricter privacy classification takes effect immediately.
-
-<!-- OPE-227 START -->
-
-## OPE-227 AI capacity state
-
-Migration `0020_add_ai_capacity_controls.sql` adds three durable D1 tables. `ai_capacity_windows` stores provider/scope/window hard limits plus reserved and consumed counters. `ai_capacity_reservations` stores bounded pre-call reservations, estimated versus actual request/input/output/provider units, expiry, and reconciliation state. `ai_circuit_breakers` stores provider+operation breaker state, qualifying failure count, next probe time, and the single half-open probe lease.
-
-Quota windows and reservations are operational metadata only; they never contain prompts or raw captured content. Reservation/window mutations use D1 transactional batches or conditional updates so concurrent Workers cannot both consume the final available unit and repeated reconciliation/release is idempotent.
-<!-- OPE-227 END -->
