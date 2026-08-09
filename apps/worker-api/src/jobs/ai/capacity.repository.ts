@@ -246,6 +246,29 @@ export class AiCapacityRepository {
     return this.ensureWindows(policies, now);
   }
 
+  async ensureCircuitBreaker(
+    provider: CapacityProvider,
+    operation: CapacityOperation,
+    now: Date = new Date(),
+  ): Promise<CircuitBreakerSnapshot> {
+    const nowIso = now.toISOString();
+    await this.db
+      .prepare(
+        `INSERT INTO ai_circuit_breakers (
+           provider, operation, state, consecutive_failures, policy_version,
+           created_at, updated_at
+         ) VALUES (?1, ?2, 'closed', 0, ?3, ?4, ?4)
+         ON CONFLICT(provider, operation) DO UPDATE SET
+           policy_version = excluded.policy_version,
+           updated_at = excluded.updated_at`,
+      )
+      .bind(provider, operation, AI_CAPACITY_POLICY_VERSION, nowIso)
+      .run();
+    const snapshot = await this.getCircuitBreaker(provider, operation);
+    if (!snapshot) throw new Error('Failed to initialize AI circuit breaker');
+    return snapshot;
+  }
+
   async listActiveWindows(
     now: Date = new Date(),
   ): Promise<CapacityWindowSnapshot[]> {
