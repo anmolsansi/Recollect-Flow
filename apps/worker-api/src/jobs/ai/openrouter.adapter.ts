@@ -23,6 +23,8 @@ import {
   ImageExtractResultJsonSchema,
 } from './ai.schema';
 
+const OPENROUTER_FREE_MODEL = 'openrouter/free';
+
 const OpenRouterImageResponseSchema = z.object({
   choices: z
     .array(
@@ -71,11 +73,11 @@ export class OpenRouterAdapter implements AiProvider {
           headers: {
             Authorization: `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
-            'HTTP-Referer': 'https://github.com/anmolsansi/Recollect-Flow', // OpenRouter requires referer
+            'HTTP-Referer': 'https://github.com/anmolsansi/Recollect-Flow',
             'X-Title': 'RecollectFlow',
           },
           body: JSON.stringify({
-            model: model,
+            model,
             messages: [{ role: 'user', content: prompt }],
             response_format: {
               type: 'json_schema',
@@ -90,11 +92,10 @@ export class OpenRouterAdapter implements AiProvider {
       );
 
       if (!response.ok) {
-        const errorText = await response.text();
         throw new AppError(
           503,
           'PROVIDER_HTTP_ERROR',
-          `OpenRouter HTTP error ${response.status}: ${errorText}`,
+          `OpenRouter request failed with HTTP ${response.status}`,
         );
       }
 
@@ -113,7 +114,6 @@ export class OpenRouterAdapter implements AiProvider {
       const inputUnits = data.usage?.prompt_tokens || 0;
       const outputUnits = data.usage?.completion_tokens || 0;
 
-      // Repair JSON attempt (simple regex matching if wrapped in backticks)
       let cleanedJson = rawJson.trim();
       if (cleanedJson.startsWith('```json')) {
         cleanedJson = cleanedJson
@@ -140,7 +140,6 @@ export class OpenRouterAdapter implements AiProvider {
         status: 'success',
       };
     } catch (error) {
-      // 1-time deterministic repair attempt
       if (attempt === 1 && rawResponse) {
         try {
           const repairPrompt = `Fix the following malformed JSON so it strictly matches the requested schema.\n\nBroken JSON:\n${rawResponse}`;
@@ -152,7 +151,7 @@ export class OpenRouterAdapter implements AiProvider {
             2,
           );
         } catch {
-          // ignore repair error and throw original
+          // Ignore repair error and throw the stable wrapper below.
         }
       }
 
@@ -183,7 +182,7 @@ export class OpenRouterAdapter implements AiProvider {
     jsonSchemaDefinition: object,
     config: AiProviderConfig,
   ): Promise<AiEnrichmentResult<T>> {
-    const model = config.model || 'meta-llama/llama-3-8b-instruct:free';
+    const model = config.model || OPENROUTER_FREE_MODEL;
     return this.callAi(prompt, schema, jsonSchemaDefinition, model);
   }
 
@@ -252,7 +251,7 @@ export class OpenRouterAdapter implements AiProvider {
       );
     }
 
-    const modelName = config?.model || 'google/gemini-flash-1.5-8b';
+    const modelName = config?.model || OPENROUTER_FREE_MODEL;
     const startTime = Date.now();
 
     try {
@@ -293,7 +292,7 @@ export class OpenRouterAdapter implements AiProvider {
         throw new AppError(
           503,
           'PROVIDER_HTTP_ERROR',
-          `OpenRouter HTTP error ${response.status}`,
+          `OpenRouter request failed with HTTP ${response.status}`,
         );
       }
 
