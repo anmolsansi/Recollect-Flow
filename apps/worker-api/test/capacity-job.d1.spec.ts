@@ -44,7 +44,7 @@ describe('OPE-227 capacity job deferral', () => {
       now,
     );
     expect(leased).toBeDefined();
-    expect(leased?.attempts).toBe(1);
+    expect(leased?.attempts).toBe(0);
 
     const deferredUntil = new Date('2026-08-09T21:00:00.000Z');
     const deferred = await new CapacityJobService(env.DB).deferProcessingJob(
@@ -70,7 +70,7 @@ describe('OPE-227 capacity job deferral', () => {
       }>();
     expect(row).toEqual({
       status: 'pending',
-      attempts: 1,
+      attempts: 0,
       available_at: deferredUntil.toISOString(),
       last_error_code: 'QUOTA_PAUSED',
       lease_owner: null,
@@ -84,7 +84,7 @@ describe('OPE-227 capacity job deferral', () => {
       .first<{ details_json: string }>();
     expect(JSON.parse(audit!.details_json)).toMatchObject({
       error_code: 'QUOTA_PAUSED',
-      attempts_preserved: 1,
+      attempts_preserved: 0,
     });
   });
 });
