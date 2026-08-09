@@ -77,12 +77,23 @@ describe('OPE-227 manual retry capacity guard', () => {
   it('lets the admin requeue a failed job but still blocks hosted execution at hard quota', async () => {
     const now = new Date('2026-08-09T20:45:00.000Z');
     const jobs = new JobService(env.DB);
-    const jobId = await jobs.enqueueProcessingJob(
-      ITEM_ID,
-      'enrich',
-      'manual-retry-capacity-input',
-      now,
-    );
+    expect(
+      await jobs.enqueueProcessingJob(
+        ITEM_ID,
+        'enrich',
+        'manual-retry-capacity-input',
+        now,
+      ),
+    ).toBe(true);
+    const job = await env.DB.prepare(
+      `SELECT id FROM processing_jobs
+       WHERE item_id = ?1 AND job_type = 'enrich'`,
+    )
+      .bind(ITEM_ID)
+      .first<{ id: string }>();
+    expect(job?.id).toBeTruthy();
+    const jobId = job!.id;
+
     await env.DB.prepare(
       `UPDATE processing_jobs
        SET status = 'failed', attempts = 1, last_error_code = 'AI_REQUEST_FAILED',
