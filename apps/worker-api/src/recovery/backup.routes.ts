@@ -32,5 +32,17 @@ export function backupRoutes() {
     });
   });
 
+  router.get('/backups/:id/download', requireAdminToken, async (context) => {
+    const backup = await new BackupService(
+      context.env.DB,
+      context.env.ATTACHMENTS,
+    ).readHostedBackup(context.req.param('id'));
+    return context.body(backup.content, 200, {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Disposition': `attachment; filename="recollectflow-backup-${backup.artifact.id}.json"`,
+      'X-RecollectFlow-Backup-SHA256': backup.artifact.sha256 ?? '',
+    });
+  });
+
   return router;
 }
