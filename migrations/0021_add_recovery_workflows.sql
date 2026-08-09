@@ -60,9 +60,12 @@ CREATE INDEX idx_purge_steps_workflow_state
 CREATE INDEX idx_purge_steps_lease
   ON purge_steps(state, lease_expires_at);
 
+-- Purge receipts intentionally do not reference purge_workflows. They are a
+-- standalone non-content anti-resurrection ledger and must remain importable
+-- into a clean recovery database even when workflow history is unavailable.
 CREATE TABLE purge_receipts (
   item_id TEXT PRIMARY KEY,
-  purge_workflow_id TEXT NOT NULL UNIQUE REFERENCES purge_workflows(id) ON DELETE RESTRICT,
+  purge_workflow_id TEXT NOT NULL UNIQUE,
   receipt_version TEXT NOT NULL,
   purged_at TEXT NOT NULL,
   backup_retention_until TEXT,
