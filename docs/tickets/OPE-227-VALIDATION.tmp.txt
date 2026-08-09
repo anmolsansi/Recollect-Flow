@@ -1,4 +1,4 @@
-validated_sha=335ad95aa44c464bac089398fd1dcbe48b942986
+validated_sha=8ed75360412218d1ad201159eedcd870c5c6f949
 check_exit=2
 migrate_exit=0
 dryrun_exit=0
@@ -21,6 +21,7 @@ Checking formatting...
 [[31merror[39m]   120 |
 [[31merror[39m]   121 |           pattern = re.compile(
 [[33mwarn[39m] apps/worker-api/test/capacity-core-continuity.d1.spec.ts
+[[33mwarn[39m] apps/worker-api/test/capacity-jobservice-deferral.d1.spec.ts
 [[33mwarn[39m] apps/worker-api/test/manual-retry-capacity.d1.spec.ts
 Error occurred when checking code style in the above file.
 === migration tail ===
