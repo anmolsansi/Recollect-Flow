@@ -32,6 +32,8 @@
 | OPE-225 | D1 FTS5 indexing and search API                                                | `tickets/OPE-225.md`, synced `item_search_fts`, search routes and D1 acceptance tests     |
 | OPE-226 | Daily digest and weekly review jobs                                            | `tickets/OPE-226.md`, digest scheduler/selector/renderer/delivery routes and D1 tests     |
 | OPE-248 | Recovery-capable Web Inbox and item review                                     | `tickets/OPE-248.md`, item/retry/privacy routes, React Inbox/detail, D1 and browser tests |
+| OPE-227 | Zero-cost AI quota admission and circuit breakers                              | migration `0020`, capacity/breaker services, usage API, concurrency and recovery tests    |
+| OPE-228 | Portable export, hosted backup, explicit purge, restore, integrity checks      | migration `0021`, recovery routes/services, purge ledger, round-trip and partial-failure tests |
 
 “Partial” is intentional: a requirement is complete only when every input/client/integration/acceptance condition is covered.
 
@@ -76,3 +78,21 @@ All source PRD sections are covered: executive/product definition (`COMPLETE_PRO
 - Capture remains independent from AI -> capture/search continuity test with the OpenRouter request window hard-filled.
 
 <!-- OPE-227 END -->
+
+<!-- OPE-228 START -->
+
+## OPE-228 traceability
+
+- Portable owner exit / no source loss -> `export.service.ts` + JSON/CSV admin route -> CSV quoting, credential scrubber, and D1 export/restore round-trip tests.
+- Verified hosted recovery artifact / ADR-031 -> `backup.service.ts`, private `backups/v1/` R2 prefix, migration `0021` -> read-back hash, retrieval-time re-verification, failure-preserves-live-data, and 30-day cleanup tests.
+- Reversible grace then explicit purge / ADR-013 + ADR-032 -> `purge.service.ts` -> soft-delete requirement, exact edit-version binding, workflow-bound 15-minute phrase, mismatch/expiry/change rejection tests.
+- Cross-system partial-failure truthfulness / ADR-032 -> leased `purge.worker.ts` steps -> Notion-503 partial-state test proves D1 content remains while external purge is incomplete.
+- Canonical content purge + completion evidence -> `canonical-purge.service.ts` + `purge_receipts` -> happy-path purge test proves content removal and non-content receipt retention.
+- Anti-resurrection backup safety / ADR-031 -> D1 receipt + private hashed `purge-receipts/v1/` mirror -> pre-purge backup restore test proves the newer receipt skips the item.
+- Clean disaster recovery -> strict restore schema/plan/repository/service -> clean-D1 round-trip recreates canonical fields, history, job/sync state and searchable FTS projection.
+- Notion is not deletion authority / ADR-003 + ADR-032 -> read-only Notion integrity check -> missing-Notion test proves zero purge workflows and unchanged canonical D1 content.
+- Recovery integrity -> `integrity.service.ts` -> missing R2 object, missing Notion projection, partial purge, and incomplete backup findings without canonical mutation.
+- Migration safety -> isolated OPE-228 migration rehearsal -> populated pre-0021 item/job data survives migration and new recovery tables pass foreign-key check.
+- Operator recovery -> `OPERATIONS.md` -> portable restore, explicit purge, D1 SQL export/import, D1 Time Travel, and post-recovery integrity procedures.
+
+<!-- OPE-228 END -->
