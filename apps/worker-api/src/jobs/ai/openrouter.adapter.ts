@@ -64,6 +64,7 @@ export class OpenRouterAdapter implements AiProvider {
 
     const startTime = Date.now();
     let rawResponse: string | null = null;
+    let repairAttempted = false;
 
     try {
       const response = await fetch(
@@ -137,10 +138,12 @@ export class OpenRouterAdapter implements AiProvider {
         latencyMs: Date.now() - startTime,
         inputUnits,
         outputUnits,
+        requestCount: attempt,
         status: 'success',
       };
     } catch (error) {
       if (attempt === 1 && rawResponse) {
+        repairAttempted = true;
         try {
           const repairPrompt = `Fix the following malformed JSON so it strictly matches the requested schema.\n\nBroken JSON:\n${rawResponse}`;
           return await this.callAi(
@@ -166,6 +169,7 @@ export class OpenRouterAdapter implements AiProvider {
           provider: this.name,
           model,
           latencyMs,
+          requestCount: repairAttempted ? 2 : attempt,
           status: 'failed',
           errorCode:
             error instanceof SyntaxError
@@ -322,6 +326,7 @@ export class OpenRouterAdapter implements AiProvider {
         latencyMs: Date.now() - startTime,
         inputUnits: data.usage?.prompt_tokens || 0,
         outputUnits: data.usage?.completion_tokens || 0,
+        requestCount: 1,
         status: 'success',
       };
     } catch (error) {
@@ -335,6 +340,7 @@ export class OpenRouterAdapter implements AiProvider {
           provider: this.name,
           model: modelName,
           latencyMs: Date.now() - startTime,
+          requestCount: 1,
           status: 'failed',
           errorCode: error instanceof AppError ? error.code : 'UNKNOWN_ERROR',
         },
