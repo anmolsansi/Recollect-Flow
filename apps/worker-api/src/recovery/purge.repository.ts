@@ -1,4 +1,5 @@
 import type {
+  PurgeReceiptRecord,
   PurgeState,
   PurgeStepKind,
   PurgeStepState,
@@ -12,6 +13,7 @@ const PURGE_STEPS: readonly PurgeStepKind[] = [
   'delete_d1_item_data',
   'finalize_receipt',
 ];
+const PURGE_RECEIPT_VERSION = '2026-08-10.1';
 
 interface PurgeWorkflowRow {
   id: string;
@@ -298,6 +300,84 @@ export class PurgeRepository {
       .bind(errorCode, nowIso, workflowId, kind)
       .run();
     return result.meta.changes === 1;
+  }
+
+  async createReceipt(
+    itemId: string,
+    workflowId: string,
+    purgedAt: Date,
+  ): Promise<PurgeReceiptRecord> {
+    const nowIso = purgedAt.toISOString();
+    const retention = await this.db
+      .prepare(
+        `SELECT MAX(expires_at) AS retention_until
+         FROM backup_artifacts
+         WHERE state = 'complete' AND expires_at > ?1`,
+      )
+      .bind(nowIso)
+      .first<{ retention_until: string | null }>();
+    const retentionUntil = retention?.retention_until ?? null;
+    await this.db
+      .prepare(
+        `INSERT INTO purge_receipts (
+           item_id, purge_workflow_id, receipt_version,
+           purged_at, backup_retention_until, created_at
+         ) VALUES (?1, ?2, ?3, ?4, ?5, ?4)
+         ON CONFLICT(item_id) DO NOTHING`,
+      )
+      .bind(
+        itemId,
+        workflowId,
+        PURGE_RECEIPT_VERSION,
+        nowIso,
+        retentionUntil,
+      )
+      .run();
+    const receipt = await this.db
+      .prepare(
+        `SELECT item_id, purge_workflow_id, receipt_version,
+                purged_at, backup_retention_until
+         FROM purge_receipts WHERE item_id = ?1`,
+      )
+      .bind(itemId)
+      .first<{
+        item_id: string;
+        purge_workflow_id: string;
+        receipt_version: string;
+        purged_at: string;
+        backup_retention_until: string | null;
+      }>();
+    if (!receipt) throw new Error('Failed to persist purge receipt');
+    return {
+      itemId: receipt.item_id,
+      purgeRequestId: receipt.purge_workflow_id,
+      purgedAt: receipt.purged_at,
+      receiptVersion: receipt.receipt_version,
+      backupRetentionUntil: receipt.backup_retention_until,
+    };
+  }
+
+  async listReceipts(): Promise<PurgeReceiptRecord[]> {
+    const result = await this.db
+      .prepare(
+        `SELECT item_id, purge_workflow_id, receipt_version,
+                purged_at, backup_retention_until
+         FROM purge_receipts ORDER BY purged_at ASC, item_id ASC`,
+      )
+      .all<{
+        item_id: string;
+        purge_workflow_id: string;
+        receipt_version: string;
+        purged_at: string;
+        backup_retention_until: string | null;
+      }>();
+    return result.results.map((receipt) => ({
+      itemId: receipt.item_id,
+      purgeRequestId: receipt.purge_workflow_id,
+      purgedAt: receipt.purged_at,
+      receiptVersion: receipt.receipt_version,
+      backupRetentionUntil: receipt.backup_retention_until,
+    }));
   }
 
   async findWorkflow(id: string): Promise<PurgeWorkflowRecord | null> {
