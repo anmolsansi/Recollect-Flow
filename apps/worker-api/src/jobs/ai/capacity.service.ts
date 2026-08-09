@@ -1,7 +1,10 @@
 import type { Env } from '../../env';
 import { AppError } from '../../shared/errors';
 import { AiCapacityAccounting } from './capacity.accounting';
-import { estimateCapacityForPrompt } from './capacity.estimate';
+import {
+  estimateCapacityForPrompt,
+  estimateProviderUnits,
+} from './capacity.estimate';
 import { getProviderCapacityPolicy } from './capacity.policy';
 import { AiCapacityRepository } from './capacity.repository';
 import type {
@@ -12,8 +15,22 @@ import type {
 } from './capacity.types';
 import { quotaWindowBoundary } from './capacity.window';
 import { AiCircuitBreakerRepository } from './circuit-breaker.repository';
+import {
+  isCircuitBreakerFailure,
+  stableProviderErrorCode,
+} from './provider-failure';
 
 const RESERVATION_TTL_MS = 2 * 60_000;
+
+export type CapacityAdmission = CapacityAdmissionResult & {
+  probeOwnerId: string | null;
+};
+
+export interface ProviderCallUsage {
+  requests?: number;
+  inputUnits?: number;
+  outputUnits?: number;
+}
 
 function dimensionFits(
   limit: number | null,
@@ -77,7 +94,7 @@ export class AiCapacityService {
     prompt: string,
     requestReserve = 1,
     now: Date = new Date(),
-  ): Promise<CapacityAdmissionResult & { probeOwnerId: string | null }> {
+  ): Promise<CapacityAdmission> {
     const policy = getProviderCapacityPolicy(
       this.env,
       provider,
@@ -126,12 +143,7 @@ export class AiCapacityService {
       }
     }
 
-    const estimate = estimateCapacityForPrompt(
-      provider,
-      model,
-      prompt,
-      undefined,
-    );
+    const estimate = estimateCapacityForPrompt(provider, model, prompt);
     estimate.requests = Math.max(1, Math.floor(requestReserve));
     const windowKeys = policy.windows.map(
       (window) => quotaWindowBoundary(window, now).key,
@@ -160,9 +172,9 @@ export class AiCapacityService {
       );
       const availableAt = new Date(
         Math.max(
-          ...((blocked.length ? blocked : snapshots).map((window) =>
+          ...(blocked.length ? blocked : snapshots).map((window) =>
             new Date(window.windowEnd).getTime(),
-          )),
+          ),
         ),
       ).toISOString();
       throw new AppError(
@@ -176,7 +188,75 @@ export class AiCapacityService {
     return { reservation, windows, probeOwnerId };
   }
 
-  async release(reservationId: string, now: Date = new Date()): Promise<boolean> {
+  async completeSuccess(
+    admission: CapacityAdmission,
+    usage: ProviderCallUsage,
+    now: Date = new Date(),
+  ): Promise<void> {
+    const { reservation, probeOwnerId } = admission;
+    const inputUnits = usage.inputUnits ?? reservation.estimate.inputUnits;
+    const outputUnits = usage.outputUnits ?? reservation.estimate.outputUnits;
+    await this.accounting.reconcileReservation(
+      reservation.id,
+      {
+        requests: usage.requests ?? 1,
+        inputUnits,
+        outputUnits,
+        providerUnits: estimateProviderUnits(
+          reservation.provider,
+          reservation.model,
+          inputUnits,
+          outputUnits,
+        ),
+      },
+      now,
+    );
+    await this.breakers.recordSuccess(
+      reservation.provider,
+      reservation.operation,
+      probeOwnerId,
+      now,
+    );
+  }
+
+  async completeFailure(
+    admission: CapacityAdmission,
+    error: unknown,
+    usage: ProviderCallUsage,
+    now: Date = new Date(),
+  ): Promise<void> {
+    const { reservation } = admission;
+    const inputUnits = usage.inputUnits ?? reservation.estimate.inputUnits;
+    const outputUnits = usage.outputUnits ?? reservation.estimate.outputUnits;
+    await this.accounting.reconcileReservation(
+      reservation.id,
+      {
+        requests: usage.requests ?? 1,
+        inputUnits,
+        outputUnits,
+        providerUnits: estimateProviderUnits(
+          reservation.provider,
+          reservation.model,
+          inputUnits,
+          outputUnits,
+        ),
+      },
+      now,
+    );
+    if (isCircuitBreakerFailure(error)) {
+      await this.breakers.recordFailure(
+        reservation.provider,
+        reservation.operation,
+        stableProviderErrorCode(error),
+        now,
+      );
+    }
+  }
+
+  async release(
+    reservationId: string,
+    now: Date = new Date(),
+  ): Promise<boolean> {
     return this.accounting.releaseReservation(reservationId, now);
   }
 
