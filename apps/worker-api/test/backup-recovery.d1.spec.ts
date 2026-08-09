@@ -65,6 +65,29 @@ describe('OPE-228 hosted backup workflow', () => {
     expect(stored?.customMetadata?.sha256).toBe(backup.sha256);
   });
 
+  it('rechecks the D1 and R2 verification metadata before returning backup bytes', async () => {
+    const service = new BackupService(
+      env.DB,
+      env.ATTACHMENTS,
+      () => new Date('2026-08-10T06:05:00.000Z'),
+    );
+    const backup = await service.createHostedBackup();
+    const downloaded = await service.readHostedBackup(backup.id);
+    expect(downloaded.artifact.id).toBe(backup.id);
+    expect(JSON.parse(downloaded.content)).toMatchObject({
+      format: 'recollectflow-portable-export',
+      schemaVersion: '2026-08-10.1',
+      itemCount: 1,
+    });
+
+    await env.ATTACHMENTS.put(backup.objectKey, '{"tampered":true}', {
+      customMetadata: { sha256: backup.sha256! },
+    });
+    await expect(service.readHostedBackup(backup.id)).rejects.toMatchObject({
+      code: 'BACKUP_VERIFICATION_MISMATCH',
+    });
+  });
+
   it('fails the backup attempt without deleting live canonical data', async () => {
     const failingBucket = {
       put: (...args: Parameters<R2Bucket['put']>) =>
