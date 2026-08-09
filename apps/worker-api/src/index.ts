@@ -6,6 +6,7 @@ import {
   type ScheduledWork,
 } from './digests/digest-schedule';
 import { processScheduledDigest } from './digests/digest.worker';
+import { cleanupExpiredCapacityReservations } from './jobs/ai/capacity.worker';
 import { processEnrichJobs } from './jobs/enrich.worker';
 import { processExtractionJobs } from './jobs/extraction/extraction.worker';
 import { processNotionSyncJobs } from './sync/sync.worker';
@@ -29,6 +30,7 @@ export async function handleScheduled(
         env.ATTACHMENTS,
       ),
     );
+    context.waitUntil(cleanupExpiredCapacityReservations(env));
     context.waitUntil(processExtractionJobs(env));
     context.waitUntil(processEnrichJobs(env));
     context.waitUntil(
