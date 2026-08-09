@@ -2,6 +2,7 @@ import type { Env } from '../env';
 import { JobService, type JobRecord } from './job.service';
 import { AiProviderRegistry } from './ai/ai-provider.registry';
 import { AppError } from '../shared/errors';
+import { CapacityJobService } from './capacity-job.service';
 import type {
   AiProvider as PolicyAiProvider,
   CredentialSource,
@@ -16,14 +17,39 @@ interface EnrichmentRoutingRow {
   data_collection_denied: number;
 }
 
+const CAPACITY_DEFER_CODES = new Set([
+  'QUOTA_PAUSED',
+  'PROVIDER_UNAVAILABLE',
+  'NO_ELIGIBLE_PROVIDER',
+  'ZERO_COST_GUARD_REJECTED',
+]);
+
 function normalizeProvider(
   provider: EnrichmentRoutingRow['provider_eligibility'],
 ): PolicyAiProvider {
   return provider === 'workers_ai' ? 'cloudflare' : provider;
 }
 
+function capacityDeferralAt(error: AppError, now: Date): Date {
+  const exact = error.fields?.available_at;
+  if (exact) {
+    const parsed = new Date(exact);
+    if (Number.isFinite(parsed.getTime()) && parsed.getTime() > now.getTime()) {
+      return parsed;
+    }
+  }
+  const delayMs =
+    error.code === 'PROVIDER_UNAVAILABLE'
+      ? 5 * 60_000
+      : error.code === 'QUOTA_PAUSED'
+        ? 60 * 60_000
+        : 24 * 60 * 60_000;
+  return new Date(now.getTime() + delayMs);
+}
+
 export class EnrichService {
   private jobService: JobService;
+  private capacityJobService: CapacityJobService;
   private aiRegistry: AiProviderRegistry;
 
   constructor(
@@ -31,6 +57,7 @@ export class EnrichService {
     private readonly db: D1Database,
   ) {
     this.jobService = new JobService(db);
+    this.capacityJobService = new CapacityJobService(db);
     this.aiRegistry = new AiProviderRegistry(env);
   }
 
@@ -65,7 +92,6 @@ export class EnrichService {
       }>();
 
     if (!itemRow) {
-      // Item deleted or not found
       return this.jobService.failProcessingJob(
         job.id,
         ownerId,
@@ -122,7 +148,6 @@ export class EnrichService {
       const now = new Date().toISOString();
       const extracted = enrichmentResult.result;
 
-      // Fetch manual overrides
       const overridesResult = await this.db
         .prepare(
           `SELECT field_name, override_value FROM item_field_overrides WHERE item_id = ?1`,
@@ -134,7 +159,6 @@ export class EnrichService {
         overridesResult.results.map((r) => [r.field_name, r.override_value]),
       );
 
-      // Build dynamic update query respecting overrides
       const updateFields: string[] = ['updated_at = ?1'];
       const updateValues: unknown[] = [now];
       let paramIndex = 2;
@@ -167,7 +191,6 @@ export class EnrichService {
 
       const updateItemsQuery = `UPDATE items SET ${updateFields.join(', ')} WHERE ${baseWhere}`;
 
-      // Update in a transaction
       const statements = [
         this.db.prepare(updateItemsQuery).bind(...updateValues),
         this.db
@@ -228,10 +251,6 @@ export class EnrichService {
 
       const results = await this.db.batch(statements);
 
-      // If the processing job update failed (0 changes), it means either:
-      // 1. The job was stolen/cancelled
-      // 2. The item was deleted or had a privacy change during enrichment.
-      // In either case, the job shouldn't be completed. We still fail it.
       if (!results[3] || results[3].meta.changes === 0) {
         return this.jobService.failProcessingJob(
           job.id,
@@ -243,28 +262,21 @@ export class EnrichService {
 
       return true;
     } catch (error) {
-      if (error instanceof AppError && error.code === 'NO_ELIGIBLE_PROVIDER') {
-        // "Add deferProcessingJob behavior for NO_ELIGIBLE_PROVIDER: Keep the job pending/deferred. Do not count it as capture failure. Do not retry rapidly. Allow a configuration/policy change or manual retry to reactivate it."
-        // We do this by releasing the job and setting available_at to a very distant future or leaving it pending with a long retry wait, or actually we could create a defer method in job.service.ts
-        const nowIso = new Date().toISOString();
-        // Defer for 24 hours so it stays pending but doesn't immediately retry
-        const deferredDate = new Date(
-          Date.now() + 24 * 60 * 60 * 1000,
-        ).toISOString();
-        await this.db
-          .prepare(
-            `UPDATE processing_jobs
-           SET status = 'pending', lease_owner = NULL, lease_expires_at = NULL,
-               available_at = ?1, last_error_code = 'NO_ELIGIBLE_PROVIDER', updated_at = ?2
-           WHERE id = ?3 AND lease_owner = ?4`,
-          )
-          .bind(deferredDate, nowIso, job.id, ownerId)
-          .run();
-
+      if (
+        error instanceof AppError &&
+        CAPACITY_DEFER_CODES.has(error.code)
+      ) {
+        const now = new Date();
+        await this.capacityJobService.deferProcessingJob(
+          job.id,
+          ownerId,
+          error.code,
+          capacityDeferralAt(error, now),
+          now,
+        );
         return false;
       }
 
-      // Record failed usage if there's provider info on the error
       let errorCode = error instanceof AppError ? error.code : 'UNKNOWN_ERROR';
 
       if (error && typeof error === 'object' && 'provider' in error) {
