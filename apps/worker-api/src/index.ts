@@ -9,6 +9,8 @@ import { processScheduledDigest } from './digests/digest.worker';
 import { cleanupExpiredCapacityReservations } from './jobs/ai/capacity.worker';
 import { processEnrichJobs } from './jobs/enrich.worker';
 import { processExtractionJobs } from './jobs/extraction/extraction.worker';
+import { cleanupExpiredHostedBackups } from './recovery/backup-cleanup';
+import { processPurgeWorkflows } from './recovery/purge.worker';
 import { processNotionSyncJobs } from './sync/sync.worker';
 
 const app = createApp();
@@ -31,6 +33,8 @@ export async function handleScheduled(
       ),
     );
     context.waitUntil(cleanupExpiredCapacityReservations(env));
+    context.waitUntil(cleanupExpiredHostedBackups(env.DB, env.ATTACHMENTS));
+    context.waitUntil(processPurgeWorkflows(env));
     context.waitUntil(processExtractionJobs(env));
     context.waitUntil(processEnrichJobs(env));
     context.waitUntil(

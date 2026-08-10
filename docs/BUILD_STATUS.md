@@ -120,3 +120,14 @@ page rehearsal remain explicit release gates. See `tickets/OPE-248.md`.
 
 OPE-227 is implemented on `agent/ope-227-capacity-controls` pending final local acceptance evidence. The branch adds migration `0020`, atomic free-tier quota reservations/reconciliation, zero-cost provider/model guards, provider/operation circuit breakers with single half-open probes, policy-derived fallback routing, retry-preserving capacity deferral, hourly reservation cleanup, and the admin-only `/api/v1/usage` surface. Production migration/deployment is not part of this branch work and must remain approval-gated.
 <!-- OPE-227 END -->
+
+<!-- OPE-228 START -->
+
+## OPE-228 recovery implementation checkpoint
+
+OPE-228 is implemented on `agent/ope-228-backup-export-recovery` and remains local/review-only until an explicit production release. The branch adds migration `0021`, full-fidelity portable JSON and readable CSV export, verified private-R2 hosted backups with 30-day retention, explicit soft-delete-to-confirmed-purge workflows, leased resumable cross-system purge steps, non-content D1/R2 purge receipt ledgers, strict clean-target restore, and read-only recovery integrity checks.
+
+Acceptance coverage includes admin authorization, credential-free export, backup write/read-back and retrieval hash verification, backup failure preservation, retention cleanup, soft-delete/version/confirmation guards, purge-step lease recovery, successful canonical purge, truthful partial Notion failure, pre-purge-backup anti-resurrection, clean-D1 restore with FTS usability, missing-Notion source-of-truth protection, integrity drift reporting, and populated migration preservation.
+
+The exact checkpoint `f917d0d…` passed the full repository quality gate, local migration application, and Wrangler dry-run. Later acceptance-hardening/documentation commits must receive the same latest-SHA gate before this branch is declared PR-ready. Production D1 migration `0021`, production backup creation, remote purge execution, and deployment are not authorized by branch completion and remain release-gated.
+<!-- OPE-228 END -->

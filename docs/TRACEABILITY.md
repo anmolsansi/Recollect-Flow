@@ -16,22 +16,24 @@
 
 ## Current implemented trace
 
-| Linear  | Requirements currently evidenced                                               | Repository evidence                                                                       |
-| ------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| OPE-213 | Product scope decisions                                                        | `COMPLETE_PRODUCT_SPEC.md`, `DECISIONS.md`                                                |
-| OPE-214 | Cloudflare account, bindings, secrets, migration, and provider smoke tests     | `tickets/OPE-214.md`, `wrangler.toml`, generated binding types                            |
-| OPE-215 | Foundation/CI/docs shell                                                       | configuration, CI, README, `repo_context.md`                                              |
-| OPE-216 | Core item/attachment/job/sync/provider/audit schema                            | `migrations/0001_initial.sql`, migration tests                                            |
-| OPE-217 | CAP-002/004 partial, ING-001/002 partial, SEC-001/002 partial, JOB-001 partial | capture route/service/repository tests and live D1 replay                                 |
-| OPE-218 | ING-002 cross-key canonical reuse and event preservation                       | capture event/deduplication migrations, repository/service and tests                      |
-| OPE-224 | AI provider privacy routing, fail-closed defaults and override lifecycle       | approved policy `2026-07-21.1`, consent/ZDR-stamped jobs, routes, migration and tests     |
-| OPE-249 | Private attachment durability and lifecycle                                    | R2 upload/finalize/link/download/cleanup routes, migrations and tests                     |
-| OPE-219 | Shortcut client contract and offline/retry design                              | build sheet, Mac Share Sheet template and device QA matrix; physical-device gate pending  |
-| OPE-222 | Provider-independent AI enrichment pipeline                                    | queue tracking, resilient AI wrappers, parsing logic, models and integrations tests       |
-| OPE-223 | Multimodal extraction for PDF and images                                       | extraction records table, vision/pdf extractors, and repository integrations tests        |
-| OPE-225 | D1 FTS5 indexing and search API                                                | `tickets/OPE-225.md`, synced `item_search_fts`, search routes and D1 acceptance tests     |
-| OPE-226 | Daily digest and weekly review jobs                                            | `tickets/OPE-226.md`, digest scheduler/selector/renderer/delivery routes and D1 tests     |
-| OPE-248 | Recovery-capable Web Inbox and item review                                     | `tickets/OPE-248.md`, item/retry/privacy routes, React Inbox/detail, D1 and browser tests |
+| Linear  | Requirements currently evidenced                                               | Repository evidence                                                                            |
+| ------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| OPE-213 | Product scope decisions                                                        | `COMPLETE_PRODUCT_SPEC.md`, `DECISIONS.md`                                                     |
+| OPE-214 | Cloudflare account, bindings, secrets, migration, and provider smoke tests     | `tickets/OPE-214.md`, `wrangler.toml`, generated binding types                                 |
+| OPE-215 | Foundation/CI/docs shell                                                       | configuration, CI, README, `repo_context.md`                                                   |
+| OPE-216 | Core item/attachment/job/sync/provider/audit schema                            | `migrations/0001_initial.sql`, migration tests                                                 |
+| OPE-217 | CAP-002/004 partial, ING-001/002 partial, SEC-001/002 partial, JOB-001 partial | capture route/service/repository tests and live D1 replay                                      |
+| OPE-218 | ING-002 cross-key canonical reuse and event preservation                       | capture event/deduplication migrations, repository/service and tests                           |
+| OPE-224 | AI provider privacy routing, fail-closed defaults and override lifecycle       | approved policy `2026-07-21.1`, consent/ZDR-stamped jobs, routes, migration and tests          |
+| OPE-249 | Private attachment durability and lifecycle                                    | R2 upload/finalize/link/download/cleanup routes, migrations and tests                          |
+| OPE-219 | Shortcut client contract and offline/retry design                              | build sheet, Mac Share Sheet template and device QA matrix; physical-device gate pending       |
+| OPE-222 | Provider-independent AI enrichment pipeline                                    | queue tracking, resilient AI wrappers, parsing logic, models and integrations tests            |
+| OPE-223 | Multimodal extraction for PDF and images                                       | extraction records table, vision/pdf extractors, and repository integrations tests             |
+| OPE-225 | D1 FTS5 indexing and search API                                                | `tickets/OPE-225.md`, synced `item_search_fts`, search routes and D1 acceptance tests          |
+| OPE-226 | Daily digest and weekly review jobs                                            | `tickets/OPE-226.md`, digest scheduler/selector/renderer/delivery routes and D1 tests          |
+| OPE-248 | Recovery-capable Web Inbox and item review                                     | `tickets/OPE-248.md`, item/retry/privacy routes, React Inbox/detail, D1 and browser tests      |
+| OPE-227 | Zero-cost AI quota admission and circuit breakers                              | migration `0020`, capacity/breaker services, usage API, concurrency and recovery tests         |
+| OPE-228 | Portable export, hosted backup, explicit purge, restore, integrity checks      | migration `0021`, recovery routes/services, purge ledger, round-trip and partial-failure tests |
 
 “Partial” is intentional: a requirement is complete only when every input/client/integration/acceptance condition is covered.
 
@@ -76,3 +78,21 @@ All source PRD sections are covered: executive/product definition (`COMPLETE_PRO
 - Capture remains independent from AI -> capture/search continuity test with the OpenRouter request window hard-filled.
 
 <!-- OPE-227 END -->
+
+<!-- OPE-228 START -->
+
+## OPE-228 traceability
+
+- Portable owner exit / no source loss -> `export.service.ts` + JSON/CSV admin route -> CSV quoting, credential scrubber, and D1 export/restore round-trip tests.
+- Verified hosted recovery artifact / ADR-031 -> `backup.service.ts`, private `backups/v1/` R2 prefix, migration `0021` -> read-back hash, retrieval-time re-verification, failure-preserves-live-data, and 30-day cleanup tests.
+- Reversible grace then explicit purge / ADR-013 + ADR-032 -> `purge.service.ts` -> soft-delete requirement, exact edit-version binding, workflow-bound 15-minute phrase, mismatch/expiry/change rejection tests.
+- Cross-system partial-failure truthfulness / ADR-032 -> leased `purge.worker.ts` steps -> Notion-503 partial-state test proves D1 content remains while external purge is incomplete.
+- Canonical content purge + completion evidence -> `canonical-purge.service.ts` + `purge_receipts` -> happy-path purge test proves content removal and non-content receipt retention.
+- Anti-resurrection backup safety / ADR-031 -> D1 receipt + private hashed `purge-receipts/v1/` mirror -> pre-purge backup restore test proves the newer receipt skips the item.
+- Clean disaster recovery -> strict restore schema/plan/repository/service -> clean-D1 round-trip recreates canonical fields, history, job/sync state and searchable FTS projection.
+- Notion is not deletion authority / ADR-003 + ADR-032 -> read-only Notion integrity check -> missing-Notion test proves zero purge workflows and unchanged canonical D1 content.
+- Recovery integrity -> `integrity.service.ts` -> missing R2 object, missing Notion projection, partial purge, and incomplete backup findings without canonical mutation.
+- Migration safety -> isolated OPE-228 migration rehearsal -> populated pre-0021 item/job data survives migration and new recovery tables pass foreign-key check.
+- Operator recovery -> `OPERATIONS.md` -> portable restore, explicit purge, D1 SQL export/import, D1 Time Travel, and post-recovery integrity procedures.
+
+<!-- OPE-228 END -->

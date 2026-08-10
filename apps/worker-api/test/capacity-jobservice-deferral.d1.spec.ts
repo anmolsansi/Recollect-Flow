@@ -1,6 +1,7 @@
 import { applyD1Migrations, env } from 'cloudflare:test';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
+import { CapacityJobService } from '../src/jobs/capacity-job.service';
 import { JobService } from '../src/jobs/job.service';
 
 const ITEM_ID = 'capacity-generic-0000-0000-0000-000000000001';
@@ -34,12 +35,14 @@ describe('OPE-227 generic processing capacity deferral', () => {
   it('keeps a leased extraction job pending without consuming attempts', async () => {
     const now = new Date('2026-08-09T21:30:00.000Z');
     const jobs = new JobService(env.DB);
-    const jobId = await jobs.enqueueProcessingJob(
-      'extract',
-      'capacity-generic-input',
-      ITEM_ID,
-      now,
-    );
+    expect(
+      await jobs.enqueueProcessingJob(
+        ITEM_ID,
+        'extract',
+        'capacity-generic-input',
+        now,
+      ),
+    ).toBe(true);
     const [leased] = await jobs.leaseProcessingJobs(
       'extract',
       'vision-worker',
@@ -47,14 +50,15 @@ describe('OPE-227 generic processing capacity deferral', () => {
       1,
       now,
     );
-    expect(leased?.id).toBe(jobId);
+    expect(leased).toBeDefined();
+    const jobId = leased!.id;
 
     expect(
-      await jobs.failProcessingJob(
+      await new CapacityJobService(env.DB).deferProcessingJob(
         jobId,
         'vision-worker',
         'QUOTA_PAUSED',
-        true,
+        new Date('2026-08-09T22:30:00.000Z'),
         now,
       ),
     ).toBe(true);
@@ -75,6 +79,6 @@ describe('OPE-227 generic processing capacity deferral', () => {
     expect(row?.attempts).toBe(0);
     expect(row?.last_error_code).toBe('QUOTA_PAUSED');
     expect(row?.lease_owner).toBeNull();
-    expect(new Date(row!.available_at).getTime()).toBeGreaterThan(now.getTime());
+    expect(row?.available_at).toBe('2026-08-09T22:30:00.000Z');
   });
 });
