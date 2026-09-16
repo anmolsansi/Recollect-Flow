@@ -35,7 +35,20 @@ Status: **complete; BG-03 unlocked**
 
 BG-02 keeps production quota semantics unchanged. The D1 regression controls the test wall clock, proves the strict expiry boundary through the real `/api/v1/usage` route, preserves authorization/redaction checks and restores real timers after each test. The temporary focused-proof and formatter-proof workflows were removed after producing evidence, so no task-specific workflow remains in the final branch diff.
 
-BG-03 is now unlocked. Its scope is the version-aware release-smoke repair defined by the build guide; BG-02 does not preemptively change that script.
+### BG-03 — version-aware release smoke
+
+Status: **implementation verified; final documentation-complete gate pending**
+
+- Primary evidence: [`BG-03_RELEASE_SMOKE_EDIT_VERSION.md`](BG-03_RELEASE_SMOKE_EDIT_VERSION.md)
+- 100-action reconciliation: [`BG-03_CHECKLIST_RECONCILIATION.md`](BG-03_CHECKLIST_RECONCILIATION.md) — 99/100 before final gate
+- GitHub tracking: issue #27 and PR #28
+- Linear tracking: OPE-323
+- Base `main`: `f43580786e4106c4983e30f1bb351e3150d16bf3`
+- Implementation gate: GitHub Actions CI run #121
+
+BG-03 repairs the release verifier rather than the already-correct server contract. Every successful privacy mutation uses a server-authoritative item version and refetches before the next independent mutation. The verifier deliberately proves a stale version still returns `VERSION_CONFLICT`, preserves the existing Public/Personal/Sensitive policy controls, validates source/canonical evidence, fails nonzero on malformed/current-conflict cases and bounds/redacts failure diagnostics. A synthetic child-process regression is part of the normal repository test gate.
+
+BG-04 remains locked until the documentation-complete BG-03 head passes CI and PR #28 is merged.
 
 ## Evidence rules
 
