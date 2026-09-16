@@ -115,3 +115,48 @@ npm run db:migrate:local
 - Workers AI binding: `AI`.
 
 Production binding names are recorded for topology only. BG-01 local evidence must not mutate production state.
+
+## 5. Isolation contract
+
+A valid BG-01 local reproduction uses a dedicated local/temporary persistence state and synthetic inputs. It must not rely on production D1, production R2, real Notion delivery, real Telegram delivery or real hosted-AI credentials.
+
+### Automated-test isolation already present
+
+`vitest.d1.config.ts` provides the strongest checked-in isolation contract:
+
+- dummy `CAPTURE_TOKEN`: `test-capture-token`;
+- dummy `ADMIN_TOKEN`: `test-admin-token`;
+- dummy `LOCAL_WORKER_TOKEN`: `test-local-worker-token`;
+- synthetic Notion/Telegram identifiers;
+- `DIGEST_AI_ENABLED=false`;
+- `MOCK_AI_ENABLED=true`;
+- mocked OpenRouter and Cloudflare provider implementations;
+- isolated D1 databases;
+- isolated `ATTACHMENTS` R2 bucket.
+
+The September 12 audit used fresh temporary D1/R2 state, dummy authentication, mocked AI and no valid Notion/Telegram credentials. That environment is reused as application-equivalent evidence for BG-01 because runtime code has not changed since the audit.
+
+### Developer `.dev.vars` warning
+
+`.dev.vars.example` contains development-shaped values, including local capture/admin credentials and placeholder integration values. Existing `.dev.vars` files are not assumed safe merely because they are local. A reproduction must inspect which config is loaded without printing secrets and must avoid inheriting live provider or messaging credentials.
+
+### Storage rule
+
+The same isolated persistence target must be used for both migration and Worker startup. A database migrated in one state directory does not prove a Worker reading another state directory is valid.
+
+### Web/API relationship
+
+For browser verification, the Vite Web app must point to the same isolated Worker used for API checks. Seeing two processes start is not enough; the September audit proved the link by exercising the actual Web UI against the local Worker.
+
+## 6. Migration baseline
+
+The current repository contains 18 forward migration files and the chain reaches:
+
+- `0020_add_ai_capacity_controls.sql`;
+- `0021_add_recovery_workflows.sql`.
+
+The September 12 audit applied the complete chain through `0021` successfully to a fresh isolated local D1.
+
+CI run #91 did not reach its separate `npm run db:migrate:local` step because `npm run check` correctly stopped on the known BG-02 D1 assertion. This is recorded as **not executed by run #91**, not as a migration failure.
+
+The fresh-migration proof therefore comes from the September 12 application-equivalent audit, not from the current documentation PR CI run.
