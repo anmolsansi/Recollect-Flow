@@ -50,3 +50,68 @@ Explicitly deferred:
 - bare URL acquisition/enrichment → BG-08 onward;
 - aggregate item processing state → BG-12/BG-13;
 - production deployment, external-service acceptance, physical-iPhone acceptance and RAG.
+
+## 4. Toolchain and repository topology
+
+### CI-compatible runtime
+
+The repository declares Node `>=22`, and `.github/workflows/ci.yml` selects Node 22.
+Current GitHub Actions run #91 resolved that to:
+
+- Node `v22.23.2`;
+- npm `10.9.8`.
+
+The September 12 audit also recorded a local Node `25.8.1` run. That older local run remains useful diagnostic evidence, but Node 22 is the release-evidence runtime.
+
+### Dependency identity
+
+- root package: `recollect-flow@0.1.0`;
+- package manager: npm;
+- lockfile: `package-lock.json`, lockfile version 3;
+- lockfile blob SHA on the audited/current runtime state: `12c77f412f190220e843320bdd8b13557a845927`;
+- workspaces:
+  - `apps/web`;
+  - `packages/contracts`.
+
+Release/reproduction installs use `npm ci`. No pnpm command from another project guide applies here.
+
+### Root verification commands
+
+`package.json` defines:
+
+```text
+npm run format
+npm run lint
+npm run typecheck
+npm test
+npm run contracts:check
+npm run web:lint
+npm run web:test
+npm run web:build
+npm run db:migrate:local
+```
+
+`npm run check` composes the first eight quality/build checks in that order. CI then runs `npm run db:migrate:local` only if the composed check succeeds.
+
+### Test topology
+
+- `vitest.node.config.ts` runs `apps/worker-api/test/**/*.test.ts` in Node.
+- `vitest.d1.config.ts` runs `apps/worker-api/test/**/*.d1.spec.ts` through the Cloudflare test runtime.
+- D1 tests bind isolated databases including `DB`, migration fixtures, and ticket-specific migration databases.
+- D1 tests bind an isolated `ATTACHMENTS` R2 bucket.
+- D1 tests use dummy capture/admin/local-worker credentials.
+- D1 tests enable mocked AI implementations for `openrouter` and `cloudflare`.
+
+### Cloudflare runtime identity
+
+`wrangler.toml` currently declares:
+
+- Worker name: `recollect-flow`;
+- entry point: `apps/worker-api/src/index.ts`;
+- compatibility date: `2026-08-01`;
+- `nodejs_compat` flag;
+- D1 binding: `DB`;
+- R2 binding: `ATTACHMENTS`;
+- Workers AI binding: `AI`.
+
+Production binding names are recorded for topology only. BG-01 local evidence must not mutate production state.
