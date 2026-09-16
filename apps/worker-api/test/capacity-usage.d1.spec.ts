@@ -152,7 +152,9 @@ describe('OPE-227 usage API', () => {
         env,
       );
       expect(response.status).toBe(200);
-      const body = (await response.json()) as { data: { windows: UsageWindow[] } };
+      const body = (await response.json()) as {
+        data: { windows: UsageWindow[] };
+      };
       return body.data.windows.filter(
         (window) => window.provider === 'openrouter',
       );
