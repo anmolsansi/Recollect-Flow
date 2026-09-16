@@ -21,7 +21,7 @@ BG-01 intentionally leaves the repository quality gate red on the dated capacity
 
 ### BG-02 — clock-stable usage regression
 
-Status: **implementation verified; final documentation gate pending**
+Status: **complete; BG-03 unlocked**
 
 - Primary evidence: [`BG-02_USAGE_CLOCK_STABILIZATION.md`](BG-02_USAGE_CLOCK_STABILIZATION.md)
 - 100-action reconciliation: [`BG-02_CHECKLIST_RECONCILIATION.md`](BG-02_CHECKLIST_RECONCILIATION.md)
@@ -31,10 +31,11 @@ Status: **implementation verified; final documentation gate pending**
 - Verified implementation commit: `82a63a47dba143ce87f411bceac654c0f5a855cd`
 - Full implementation gate: GitHub Actions CI run #102
 - Focused repeated/adjacent proof: temporary `BG-02 focused proof` workflow run #1
+- Documentation-complete gate: GitHub Actions CI run #110
 
-BG-02 keeps production quota semantics unchanged. The D1 regression controls the test wall clock, proves the strict expiry boundary through the real `/api/v1/usage` route, preserves authorization/redaction checks and restores real timers after each test. The temporary focused-proof workflow was removed after its successful evidence run, so no task-specific workflow remains in the final branch diff.
+BG-02 keeps production quota semantics unchanged. The D1 regression controls the test wall clock, proves the strict expiry boundary through the real `/api/v1/usage` route, preserves authorization/redaction checks and restores real timers after each test. The temporary focused-proof and formatter-proof workflows were removed after producing evidence, so no task-specific workflow remains in the final branch diff.
 
-BG-03 remains locked until the documentation-complete BG-02 head passes the normal repository CI gate and the final BG-02 gate is recorded.
+BG-03 is now unlocked. Its scope is the version-aware release-smoke repair defined by the build guide; BG-02 does not preemptively change that script.
 
 ## Evidence rules
 
