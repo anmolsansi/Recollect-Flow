@@ -72,6 +72,9 @@ describe('OPE-227 usage API', () => {
         windows: Array<{
           provider: string;
           scope_key: string;
+          window_kind: string;
+          window_start: string;
+          window_end: string;
           dimensions: Array<{ dimension: string; used: number }>;
         }>;
         circuit_breakers: Array<{ provider: string; operation: string }>;
@@ -83,11 +86,28 @@ describe('OPE-227 usage API', () => {
       warning_90: 0.9,
       hard: 1,
     });
+    expect(body.data.windows).toHaveLength(2);
     expect(body.data.windows).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           provider: 'openrouter',
           scope_key: 'free-model-account-pool',
+          window_kind: 'minute',
+          window_start: '2026-08-09T20:15:00.000Z',
+          window_end: '2026-08-09T20:16:00.000Z',
+          dimensions: expect.arrayContaining([
+            expect.objectContaining({ dimension: 'requests', used: 1 }),
+          ]),
+        }),
+        expect.objectContaining({
+          provider: 'openrouter',
+          scope_key: 'free-model-account-pool',
+          window_kind: 'day',
+          window_start: '2026-08-09T00:00:00.000Z',
+          window_end: '2026-08-10T00:00:00.000Z',
+          dimensions: expect.arrayContaining([
+            expect.objectContaining({ dimension: 'requests', used: 1 }),
+          ]),
         }),
       ]),
     );
