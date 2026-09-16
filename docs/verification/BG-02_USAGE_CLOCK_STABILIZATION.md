@@ -1,6 +1,6 @@
 # BG-02 — Usage Clock Stabilization
 
-Status: **implementation verified; documentation/final gate in progress**
+Status: **complete — BG-03 unlocked**
 
 Tracking:
 
@@ -146,6 +146,31 @@ this run proves the BG-02 test coexists with the broader repository gate. The pr
 concurrent-capacity timeout did not reproduce and is recorded as transient evidence,
 not silently converted into BG-02 scope.
 
+### Focused isolation proof
+
+Temporary `BG-02 focused proof` workflow run #1 used Node 22 and executed three
+commands against the same BG-02 branch state:
+
+1. `capacity-usage.d1.spec.ts` alone — pass;
+2. the same usage file again in a fresh command — pass;
+3. the usage file beside `capacity.d1.spec.ts` — pass.
+
+The workflow file was then deleted. Its add/remove commits leave no permanent CI
+workflow change in the final branch diff while the successful run remains immutable
+verification evidence.
+
+### Documentation-complete gate
+
+GitHub Actions CI run #110 executed the documentation-complete head after both
+temporary proof workflows had been removed. It passed:
+
+- `npm ci`;
+- the full `npm run check` quality/build/test contract;
+- standalone `npm run db:migrate:local`.
+
+That run is the completion gate used to close BG-02. The final status-marker commits
+must also remain green before merge.
+
 ## 8. Microcommit record
 
 1. `5494fbbb…` — pin route evaluation to the reservation clock and restore real timers.
@@ -153,14 +178,18 @@ not silently converted into BG-02 scope.
 3. `e775bdf5…` — protect before/exact/after minute-expiry behavior.
 4. `4ced388d…` — prove next-minute creation without stale-window revival.
 5. `82a63a47…` — normalize the final regression file to repository formatting.
-
-Documentation and final tracking commits follow these implementation commits.
+6. Evidence/checklist/index commits — record proof without changing production behavior.
+7. One-shot workflow add/remove pairs — focused isolation and formatter evidence only;
+   neither workflow exists in the final branch diff.
 
 ## 9. Scope and safety review
 
-The final implementation diff before documentation contains one file:
+The final net branch diff contains:
 
-`apps/worker-api/test/capacity-usage.d1.spec.ts`
+- `apps/worker-api/test/capacity-usage.d1.spec.ts`;
+- `docs/verification/BG-02_USAGE_CLOCK_STABILIZATION.md`;
+- `docs/verification/BG-02_CHECKLIST_RECONCILIATION.md`;
+- `docs/verification/README.md`.
 
 No secret, private capture content, production configuration, migration, provider
 limit, public API, Worker route or application service was changed. All test inputs
@@ -168,12 +197,18 @@ are synthetic checked-in fixtures.
 
 ## 10. Completion boundary
 
-The implementation portion of BG-02 is verified. Final completion additionally
-requires:
+BG-02's completion boundary is met:
 
-- reconcile the authoritative 100-action companion against actual evidence;
-- update the verification index and task trackers;
-- run CI on the documentation-complete head;
-- record whether BG-03 is unlocked.
+- the usage regression is independent of today's date;
+- the real route runs under one deterministic test wall clock;
+- minute and daily window identities/counters are explicit;
+- the minute window is present before expiry and absent at/after exact expiry;
+- a fresh next-minute reservation creates a new window without reviving the old one;
+- authorization and redaction checks remain intact;
+- focused repeat/adjacent proof is green;
+- the complete repository quality and migration gates are green;
+- no production quota, API, migration or provider behavior changed;
+- the authoritative 100-action companion is reconciled.
 
-Until that final gate is green, this record must not claim BG-02 is fully closed.
+**BG-03 is unlocked.** Its next task is to carry authoritative `edit_version`
+values through the release smoke verifier without changing unrelated BG-02 behavior.
