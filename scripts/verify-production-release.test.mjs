@@ -34,7 +34,7 @@ async function createVerifierServer({
   let privacyLevel = 'unknown';
   let sourceUrl = null;
   let canonicalUrl = null;
-  let rawText = null;
+  const rawText = 'BG-03 synthetic source evidence';
   let uploadedBytes = Buffer.alloc(0);
   const privacyRequests = [];
   const detailVersions = [];
@@ -126,6 +126,16 @@ async function createVerifierServer({
     ) {
       privacyRequests.push(body);
       const requestedVersion = body?.edit_version;
+
+      if (!Number.isInteger(requestedVersion) || requestedVersion < 1) {
+        json(response, 422, {
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'edit_version must be a positive integer.',
+          },
+        });
+        return;
+      }
 
       if (requestedVersion !== itemVersion) {
         json(response, 409, {
