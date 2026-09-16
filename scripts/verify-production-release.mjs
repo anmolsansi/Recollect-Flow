@@ -12,6 +12,7 @@ if (!baseUrl || !captureToken || !adminToken) {
   );
 }
 
+
 const captureHeaders = {
   Authorization: `Bearer ${captureToken}`,
   'Content-Type': 'application/json',
@@ -41,10 +42,75 @@ async function jsonRequest(path, options, expectedStatus) {
   return body;
 }
 
+function readItemState(detail, itemId, scenario) {
+  const item = detail?.data?.item;
+  assert(
+    item && typeof item === 'object' && !Array.isArray(item),
+    `[${scenario}] Item detail response is missing data.item.`,
+  );
+  assert(
+    item.id === itemId,
+    `[${scenario}] Item detail returned an unexpected item ID.`,
+  );
+  assert(
+    Number.isInteger(item.edit_version) && item.edit_version >= 1,
+    `[${scenario}] Item detail edit_version must be a positive integer.`,
+  );
+  return {
+    itemId: item.id,
+    editVersion: item.edit_version,
+    privacyLevel: item.privacy_level ?? null,
+    sourceUrl: item.source_url ?? null,
+    canonicalUrl: item.canonical_url ?? null,
+    rawText: item.raw_text ?? null,
+  };
+}
+
+async function readCurrentItem(itemId, scenario) {
+  const detail = await jsonRequest(
+    `/api/v1/items/${encodeURIComponent(itemId)}`,
+    { headers: adminHeaders },
+    200,
+    scenario,
+  );
+  return readItemState(detail, itemId, scenario);
+}
+
+async function changePrivacy(itemId, current, fields, scenario) {
+  const response = await jsonRequest(
+    `/api/v1/items/${encodeURIComponent(itemId)}/privacy`,
+    {
+      method: 'PATCH',
+      headers: adminHeaders,
+      body: JSON.stringify({
+        edit_version: current.editVersion,
+        ...fields,
+      }),
+    },
+    200,
+    scenario,
+  );
+  const returnedVersion = response?.data?.edit_version;
+  assert(
+    Number.isInteger(returnedVersion) && returnedVersion >= 1,
+    `[${scenario}] Privacy response edit_version must be a positive integer.`,
+  );
+  const next = await readCurrentItem(itemId, `${scenario}:refetch`);
+  assert(
+    next.editVersion === returnedVersion,
+    `[${scenario}] Refetched edit_version did not match the server mutation response.`,
+  );
+  assert(
+    next.editVersion > current.editVersion,
+    `[${scenario}] Successful privacy mutation did not advance edit_version.`,
+  );
+  return { response, current: next };
+}
+
 const runId = randomUUID();
 const now = () => new Date().toISOString();
 
-const health = await jsonRequest('/api/v1/health', {}, 200);
+const health = await jsonRequest('/api/v1/health', {}, 200, 'health');
 assert(health.data?.status === 'ok', 'Health response was not ok.');
 
 await jsonRequest(
@@ -55,6 +121,7 @@ await jsonRequest(
     body: JSON.stringify({}),
   },
   401,
+  'anonymous-capture',
 );
 
 const captureBase = {
@@ -78,6 +145,7 @@ const firstCapture = await jsonRequest(
     }),
   },
   201,
+  'capture-primary',
 );
 const secondCapture = await jsonRequest(
   '/api/v1/captures',
@@ -93,6 +161,7 @@ const secondCapture = await jsonRequest(
     }),
   },
   201,
+  'capture-duplicate',
 );
 assert(
   firstCapture.data?.capture_id === secondCapture.data?.capture_id,
@@ -103,18 +172,20 @@ assert(
   'Duplicate response did not identify the canonical item.',
 );
 
-const publicPolicy = await jsonRequest(
-  `/api/v1/items/${firstCapture.data.capture_id}/privacy`,
+const itemId = firstCapture.data?.capture_id;
+assert(itemId, 'Primary capture did not return a capture ID.');
+const initialItem = await readCurrentItem(itemId, 'privacy-initial-detail');
+
+const publicChange = await changePrivacy(
+  itemId,
+  initialItem,
   {
-    method: 'PATCH',
-    headers: adminHeaders,
-    body: JSON.stringify({
-      privacy_level: 'public',
-      derived_data_action: 'reprocess',
-    }),
+    privacy_level: 'public',
+    derived_data_action: 'reprocess',
   },
-  200,
+  'privacy-public',
 );
+const publicPolicy = publicChange.response;
 assert(
   publicPolicy.data?.provider_eligibility === 'openrouter',
   'Public data did not select OpenRouter.',
@@ -125,42 +196,38 @@ assert(
   'Public data did not publish the Gemini fallback.',
 );
 
-const personalWithoutConsent = await jsonRequest(
-  `/api/v1/items/${firstCapture.data.capture_id}/privacy`,
+const personalWithoutConsentChange = await changePrivacy(
+  itemId,
+  publicChange.current,
   {
-    method: 'PATCH',
-    headers: adminHeaders,
-    body: JSON.stringify({
-      privacy_level: 'personal',
-      derived_data_action: 'reprocess',
-      ai_provider: 'openrouter',
-      credential_source: 'app_managed',
-    }),
+    privacy_level: 'personal',
+    derived_data_action: 'reprocess',
+    ai_provider: 'openrouter',
+    credential_source: 'app_managed',
   },
-  200,
+  'privacy-personal-without-consent',
 );
+const personalWithoutConsent = personalWithoutConsentChange.response;
 assert(
   personalWithoutConsent.data?.provider_eligibility === 'none',
   'Personal data without consent did not fail closed.',
 );
 
-const personalWithConsent = await jsonRequest(
-  `/api/v1/items/${firstCapture.data.capture_id}/privacy`,
+const personalWithConsentChange = await changePrivacy(
+  itemId,
+  personalWithoutConsentChange.current,
   {
-    method: 'PATCH',
-    headers: adminHeaders,
-    body: JSON.stringify({
-      privacy_level: 'personal',
-      derived_data_action: 'reprocess',
-      ai_provider: 'openrouter',
-      credential_source: 'app_managed',
-      hosted_processing_consent: true,
-      zero_data_retention_enforced: true,
-      data_collection_denied: true,
-    }),
+    privacy_level: 'personal',
+    derived_data_action: 'reprocess',
+    ai_provider: 'openrouter',
+    credential_source: 'app_managed',
+    hosted_processing_consent: true,
+    zero_data_retention_enforced: true,
+    data_collection_denied: true,
   },
-  200,
+  'privacy-personal-with-consent',
 );
+const personalWithConsent = personalWithConsentChange.response;
 assert(
   personalWithConsent.data?.provider_eligibility === 'openrouter',
   'Compliant Personal routing did not select OpenRouter.',
@@ -171,18 +238,16 @@ assert(
   'Compliant Personal routing did not require both privacy controls.',
 );
 
-const sensitivePolicy = await jsonRequest(
-  `/api/v1/items/${firstCapture.data.capture_id}/privacy`,
+const sensitiveChange = await changePrivacy(
+  itemId,
+  personalWithConsentChange.current,
   {
-    method: 'PATCH',
-    headers: adminHeaders,
-    body: JSON.stringify({
-      privacy_level: 'sensitive',
-      derived_data_action: 'purge',
-    }),
+    privacy_level: 'sensitive',
+    derived_data_action: 'purge',
   },
-  200,
+  'privacy-sensitive',
 );
+const sensitivePolicy = sensitiveChange.response;
 assert(
   sensitivePolicy.data?.provider_eligibility === 'none',
   'Sensitive data did not fail closed.',
@@ -210,6 +275,7 @@ const uploadInit = await jsonRequest(
     }),
   },
   201,
+  'attachment-init',
 );
 const attachmentId = uploadInit.data?.attachment_id;
 assert(attachmentId, 'Upload init did not return an attachment ID.');
@@ -226,6 +292,7 @@ await jsonRequest(
     body: pdfBytes,
   },
   200,
+  'attachment-upload',
 );
 await jsonRequest(
   `/api/v1/uploads/${attachmentId}/finalize`,
@@ -235,6 +302,7 @@ await jsonRequest(
     body: JSON.stringify({ checksum }),
   },
   200,
+  'attachment-finalize',
 );
 
 const fileCapture = await jsonRequest(
@@ -254,6 +322,7 @@ const fileCapture = await jsonRequest(
     }),
   },
   201,
+  'attachment-capture',
 );
 
 const authorizedDownload = await fetch(
@@ -282,8 +351,15 @@ console.log(
   JSON.stringify({
     health: 'ok',
     anonymous_capture_status: 401,
-    duplicate_item_id: firstCapture.data.capture_id,
+    duplicate_item_id: itemId,
     duplicate_of: secondCapture.data.duplicate_of,
+    initial_edit_version: initialItem.editVersion,
+    public_edit_version: publicChange.current.editVersion,
+    personal_without_consent_edit_version:
+      personalWithoutConsentChange.current.editVersion,
+    personal_with_consent_edit_version:
+      personalWithConsentChange.current.editVersion,
+    sensitive_edit_version: sensitiveChange.current.editVersion,
     public_policy_provider: publicPolicy.data.provider_eligibility,
     public_policy_fallbacks: publicPolicy.data.fallback_providers,
     personal_without_consent: personalWithoutConsent.data.provider_eligibility,
