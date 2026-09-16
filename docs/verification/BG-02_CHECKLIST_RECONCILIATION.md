@@ -181,7 +181,7 @@ Status: **10/10 satisfied**.
 
 ## BG-02 / 10 — Verify and close (.091–.100)
 
-Status: **9/10 satisfied; final gate pending**.
+Status: **10/10 satisfied**.
 
 - `.091`: checklist/outcome review found no missing BG-02 behavior after adding the
   focused repeated/adjacent proof.
@@ -190,26 +190,27 @@ Status: **9/10 satisfied; final gate pending**.
 - `.093`: anonymous/capture-token rejection and exact-expiry rejection semantics
   remain explicit.
 - `.094`: data, privacy, auth, quota and active-window guarantees were not weakened.
-- `.095`: no owned local process was started. The temporary focused-proof workflow
-  was removed after producing immutable CI evidence.
-- `.096`: current implementation diff was reviewed for unrelated changes; none were
-  introduced.
+- `.095`: no owned local process was started. The temporary focused-proof and
+  formatter-proof workflows were removed after producing immutable CI evidence.
+- `.096`: final net diff contains only the usage D1 test and BG-02 verification
+  documentation; no unrelated runtime change remains.
 - `.097`: results are recorded in the primary evidence file with branch, base,
   candidate SHA and CI run identities.
 - `.098`: the transient run #98 concurrency timeout is recorded as an exception and
   not hidden or repaired under BG-02.
-- `.099`: documentation is updated only to the verified implementation level.
-- `.100`: **Pending.** BG-03 is unlocked only after the documentation-complete PR
-  head passes the repository CI gate and BG-02 is closed.
+- `.099`: the primary evidence and verification index record BG-02 as complete only
+  after the documentation-complete gate succeeded.
+- `.100`: CI run #110 passed `npm run check` and `npm run db:migrate:local` on the
+  documentation-complete branch head. **BG-03 is unlocked.**
 
 ## Overall reconciliation
 
-- Satisfied now: **99/100**.
-- Pending: **BG-02.100 final parent gate**.
+- Satisfied: **100/100**.
 - Production/runtime source edits: **none**.
 - Migration edits: **none**.
 - Permanent CI workflow edits: **none**.
 - Known unrelated defect created by BG-02: **none**.
+- Next task: **BG-03 — carry authoritative `edit_version` values through the smoke script.**
 
-The next action is one final CI run on the documentation-complete head. Only a green
-result may change BG-02.100 to satisfied and unlock BG-03.
+BG-02 is ready to close after the final status-marker commits themselves remain
+green in the normal repository CI gate.
