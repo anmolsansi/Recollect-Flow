@@ -327,6 +327,10 @@ assert(
   'Sensitive data did not fail closed.',
 );
 assert(
+  sensitivePolicy.data?.derived_data_action === 'purge',
+  'Sensitive privacy response did not preserve the purge-derived-data action.',
+);
+assert(
   sensitivePolicy.data?.policy_version === '2026-07-21.1',
   'Unexpected policy version.',
 );
