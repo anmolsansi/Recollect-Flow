@@ -13,6 +13,15 @@ import { createApp } from '../src/app';
 import type { Env } from '../src/env';
 import { AiCapacityService } from '../src/jobs/ai/capacity.service';
 
+interface UsageWindow {
+  provider: string;
+  scope_key: string;
+  window_kind: string;
+  window_start: string;
+  window_end: string;
+  dimensions: Array<{ dimension: string; used: number }>;
+}
+
 describe('OPE-227 usage API', () => {
   beforeAll(async () => {
     await applyD1Migrations(env.DB, env.TEST_MIGRATIONS!);
@@ -69,14 +78,7 @@ describe('OPE-227 usage API', () => {
       data: {
         policy_version: string;
         warning_thresholds: Record<string, number>;
-        windows: Array<{
-          provider: string;
-          scope_key: string;
-          window_kind: string;
-          window_start: string;
-          window_end: string;
-          dimensions: Array<{ dimension: string; used: number }>;
-        }>;
+        windows: UsageWindow[];
         circuit_breakers: Array<{ provider: string; operation: string }>;
       };
     };
@@ -124,5 +126,49 @@ describe('OPE-227 usage API', () => {
     expect(serialized).not.toContain('test-admin-token');
     expect(serialized).not.toContain('safe usage fixture');
     expect(serialized).not.toContain('OPENROUTER_API_KEY');
+  });
+
+  it('expires the minute window exactly at its end while the daily window stays active', async () => {
+    vi.useFakeTimers();
+    const reservationTime = new Date('2026-08-09T20:15:00.000Z');
+    vi.setSystemTime(reservationTime);
+
+    const capacity = new AiCapacityService(env as unknown as Env, env.DB);
+    await capacity.admit(
+      'openrouter',
+      'enrich',
+      'openrouter/free',
+      'expiry boundary fixture',
+      1,
+      reservationTime,
+    );
+
+    const app = createApp();
+    const windowsAt = async (instant: string): Promise<UsageWindow[]> => {
+      vi.setSystemTime(new Date(instant));
+      const response = await app.request(
+        '/api/v1/usage',
+        { headers: { Authorization: 'Bearer test-admin-token' } },
+        env,
+      );
+      expect(response.status).toBe(200);
+      const body = (await response.json()) as { data: { windows: UsageWindow[] } };
+      return body.data.windows.filter(
+        (window) => window.provider === 'openrouter',
+      );
+    };
+
+    const beforeExpiry = await windowsAt('2026-08-09T20:15:59.999Z');
+    expect(beforeExpiry.map((window) => window.window_kind)).toEqual([
+      'minute',
+      'day',
+    ]);
+
+    const atExpiry = await windowsAt('2026-08-09T20:16:00.000Z');
+    expect(atExpiry.map((window) => window.window_kind)).toEqual(['day']);
+    expect(atExpiry[0]?.window_end).toBe('2026-08-10T00:00:00.000Z');
+
+    const afterExpiry = await windowsAt('2026-08-09T20:16:00.001Z');
+    expect(afterExpiry.map((window) => window.window_kind)).toEqual(['day']);
   });
 });
