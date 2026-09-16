@@ -229,3 +229,45 @@ The following evidence is reused because application code is unchanged from the 
 | Production Worker root | HTTP 404; does not establish production Web Inbox hosting |
 
 The audit's first sandboxed attempt also hit a localhost permission restriction before D1 tests could start. After localhost access was available, the test suite reached the real clock-dependent assertion. BG-01 preserves these as separate environment and application findings.
+
+## 9. Baseline failure ledger
+
+| ID | Evidence class | Command/story | Environment | Expected | Observed | Exit/result | Owner |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| BL-01 | current | `npm run check` | GitHub Actions run #91, Ubuntu 24.04, Node 22.23.2 | reproduce repository baseline | reaches known capacity usage defect | exit 1 | BG-02 |
+| BL-02 | current | capacity usage D1 test | same CI run | active historical fixture expected by old test | HTTP 200 with `windows: []`; assertion fails at line 70 | 1 failed / 114 passed | BG-02 |
+| BL-03 | reused | release verifier | isolated local Worker from Sept 12 audit | verifier progresses through declared stages | first privacy PATCH returns 422 because `edit_version` is required | smoke failure | BG-03 |
+| BL-04 | reused | first sandbox D1 attempt | constrained audit sandbox | Worker tests start | localhost binding denied before application assertion | environment-only blocker | environment, resolved for rerun |
+| BL-05 | reused | browser attachment link | real Vite UI + isolated Worker | logged-in admin can read linked private attachment | admin session cookie rejected; direct bearer request succeeds | workflow defect | BG-06/BG-07 |
+| BL-06 | reused | bare public URL background processing | isolated D1/R2 + mocked AI | supported processing reaches truthful terminal outcome | enrich job fails `NO_CONTENT_TO_ENRICH` | workflow defect | BG-08–BG-11 |
+| BL-07 | reused | item/job aggregate status | same URL story | item reflects terminal job result | item says `pending`, only job says `failed` | state defect | BG-12/BG-13 |
+| BL-08 | reused | production Worker root | read-only production probe | only establishes what root serves | HTTP 404; no Web Inbox proven | acceptance gap | BG-20/BG-21 |
+
+### Failure classification rules
+
+- Environment failures do not become application failures until the environment restriction is removed and the application path is actually reached.
+- A command skipped because a prior stage failed is **not passed** and **not failed**. It is `not reached`.
+- A reused audit result is not relabeled as a new run.
+- Expected known failures stay red until their owning BG task changes the underlying behavior or test contract.
+
+## 10. Evidence hygiene
+
+The baseline record intentionally stores only safe evidence:
+
+- commit SHAs and branch names;
+- public file paths and migration names;
+- runtime/tool versions;
+- test names, counts, statuses and sanitized assertion text;
+- synthetic request/result classifications;
+- issue, PR and Linear identifiers.
+
+It does not store:
+
+- actual production secrets;
+- bearer token values from production;
+- `.dev.vars` contents from an owner machine;
+- real private capture text;
+- real Notion or Telegram payload contents;
+- private attachment bytes.
+
+Dummy credentials from checked-in test configuration may be named because they are deliberately synthetic and public test fixtures.
