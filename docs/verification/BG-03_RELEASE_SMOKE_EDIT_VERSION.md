@@ -45,12 +45,12 @@ The script does not calculate the next version with `version + 1`. The server re
 
 The existing policy scenarios remain explicit:
 
-| Scenario | Derived-data action | Important controls | Expected routing |
-| --- | --- | --- | --- |
-| Public | `reprocess` | current server version | OpenRouter with Gemini fallback |
-| Personal without consent | `reprocess` | OpenRouter requested, app-managed credential | no hosted provider |
-| Personal with consent | `reprocess` | hosted consent, ZDR enforced, data collection denied | OpenRouter |
-| Sensitive | `purge` | current server version | no hosted provider |
+| Scenario                 | Derived-data action | Important controls                                   | Expected routing                |
+| ------------------------ | ------------------- | ---------------------------------------------------- | ------------------------------- |
+| Public                   | `reprocess`         | current server version                               | OpenRouter with Gemini fallback |
+| Personal without consent | `reprocess`         | OpenRouter requested, app-managed credential         | no hosted provider              |
+| Personal with consent    | `reprocess`         | hosted consent, ZDR enforced, data collection denied | OpenRouter                      |
+| Sensitive                | `purge`             | current server version                               | no hosted provider              |
 
 `purge` here remains the privacy route's derived-data action. BG-03 does not turn this into the separate permanent canonical-item purge workflow.
 
