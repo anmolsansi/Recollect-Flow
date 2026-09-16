@@ -1,4 +1,4 @@
-/* global Buffer, TextEncoder, console, fetch, process */
+/* global Buffer, TextEncoder, URL, console, fetch, process */
 
 import { createHash, randomUUID } from 'node:crypto';
 
