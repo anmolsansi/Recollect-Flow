@@ -1,6 +1,6 @@
 # BG-01 — Reproducible Verification Baseline
 
-Status: in progress
+Status: **complete — BG-02 unlocked**
 
 Tracking:
 
@@ -8,6 +8,7 @@ Tracking:
 - Linear: OPE-321
 - Prerequisite context refresh: PR #22
 - Work branch: `agent/ope-321-bg-01-reproducible-baseline`
+- Checklist reconciliation: `docs/verification/BG-01_CHECKLIST_RECONCILIATION.md`
 
 ## 1. Baseline identity
 
@@ -271,3 +272,45 @@ It does not store:
 - private attachment bytes.
 
 Dummy credentials from checked-in test configuration may be named because they are deliberately synthetic and public test fixtures.
+
+## 11. BG-01 completion decision
+
+BG-01's completion boundary is met.
+
+What is now reproducible and named:
+
+- application baseline SHA;
+- documentation/context drift above that SHA;
+- work branch ancestry;
+- Node/npm/lockfile/workspace identity;
+- exact quality-gate topology;
+- D1/R2/dummy-auth/mocked-provider isolation contract;
+- migration chain through `0021`;
+- current Node 22 quality-gate prefix and exact failing assertion;
+- isolated runtime, Web/API and smoke evidence from the application-equivalent audit;
+- sanitized failure ledger with ownership of every known baseline defect.
+
+No runtime application file, migration, secret, deployment target, production record, external delivery or user data was changed by BG-01.
+
+### Microcommit record
+
+1. `10b4fa57…` — baseline revision identity.
+2. `75aa46eb…` — toolchain and verification topology.
+3. `722e27b0…` — isolated state and migration baseline.
+4. `2d01181a…` — Node 22 and runtime baseline evidence.
+5. `2717e54f…` — failure ledger and evidence hygiene.
+6. `20216fd3…` — 100-action checklist reconciliation.
+7. Finalization commit — this completion decision.
+8. Final repo-context pointer — separate final microcommit.
+
+### Gate
+
+**BG-02 is unlocked.**
+
+Its frozen entry condition is:
+
+- `apps/worker-api/test/capacity-usage.d1.spec.ts` reproduces the dated-window failure on Node 22;
+- the current application correctly excludes expired windows;
+- BG-02 must control the test clock without weakening active-window semantics.
+
+PR/merge note: the documentation stack is expected to remain red until BG-02 repairs the reproduced test. That red status is baseline evidence, not permission to bypass CI.
