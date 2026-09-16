@@ -66,8 +66,8 @@ Reference reservation time:
 
 Expected OpenRouter windows:
 
-| Kind   | Start                        | End                          | Initial request usage |
-| ------ | ---------------------------- | ---------------------------- | --------------------- |
+| Kind   | Start                      | End                        | Initial request usage |
+| ------ | -------------------------- | -------------------------- | --------------------- |
 | minute | `2026-08-09T20:15:00.000Z` | `2026-08-09T20:16:00.000Z` | 1                     |
 | day    | `2026-08-09T00:00:00.000Z` | `2026-08-10T00:00:00.000Z` | 1                     |
 
@@ -78,11 +78,11 @@ text used by the original regression.
 
 The route is queried at three controlled instants:
 
-| Query instant                  | Expected active OpenRouter windows |
-| ------------------------------ | ---------------------------------- |
-| `2026-08-09T20:15:59.999Z`     | minute + day                       |
-| `2026-08-09T20:16:00.000Z`     | day only                           |
-| `2026-08-09T20:16:00.001Z`     | day only                           |
+| Query instant              | Expected active OpenRouter windows |
+| -------------------------- | ---------------------------------- |
+| `2026-08-09T20:15:59.999Z` | minute + day                       |
+| `2026-08-09T20:16:00.000Z` | day only                           |
+| `2026-08-09T20:16:00.001Z` | day only                           |
 
 This protects the strict `>` comparison. A window ending exactly at the query time
 is expired.
