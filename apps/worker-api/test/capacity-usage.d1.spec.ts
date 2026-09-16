@@ -170,5 +170,64 @@ describe('OPE-227 usage API', () => {
 
     const afterExpiry = await windowsAt('2026-08-09T20:16:00.001Z');
     expect(afterExpiry.map((window) => window.window_kind)).toEqual(['day']);
+
+    const nextReservationTime = new Date('2026-08-09T20:16:00.001Z');
+    await capacity.admit(
+      'openrouter',
+      'enrich',
+      'openrouter/free',
+      'next minute fixture',
+      1,
+      nextReservationTime,
+    );
+
+    const nextMinute = await windowsAt(nextReservationTime.toISOString());
+    expect(nextMinute.map((window) => window.window_kind)).toEqual([
+      'minute',
+      'day',
+    ]);
+    expect(
+      nextMinute.find((window) => window.window_kind === 'minute'),
+    ).toEqual(
+      expect.objectContaining({
+        window_start: '2026-08-09T20:16:00.000Z',
+        window_end: '2026-08-09T20:17:00.000Z',
+        dimensions: expect.arrayContaining([
+          expect.objectContaining({ dimension: 'requests', used: 1 }),
+        ]),
+      }),
+    );
+    expect(nextMinute.find((window) => window.window_kind === 'day')).toEqual(
+      expect.objectContaining({
+        window_start: '2026-08-09T00:00:00.000Z',
+        window_end: '2026-08-10T00:00:00.000Z',
+        dimensions: expect.arrayContaining([
+          expect.objectContaining({ dimension: 'requests', used: 2 }),
+        ]),
+      }),
+    );
+
+    const historicalMinuteWindows = await env.DB.prepare(
+      `SELECT window_start, window_end, request_reserved
+       FROM ai_capacity_windows
+       WHERE provider = 'openrouter' AND window_kind = 'minute'
+       ORDER BY window_start`,
+    ).all<{
+      window_start: string;
+      window_end: string;
+      request_reserved: number;
+    }>();
+    expect(historicalMinuteWindows.results).toEqual([
+      {
+        window_start: '2026-08-09T20:15:00.000Z',
+        window_end: '2026-08-09T20:16:00.000Z',
+        request_reserved: 1,
+      },
+      {
+        window_start: '2026-08-09T20:16:00.000Z',
+        window_end: '2026-08-09T20:17:00.000Z',
+        request_reserved: 1,
+      },
+    ]);
   });
 });
