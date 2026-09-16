@@ -160,3 +160,72 @@ The September 12 audit applied the complete chain through `0021` successfully to
 CI run #91 did not reach its separate `npm run db:migrate:local` step because `npm run check` correctly stopped on the known BG-02 D1 assertion. This is recorded as **not executed by run #91**, not as a migration failure.
 
 The fresh-migration proof therefore comes from the September 12 application-equivalent audit, not from the current documentation PR CI run.
+
+## 7. Current Node 22 baseline observation
+
+GitHub Actions run **#91** executed against the merge candidate containing the prerequisite repo-context documentation and the same application code as the audited baseline.
+
+Observed environment:
+
+- runner: Ubuntu 24.04;
+- Node: `v22.23.2`;
+- npm: `10.9.8`;
+- install command: `npm ci`;
+- install result: success;
+- package installation changed no committed lockfile.
+
+Observed quality-gate sequence:
+
+| Stage | Result | Evidence |
+| --- | --- | --- |
+| Prettier check | PASS | `All matched files use Prettier code style!` |
+| ESLint | PASS | command exited successfully |
+| TypeScript | PASS | `tsc --noEmit` exited successfully |
+| Node tests | PASS | 23 files, 132/132 tests |
+| D1/workerd tests | EXPECTED BASELINE FAILURE | 32 files pass; `capacity-usage.d1.spec.ts` has 1 failing test; 114/115 tests pass |
+| contracts | NOT REACHED | `npm run check` stops at D1 failure |
+| Web lint/tests/build | NOT REACHED IN RUN #91 | same reason |
+| standalone local migration step | SKIPPED BY CI | CI only runs it after `npm run check` |
+
+The failure is the expected BG-02 entry condition, not a new regression introduced by documentation work.
+
+### Exact current failure
+
+Test:
+
+`apps/worker-api/test/capacity-usage.d1.spec.ts > OPE-227 usage API > returns safe quota and breaker metadata to the admin only`
+
+Observed assertion:
+
+```text
+expected [] to deeply equal ArrayContaining{…}
+```
+
+Location:
+
+`apps/worker-api/test/capacity-usage.d1.spec.ts:70`
+
+The route returned HTTP 200. The assertion failed because `body.data.windows` was empty when the test expected the historical OpenRouter capacity window to still be active.
+
+This is the same defect described by the September 12 audit. BG-01 records it. BG-02 repairs it.
+
+## 8. Reused September 12 runtime evidence
+
+The following evidence is reused because application code is unchanged from the audited SHA.
+
+| Story | Reused result |
+| --- | --- |
+| Fresh local D1 migrations | PASS, all 18 migration files through `0021` |
+| Worker deployment dry run | PASS, no deployment performed |
+| Web production build | PASS |
+| Contracts/Web lint/Web tests | PASS; Web tests 9/9 |
+| Local health | HTTP 200, status `ok` |
+| Web Inbox against local Worker | Browser login/review flows exercised against real Vite UI and local Worker |
+| Synthetic capture | Durable capture and duplicate reuse observed in isolated runtime |
+| Release smoke | FAIL at privacy PATCH with HTTP 422 because `edit_version` is missing |
+| Browser attachment download | FAIL with admin session cookie; bearer-token direct download succeeds byte-for-byte |
+| Bare URL processing | capture persists, enrichment terminally fails `NO_CONTENT_TO_ENRICH` |
+| Aggregate item status | item remains `pending` while its only job is terminally `failed` |
+| Production Worker root | HTTP 404; does not establish production Web Inbox hosting |
+
+The audit's first sandboxed attempt also hit a localhost permission restriction before D1 tests could start. After localhost access was available, the test suite reached the real clock-dependent assertion. BG-01 preserves these as separate environment and application findings.
