@@ -37,18 +37,21 @@ BG-02 keeps production quota semantics unchanged. The D1 regression controls the
 
 ### BG-03 — version-aware release smoke
 
-Status: **implementation verified; final documentation-complete gate pending**
+Status: **complete; BG-04 unlocked**
 
 - Primary evidence: [`BG-03_RELEASE_SMOKE_EDIT_VERSION.md`](BG-03_RELEASE_SMOKE_EDIT_VERSION.md)
-- 100-action reconciliation: [`BG-03_CHECKLIST_RECONCILIATION.md`](BG-03_CHECKLIST_RECONCILIATION.md) — 99/100 before final gate
-- GitHub tracking: issue #27 and PR #28
+- Pre-merge 100-action reconciliation: [`BG-03_CHECKLIST_RECONCILIATION.md`](BG-03_CHECKLIST_RECONCILIATION.md)
+- Post-merge final closeout: [`BG-03_FINAL_CLOSEOUT.md`](BG-03_FINAL_CLOSEOUT.md) — authoritative 100/100 completion record
+- GitHub tracking: issue #27 and merged PR #28
 - Linear tracking: OPE-323
 - Base `main`: `f43580786e4106c4983e30f1bb351e3150d16bf3`
 - Implementation gate: GitHub Actions CI run #121
+- Final clean-head gate: GitHub Actions CI run #130
+- Merged `main` commit: `95f27d34527a3d5b9b9e31037c060672bf54c8f6`
 
 BG-03 repairs the release verifier rather than the already-correct server contract. Every successful privacy mutation uses a server-authoritative item version and refetches before the next independent mutation. The verifier deliberately proves a stale version still returns `VERSION_CONFLICT`, preserves the existing Public/Personal/Sensitive policy controls, validates source/canonical evidence, fails nonzero on malformed/current-conflict cases and bounds/redacts failure diagnostics. A synthetic child-process regression is part of the normal repository test gate.
 
-BG-04 remains locked until the documentation-complete BG-03 head passes CI and PR #28 is merged.
+The pre-merge reconciliation intentionally stopped at 99/100 because the final action required a green clean-head CI and an actual merge. `BG-03_FINAL_CLOSEOUT.md` records that CI run #130 passed on the exact merged head and PR #28 merged successfully, satisfying BG-03.100 and unlocking BG-04.
 
 ## Evidence rules
 
