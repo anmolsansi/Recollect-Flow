@@ -133,7 +133,10 @@ async function changePrivacy(itemId, current, fields, scenario) {
 }
 
 function assertStableEvidence(before, after, scenario) {
-  assert(after.itemId === before.itemId, `[${scenario}] Canonical item ID changed.`);
+  assert(
+    after.itemId === before.itemId,
+    `[${scenario}] Canonical item ID changed.`,
+  );
   assert(
     after.sourceUrl === before.sourceUrl,
     `[${scenario}] Source URL changed unexpectedly.`,
@@ -327,7 +330,11 @@ assert(
   sensitivePolicy.data?.policy_version === '2026-07-21.1',
   'Unexpected policy version.',
 );
-assertStableEvidence(initialItem, sensitiveChange.current, 'privacy-final-state');
+assertStableEvidence(
+  initialItem,
+  sensitiveChange.current,
+  'privacy-final-state',
+);
 assert(
   sensitiveChange.current.privacyLevel === 'sensitive',
   'Final item privacy level did not match the Sensitive scenario.',

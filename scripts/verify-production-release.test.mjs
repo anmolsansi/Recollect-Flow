@@ -99,7 +99,9 @@ async function createVerifierServer({
       requestUrl.pathname === `/api/v1/items/${itemId}`
     ) {
       const version =
-        malformedInitialVersion && detailVersions.length === 0 ? 0 : itemVersion;
+        malformedInitialVersion && detailVersions.length === 0
+          ? 0
+          : itemVersion;
       detailVersions.push(version);
       json(response, 200, {
         data: {
