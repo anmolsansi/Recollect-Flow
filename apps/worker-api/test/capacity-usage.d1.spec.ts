@@ -1,5 +1,13 @@
 import { applyD1Migrations, env } from 'cloudflare:test';
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
 import { createApp } from '../src/app';
 import type { Env } from '../src/env';
@@ -18,6 +26,10 @@ describe('OPE-227 usage API', () => {
     ]);
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('rejects unauthenticated and capture-scoped callers', async () => {
     const app = createApp();
     const anonymous = await app.request('/api/v1/usage', {}, env);
@@ -32,6 +44,10 @@ describe('OPE-227 usage API', () => {
   });
 
   it('returns safe quota and breaker metadata to the admin only', async () => {
+    const now = new Date('2026-08-09T20:15:00.000Z');
+    vi.useFakeTimers();
+    vi.setSystemTime(now);
+
     const capacity = new AiCapacityService(env as unknown as Env, env.DB);
     await capacity.admit(
       'openrouter',
@@ -39,7 +55,7 @@ describe('OPE-227 usage API', () => {
       'openrouter/free',
       'safe usage fixture',
       1,
-      new Date('2026-08-09T20:15:00.000Z'),
+      now,
     );
 
     const response = await createApp().request(
