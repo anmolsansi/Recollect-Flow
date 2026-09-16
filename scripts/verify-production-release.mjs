@@ -12,6 +12,15 @@ if (!baseUrl || !captureToken || !adminToken) {
   );
 }
 
+let targetOrigin;
+try {
+  targetOrigin = new URL(baseUrl);
+} catch {
+  throw new Error('WORKER_BASE_URL must be a valid absolute URL.');
+}
+if (!['http:', 'https:'].includes(targetOrigin.protocol)) {
+  throw new Error('WORKER_BASE_URL must use http or https.');
+}
 
 const captureHeaders = {
   Authorization: `Bearer ${captureToken}`,
@@ -22,11 +31,27 @@ const adminHeaders = {
   'Content-Type': 'application/json',
 };
 
+const MAX_DIAGNOSTIC_RESPONSE_CHARS = 800;
+
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-async function jsonRequest(path, options, expectedStatus) {
+function boundedDiagnostic(body) {
+  let serialized;
+  try {
+    serialized = JSON.stringify(body);
+  } catch {
+    serialized = '[unserializable response]';
+  }
+  for (const secret of [captureToken, adminToken]) {
+    if (secret) serialized = serialized.replaceAll(secret, '[REDACTED]');
+  }
+  if (serialized.length <= MAX_DIAGNOSTIC_RESPONSE_CHARS) return serialized;
+  return `${serialized.slice(0, MAX_DIAGNOSTIC_RESPONSE_CHARS)}...[truncated]`;
+}
+
+async function jsonRequest(path, options, expectedStatus, scenario = path) {
   const response = await fetch(`${baseUrl}${path}`, options);
   const text = await response.text();
   let body;
@@ -37,7 +62,7 @@ async function jsonRequest(path, options, expectedStatus) {
   }
   assert(
     response.status === expectedStatus,
-    `${options.method ?? 'GET'} ${path}: expected ${expectedStatus}, got ${response.status}: ${JSON.stringify(body)}`,
+    `[${scenario}] ${options.method ?? 'GET'} ${path}: expected ${expectedStatus}, got ${response.status}: ${boundedDiagnostic(body)}`,
   );
   return body;
 }
@@ -105,6 +130,22 @@ async function changePrivacy(itemId, current, fields, scenario) {
     `[${scenario}] Successful privacy mutation did not advance edit_version.`,
   );
   return { response, current: next };
+}
+
+function assertStableEvidence(before, after, scenario) {
+  assert(after.itemId === before.itemId, `[${scenario}] Canonical item ID changed.`);
+  assert(
+    after.sourceUrl === before.sourceUrl,
+    `[${scenario}] Source URL changed unexpectedly.`,
+  );
+  assert(
+    after.canonicalUrl === before.canonicalUrl,
+    `[${scenario}] Canonical URL changed unexpectedly.`,
+  );
+  assert(
+    after.rawText === before.rawText,
+    `[${scenario}] Raw source text changed unexpectedly.`,
+  );
 }
 
 const runId = randomUUID();
@@ -196,9 +237,39 @@ assert(
   'Public data did not publish the Gemini fallback.',
 );
 
+const beforeConflict = publicChange.current;
+const staleConflict = await jsonRequest(
+  `/api/v1/items/${encodeURIComponent(itemId)}/privacy`,
+  {
+    method: 'PATCH',
+    headers: adminHeaders,
+    body: JSON.stringify({
+      edit_version: initialItem.editVersion,
+      privacy_level: 'unknown',
+      derived_data_action: 'reprocess',
+    }),
+  },
+  409,
+  'privacy-stale-version',
+);
+assert(
+  staleConflict?.error?.code === 'VERSION_CONFLICT',
+  'Stale privacy mutation did not return VERSION_CONFLICT.',
+);
+const afterConflict = await readCurrentItem(itemId, 'privacy-stale-refetch');
+assert(
+  afterConflict.editVersion === beforeConflict.editVersion,
+  'Stale privacy mutation changed the authoritative edit version.',
+);
+assert(
+  afterConflict.privacyLevel === beforeConflict.privacyLevel,
+  'Stale privacy mutation changed the current privacy level.',
+);
+assertStableEvidence(beforeConflict, afterConflict, 'privacy-stale-version');
+
 const personalWithoutConsentChange = await changePrivacy(
   itemId,
-  publicChange.current,
+  afterConflict,
   {
     privacy_level: 'personal',
     derived_data_action: 'reprocess',
@@ -255,6 +326,11 @@ assert(
 assert(
   sensitivePolicy.data?.policy_version === '2026-07-21.1',
   'Unexpected policy version.',
+);
+assertStableEvidence(initialItem, sensitiveChange.current, 'privacy-final-state');
+assert(
+  sensitiveChange.current.privacyLevel === 'sensitive',
+  'Final item privacy level did not match the Sensitive scenario.',
 );
 
 const pdfBytes = new TextEncoder().encode(
@@ -355,6 +431,7 @@ console.log(
     duplicate_of: secondCapture.data.duplicate_of,
     initial_edit_version: initialItem.editVersion,
     public_edit_version: publicChange.current.editVersion,
+    stale_version_conflict: staleConflict.error.code,
     personal_without_consent_edit_version:
       personalWithoutConsentChange.current.editVersion,
     personal_with_consent_edit_version:
