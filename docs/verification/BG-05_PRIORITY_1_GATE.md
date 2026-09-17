@@ -45,6 +45,22 @@ Run #150 proves:
 
 Unresolved evidence after this reuse is intentionally narrow: Worker deployment dry-run and an actual isolated local execution of the corrected smoke runner on the candidate.
 
+## Formatting, lint and type-contract proof
+
+CI run #150 executes the repository `npm run check` chain with `&&`, so each later result below is reachable only because every prior command exited successfully.
+
+| Check | Candidate result |
+|---|---|
+| `npm run format` | PASS — Prettier reported all matched files use the configured style |
+| `npm run lint` | PASS — ESLint exited successfully |
+| `npm run typecheck` | PASS — root `tsc --noEmit` exited successfully |
+| `npm run contracts:check` | PASS — shared contracts `tsc --noEmit` exited successfully |
+| `npm run web:lint` | PASS — 0 warnings and 0 errors across 7 files |
+
+No formatting repair, lint suppression, unsafe-cast workaround, generated-binding edit, or API-contract change was needed for BG-05. The candidate therefore remains unchanged for these checks.
+
+This evidence also keeps scope discipline: a passing unrelated check is not substituted for a required check, and BG-05 does not make speculative source edits merely to create implementation work.
+
 ## Known later-stage application gaps
 
 These remain outside Priority 1 acceptance and must stay visible:
