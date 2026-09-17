@@ -73,7 +73,7 @@ The pre-merge reconciliation intentionally stopped at 99/100 because the final a
 
 ### BG-05 — complete Priority 1 gate
 
-Status: **candidate gate proven; implementation merge pending; BG-06 locked**
+Status: **complete; BG-06 unlocked**
 
 - Primary evidence: [`BG-05_PRIORITY_1_GATE.md`](BG-05_PRIORITY_1_GATE.md)
 - Automated-suite evidence: [`BG-05_TEST_SUITE_EVIDENCE.md`](BG-05_TEST_SUITE_EVIDENCE.md)
@@ -81,15 +81,19 @@ Status: **candidate gate proven; implementation merge pending; BG-06 locked**
 - Web-artifact evidence: [`BG-05_WEB_ARTIFACT_EVIDENCE.md`](BG-05_WEB_ARTIFACT_EVIDENCE.md)
 - Worker/smoke evidence: [`BG-05_RUNTIME_EVIDENCE.md`](BG-05_RUNTIME_EVIDENCE.md)
 - Pre-merge reconciliation: [`BG-05_CHECKLIST_RECONCILIATION.md`](BG-05_CHECKLIST_RECONCILIATION.md)
-- GitHub tracking: issue #34
+- Post-merge final closeout: [`BG-05_FINAL_CLOSEOUT.md`](BG-05_FINAL_CLOSEOUT.md) — authoritative 100/100 completion record
+- GitHub tracking: issue #34 and merged PR #35
 - Linear tracking: OPE-325
 - Verification candidate: `3179b1d1601142d8d071285d06aa3630e3f0742c`
 - Exact-candidate repository gate: GitHub Actions CI run #150
 - Exact-candidate Worker/smoke proof: BG-05 Candidate Proof run `35263570610`
+- Final PR-head gate: GitHub Actions CI run #153
+- Final clean-head gate: GitHub Actions CI run #154
+- Merged `main` commit: `5f6d61c6a255611fd8d6b6ba6731b4e92f33d4df`
 
 BG-05 reuses the green exact-SHA repository gate and adds the two missing operational proofs without changing application source. The candidate passes formatting, lint, type contracts, 5 release-verifier regressions, 132 Node tests, 116 Worker D1 tests, 9 Web tests, the production Web build and all 18 fresh local migrations. A separate exact-candidate proof passes the Worker deployment dry-run and corrected local smoke with 24 passed, 0 failed and 4 explicitly unavailable later-stage capabilities.
 
-The task-specific proof workflow was removed after producing immutable Actions evidence. No production deployment, remote migration, live external delivery or production credential use occurred. The pre-merge reconciliation intentionally remains at 99/100 until the evidence PR is merged and the resulting `main` SHA is recorded. BG-06 stays locked until that post-merge closeout.
+The task-specific proof workflow was removed after producing immutable Actions evidence. PR #35 preserved the microcommit history, passed final-head CI #153, merged successfully, and the resulting `main` SHA passed clean-head CI #154. `BG-05_FINAL_CLOSEOUT.md` therefore satisfies BG-05.100 and unlocks BG-06. No production deployment, remote migration, live external delivery or production credential use occurred.
 
 ## Evidence rules
 
