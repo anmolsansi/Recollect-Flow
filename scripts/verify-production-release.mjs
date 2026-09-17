@@ -174,17 +174,6 @@ async function runStage(name, expectedHttp, work) {
   }
 }
 
-function unavailableStage(name, reason, details = {}) {
-  const stage = {
-    name,
-    status: 'unavailable',
-    reason,
-    ...details,
-  };
-  stageResults.push(stage);
-  return stage;
-}
-
 function stageSummary(overall, error = null) {
   const allStages = [
     ...stageResults,
