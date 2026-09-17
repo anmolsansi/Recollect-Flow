@@ -564,133 +564,133 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-05 / 01 — Establish task context
 
-- [ ] `BG-05.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-05.002` **Dependency:** Verify BG-04's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-05.003` **Baseline:** Record the actual checkout or release candidate used for BG-05.
-- [ ] `BG-05.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-05.005` **Evidence:** Check whether existing evidence already satisfies any BG-05 step; reference it instead of manufacturing work.
-- [ ] `BG-05.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-05.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-05.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-05.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-05.010` **Tracking:** Open a BG-05 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-05.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-05.002` **Dependency:** Verify BG-04's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-05.003` **Baseline:** Record the actual checkout or release candidate used for BG-05.
+- [x] `BG-05.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-05.005` **Evidence:** Check whether existing evidence already satisfies any BG-05 step; reference it instead of manufacturing work.
+- [x] `BG-05.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-05.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-05.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-05.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-05.010` **Tracking:** Open a BG-05 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-05 / 02 — Candidate identity
 
-- [ ] `BG-05.011` Record verification candidate SHA.
-- [ ] `BG-05.012` Confirm intended worktree state.
-- [ ] `BG-05.013` Confirm Node 22 selected.
-- [ ] `BG-05.014` Record dependency lockfile identity.
-- [ ] `BG-05.015` Confirm no unrelated source edits.
-- [ ] `BG-05.016` Confirm baseline fixes included.
-- [ ] `BG-05.017` Confirm smoke script revision.
-- [ ] `BG-05.018` Identify remaining application defects.
-- [ ] `BG-05.019` Separate expected reproductions from acceptance.
-- [ ] `BG-05.020` Create candidate gate record.
+- [x] `BG-05.011` Record verification candidate SHA.
+- [x] `BG-05.012` Confirm intended worktree state.
+- [x] `BG-05.013` Confirm Node 22 selected.
+- [x] `BG-05.014` Record dependency lockfile identity.
+- [x] `BG-05.015` Confirm no unrelated source edits.
+- [x] `BG-05.016` Confirm baseline fixes included.
+- [x] `BG-05.017` Confirm smoke script revision.
+- [x] `BG-05.018` Identify remaining application defects.
+- [x] `BG-05.019` Separate expected reproductions from acceptance.
+- [x] `BG-05.020` Create candidate gate record.
 
 #### BG-05 / 03 — Formatting and lint
 
-- [ ] `BG-05.021` Run repository formatting check.
-- [ ] `BG-05.022` Capture actual command exit.
-- [ ] `BG-05.023` Inspect formatting failures if any.
-- [ ] `BG-05.024` Fix only task-owned formatting.
-- [ ] `BG-05.025` Run root lint command.
-- [ ] `BG-05.026` Inspect lint failures if any.
-- [ ] `BG-05.027` Avoid disabling relevant rules.
-- [ ] `BG-05.028` Confirm generated files unchanged.
-- [ ] `BG-05.029` Save compact lint results.
-- [ ] `BG-05.030` Record successful source revision.
+- [x] `BG-05.021` Run repository formatting check.
+- [x] `BG-05.022` Capture actual command exit.
+- [x] `BG-05.023` Inspect formatting failures if any.
+- [x] `BG-05.024` Fix only task-owned formatting.
+- [x] `BG-05.025` Run root lint command.
+- [x] `BG-05.026` Inspect lint failures if any.
+- [x] `BG-05.027` Avoid disabling relevant rules.
+- [x] `BG-05.028` Confirm generated files unchanged.
+- [x] `BG-05.029` Save compact lint results.
+- [x] `BG-05.030` Record successful source revision.
 
 #### BG-05 / 04 — Type contracts
 
-- [ ] `BG-05.031` Run root TypeScript check.
-- [ ] `BG-05.032` Inspect first type failure.
-- [ ] `BG-05.033` Resolve real contract mismatch.
-- [ ] `BG-05.034` Run shared contracts check.
-- [ ] `BG-05.035` Inspect API field compatibility.
-- [ ] `BG-05.036` Check Web import compatibility.
-- [ ] `BG-05.037` Verify no unsafe cast workaround.
-- [ ] `BG-05.038` Check generated binding compatibility.
-- [ ] `BG-05.039` Record contract check output.
-- [ ] `BG-05.040` Reconfirm candidate identity.
+- [x] `BG-05.031` Run root TypeScript check.
+- [x] `BG-05.032` Inspect first type failure.
+- [x] `BG-05.033` Resolve real contract mismatch.
+- [x] `BG-05.034` Run shared contracts check.
+- [x] `BG-05.035` Inspect API field compatibility.
+- [x] `BG-05.036` Check Web import compatibility.
+- [x] `BG-05.037` Verify no unsafe cast workaround.
+- [x] `BG-05.038` Check generated binding compatibility.
+- [x] `BG-05.039` Record contract check output.
+- [x] `BG-05.040` Reconfirm candidate identity.
 
 #### BG-05 / 05 — Automated suites
 
-- [ ] `BG-05.041` Run Node test suite.
-- [ ] `BG-05.042` Record Node file count.
-- [ ] `BG-05.043` Record Node test count.
-- [ ] `BG-05.044` Run Worker D1 suite.
-- [ ] `BG-05.045` Confirm dated usage regression passes.
-- [ ] `BG-05.046` Record D1 file count.
-- [ ] `BG-05.047` Record D1 test count.
-- [ ] `BG-05.048` Run Web test suite.
-- [ ] `BG-05.049` Record Web test count.
-- [ ] `BG-05.050` Report skipped tests separately.
+- [x] `BG-05.041` Run Node test suite.
+- [x] `BG-05.042` Record Node file count.
+- [x] `BG-05.043` Record Node test count.
+- [x] `BG-05.044` Run Worker D1 suite.
+- [x] `BG-05.045` Confirm dated usage regression passes.
+- [x] `BG-05.046` Record D1 file count.
+- [x] `BG-05.047` Record D1 test count.
+- [x] `BG-05.048` Run Web test suite.
+- [x] `BG-05.049` Record Web test count.
+- [x] `BG-05.050` Report skipped tests separately.
 
 #### BG-05 / 06 — Migration evidence
 
-- [ ] `BG-05.051` Choose empty local state.
-- [ ] `BG-05.052` List migration files in order.
-- [ ] `BG-05.053` Apply complete migration chain.
-- [ ] `BG-05.054` Check command exit status.
-- [ ] `BG-05.055` Read applied migration ledger.
-- [ ] `BG-05.056` Compare expected migration count.
-- [ ] `BG-05.057` Run foreign-key validation where supported.
-- [ ] `BG-05.058` Verify essential tables exist.
-- [ ] `BG-05.059` Verify FTS index exists.
-- [ ] `BG-05.060` Save fresh-migration evidence.
+- [x] `BG-05.051` Choose empty local state.
+- [x] `BG-05.052` List migration files in order.
+- [x] `BG-05.053` Apply complete migration chain.
+- [x] `BG-05.054` Check command exit status.
+- [x] `BG-05.055` Read applied migration ledger.
+- [x] `BG-05.056` Compare expected migration count.
+- [x] `BG-05.057` Run foreign-key validation where supported.
+- [x] `BG-05.058` Verify essential tables exist.
+- [x] `BG-05.059` Verify FTS index exists.
+- [x] `BG-05.060` Save fresh-migration evidence.
 
 #### BG-05 / 07 — Artifact evidence
 
-- [ ] `BG-05.061` Build Web production assets.
-- [ ] `BG-05.062` Record build outcome.
-- [ ] `BG-05.063` Check artifact directory contents.
-- [ ] `BG-05.064` Run Worker deployment dry run.
-- [ ] `BG-05.065` Record bundle outcome.
-- [ ] `BG-05.066` Verify no deployment occurred.
-- [ ] `BG-05.067` Check binding names safely.
-- [ ] `BG-05.068` Record toolchain versions.
-- [ ] `BG-05.069` Associate artifacts with SHA.
-- [ ] `BG-05.070` Note later hosting work boundary.
+- [x] `BG-05.061` Build Web production assets.
+- [x] `BG-05.062` Record build outcome.
+- [x] `BG-05.063` Check artifact directory contents.
+- [x] `BG-05.064` Run Worker deployment dry run.
+- [x] `BG-05.065` Record bundle outcome.
+- [x] `BG-05.066` Verify no deployment occurred.
+- [x] `BG-05.067` Check binding names safely.
+- [x] `BG-05.068` Record toolchain versions.
+- [x] `BG-05.069` Associate artifacts with SHA.
+- [x] `BG-05.070` Note later hosting work boundary.
 
 #### BG-05 / 08 — Smoke evidence
 
-- [ ] `BG-05.071` Start isolated API state.
-- [ ] `BG-05.072` Run corrected smoke verifier.
-- [ ] `BG-05.073` Confirm supported stages complete.
-- [ ] `BG-05.074` Preserve nonzero failures honestly.
-- [ ] `BG-05.075` Record duplicate/replay result.
-- [ ] `BG-05.076` Record privacy sequence result.
-- [ ] `BG-05.077` Record attachment byte result.
-- [ ] `BG-05.078` Separate known browser-download reproduction.
-- [ ] `BG-05.079` Separate known URL-processing reproduction.
-- [ ] `BG-05.080` Shut down owned smoke processes.
+- [x] `BG-05.071` Start isolated API state.
+- [x] `BG-05.072` Run corrected smoke verifier.
+- [x] `BG-05.073` Confirm supported stages complete.
+- [x] `BG-05.074` Preserve nonzero failures honestly.
+- [x] `BG-05.075` Record duplicate/replay result.
+- [x] `BG-05.076` Record privacy sequence result.
+- [x] `BG-05.077` Record attachment byte result.
+- [x] `BG-05.078` Separate known browser-download reproduction.
+- [x] `BG-05.079` Separate known URL-processing reproduction.
+- [x] `BG-05.080` Shut down owned smoke processes.
 
 #### BG-05 / 09 — Gate reconciliation
 
-- [ ] `BG-05.081` Compare all required commands.
-- [ ] `BG-05.082` Identify any missing check.
-- [ ] `BG-05.083` Rerun only unresolved check.
-- [ ] `BG-05.084` Reject unrelated passing substitutions.
-- [ ] `BG-05.085` Confirm no expected unit failure.
-- [ ] `BG-05.086` Confirm smoke limitation labels.
-- [ ] `BG-05.087` Record gate date and timezone.
-- [ ] `BG-05.088` Summarize remaining Priority 2 work.
-- [ ] `BG-05.089` Save one candidate evidence index.
-- [ ] `BG-05.090` Prepare Priority 1 completion decision.
+- [x] `BG-05.081` Compare all required commands.
+- [x] `BG-05.082` Identify any missing check.
+- [x] `BG-05.083` Rerun only unresolved check.
+- [x] `BG-05.084` Reject unrelated passing substitutions.
+- [x] `BG-05.085` Confirm no expected unit failure.
+- [x] `BG-05.086` Confirm smoke limitation labels.
+- [x] `BG-05.087` Record gate date and timezone.
+- [x] `BG-05.088` Summarize remaining Priority 2 work.
+- [x] `BG-05.089` Save one candidate evidence index.
+- [x] `BG-05.090` Prepare Priority 1 completion decision.
 
 #### BG-05 / 10 — Verify and close this task
 
-- [ ] `BG-05.091` **Review:** Compare the completed checklist with BG-05's stated outcome; identify uncovered behavior.
-- [ ] `BG-05.092` **Verification:** Run or inspect the focused proof required by BG-05; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-05.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-05.094` **Integrity:** Check that BG-05 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-05.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-05.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-05.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-05.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-05.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-05.100` **Gate:** Check the parent completion boundary and record whether BG-06 is unlocked.
+- [x] `BG-05.091` **Review:** Compare the completed checklist with BG-05's stated outcome; identify uncovered behavior.
+- [x] `BG-05.092` **Verification:** Run or inspect the focused proof required by BG-05; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-05.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-05.094` **Integrity:** Check that BG-05 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-05.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-05.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-05.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-05.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-05.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-05.100` **Gate:** Check the parent completion boundary and record whether BG-06 is unlocked.
 
 ## BG-06 — 100 executable microtasks
 
