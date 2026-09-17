@@ -10,15 +10,15 @@ This reconciliation maps the authoritative `BG-05.001`–`BG-05.100` checklist t
 
 ## Evidence index
 
-| Evidence | Purpose |
-|---|---|
-| `BG-05_PRIORITY_1_GATE.md` | candidate identity, authorization boundary, exact-SHA gate and completion decision |
-| `BG-05_TEST_SUITE_EVIDENCE.md` | release verifier, Node, D1 and Web suite counts |
-| `BG-05_MIGRATION_EVIDENCE.md` | complete fresh local 18-migration chain |
-| `BG-05_WEB_ARTIFACT_EVIDENCE.md` | production Web build and artifact sizes |
-| `BG-05_RUNTIME_EVIDENCE.md` | Worker dry-run, isolated smoke, unavailable-stage accounting and cleanup |
-| GitHub Actions CI run #150 | exact-candidate repository gate |
-| BG-05 Candidate Proof run `35263570610` | exact-candidate Worker dry-run and local smoke proof |
+| Evidence                                | Purpose                                                                            |
+| --------------------------------------- | ---------------------------------------------------------------------------------- |
+| `BG-05_PRIORITY_1_GATE.md`              | candidate identity, authorization boundary, exact-SHA gate and completion decision |
+| `BG-05_TEST_SUITE_EVIDENCE.md`          | release verifier, Node, D1 and Web suite counts                                    |
+| `BG-05_MIGRATION_EVIDENCE.md`           | complete fresh local 18-migration chain                                            |
+| `BG-05_WEB_ARTIFACT_EVIDENCE.md`        | production Web build and artifact sizes                                            |
+| `BG-05_RUNTIME_EVIDENCE.md`             | Worker dry-run, isolated smoke, unavailable-stage accounting and cleanup           |
+| GitHub Actions CI run #150              | exact-candidate repository gate                                                    |
+| BG-05 Candidate Proof run `35263570610` | exact-candidate Worker dry-run and local smoke proof                               |
 
 ## Group reconciliation
 
