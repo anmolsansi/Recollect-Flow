@@ -51,7 +51,7 @@ jobs:
         run: |
           set -euo pipefail
           cp .dev.vars.example .dev.vars
-          npm run dev:api > /tmp/bg05-api.log 2>&1 &
+          npm run dev:api -- --local > /tmp/bg05-api.log 2>&1 &
           API_PID=$!
           cleanup() {
             kill "$API_PID" 2>/dev/null || true
@@ -78,8 +78,8 @@ jobs:
           WORKER_BASE_URL=http://127.0.0.1:8787 \
           CAPTURE_TOKEN=local-capture-token \
           ADMIN_TOKEN=local-admin-token \
-          node scripts/verify-production-release.mjs | tee /tmp/bg05-smoke.json
+          timeout 180s node scripts/verify-production-release.mjs | tee /tmp/bg05-smoke.json
 
       - name: Confirm proof did not deploy remotely
         run: |
-          echo "Worker command used --dry-run only. Smoke target was 127.0.0.1. No remote migration or deployment command was executed."
+          echo "Worker command used --dry-run only. Smoke target was 127.0.0.1 with wrangler --local. No remote migration or deployment command was executed."
