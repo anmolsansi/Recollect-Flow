@@ -552,7 +552,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-04.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-04.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-04.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-04.100` **Gate:** Check the parent completion boundary and record whether BG-05 is unlocked.
+- [x] `BG-04.100` **Gate:** Check the parent completion boundary and record whether BG-05 is unlocked.
 
 ## BG-05 — 100 executable microtasks
 

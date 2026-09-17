@@ -53,6 +53,24 @@ BG-03 repairs the release verifier rather than the already-correct server contra
 
 The pre-merge reconciliation intentionally stopped at 99/100 because the final action required a green clean-head CI and an actual merge. `BG-03_FINAL_CLOSEOUT.md` records that CI run #130 passed on the exact merged head and PR #28 merged successfully, satisfying BG-03.100 and unlocking BG-04.
 
+### BG-04 — staged smoke story and local setup
+
+Status: **complete; BG-05 unlocked**
+
+- Primary evidence: [`BG-04_SMOKE_STORY_SETUP.md`](BG-04_SMOKE_STORY_SETUP.md)
+- Pre-merge 100-action reconciliation: [`BG-04_CHECKLIST_RECONCILIATION.md`](BG-04_CHECKLIST_RECONCILIATION.md)
+- Post-merge final closeout: [`BG-04_FINAL_CLOSEOUT.md`](BG-04_FINAL_CLOSEOUT.md) — authoritative 100/100 completion record
+- GitHub tracking: issue #31 and merged PR #32
+- Linear tracking: OPE-324
+- Base `main`: `67c9ec7df369ca4f3413a40d97ceab03f23e4495`
+- Implementation gate: GitHub Actions CI run #143
+- Final clean-head gate: GitHub Actions CI run #147
+- Merged `main` commit: `feb568f6438bc7068520fb654ca933238b9f8c28`
+
+BG-04 turns the release verifier into truthful staged evidence. It reports passed, failed and unavailable stages, preserves earlier stage evidence on failure, requires explicit opt-in for non-local targets, separates exact replay from normalized duplicates, verifies provenance/raw retrieval and version-aware privacy behavior, proves attachment byte integrity without claiming extraction, keeps known later capabilities visibly unavailable, exercises edit/delete/restore/search/export smoke paths, and repairs the root two-terminal local startup instructions.
+
+The pre-merge reconciliation intentionally stopped at 99/100 because the final action required a green documentation-complete CI and an actual merge. `BG-04_FINAL_CLOSEOUT.md` records CI run #147 on the exact merged head and PR #32's merge, satisfying BG-04.100 and unlocking BG-05.
+
 ## Evidence rules
 
 - Tie claims to a revision and environment.
