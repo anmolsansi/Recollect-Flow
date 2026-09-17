@@ -426,132 +426,132 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-04 / 01 — Establish task context
 
-- [ ] `BG-04.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-04.002` **Dependency:** Verify BG-03's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-04.003` **Baseline:** Record the actual checkout or release candidate used for BG-04.
-- [ ] `BG-04.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-04.005` **Evidence:** Check whether existing evidence already satisfies any BG-04 step; reference it instead of manufacturing work.
-- [ ] `BG-04.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-04.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-04.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-04.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-04.010` **Tracking:** Open a BG-04 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-04.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-04.002` **Dependency:** Verify BG-03's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-04.003` **Baseline:** Record the actual checkout or release candidate used for BG-04.
+- [x] `BG-04.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-04.005` **Evidence:** Check whether existing evidence already satisfies any BG-04 step; reference it instead of manufacturing work.
+- [x] `BG-04.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-04.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-04.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-04.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-04.010` **Tracking:** Open a BG-04 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-04 / 02 — Scenario inventory
 
-- [ ] `BG-04.011` List existing smoke stages.
-- [ ] `BG-04.012` Mark formerly unreachable stages.
-- [ ] `BG-04.013` Map each stage to route.
-- [ ] `BG-04.014` Read current response envelopes.
-- [ ] `BG-04.015` Identify hardcoded policy version.
-- [ ] `BG-04.016` Identify hardcoded fallback list.
-- [ ] `BG-04.017` Separate eligibility from capability.
-- [ ] `BG-04.018` Identify attachment byte fixture.
-- [ ] `BG-04.019` Identify missing browser auth stage.
-- [ ] `BG-04.020` Record required smoke coverage.
+- [x] `BG-04.011` List existing smoke stages.
+- [x] `BG-04.012` Mark formerly unreachable stages.
+- [x] `BG-04.013` Map each stage to route.
+- [x] `BG-04.014` Read current response envelopes.
+- [x] `BG-04.015` Identify hardcoded policy version.
+- [x] `BG-04.016` Identify hardcoded fallback list.
+- [x] `BG-04.017` Separate eligibility from capability.
+- [x] `BG-04.018` Identify attachment byte fixture.
+- [x] `BG-04.019` Identify missing browser auth stage.
+- [x] `BG-04.020` Record required smoke coverage.
 
 #### BG-04 / 03 — Runner structure
 
-- [ ] `BG-04.021` Assign unique run marker.
-- [ ] `BG-04.022` Label each scenario explicitly.
-- [ ] `BG-04.023` Store stage start timestamp.
-- [ ] `BG-04.024` Record expected status per stage.
-- [ ] `BG-04.025` Record actual status per stage.
-- [ ] `BG-04.026` Preserve first failure cause.
-- [ ] `BG-04.027` Report completed earlier stages.
-- [ ] `BG-04.028` Exit nonzero on failure.
-- [ ] `BG-04.029` Avoid credential-bearing diagnostics.
-- [ ] `BG-04.030` Reject implicit production target.
+- [x] `BG-04.021` Assign unique run marker.
+- [x] `BG-04.022` Label each scenario explicitly.
+- [x] `BG-04.023` Store stage start timestamp.
+- [x] `BG-04.024` Record expected status per stage.
+- [x] `BG-04.025` Record actual status per stage.
+- [x] `BG-04.026` Preserve first failure cause.
+- [x] `BG-04.027` Report completed earlier stages.
+- [x] `BG-04.028` Exit nonzero on failure.
+- [x] `BG-04.029` Avoid credential-bearing diagnostics.
+- [x] `BG-04.030` Reject implicit production target.
 
 #### BG-04 / 04 — Capture cases
 
-- [ ] `BG-04.031` Create URL fixture.
-- [ ] `BG-04.032` Replay identical capture request.
-- [ ] `BG-04.033` Compare canonical IDs.
-- [ ] `BG-04.034` Compare replay flag.
-- [ ] `BG-04.035` Create normalized duplicate URL.
-- [ ] `BG-04.036` Use fresh duplicate key.
-- [ ] `BG-04.037` Preserve second user reason.
-- [ ] `BG-04.038` Inspect capture event history.
-- [ ] `BG-04.039` Confirm no accidental extra item.
-- [ ] `BG-04.040` Verify raw retrieval without AI.
+- [x] `BG-04.031` Create URL fixture.
+- [x] `BG-04.032` Replay identical capture request.
+- [x] `BG-04.033` Compare canonical IDs.
+- [x] `BG-04.034` Compare replay flag.
+- [x] `BG-04.035` Create normalized duplicate URL.
+- [x] `BG-04.036` Use fresh duplicate key.
+- [x] `BG-04.037` Preserve second user reason.
+- [x] `BG-04.038` Inspect capture event history.
+- [x] `BG-04.039` Confirm no accidental extra item.
+- [x] `BG-04.040` Verify raw retrieval without AI.
 
 #### BG-04 / 05 — Privacy cases
 
-- [ ] `BG-04.041` Read current policy contract.
-- [ ] `BG-04.042` Update current version handling.
-- [ ] `BG-04.043` Check Public eligibility.
-- [ ] `BG-04.044` Check Personal without consent.
-- [ ] `BG-04.045` Check compliant Personal controls.
-- [ ] `BG-04.046` Check Sensitive no-AI result.
-- [ ] `BG-04.047` Verify no silent fallback.
-- [ ] `BG-04.048` Check malformed consent rejection.
-- [ ] `BG-04.049` Verify source remains intact.
-- [ ] `BG-04.050` Label adapter execution separately.
+- [x] `BG-04.041` Read current policy contract.
+- [x] `BG-04.042` Update current version handling.
+- [x] `BG-04.043` Check Public eligibility.
+- [x] `BG-04.044` Check Personal without consent.
+- [x] `BG-04.045` Check compliant Personal controls.
+- [x] `BG-04.046` Check Sensitive no-AI result.
+- [x] `BG-04.047` Verify no silent fallback.
+- [x] `BG-04.048` Check malformed consent rejection.
+- [x] `BG-04.049` Verify source remains intact.
+- [x] `BG-04.050` Label adapter execution separately.
 
 #### BG-04 / 06 — Attachment cases
 
-- [ ] `BG-04.051` Initialize synthetic upload.
-- [ ] `BG-04.052` Upload original bytes.
-- [ ] `BG-04.053` Finalize checksum validation.
-- [ ] `BG-04.054` Link finalized attachment.
-- [ ] `BG-04.055` Download with allowed bearer.
-- [ ] `BG-04.056` Compare byte length.
-- [ ] `BG-04.057` Compare SHA-256 checksum.
-- [ ] `BG-04.058` Reject anonymous download.
-- [ ] `BG-04.059` Label signature-only PDF purpose.
-- [ ] `BG-04.060` Add parseable PDF fixture separately.
+- [x] `BG-04.051` Initialize synthetic upload.
+- [x] `BG-04.052` Upload original bytes.
+- [x] `BG-04.053` Finalize checksum validation.
+- [x] `BG-04.054` Link finalized attachment.
+- [x] `BG-04.055` Download with allowed bearer.
+- [x] `BG-04.056` Compare byte length.
+- [x] `BG-04.057` Compare SHA-256 checksum.
+- [x] `BG-04.058` Reject anonymous download.
+- [x] `BG-04.059` Label signature-only PDF purpose.
+- [x] `BG-04.060` Add parseable PDF fixture separately.
 
 #### BG-04 / 07 — Review and recovery cases
 
-- [ ] `BG-04.061` Prepare item edit scenario.
-- [ ] `BG-04.062` Fetch current edit version.
-- [ ] `BG-04.063` Verify stale edit rejection.
-- [ ] `BG-04.064` Verify successful derived edit.
-- [ ] `BG-04.065` Soft-delete synthetic item.
-- [ ] `BG-04.066` Check search exclusion.
-- [ ] `BG-04.067` Restore with current version.
-- [ ] `BG-04.068` Check search restoration.
-- [ ] `BG-04.069` Verify JSON export includes item.
-- [ ] `BG-04.070` Keep purge outside default smoke.
+- [x] `BG-04.061` Prepare item edit scenario.
+- [x] `BG-04.062` Fetch current edit version.
+- [x] `BG-04.063` Verify stale edit rejection.
+- [x] `BG-04.064` Verify successful derived edit.
+- [x] `BG-04.065` Soft-delete synthetic item.
+- [x] `BG-04.066` Check search exclusion.
+- [x] `BG-04.067` Restore with current version.
+- [x] `BG-04.068` Check search restoration.
+- [x] `BG-04.069` Verify JSON export includes item.
+- [x] `BG-04.070` Keep purge outside default smoke.
 
 #### BG-04 / 08 — README startup
 
-- [ ] `BG-04.071` Replace nonexistent dev command.
-- [ ] `BG-04.072` Document separate API terminal.
-- [ ] `BG-04.073` Document separate Web terminal.
-- [ ] `BG-04.074` Document required local migrations.
-- [ ] `BG-04.075` Document dummy credential setup.
-- [ ] `BG-04.076` Document API listening port.
-- [ ] `BG-04.077` Document Vite proxy dependency.
-- [ ] `BG-04.078` Document isolated persistence path.
-- [ ] `BG-04.079` Verify commands from repository root.
-- [ ] `BG-04.080` Remove Serviq-specific setup assumptions.
+- [x] `BG-04.071` Replace nonexistent dev command.
+- [x] `BG-04.072` Document separate API terminal.
+- [x] `BG-04.073` Document separate Web terminal.
+- [x] `BG-04.074` Document required local migrations.
+- [x] `BG-04.075` Document dummy credential setup.
+- [x] `BG-04.076` Document API listening port.
+- [x] `BG-04.077` Document Vite proxy dependency.
+- [x] `BG-04.078` Document isolated persistence path.
+- [x] `BG-04.079` Verify commands from repository root.
+- [x] `BG-04.080` Remove Serviq-specific setup assumptions.
 
 #### BG-04 / 09 — Smoke boundaries
 
-- [ ] `BG-04.081` Label local versus remote runs.
-- [ ] `BG-04.082` Print safe target origin.
-- [ ] `BG-04.083` Require explicit remote selection.
-- [ ] `BG-04.084` Limit fixture cleanup scope.
-- [ ] `BG-04.085` Avoid arbitrary owner-item deletion.
-- [ ] `BG-04.086` Keep live delivery opt-in.
-- [ ] `BG-04.087` Run every supported local stage.
-- [ ] `BG-04.088` Record known later-stage defects.
-- [ ] `BG-04.089` Preserve true stage failures.
-- [ ] `BG-04.090` Record verifier coverage boundary.
+- [x] `BG-04.081` Label local versus remote runs.
+- [x] `BG-04.082` Print safe target origin.
+- [x] `BG-04.083` Require explicit remote selection.
+- [x] `BG-04.084` Limit fixture cleanup scope.
+- [x] `BG-04.085` Avoid arbitrary owner-item deletion.
+- [x] `BG-04.086` Keep live delivery opt-in.
+- [x] `BG-04.087` Run every supported local stage.
+- [x] `BG-04.088` Record known later-stage defects.
+- [x] `BG-04.089` Preserve true stage failures.
+- [x] `BG-04.090` Record verifier coverage boundary.
 
 #### BG-04 / 10 — Verify and close this task
 
-- [ ] `BG-04.091` **Review:** Compare the completed checklist with BG-04's stated outcome; identify uncovered behavior.
-- [ ] `BG-04.092` **Verification:** Run or inspect the focused proof required by BG-04; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-04.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-04.094` **Integrity:** Check that BG-04 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-04.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-04.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-04.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-04.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-04.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-04.091` **Review:** Compare the completed checklist with BG-04's stated outcome; identify uncovered behavior.
+- [x] `BG-04.092` **Verification:** Run or inspect the focused proof required by BG-04; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-04.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-04.094` **Integrity:** Check that BG-04 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-04.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-04.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-04.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-04.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-04.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-04.100` **Gate:** Check the parent completion boundary and record whether BG-05 is unlocked.
 
 ## BG-05 — 100 executable microtasks
