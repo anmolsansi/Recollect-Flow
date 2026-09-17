@@ -71,6 +71,26 @@ BG-04 turns the release verifier into truthful staged evidence. It reports passe
 
 The pre-merge reconciliation intentionally stopped at 99/100 because the final action required a green documentation-complete CI and an actual merge. `BG-04_FINAL_CLOSEOUT.md` records CI run #147 on the exact merged head and PR #32's merge, satisfying BG-04.100 and unlocking BG-05.
 
+### BG-05 — complete Priority 1 gate
+
+Status: **candidate gate proven; implementation merge pending; BG-06 locked**
+
+- Primary evidence: [`BG-05_PRIORITY_1_GATE.md`](BG-05_PRIORITY_1_GATE.md)
+- Automated-suite evidence: [`BG-05_TEST_SUITE_EVIDENCE.md`](BG-05_TEST_SUITE_EVIDENCE.md)
+- Fresh-migration evidence: [`BG-05_MIGRATION_EVIDENCE.md`](BG-05_MIGRATION_EVIDENCE.md)
+- Web-artifact evidence: [`BG-05_WEB_ARTIFACT_EVIDENCE.md`](BG-05_WEB_ARTIFACT_EVIDENCE.md)
+- Worker/smoke evidence: [`BG-05_RUNTIME_EVIDENCE.md`](BG-05_RUNTIME_EVIDENCE.md)
+- Pre-merge reconciliation: [`BG-05_CHECKLIST_RECONCILIATION.md`](BG-05_CHECKLIST_RECONCILIATION.md)
+- GitHub tracking: issue #34
+- Linear tracking: OPE-325
+- Verification candidate: `3179b1d1601142d8d071285d06aa3630e3f0742c`
+- Exact-candidate repository gate: GitHub Actions CI run #150
+- Exact-candidate Worker/smoke proof: BG-05 Candidate Proof run `35263570610`
+
+BG-05 reuses the green exact-SHA repository gate and adds the two missing operational proofs without changing application source. The candidate passes formatting, lint, type contracts, 5 release-verifier regressions, 132 Node tests, 116 Worker D1 tests, 9 Web tests, the production Web build and all 18 fresh local migrations. A separate exact-candidate proof passes the Worker deployment dry-run and corrected local smoke with 24 passed, 0 failed and 4 explicitly unavailable later-stage capabilities.
+
+The task-specific proof workflow was removed after producing immutable Actions evidence. No production deployment, remote migration, live external delivery or production credential use occurred. The pre-merge reconciliation intentionally remains at 99/100 until the evidence PR is merged and the resulting `main` SHA is recorded. BG-06 stays locked until that post-merge closeout.
+
 ## Evidence rules
 
 - Tie claims to a revision and environment.
