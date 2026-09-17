@@ -371,7 +371,10 @@ async function createVerifierServer({
     ) {
       if (body?.edit_version !== itemVersion) {
         json(response, 409, {
-          error: { code: 'VERSION_CONFLICT', message: 'Item version conflict.' },
+          error: {
+            code: 'VERSION_CONFLICT',
+            message: 'Item version conflict.',
+          },
         });
         return;
       }

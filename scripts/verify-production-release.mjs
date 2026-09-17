@@ -861,7 +861,10 @@ async function main() {
         body.data?.attachment_id,
         'Upload init did not return an attachment ID.',
       );
-      assert(body.data?.upload_url, 'Upload init did not return an upload URL.');
+      assert(
+        body.data?.upload_url,
+        'Upload init did not return an upload URL.',
+      );
       return body;
     },
   );
@@ -1135,7 +1138,10 @@ async function main() {
         200,
         'item-search-after-delete',
       );
-      assert(Array.isArray(search?.data), 'Search response data was not an array.');
+      assert(
+        Array.isArray(search?.data),
+        'Search response data was not an array.',
+      );
       assert(
         !search.data.some((item) => item.id === itemId),
         'Soft-deleted item remained visible in default search.',
@@ -1182,7 +1188,10 @@ async function main() {
         'Restored item did not reappear in default search.',
       );
       const detail = await readItemDetail(itemId, 'item-restore:refetch');
-      assert(detail.state.deletedAt === null, 'Restored item remained deleted.');
+      assert(
+        detail.state.deletedAt === null,
+        'Restored item remained deleted.',
+      );
       assert(
         detail.state.editVersion === returnedVersion,
         'Restored item refetch did not match the returned edit version.',
@@ -1206,7 +1215,10 @@ async function main() {
         body?.format === 'recollectflow-portable-export',
         'JSON export did not return the portable export envelope.',
       );
-      assert(Array.isArray(body?.items), 'JSON export items were not an array.');
+      assert(
+        Array.isArray(body?.items),
+        'JSON export items were not an array.',
+      );
       assert(
         body.items.some((entry) => entry?.item?.id === itemId),
         'JSON export did not include the restored run-owned item.',
