@@ -702,132 +702,132 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-06 / 01 — Establish task context
 
-- [ ] `BG-06.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-06.002` **Dependency:** Verify BG-05's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-06.003` **Baseline:** Record the actual checkout or release candidate used for BG-06.
-- [ ] `BG-06.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-06.005` **Evidence:** Check whether existing evidence already satisfies any BG-06 step; reference it instead of manufacturing work.
-- [ ] `BG-06.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-06.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-06.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-06.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-06.010` **Tracking:** Open a BG-06 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-06.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-06.002` **Dependency:** Verify BG-05's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-06.003` **Baseline:** Record the actual checkout or release candidate used for BG-06.
+- [x] `BG-06.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-06.005` **Evidence:** Check whether existing evidence already satisfies any BG-06 step; reference it instead of manufacturing work.
+- [x] `BG-06.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-06.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-06.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-06.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-06.010` **Tracking:** Open a BG-06 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-06 / 02 — Middleware mapping
 
-- [ ] `BG-06.011` Locate attachment router creation.
-- [ ] `BG-06.012` Read wildcard attachment guard.
-- [ ] `BG-06.013` Read wildcard upload guard.
-- [ ] `BG-06.014` Read content route registration.
-- [ ] `BG-06.015` Read deletion second guard.
-- [ ] `BG-06.016` Read usage second guard.
-- [ ] `BG-06.017` Trace cookie validation helper.
-- [ ] `BG-06.018` Trace bearer validation helper.
-- [ ] `BG-06.019` Record actual middleware order.
-- [ ] `BG-06.020` Identify rejection before content lookup.
+- [x] `BG-06.011` Locate attachment router creation.
+- [x] `BG-06.012` Read wildcard attachment guard.
+- [x] `BG-06.013` Read wildcard upload guard.
+- [x] `BG-06.014` Read content route registration.
+- [x] `BG-06.015` Read deletion second guard.
+- [x] `BG-06.016` Read usage second guard.
+- [x] `BG-06.017` Trace cookie validation helper.
+- [x] `BG-06.018` Trace bearer validation helper.
+- [x] `BG-06.019` Record actual middleware order.
+- [x] `BG-06.020` Identify rejection before content lookup.
 
 #### BG-06 / 03 — Permission inventory
 
-- [ ] `BG-06.021` List anonymous content request.
-- [ ] `BG-06.022` List invalid bearer request.
-- [ ] `BG-06.023` List capture bearer request.
-- [ ] `BG-06.024` List admin bearer request.
-- [ ] `BG-06.025` List admin cookie request.
-- [ ] `BG-06.026` List local-worker token request.
-- [ ] `BG-06.027` List expired cookie request.
-- [ ] `BG-06.028` List tampered cookie request.
-- [ ] `BG-06.029` List mixed cookie/header request.
-- [ ] `BG-06.030` Assign expected permission per identity.
+- [x] `BG-06.021` List anonymous content request.
+- [x] `BG-06.022` List invalid bearer request.
+- [x] `BG-06.023` List capture bearer request.
+- [x] `BG-06.024` List admin bearer request.
+- [x] `BG-06.025` List admin cookie request.
+- [x] `BG-06.026` List local-worker token request.
+- [x] `BG-06.027` List expired cookie request.
+- [x] `BG-06.028` List tampered cookie request.
+- [x] `BG-06.029` List mixed cookie/header request.
+- [x] `BG-06.030` Assign expected permission per identity.
 
 #### BG-06 / 04 — Read boundary
 
-- [ ] `BG-06.031` Separate content reads from writes.
-- [ ] `BG-06.032` Identify intended attachment statuses.
-- [ ] `BG-06.033` Identify purged attachment handling.
-- [ ] `BG-06.034` Identify unlinked attachment handling.
-- [ ] `BG-06.035` Identify missing object behavior.
-- [ ] `BG-06.036` Keep object keys server-owned.
-- [ ] `BG-06.037` Preserve canonical ownership checks.
-- [ ] `BG-06.038` Specify safe error disclosure.
-- [ ] `BG-06.039` Specify private response caching.
-- [ ] `BG-06.040` Record content-read contract.
+- [x] `BG-06.031` Separate content reads from writes.
+- [x] `BG-06.032` Identify intended attachment statuses.
+- [x] `BG-06.033` Identify purged attachment handling.
+- [x] `BG-06.034` Identify unlinked attachment handling.
+- [x] `BG-06.035` Identify missing object behavior.
+- [x] `BG-06.036` Keep object keys server-owned.
+- [x] `BG-06.037` Preserve canonical ownership checks.
+- [x] `BG-06.038` Specify safe error disclosure.
+- [x] `BG-06.039` Specify private response caching.
+- [x] `BG-06.040` Record content-read contract.
 
 #### BG-06 / 05 — Credential precedence
 
-- [ ] `BG-06.041` Inspect existing precedence behavior.
-- [ ] `BG-06.042` Choose valid-cookie mixed-header rule.
-- [ ] `BG-06.043` Choose invalid-cookie valid-bearer rule.
-- [ ] `BG-06.044` Choose wrong-scope header behavior.
-- [ ] `BG-06.045` Preserve constant-time comparison helper.
-- [ ] `BG-06.046` Preserve signed-cookie verification helper.
-- [ ] `BG-06.047` Avoid client-supplied role trust.
-- [ ] `BG-06.048` Avoid raw token query parameters.
-- [ ] `BG-06.049` Avoid duplicated cryptographic code.
-- [ ] `BG-06.050` Document mixed-identity outcomes.
+- [x] `BG-06.041` Inspect existing precedence behavior.
+- [x] `BG-06.042` Choose valid-cookie mixed-header rule.
+- [x] `BG-06.043` Choose invalid-cookie valid-bearer rule.
+- [x] `BG-06.044` Choose wrong-scope header behavior.
+- [x] `BG-06.045` Preserve constant-time comparison helper.
+- [x] `BG-06.046` Preserve signed-cookie verification helper.
+- [x] `BG-06.047` Avoid client-supplied role trust.
+- [x] `BG-06.048` Avoid raw token query parameters.
+- [x] `BG-06.049` Avoid duplicated cryptographic code.
+- [x] `BG-06.050` Document mixed-identity outcomes.
 
 #### BG-06 / 06 — Guard design
 
-- [ ] `BG-06.051` Choose route-specific read guard.
-- [ ] `BG-06.052` Name guard by capability.
-- [ ] `BG-06.053` Define accepted credential forms.
-- [ ] `BG-06.054` Leave upload expansion separate.
-- [ ] `BG-06.055` Keep destructive admin guard.
-- [ ] `BG-06.056` Remove only conflicting path guard.
-- [ ] `BG-06.057` Ensure correct registration order.
-- [ ] `BG-06.058` Preserve existing error vocabulary.
-- [ ] `BG-06.059` Keep local-worker scope narrow.
-- [ ] `BG-06.060` Review route-by-route authorization change.
+- [x] `BG-06.051` Choose route-specific read guard.
+- [x] `BG-06.052` Name guard by capability.
+- [x] `BG-06.053` Define accepted credential forms.
+- [x] `BG-06.054` Leave upload expansion separate.
+- [x] `BG-06.055` Keep destructive admin guard.
+- [x] `BG-06.056` Remove only conflicting path guard.
+- [x] `BG-06.057` Ensure correct registration order.
+- [x] `BG-06.058` Preserve existing error vocabulary.
+- [x] `BG-06.059` Keep local-worker scope narrow.
+- [x] `BG-06.060` Review route-by-route authorization change.
 
 #### BG-06 / 07 — Positive fixtures
 
-- [ ] `BG-06.061` Create linked attachment fixture.
-- [ ] `BG-06.062` Issue capture bearer content request.
-- [ ] `BG-06.063` Assert allowed baseline access.
-- [ ] `BG-06.064` Issue admin bearer content request.
-- [ ] `BG-06.065` Assert admin access.
-- [ ] `BG-06.066` Create signed admin cookie.
-- [ ] `BG-06.067` Issue cookie-only content request.
-- [ ] `BG-06.068` Assert cookie reaches lookup.
-- [ ] `BG-06.069` Verify exact attachment selected.
-- [ ] `BG-06.070` Verify correct object bytes returned.
+- [x] `BG-06.061` Create linked attachment fixture.
+- [x] `BG-06.062` Issue capture bearer content request.
+- [x] `BG-06.063` Assert allowed baseline access.
+- [x] `BG-06.064` Issue admin bearer content request.
+- [x] `BG-06.065` Assert admin access.
+- [x] `BG-06.066` Create signed admin cookie.
+- [x] `BG-06.067` Issue cookie-only content request.
+- [x] `BG-06.068` Assert cookie reaches lookup.
+- [x] `BG-06.069` Verify exact attachment selected.
+- [x] `BG-06.070` Verify correct object bytes returned.
 
 #### BG-06 / 08 — Negative fixtures
 
-- [ ] `BG-06.071` Request content anonymously.
-- [ ] `BG-06.072` Request content with invalid token.
-- [ ] `BG-06.073` Request content with worker token.
-- [ ] `BG-06.074` Request content with expired cookie.
-- [ ] `BG-06.075` Request content with tampered cookie.
-- [ ] `BG-06.076` Assert each required denial.
-- [ ] `BG-06.077` Request admin deletion with capture token.
-- [ ] `BG-06.078` Confirm deletion stays denied.
-- [ ] `BG-06.079` Check missing object after authorization.
-- [ ] `BG-06.080` Confirm no unintended object exposure.
+- [x] `BG-06.071` Request content anonymously.
+- [x] `BG-06.072` Request content with invalid token.
+- [x] `BG-06.073` Request content with worker token.
+- [x] `BG-06.074` Request content with expired cookie.
+- [x] `BG-06.075` Request content with tampered cookie.
+- [x] `BG-06.076` Assert each required denial.
+- [x] `BG-06.077` Request admin deletion with capture token.
+- [x] `BG-06.078` Confirm deletion stays denied.
+- [x] `BG-06.079` Check missing object after authorization.
+- [x] `BG-06.080` Confirm no unintended object exposure.
 
 #### BG-06 / 09 — Contract closure
 
-- [ ] `BG-06.081` Run focused auth route checks.
-- [ ] `BG-06.082` Run attachment route checks.
-- [ ] `BG-06.083` Check mixed-identity matrix.
-- [ ] `BG-06.084` Compare existing capture permissions.
-- [ ] `BG-06.085` Compare existing deletion permissions.
-- [ ] `BG-06.086` Record middleware ordering evidence.
-- [ ] `BG-06.087` Record unresolved status policy choices.
-- [ ] `BG-06.088` Link matrix to source locations.
-- [ ] `BG-06.089` Identify browser proof prerequisite.
-- [ ] `BG-06.090` Freeze read-authorization decision.
+- [x] `BG-06.081` Run focused auth route checks.
+- [x] `BG-06.082` Run attachment route checks.
+- [x] `BG-06.083` Check mixed-identity matrix.
+- [x] `BG-06.084` Compare existing capture permissions.
+- [x] `BG-06.085` Compare existing deletion permissions.
+- [x] `BG-06.086` Record middleware ordering evidence.
+- [x] `BG-06.087` Record unresolved status policy choices.
+- [x] `BG-06.088` Link matrix to source locations.
+- [x] `BG-06.089` Identify browser proof prerequisite.
+- [x] `BG-06.090` Freeze read-authorization decision.
 
 #### BG-06 / 10 — Verify and close this task
 
-- [ ] `BG-06.091` **Review:** Compare the completed checklist with BG-06's stated outcome; identify uncovered behavior.
-- [ ] `BG-06.092` **Verification:** Run or inspect the focused proof required by BG-06; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-06.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-06.094` **Integrity:** Check that BG-06 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-06.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-06.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-06.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-06.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-06.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-06.091` **Review:** Compare the completed checklist with BG-06's stated outcome; identify uncovered behavior.
+- [x] `BG-06.092` **Verification:** Run or inspect the focused proof required by BG-06; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-06.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-06.094` **Integrity:** Check that BG-06 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-06.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-06.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-06.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-06.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-06.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-06.100` **Gate:** Check the parent completion boundary and record whether BG-07 is unlocked.
 
 ## BG-07 — 100 executable microtasks
