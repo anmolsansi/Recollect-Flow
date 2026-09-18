@@ -207,10 +207,7 @@ async function initialize(
   };
 }
 
-async function createFinalizedPdf(
-  app: ReturnType<typeof createApp>,
-  env: Env,
-) {
+async function createFinalizedPdf(app: ReturnType<typeof createApp>, env: Env) {
   const bytes = new TextEncoder().encode('%PDF-1.7\nread-auth-fixture').buffer;
   const initialized = await initialize(app, env, {
     filename: 'read-auth.pdf',
