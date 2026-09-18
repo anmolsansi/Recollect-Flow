@@ -18,15 +18,15 @@ The mismatch was an authentication-boundary problem, not an R2 or attachment-lif
 
 BG-06 defines the permission matrix below for the attachment content capability.
 
-| Request identity | `GET /api/v1/attachments/:id/content` | Attachment upload/write | `DELETE /api/v1/attachments/:id` |
-| --- | --- | --- | --- |
-| Anonymous | deny | deny | deny |
-| Invalid bearer | deny | deny | deny |
-| Valid capture bearer | allow | preserve existing capture scope | deny |
-| Valid admin bearer | allow | preserve existing bearer behavior | allow |
-| Valid signed admin session cookie | allow | do not broaden in BG-06 | preserve current denial in BG-06 |
-| Local-worker bearer alone | deny | local-worker routes only | deny |
-| Tampered or cleared browser session | deny | deny | deny |
+| Request identity                    | `GET /api/v1/attachments/:id/content` | Attachment upload/write           | `DELETE /api/v1/attachments/:id` |
+| ----------------------------------- | ------------------------------------- | --------------------------------- | -------------------------------- |
+| Anonymous                           | deny                                  | deny                              | deny                             |
+| Invalid bearer                      | deny                                  | deny                              | deny                             |
+| Valid capture bearer                | allow                                 | preserve existing capture scope   | deny                             |
+| Valid admin bearer                  | allow                                 | preserve existing bearer behavior | allow                            |
+| Valid signed admin session cookie   | allow                                 | do not broaden in BG-06           | preserve current denial in BG-06 |
+| Local-worker bearer alone           | deny                                  | local-worker routes only          | deny                             |
+| Tampered or cleared browser session | deny                                  | deny                              | deny                             |
 
 The admin session cookie is not trusted by name or value alone. It is verified through Hono's existing signed-cookie mechanism with the configured admin secret and must decode to the existing `authenticated` value.
 
