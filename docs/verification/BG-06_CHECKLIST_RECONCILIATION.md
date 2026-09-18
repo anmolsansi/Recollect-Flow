@@ -1,6 +1,6 @@
 # BG-06 — Checklist Reconciliation
 
-Status: **99 / 100 complete before merge**
+Status: **100 / 100 complete on closeout branch; closeout PR CI/merge pending**
 
 Tracking: GitHub #38 / PR #39 / Linear OPE-326
 
@@ -10,9 +10,10 @@ Technical implementation gate: GitHub Actions CI run #170 on
 `1c366a2d5d005b1fb421fb4ff709ee47152c3b68`
 
 This reconciliation maps the authoritative `BG-06.001`–`BG-06.100` checklist
-to concrete code, tests and sanitized repository evidence. It intentionally leaves
-only `BG-06.100` incomplete until the implementation/evidence PR is merged into
-`main` and the resulting clean head is verified.
+to concrete code, tests and sanitized repository evidence. Implementation PR #39
+has merged into `main` at `a5096e337def6cad993ff5267f640cc619cafa03`.
+The closeout branch marks BG-06.100 complete and must pass CI before the final
+closeout record is merged.
 
 ## Evidence index
 
@@ -159,22 +160,32 @@ migration, live delivery or production credential operation was introduced.
 The build guide and evidence packet document what changed, why, how the route
 works, where it lives, how it is tested and the remaining BG-07 browser proof.
 
-### BG-06.100 — Merge and clean-head completion boundary: intentionally pending
+### BG-06.100 — Merge and parent completion boundary: complete on closeout branch
 
-BG-06.100 must not be checked before the implementation/evidence PR has actually
-merged and the merged `main` head has passed CI.
+Implementation PR #39 merged successfully into `main` at
+`a5096e337def6cad993ff5267f640cc619cafa03`. The authoritative checklist now
+marks BG-06.100 complete on a documentation-only closeout branch created from that
+exact merged head.
 
-Pre-merge conclusion:
+A separate push-workflow run was not visible for the implementation merge SHA when
+the closeout branch was created. The repository therefore does not fabricate an
+exact clean-head run claim. Instead, the closeout PR must pass the normal repository
+CI while based exactly on the merged implementation head. Because the closeout diff
+contains only evidence/checklist updates, that gate validates the merged application
+tree plus final documentation without another application change.
 
-- technical implementation: complete;
-- pre-merge checklist: 99 / 100;
-- PR #39: requires documentation-complete CI and merge;
-- BG-07: **not yet unlocked**;
-- remaining action: merge the validated PR, verify clean-head `main` CI, record
-  final closeout, then mark BG-06.100 complete and unlock BG-07.
+Final completion conditions for this closeout PR:
 
-## Pre-merge conclusion
+- authoritative checklist: 100 / 100;
+- implementation PR #39: merged;
+- closeout branch base: exact merged `main` SHA;
+- closeout PR CI: required to pass before merge;
+- BG-07: unlocked only after closeout PR CI and merge.
 
-BG-06 is ready for its documentation-complete PR gate. The access decision is
-explicit, implementation and regressions are present, and the only intentionally
-open checklist action is the post-merge completion boundary.
+## Final closeout conclusion
+
+BG-06's implementation is merged and its authoritative checklist is 100/100 on the
+closeout branch. `BG-06_FINAL_CLOSEOUT.md` records the immutable merge identity and
+the final verification condition. Once this documentation-only closeout PR passes CI
+and merges, GitHub #38 and Linear OPE-326 may be closed and BG-07 is unlocked.
+
