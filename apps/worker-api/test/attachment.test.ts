@@ -539,4 +539,25 @@ describe('private attachment lifecycle', () => {
     }
   });
 
+  it('rejects a tampered admin session cookie for attachment reads', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const { id } = await createFinalizedPdf(app, env);
+    const cookie = await createAdminSessionCookie(app, env);
+    const tamperedCookie = `${cookie}x`;
+
+    const response = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Cookie: tamperedCookie } },
+      env,
+    );
+
+    expect(response.status).toBe(401);
+    expect(await response.json()).toMatchObject({
+      error: { code: 'UNAUTHENTICATED' },
+    });
+  });
+
 });
