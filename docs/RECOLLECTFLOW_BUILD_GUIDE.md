@@ -829,6 +829,30 @@ and executable; BG-07 then proves the original actually downloads in the browser
 7. Use a route-specific read guard or a small shared guard with a precise name.
    Do not make all capture-token routes accept cookies as an accidental side effect.
 
+### Implemented BG-06 access decision
+
+BG-06 implements the read boundary as a capability-specific guard on
+`GET /api/v1/attachments/:id/content`. The guard accepts a valid capture bearer,
+a valid admin bearer, or a verified signed admin session cookie. These credentials
+are alternatives: one valid permitted credential is sufficient, so an invalid or
+wrong-scope Authorization header does not suppress an otherwise valid signed admin
+cookie, and an invalid cookie does not suppress an otherwise valid permitted bearer.
+
+Upload routes keep their existing capture/admin bearer guard. Attachment deletion
+keeps its previous effective boundary explicitly as `requireCaptureToken` followed
+by `requireAdminToken`: an admin bearer can delete, while a capture bearer and a
+cookie-only browser session cannot. Any broader browser write permission remains
+owned by BG-15 rather than being introduced as a side effect of BG-06.
+
+Signed-cookie verification continues to use the existing Hono helper and admin
+secret. Browser expiry removes the credential before the request reaches the
+server; tampered and cleared/logout cookies fail verification. Object lifecycle,
+stored R2-key lookup, private/no-store caching and safe filename behavior remain
+unchanged after authentication succeeds.
+
+Implementation and regression evidence lives in
+[`docs/verification/BG-06_ATTACHMENT_READ_AUTH.md`](verification/BG-06_ATTACHMENT_READ_AUTH.md).
+
 ### Proof and completion boundary
 
 Exercise every row with the real route. A valid cookie reaches the content lookup;

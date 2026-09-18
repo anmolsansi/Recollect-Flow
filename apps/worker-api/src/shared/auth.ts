@@ -1,4 +1,4 @@
-import type { MiddlewareHandler } from 'hono';
+import type { Context, MiddlewareHandler } from 'hono';
 import { getSignedCookie } from 'hono/cookie';
 
 import type { AppContext } from '../env';
@@ -36,6 +36,17 @@ export async function matchesCaptureToken(
   return provided ? constantTimeEqual(provided, expectedToken) : false;
 }
 
+export async function matchesAdminSession(
+  context: Context<AppContext>,
+): Promise<boolean> {
+  const cookieMatch = await getSignedCookie(
+    context,
+    context.env.ADMIN_TOKEN,
+    'admin_session',
+  );
+  return cookieMatch === 'authenticated';
+}
+
 export const requireCaptureToken: MiddlewareHandler<AppContext> = async (
   context,
   next,
@@ -58,6 +69,34 @@ export const requireCaptureToken: MiddlewareHandler<AppContext> = async (
   await next();
 };
 
+export const requireAttachmentContentRead: MiddlewareHandler<
+  AppContext
+> = async (context, next) => {
+  const provided = bearerToken(context.req.header('Authorization'));
+  const captureMatch = provided
+    ? await constantTimeEqual(provided, context.env.CAPTURE_TOKEN)
+    : false;
+  const adminMatch = provided
+    ? await constantTimeEqual(provided, context.env.ADMIN_TOKEN)
+    : false;
+
+  if (captureMatch || adminMatch) {
+    await next();
+    return;
+  }
+
+  if (await matchesAdminSession(context)) {
+    await next();
+    return;
+  }
+
+  throw new AppError(
+    401,
+    'UNAUTHENTICATED',
+    'A valid capture token is required.',
+  );
+};
+
 export const requireAdminToken: MiddlewareHandler<AppContext> = async (
   context,
   next,
@@ -72,12 +111,7 @@ export const requireAdminToken: MiddlewareHandler<AppContext> = async (
     return;
   }
 
-  const cookieMatch = await getSignedCookie(
-    context,
-    context.env.ADMIN_TOKEN,
-    'admin_session',
-  );
-  if (cookieMatch === 'authenticated') {
+  if (await matchesAdminSession(context)) {
     await next();
     return;
   }
