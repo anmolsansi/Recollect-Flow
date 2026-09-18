@@ -516,4 +516,27 @@ describe('private attachment lifecycle', () => {
     expect(await response.arrayBuffer()).toEqual(bytes);
   });
 
+  it('rejects invalid and local-worker bearer credentials for attachment reads', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const { id } = await createFinalizedPdf(app, env);
+
+    for (const authorization of [
+      'Bearer wrong-secret',
+      'Bearer local-worker-secret',
+    ]) {
+      const response = await app.request(
+        `/api/v1/attachments/${id}/content`,
+        { headers: { Authorization: authorization } },
+        env,
+      );
+      expect(response.status).toBe(401);
+      expect(await response.json()).toMatchObject({
+        error: { code: 'UNAUTHENTICATED' },
+      });
+    }
+  });
+
 });
