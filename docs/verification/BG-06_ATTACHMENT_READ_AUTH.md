@@ -122,12 +122,48 @@ Coverage includes:
 
 ## Validation
 
-PR #39 opened an early CI run against the code-complete authorization changes:
+The code-complete branch passed GitHub Actions CI run #170 on head
+`1c366a2d5d005b1fb421fb4ff709ee47152c3b68`.
 
-- GitHub Actions CI run #160: **in progress when this evidence record was first written**;
-- required workflow commands: `npm ci`, `npm run check`, `npm run db:migrate:local`.
+The required workflow completed successfully:
 
-This file must be updated with the actual final-head results before the implementation PR is marked ready or merged. A passing implementation PR is still pre-merge evidence. BG-06.100 remains open until the validated implementation is merged, the resulting `main` head is green, and a post-merge closeout records that state.
+- `npm ci`;
+- `npm run check`;
+- `npm run db:migrate:local`.
+
+Recorded `npm run check` results:
+
+- formatting: passed;
+- lint: passed;
+- root TypeScript typecheck: passed;
+- release-verifier regressions: 5 / 5 passed;
+- Node Vitest: 23 files, 140 / 140 tests passed;
+- Worker D1 Vitest: 33 files, 116 / 116 tests passed;
+- shared contracts typecheck: passed;
+- Web lint: passed;
+- Web Vitest: 2 files, 9 / 9 tests passed;
+- Web production build: passed with Vite 8.2.0.
+
+The local D1 gate used Wrangler 4.116.0 and applied the complete checked-in local
+migration chain successfully: 18 migration commands completed and every listed
+migration ended in the successful state. No remote D1 operation was used.
+
+### Validation iterations
+
+Early PR runs #160 and #164 stopped at Prettier before tests because the newly
+written TypeScript/Markdown did not match repository formatting. No quality rule
+was bypassed. A temporary branch-only formatter workflow ran the repository's own
+installed Prettier, captured the exact rewrite, and was deleted after the formatted
+output was applied. CI run #170 then passed from the clean task diff.
+
+`npm ci` still reports the repository's inherited dependency advisory count of
+10 findings, 3 moderate and 7 high. BG-06 does not silently upgrade unrelated
+dependencies under an attachment-authorization task; the advisories remain a
+separate security-maintenance concern.
+
+A passing implementation PR is still pre-merge evidence. BG-06.100 remains open
+until the validated implementation is merged, the resulting `main` head passes
+clean-head CI, and the post-merge closeout records that state.
 
 ## Scope and limitations
 
