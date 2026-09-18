@@ -687,4 +687,24 @@ describe('private attachment lifecycle', () => {
     expect(repository.attachments.get(id)?.status).toBe('deleted');
   });
 
+  it('keeps unavailable attachment bytes hidden after successful authentication', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const { id } = await createFinalizedPdf(app, env);
+    r2.objects.clear();
+
+    const response = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Authorization: 'Bearer admin-secret' } },
+      env,
+    );
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toMatchObject({
+      error: { code: 'NOT_FOUND' },
+    });
+  });
+
 });
