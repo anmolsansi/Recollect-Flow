@@ -628,4 +628,63 @@ describe('private attachment lifecycle', () => {
     expect(await validBearerWithTamperedCookie.arrayBuffer()).toEqual(bytes);
   });
 
+  it('does not broaden admin-cookie access to attachment writes or deletion', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const { id } = await createFinalizedPdf(app, env);
+    const cookie = await createAdminSessionCookie(app, env);
+
+    const cookieUploadInit = await app.request(
+      '/api/v1/uploads/init',
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookie,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename: 'cookie-only.pdf',
+          mime_type: 'application/pdf',
+          size_bytes: 8,
+          source_type: 'file',
+        }),
+      },
+      env,
+    );
+    expect(cookieUploadInit.status).toBe(401);
+
+    const captureDelete = await app.request(
+      `/api/v1/attachments/${id}`,
+      {
+        method: 'DELETE',
+        headers: { Authorization: 'Bearer capture-secret' },
+      },
+      env,
+    );
+    expect(captureDelete.status).toBe(403);
+
+    const cookieDelete = await app.request(
+      `/api/v1/attachments/${id}`,
+      {
+        method: 'DELETE',
+        headers: { Cookie: cookie },
+      },
+      env,
+    );
+    expect(cookieDelete.status).toBe(401);
+
+    const adminDelete = await app.request(
+      `/api/v1/attachments/${id}`,
+      {
+        method: 'DELETE',
+        headers: { Authorization: 'Bearer admin-secret' },
+      },
+      env,
+    );
+    expect(adminDelete.status).toBe(204);
+    expect(repository.attachments.get(id)?.status).toBe('deleted');
+  });
+
 });
