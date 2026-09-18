@@ -1,6 +1,6 @@
 # RecollectFlow — Microtask Execution Checklist
 
-Read the [build guide](RECOLLECTFLOW_BUILD_GUIDE.md) for the detailed feature explanations, design reasoning, examples, source references and completion boundaries. This companion preserves the original 100 microtasks for each of the 40 tasks, in priority order. All 4,000 boxes remain unchecked; they are planned work, not completion evidence.
+Read the [build guide](RECOLLECTFLOW_BUILD_GUIDE.md) for the detailed feature explanations, design reasoning, examples, source references and completion boundaries. This companion preserves the original 100 microtasks for each of the 40 tasks, in priority order. Boxes remain planned work until task-specific evidence proves completion, at which point the corresponding checklist may be checked.
 
 ## BG-01 — 100 executable microtasks
 
