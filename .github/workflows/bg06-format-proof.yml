@@ -20,10 +20,19 @@ jobs:
           apps/worker-api/src/attachments/attachment.routes.ts
           apps/worker-api/test/attachment.test.ts
           docs/verification/BG-06_ATTACHMENT_READ_AUTH.md
+      - name: Capture formatter diff
+        run: >-
+          git diff --
+          apps/worker-api/src/shared/auth.ts
+          apps/worker-api/src/attachments/attachment.routes.ts
+          apps/worker-api/test/attachment.test.ts
+          docs/verification/BG-06_ATTACHMENT_READ_AUTH.md
+          > bg06-prettier.diff
       - uses: actions/upload-artifact@v4
         with:
           name: bg06-prettier-output
           path: |
+            bg06-prettier.diff
             apps/worker-api/src/shared/auth.ts
             apps/worker-api/src/attachments/attachment.routes.ts
             apps/worker-api/test/attachment.test.ts
