@@ -481,6 +481,7 @@ describe('private attachment lifecycle', () => {
       ),
     ).toBe(0);
   });
+
   it('allows an admin bearer to read finalized attachment bytes', async () => {
     const repository = new MemoryAttachmentRepository();
     const r2 = memoryBucket();
@@ -706,5 +707,4 @@ describe('private attachment lifecycle', () => {
       error: { code: 'NOT_FOUND' },
     });
   });
-
 });
