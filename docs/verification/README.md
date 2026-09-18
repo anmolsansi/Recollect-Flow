@@ -95,6 +95,32 @@ BG-05 reuses the green exact-SHA repository gate and adds the two missing operat
 
 The task-specific proof workflow was removed after producing immutable Actions evidence. PR #35 preserved the microcommit history, passed final-head CI #153, merged successfully, and the resulting `main` SHA passed clean-head CI #154. `BG-05_FINAL_CLOSEOUT.md` therefore satisfies BG-05.100 and unlocks BG-06. No production deployment, remote migration, live external delivery or production credential use occurred.
 
+### BG-06 — attachment read authorization
+
+Status: **99/100 pre-merge; BG-07 remains locked**
+
+- Primary evidence: [`BG-06_ATTACHMENT_READ_AUTH.md`](BG-06_ATTACHMENT_READ_AUTH.md)
+- Pre-merge 100-action reconciliation: [`BG-06_CHECKLIST_RECONCILIATION.md`](BG-06_CHECKLIST_RECONCILIATION.md)
+- GitHub tracking: issue #38 and implementation PR #39
+- Linear tracking: OPE-326
+- Task base `main`: `13f78b3c4eb1246e044f3a23ed8130de54817434`
+- Technical implementation gate: GitHub Actions CI run #170
+- Code-gate head: `1c366a2d5d005b1fb421fb4ff709ee47152c3b68`
+
+BG-06 replaces the conflicting wildcard attachment-read bearer gate with a
+capability-specific content guard. Capture bearer, admin bearer and a verified
+signed admin session cookie can read eligible attachment content. Upload routes
+keep their existing bearer boundary, and deletion explicitly preserves the prior
+bearer-first plus admin-only behavior so capture credentials and cookie-only browser
+sessions cannot delete. Mixed credentials use the existing alternative-credential
+precedence, and attachment lifecycle/R2 checks remain intact after authentication.
+
+CI run #170 passed 5 release-verifier regressions, 140 Node tests, 116 Worker D1
+tests, 9 Web tests, formatting/lint/type contracts, the Web production build and
+the full 18-command local migration gate. The pre-merge checklist intentionally
+stops at 99/100 because BG-06.100 requires the actual merge and clean-head `main`
+CI before BG-07 can be unlocked.
+
 ## Evidence rules
 
 - Tie claims to a revision and environment.
