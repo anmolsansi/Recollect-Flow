@@ -1,4 +1,4 @@
-import type { MiddlewareHandler } from 'hono';
+import type { Context, MiddlewareHandler } from 'hono';
 import { getSignedCookie } from 'hono/cookie';
 
 import type { AppContext } from '../env';
@@ -34,6 +34,17 @@ export async function matchesCaptureToken(
 ): Promise<boolean> {
   const provided = bearerToken(header);
   return provided ? constantTimeEqual(provided, expectedToken) : false;
+}
+
+export async function matchesAdminSession(
+  context: Context<AppContext>,
+): Promise<boolean> {
+  const cookieMatch = await getSignedCookie(
+    context,
+    context.env.ADMIN_TOKEN,
+    'admin_session',
+  );
+  return cookieMatch === 'authenticated';
 }
 
 export const requireCaptureToken: MiddlewareHandler<AppContext> = async (
@@ -72,12 +83,7 @@ export const requireAdminToken: MiddlewareHandler<AppContext> = async (
     return;
   }
 
-  const cookieMatch = await getSignedCookie(
-    context,
-    context.env.ADMIN_TOKEN,
-    'admin_session',
-  );
-  if (cookieMatch === 'authenticated') {
+  if (await matchesAdminSession(context)) {
     await next();
     return;
   }
