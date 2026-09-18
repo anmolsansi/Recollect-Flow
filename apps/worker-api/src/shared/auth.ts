@@ -69,32 +69,33 @@ export const requireCaptureToken: MiddlewareHandler<AppContext> = async (
   await next();
 };
 
-export const requireAttachmentContentRead: MiddlewareHandler<AppContext> =
-  async (context, next) => {
-    const provided = bearerToken(context.req.header('Authorization'));
-    const captureMatch = provided
-      ? await constantTimeEqual(provided, context.env.CAPTURE_TOKEN)
-      : false;
-    const adminMatch = provided
-      ? await constantTimeEqual(provided, context.env.ADMIN_TOKEN)
-      : false;
+export const requireAttachmentContentRead: MiddlewareHandler<
+  AppContext
+> = async (context, next) => {
+  const provided = bearerToken(context.req.header('Authorization'));
+  const captureMatch = provided
+    ? await constantTimeEqual(provided, context.env.CAPTURE_TOKEN)
+    : false;
+  const adminMatch = provided
+    ? await constantTimeEqual(provided, context.env.ADMIN_TOKEN)
+    : false;
 
-    if (captureMatch || adminMatch) {
-      await next();
-      return;
-    }
+  if (captureMatch || adminMatch) {
+    await next();
+    return;
+  }
 
-    if (await matchesAdminSession(context)) {
-      await next();
-      return;
-    }
+  if (await matchesAdminSession(context)) {
+    await next();
+    return;
+  }
 
-    throw new AppError(
-      401,
-      'UNAUTHENTICATED',
-      'A valid capture token is required.',
-    );
-  };
+  throw new AppError(
+    401,
+    'UNAUTHENTICATED',
+    'A valid capture token is required.',
+  );
+};
 
 export const requireAdminToken: MiddlewareHandler<AppContext> = async (
   context,
