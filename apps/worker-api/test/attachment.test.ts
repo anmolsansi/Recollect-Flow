@@ -481,4 +481,21 @@ describe('private attachment lifecycle', () => {
       ),
     ).toBe(0);
   });
+  it('allows an admin bearer to read finalized attachment bytes', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const { id, bytes } = await createFinalizedPdf(app, env);
+
+    const response = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Authorization: 'Bearer admin-secret' } },
+      env,
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.arrayBuffer()).toEqual(bytes);
+  });
+
 });
