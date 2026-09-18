@@ -97,15 +97,19 @@ The task-specific proof workflow was removed after producing immutable Actions e
 
 ### BG-06 — attachment read authorization
 
-Status: **99/100 pre-merge; BG-07 remains locked**
+Status: **100/100 complete when this closeout entry is present on `main`**
 
 - Primary evidence: [`BG-06_ATTACHMENT_READ_AUTH.md`](BG-06_ATTACHMENT_READ_AUTH.md)
-- Pre-merge 100-action reconciliation: [`BG-06_CHECKLIST_RECONCILIATION.md`](BG-06_CHECKLIST_RECONCILIATION.md)
-- GitHub tracking: issue #38 and implementation PR #39
+- Checklist reconciliation: [`BG-06_CHECKLIST_RECONCILIATION.md`](BG-06_CHECKLIST_RECONCILIATION.md)
+- Final closeout: [`BG-06_FINAL_CLOSEOUT.md`](BG-06_FINAL_CLOSEOUT.md)
+- GitHub tracking: issue #38, merged implementation PR #39
 - Linear tracking: OPE-326
 - Task base `main`: `13f78b3c4eb1246e044f3a23ed8130de54817434`
+- Final implementation/evidence head: `980dad7793d11e408c5661cc68c85e18f3bd2322`
+- Merged implementation `main`: `a5096e337def6cad993ff5267f640cc619cafa03`
 - Technical implementation gate: GitHub Actions CI run #170
-- Code-gate head: `1c366a2d5d005b1fb421fb4ff709ee47152c3b68`
+- Documentation-complete implementation gate: GitHub Actions CI run #175
+- Final closeout gate: GitHub Actions CI run #180 — passed
 
 BG-06 replaces the conflicting wildcard attachment-read bearer gate with a
 capability-specific content guard. Capture bearer, admin bearer and a verified
@@ -115,11 +119,10 @@ bearer-first plus admin-only behavior so capture credentials and cookie-only bro
 sessions cannot delete. Mixed credentials use the existing alternative-credential
 precedence, and attachment lifecycle/R2 checks remain intact after authentication.
 
-CI run #170 passed 5 release-verifier regressions, 140 Node tests, 116 Worker D1
-tests, 9 Web tests, formatting/lint/type contracts, the Web production build and
-the full 18-command local migration gate. The pre-merge checklist intentionally
-stops at 99/100 because BG-06.100 requires the actual merge and clean-head `main`
-CI before BG-07 can be unlocked.
+Implementation PR #39 is merged. The authoritative checklist is 100/100 on a
+documentation-only closeout branch based exactly on the merged implementation SHA.
+Closeout PR #40 passed GitHub Actions CI run #180. When this entry is present on
+`main`, GitHub #38 / Linear OPE-326 can close and BG-07 is durably unlocked.
 
 ## Evidence rules
 
