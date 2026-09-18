@@ -188,4 +188,3 @@ BG-06's implementation is merged and its authoritative checklist is 100/100 on t
 closeout branch. `BG-06_FINAL_CLOSEOUT.md` records the immutable merge identity and
 the final verification condition. Once this documentation-only closeout PR passes CI
 and merges, GitHub #38 and Linear OPE-326 may be closed and BG-07 is unlocked.
-
