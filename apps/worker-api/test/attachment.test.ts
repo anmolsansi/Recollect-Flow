@@ -207,6 +207,71 @@ async function initialize(
   };
 }
 
+async function createFinalizedPdf(
+  app: ReturnType<typeof createApp>,
+  env: Env,
+) {
+  const bytes = new TextEncoder().encode('%PDF-1.7\nread-auth-fixture').buffer;
+  const initialized = await initialize(app, env, {
+    filename: 'read-auth.pdf',
+    mime_type: 'application/pdf',
+    size_bytes: bytes.byteLength,
+    source_type: 'file',
+  });
+  expect(initialized.response.status).toBe(201);
+  const id = initialized.body.data.attachment_id;
+
+  const upload = await app.request(
+    `/api/v1/uploads/${id}/content`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: 'Bearer capture-secret',
+        'Content-Type': 'application/pdf',
+        'Content-Length': String(bytes.byteLength),
+      },
+      body: bytes,
+    },
+    env,
+  );
+  expect(upload.status).toBe(200);
+
+  const finalized = await app.request(
+    `/api/v1/uploads/${id}/finalize`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer capture-secret',
+        'Content-Type': 'application/json',
+      },
+      body: '{}',
+    },
+    env,
+  );
+  expect(finalized.status).toBe(200);
+
+  return { id, bytes };
+}
+
+async function createAdminSessionCookie(
+  app: ReturnType<typeof createApp>,
+  env: Env,
+): Promise<string> {
+  const login = await app.request(
+    '/api/v1/admin/session',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: 'admin-secret' }),
+    },
+    env,
+  );
+  expect(login.status).toBe(200);
+  const setCookie = login.headers.get('Set-Cookie');
+  expect(setCookie).toBeTruthy();
+  return setCookie!.split(';', 1)[0]!;
+}
+
 describe('private attachment lifecycle', () => {
   it('uploads, finalizes, and downloads an authorized PDF', async () => {
     const repository = new MemoryAttachmentRepository();
