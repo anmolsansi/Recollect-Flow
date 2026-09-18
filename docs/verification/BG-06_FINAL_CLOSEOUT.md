@@ -1,6 +1,6 @@
 # BG-06 — Final Closeout
 
-Status: **closeout candidate; documentation-only verification pending**
+Status: **100 / 100 complete when this closeout record is present on `main`**
 
 Tracking: GitHub #38 / implementation PR #39 / Linear OPE-326
 
@@ -50,21 +50,21 @@ The final pre-merge branch passed the repository's full CI gate in run #175:
 
 The repository did not expose a separate workflow run for merge SHA
 `a5096e337def6cad993ff5267f640cc619cafa03` when this closeout branch was
-created. To avoid fabricating a clean-head claim, the final closeout is being
-performed in a documentation-only PR whose base is exactly that merged `main`
-commit. Its CI must pass before this closeout record can be merged.
+created. To avoid fabricating a clean-head claim, final closeout PR #40 was based
+exactly on that merged `main` commit and changed documentation/checklist state only.
 
-Because the closeout branch changes documentation/checklist state only, a green
-closeout PR validates the already-merged application tree plus the final evidence
-updates without introducing another application change.
+GitHub Actions CI run #180 on the closeout PR passed the normal repository gate,
+including `npm run check` and `npm run db:migrate:local`. That validates the
+already-merged application tree plus the final evidence updates without introducing
+another application change.
 
 ## BG-06.100
 
-The authoritative checklist now records BG-06.001 through BG-06.100 as complete on
-this closeout branch. BG-06.100 is considered durable only when the closeout PR
-passes CI and merges.
+The authoritative checklist records BG-06.001 through BG-06.100 as complete.
+Closeout PR #40 passed CI run #180. This record is authoritative only when read from
+`main`, which means the closeout PR has merged.
 
-Once that happens:
+At that point:
 
 - BG-06 is **100 / 100 complete**;
 - GitHub #38 can close;
