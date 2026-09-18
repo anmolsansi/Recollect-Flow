@@ -560,4 +560,37 @@ describe('private attachment lifecycle', () => {
     });
   });
 
+  it('rejects the cleared browser session after logout', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const { id } = await createFinalizedPdf(app, env);
+    const cookie = await createAdminSessionCookie(app, env);
+
+    const logout = await app.request(
+      '/api/v1/admin/session',
+      {
+        method: 'DELETE',
+        headers: { Cookie: cookie },
+      },
+      env,
+    );
+    expect(logout.status).toBe(200);
+    const clearedSetCookie = logout.headers.get('Set-Cookie');
+    expect(clearedSetCookie).toBeTruthy();
+    const clearedCookie = clearedSetCookie!.split(';', 1)[0]!;
+
+    const response = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Cookie: clearedCookie } },
+      env,
+    );
+
+    expect(response.status).toBe(401);
+    expect(await response.json()).toMatchObject({
+      error: { code: 'UNAUTHENTICATED' },
+    });
+  });
+
 });
