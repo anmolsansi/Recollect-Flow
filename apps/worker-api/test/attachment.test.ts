@@ -593,4 +593,39 @@ describe('private attachment lifecycle', () => {
     });
   });
 
+  it('treats permitted attachment-read credentials as alternatives', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const { id, bytes } = await createFinalizedPdf(app, env);
+    const cookie = await createAdminSessionCookie(app, env);
+
+    const validCookieWithWrongScopeBearer = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      {
+        headers: {
+          Authorization: 'Bearer local-worker-secret',
+          Cookie: cookie,
+        },
+      },
+      env,
+    );
+    expect(validCookieWithWrongScopeBearer.status).toBe(200);
+    expect(await validCookieWithWrongScopeBearer.arrayBuffer()).toEqual(bytes);
+
+    const validBearerWithTamperedCookie = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      {
+        headers: {
+          Authorization: 'Bearer capture-secret',
+          Cookie: `${cookie}x`,
+        },
+      },
+      env,
+    );
+    expect(validBearerWithTamperedCookie.status).toBe(200);
+    expect(await validBearerWithTamperedCookie.arrayBuffer()).toEqual(bytes);
+  });
+
 });
