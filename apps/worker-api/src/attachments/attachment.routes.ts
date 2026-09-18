@@ -2,7 +2,11 @@ import { Hono } from 'hono';
 
 import { sha256Bytes } from '../captures/hash';
 import type { AppContext, Env } from '../env';
-import { requireAdminToken, requireCaptureToken } from '../shared/auth';
+import {
+  requireAdminToken,
+  requireAttachmentContentRead,
+  requireCaptureToken,
+} from '../shared/auth';
 import { AppError } from '../shared/errors';
 import { D1AttachmentRepository } from './attachment.repository';
 import type { AttachmentRepository } from './attachment.repository';
@@ -24,7 +28,6 @@ export function attachmentRoutes(
   const router = new Hono<AppContext>();
 
   router.use('/uploads/*', requireCaptureToken);
-  router.use('/attachments/*', requireCaptureToken);
 
   router.post('/uploads/init', async (context) => {
     const body = await context.req.json().catch(() => {
@@ -221,7 +224,10 @@ export function attachmentRoutes(
     });
   });
 
-  router.get('/attachments/:id/content', async (context) => {
+  router.get(
+    '/attachments/:id/content',
+    requireAttachmentContentRead,
+    async (context) => {
     const attachment = await repositoryFactory(context.env).findById(
       context.req.param('id'),
     );
@@ -249,17 +255,23 @@ export function attachmentRoutes(
         ETag: object.httpEtag,
       },
     });
-  });
+    },
+  );
 
-  router.delete('/attachments/:id', requireAdminToken, async (context) => {
+  router.delete(
+    '/attachments/:id',
+    requireCaptureToken,
+    requireAdminToken,
+    async (context) => {
     const repository = repositoryFactory(context.env);
     const attachment = await repository.findById(context.req.param('id'));
     if (!attachment)
       throw new AppError(404, 'NOT_FOUND', 'Attachment not found.');
     await context.env.ATTACHMENTS.delete(attachment.r2Key);
     await repository.markDeleted(attachment.id, new Date().toISOString());
-    return context.body(null, 204);
-  });
+      return context.body(null, 204);
+    },
+  );
 
   router.get('/uploads/usage', requireAdminToken, async (context) => {
     const usage = await repositoryFactory(context.env).usage();
