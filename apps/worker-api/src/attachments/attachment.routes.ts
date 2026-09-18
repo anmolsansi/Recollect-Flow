@@ -228,33 +228,33 @@ export function attachmentRoutes(
     '/attachments/:id/content',
     requireAttachmentContentRead,
     async (context) => {
-    const attachment = await repositoryFactory(context.env).findById(
-      context.req.param('id'),
-    );
-    if (!attachment || !['finalized', 'linked'].includes(attachment.status)) {
-      throw new AppError(404, 'NOT_FOUND', 'Attachment is not available.');
-    }
-    if (
-      attachment.status === 'finalized' &&
-      attachment.expiresAt <= new Date().toISOString()
-    ) {
-      throw new AppError(409, 'UPLOAD_EXPIRED', 'Attachment upload expired.');
-    }
-    const object = await context.env.ATTACHMENTS.get(attachment.r2Key);
-    if (!object)
-      throw new AppError(404, 'NOT_FOUND', 'Attachment bytes not found.');
+      const attachment = await repositoryFactory(context.env).findById(
+        context.req.param('id'),
+      );
+      if (!attachment || !['finalized', 'linked'].includes(attachment.status)) {
+        throw new AppError(404, 'NOT_FOUND', 'Attachment is not available.');
+      }
+      if (
+        attachment.status === 'finalized' &&
+        attachment.expiresAt <= new Date().toISOString()
+      ) {
+        throw new AppError(409, 'UPLOAD_EXPIRED', 'Attachment upload expired.');
+      }
+      const object = await context.env.ATTACHMENTS.get(attachment.r2Key);
+      if (!object)
+        throw new AppError(404, 'NOT_FOUND', 'Attachment bytes not found.');
 
-    return new Response(object.body, {
-      headers: {
-        'Content-Type':
-          attachment.detectedContentType ?? 'application/octet-stream',
-        'Content-Length': String(object.size),
-        'Content-Disposition': `attachment; filename="${safeFilename(attachment.fileName)}"`,
-        'Cache-Control': 'private, no-store',
-        'X-Content-Type-Options': 'nosniff',
-        ETag: object.httpEtag,
-      },
-    });
+      return new Response(object.body, {
+        headers: {
+          'Content-Type':
+            attachment.detectedContentType ?? 'application/octet-stream',
+          'Content-Length': String(object.size),
+          'Content-Disposition': `attachment; filename="${safeFilename(attachment.fileName)}"`,
+          'Cache-Control': 'private, no-store',
+          'X-Content-Type-Options': 'nosniff',
+          ETag: object.httpEtag,
+        },
+      });
     },
   );
 
@@ -263,12 +263,12 @@ export function attachmentRoutes(
     requireCaptureToken,
     requireAdminToken,
     async (context) => {
-    const repository = repositoryFactory(context.env);
-    const attachment = await repository.findById(context.req.param('id'));
-    if (!attachment)
-      throw new AppError(404, 'NOT_FOUND', 'Attachment not found.');
-    await context.env.ATTACHMENTS.delete(attachment.r2Key);
-    await repository.markDeleted(attachment.id, new Date().toISOString());
+      const repository = repositoryFactory(context.env);
+      const attachment = await repository.findById(context.req.param('id'));
+      if (!attachment)
+        throw new AppError(404, 'NOT_FOUND', 'Attachment not found.');
+      await context.env.ATTACHMENTS.delete(attachment.r2Key);
+      await repository.markDeleted(attachment.id, new Date().toISOString());
       return context.body(null, 204);
     },
   );
