@@ -1279,9 +1279,13 @@ network I/O. A later explicit privacy reprocess for a URL routes through
 `acquire_url` again rather than jumping directly to enrichment.
 
 Current acquired text is included explicitly in enrichment input, admin item detail,
-and the rebuildable FTS `source_text` projection. Portable export schema
-`2026-09-19.1`, clean-target restore, canonical purge and integrity scanning all
-include URL evidence.
+and the rebuildable FTS `source_text` projection. Item detail and the Web Inbox
+render the source as text/read-only values rather than trusted HTML. Evidence also
+records bounded attempt count, duration and whether privacy skipped network I/O.
+Portable export schema `2026-09-19.1`, a current-evidence CSV summary,
+clean-target restore, canonical purge and integrity scanning all include URL
+evidence. Generic same-job retry is rejected for `acquire_url`; BG-11 owns the
+generation-aware owner retry/reprocess command.
 
 ### Why fetching into memory does not complete the feature
 
