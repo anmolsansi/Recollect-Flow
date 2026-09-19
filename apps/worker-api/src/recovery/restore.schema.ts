@@ -17,6 +17,7 @@ const portableItemSchema = z
     captureEvents: z.array(portableRecordSchema),
     attachments: z.array(portableRecordSchema),
     extractions: z.array(portableRecordSchema),
+    urlAcquisitions: z.array(portableRecordSchema).default([]),
     processingJobs: z.array(portableRecordSchema),
     processingJobResults: z.array(portableRecordSchema),
     syncAttempts: z.array(portableRecordSchema),

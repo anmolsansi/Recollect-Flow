@@ -78,6 +78,9 @@ export class CanonicalPurgeService {
         .prepare('DELETE FROM extraction_records WHERE item_id = ?1')
         .bind(itemId),
       this.db
+        .prepare('DELETE FROM url_acquisitions WHERE item_id = ?1')
+        .bind(itemId),
+      this.db
         .prepare('DELETE FROM item_field_overrides WHERE item_id = ?1')
         .bind(itemId),
       this.db

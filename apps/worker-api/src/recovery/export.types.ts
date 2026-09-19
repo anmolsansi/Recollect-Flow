@@ -7,6 +7,7 @@ export interface PortableItemExport {
   captureEvents: PortableRecord[];
   attachments: PortableRecord[];
   extractions: PortableRecord[];
+  urlAcquisitions: PortableRecord[];
   processingJobs: PortableRecord[];
   processingJobResults: PortableRecord[];
   syncAttempts: PortableRecord[];

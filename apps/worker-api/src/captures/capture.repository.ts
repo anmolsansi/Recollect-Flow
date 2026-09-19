@@ -9,6 +9,9 @@ export interface StoredCapture {
   requestFingerprint: string | null;
   duplicateOf: string | null;
   privacyLevel: CaptureInput['privacy_level'];
+  sourceType: CaptureInput['source_type'];
+  sourceUrl: string | null;
+  sourceRevision: number;
   attachmentId: string | null;
   processingStatus: 'pending' | 'processing' | 'complete' | 'failed';
 }
@@ -45,6 +48,9 @@ interface CaptureRow {
   request_fingerprint: string | null;
   duplicate_of: string | null;
   privacy_level: CaptureInput['privacy_level'];
+  source_type: CaptureInput['source_type'];
+  source_url: string | null;
+  source_revision: number;
   attachment_id: string | null;
   processing_status: StoredCapture['processingStatus'];
 }
@@ -64,6 +70,9 @@ function toStoredCapture(row: CaptureRow): StoredCapture {
     requestFingerprint: row.request_fingerprint,
     duplicateOf: row.duplicate_of,
     privacyLevel: row.privacy_level,
+    sourceType: row.source_type,
+    sourceUrl: row.source_url,
+    sourceRevision: row.source_revision,
     attachmentId: row.attachment_id,
     processingStatus: row.processing_status,
   };
@@ -89,7 +98,8 @@ export class D1CaptureRepository implements CaptureRepository {
       .prepare(
         `SELECT i.id, e.id AS event_id, e.idempotency_key,
                 e.request_fingerprint, e.duplicate_of,
-                i.privacy_level, e.attachment_id, i.processing_status
+                i.privacy_level, i.source_type, i.source_url, i.source_revision,
+                e.attachment_id, i.processing_status
          FROM capture_events e
          INNER JOIN items i ON i.id = e.item_id
          WHERE e.idempotency_key = ?1`,
@@ -111,7 +121,8 @@ export class D1CaptureRepository implements CaptureRepository {
       .prepare(
         `SELECT i.id, e.id AS event_id, e.idempotency_key,
                 e.request_fingerprint,
-                i.id AS duplicate_of, i.privacy_level, e.attachment_id, i.processing_status
+                i.id AS duplicate_of, i.privacy_level, i.source_type, i.source_url,
+                i.source_revision, e.attachment_id, i.processing_status
          FROM item_deduplication_keys k
          INNER JOIN items i ON i.id = k.item_id
          INNER JOIN capture_events e ON e.item_id = i.id AND e.duplicate_of IS NULL
@@ -247,6 +258,9 @@ export class D1CaptureRepository implements CaptureRepository {
       requestFingerprint: capture.requestFingerprint,
       duplicateOf: capture.duplicateOf,
       privacyLevel: capture.privacy_level,
+      sourceType: capture.source_type,
+      sourceUrl: capture.url ?? null,
+      sourceRevision: 1,
       attachmentId: capture.attachment_id ?? null,
       processingStatus: 'pending',
     };
@@ -273,60 +287,50 @@ export class D1CaptureRepository implements CaptureRepository {
     ];
 
     if (!capture.duplicateOf) {
+      const processingJob = (
+        jobType: 'extract' | 'enrich' | 'acquire_url',
+        inputHash: string | null = null,
+      ) =>
+        this.database
+          .prepare(
+            `INSERT INTO processing_jobs (
+              id, item_id, job_type, status, available_at, created_at, updated_at,
+              input_hash, privacy_level_snapshot, provider_eligibility, policy_version,
+              credential_source, hosted_processing_consent,
+              zero_data_retention_required, data_collection_denied
+            ) VALUES (
+              ?1, ?2, ?3, 'pending', ?4, ?4, ?4, ?5, ?6, ?7, ?8,
+              ?9, ?10, ?11, ?12
+            )`,
+          )
+          .bind(
+            crypto.randomUUID(),
+            capture.id,
+            jobType,
+            at,
+            inputHash,
+            capture.privacyLevel,
+            decision.provider,
+            decision.policyVersion,
+            decision.credentialSource,
+            decision.hostedProcessingConsent ? 1 : 0,
+            decision.zeroDataRetentionRequired ? 1 : 0,
+            decision.dataCollectionDenied ? 1 : 0,
+          );
+
+      if (capture.sourceType === 'url' && capture.sourceUrl) {
+        statements.push(
+          processingJob(
+            'acquire_url',
+            `url-source-v1:${capture.sourceRevision}`,
+          ),
+        );
+      }
+
       if (capture.attachmentId) {
-        statements.push(
-          this.database
-            .prepare(
-              `INSERT INTO processing_jobs (
-                id, item_id, job_type, status, available_at, created_at, updated_at,
-                privacy_level_snapshot, provider_eligibility, policy_version,
-                credential_source, hosted_processing_consent,
-                zero_data_retention_required, data_collection_denied
-              ) VALUES (
-                ?1, ?2, 'extract', 'pending', ?3, ?3, ?3, ?4, ?5, ?6,
-                ?7, ?8, ?9, ?10
-              )`,
-            )
-            .bind(
-              crypto.randomUUID(),
-              capture.id,
-              at,
-              capture.privacyLevel,
-              decision.provider,
-              decision.policyVersion,
-              decision.credentialSource,
-              decision.hostedProcessingConsent ? 1 : 0,
-              decision.zeroDataRetentionRequired ? 1 : 0,
-              decision.dataCollectionDenied ? 1 : 0,
-            ),
-        );
-      } else {
-        statements.push(
-          this.database
-            .prepare(
-              `INSERT INTO processing_jobs (
-                id, item_id, job_type, status, available_at, created_at, updated_at,
-                privacy_level_snapshot, provider_eligibility, policy_version,
-                credential_source, hosted_processing_consent,
-                zero_data_retention_required, data_collection_denied
-              ) VALUES (
-                ?1, ?2, 'enrich', 'pending', ?3, ?3, ?3, ?4, ?5, ?6,
-                ?7, ?8, ?9, ?10
-              )`,
-            )
-            .bind(
-              crypto.randomUUID(),
-              capture.id,
-              at,
-              capture.privacyLevel,
-              decision.provider,
-              decision.policyVersion,
-              decision.credentialSource,
-              decision.hostedProcessingConsent ? 1 : 0,
-              decision.zeroDataRetentionRequired ? 1 : 0,
-              decision.dataCollectionDenied ? 1 : 0,
-            ),
-        );
+        statements.push(processingJob('extract'));
+      } else if (capture.sourceType !== 'url') {
+        statements.push(processingJob('enrich'));
       }
 
       statements.push(

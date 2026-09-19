@@ -692,12 +692,61 @@ function ItemDetail() {
         <p>
           <strong>Processing:</strong> {draft.processing_status ?? 'Unknown'}
         </p>
-        <textarea
-          className="input"
-          rows={8}
-          readOnly
-          value={draft.raw_text ?? ''}
-        />
+        {draft.source_url && (
+          <p>
+            <strong>Submitted URL:</strong> {draft.source_url}
+          </p>
+        )}
+        {draft.canonical_url && (
+          <p>
+            <strong>Canonical URL:</strong> {draft.canonical_url}
+          </p>
+        )}
+        <Field label="Owner/client supplied text">
+          <textarea
+            className="input"
+            rows={8}
+            readOnly
+            value={draft.raw_text ?? ''}
+          />
+        </Field>
+        {detail.url_acquisition ? (
+          <div style={{ marginTop: 16 }}>
+            <h3>Current URL acquisition</h3>
+            <p>
+              <strong>Status:</strong> {detail.url_acquisition.status} ·{' '}
+              <strong>Coverage:</strong> {detail.url_acquisition.coverage}
+            </p>
+            <p>
+              <strong>Completed:</strong>{' '}
+              {new Date(detail.url_acquisition.completed_at).toLocaleString()} ·{' '}
+              <strong>Attempt:</strong> {detail.url_acquisition.attempt_count} ·{' '}
+              <strong>Duration:</strong> {detail.url_acquisition.duration_ms} ms
+            </p>
+            {detail.url_acquisition.fetched_final_url && (
+              <p>
+                <strong>Fetched final URL:</strong>{' '}
+                {detail.url_acquisition.fetched_final_url}
+              </p>
+            )}
+            {detail.url_acquisition.error_code && (
+              <p>
+                <strong>Acquisition result:</strong>{' '}
+                {detail.url_acquisition.error_code}
+              </p>
+            )}
+            <Field label="Acquired source text">
+              <textarea
+                className="input"
+                rows={10}
+                readOnly
+                value={detail.url_acquisition.acquired_text ?? ''}
+              />
+            </Field>
+          </div>
+        ) : (
+          <p>No current URL acquisition evidence.</p>
+        )}
       </Section>
 
       <Section title="Attachments and extraction">
@@ -750,21 +799,22 @@ function ItemDetail() {
               {job.jobType}: {job.visibleStatus}{' '}
               {job.lastErrorCode ? `(${job.lastErrorCode})` : ''}
             </span>
-            {job.visibleStatus === 'failed' && (
-              <button
-                className="btn btn-outline"
-                disabled={saving}
-                onClick={() =>
-                  void mutate(
-                    `/jobs/${job.id}/retry?kind=processing`,
-                    { method: 'POST' },
-                    'Processing job queued for retry.',
-                  )
-                }
-              >
-                Retry
-              </button>
-            )}
+            {job.visibleStatus === 'failed' &&
+              job.jobType !== 'acquire_url' && (
+                <button
+                  className="btn btn-outline"
+                  disabled={saving}
+                  onClick={() =>
+                    void mutate(
+                      `/jobs/${job.id}/retry?kind=processing`,
+                      { method: 'POST' },
+                      'Processing job queued for retry.',
+                    )
+                  }
+                >
+                  Retry
+                </button>
+              )}
           </div>
         ))}
         {detail.sync_attempts.map((attempt) => (

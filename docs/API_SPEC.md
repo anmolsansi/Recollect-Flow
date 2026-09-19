@@ -81,61 +81,51 @@ clients.
 
 Admin scope. Required input: `privacy_level` plus `derived_data_action` (`reprocess|purge`). Optional hosted-routing evidence: `ai_provider` (`openrouter|gemini`), `credential_source` (`app_managed|user_provided|none`), `hosted_processing_consent`, `zero_data_retention_enforced`, and `data_collection_denied`. The API never accepts or returns a provider secret. The operation invalidates current derived fields/jobs, records an audit event and either creates a policy-stamped enrichment job or leaves derived data purged. Personal app-managed reprocessing selects OpenRouter only when consent, ZDR and denied data collection are all explicit; otherwise it records `none`.
 
-## Planned BG-10 URL source-acquisition API projection
+## BG-10 URL source-acquisition item-detail projection
 
-BG-08 defines the response contract only. No new route or response field is
-implemented by BG-08.
+BG-10 does not add a second owner route. The existing admin
+`GET /api/v1/items/:itemId` detail response now includes a
+`url_acquisitions` array. The contract transform also exposes
+`url_acquisition` as the current entry, or `null` when no acquisition row
+matches the canonical item's current source revision and privacy level.
 
-The admin item-detail response will expose the latest URL acquisition evidence as a
-separate `source_acquisition` object rather than overwriting existing source fields:
+Each URL acquisition row keeps source evidence separate from the existing fields:
 
-```json
-{
-  "source_acquisition": {
-    "status": "login_required",
-    "coverage": "url_only",
-    "fetched_at": "2026-09-19T08:00:00.000Z",
-    "fetched_final_url": "https://example.test/login",
-    "http_status": 401,
-    "content_type": "text/html",
-    "response_bytes": 1842,
-    "extracted_characters": 0,
-    "metadata": {
-      "title": "Sign in",
-      "description": null,
-      "site_name": "Example",
-      "canonical_hint_url": null
-    },
-    "acquired_text": null,
-    "error_code": "SOURCE_LOGIN_REQUIRED",
-    "retryable": false
-  }
-}
-```
+- `source_url_snapshot`: submitted URL observed for that acquisition generation;
+- `source_revision`: input generation accepted by the worker;
+- `privacy_level_snapshot`: privacy level that governed source-host contact;
+- `status` and `coverage`: machine-readable acquisition outcome and evidence
+  strength;
+- `fetched_final_url`, HTTP/content metadata and deterministic source metadata:
+  bounded fetch evidence only, never a deduplication rewrite;
+- `acquired_text` and `acquired_text_hash`: fetched source evidence, never
+  copied into `raw_text`;
+- `error_code` and `retryable`: safe operational outcome without raw exception
+  text;
+- `attempt_count`, `duration_ms`, and `network_io_skipped_by_policy`:
+  bounded execution observability without source content in logs;
+- parser identity/timestamps and `is_current`.
 
-The exact JSON nesting may be implemented by BG-10 only if it preserves these
-semantics and remains schema-validated.
+The existing fields remain distinct: `source_url` is canonical submitted source
+evidence, `canonical_url` is the conservative deduplication value, `raw_text`
+is owner/client-supplied text, `user_note` is owner intent, and `summary` is a
+derived interpretation.
 
-The existing fields stay distinct:
+Automatic source-host I/O occurs only for a current `public` item. For
+`unknown`, `personal`, or `sensitive`, BG-10 records a
+`policy_blocked` URL acquisition with `SOURCE_FETCH_POLICY_BLOCKED` and does
+not call the source host. Source-host acquisition and AI-provider eligibility
+remain separate policy decisions.
 
-- `source_url`: submitted source evidence;
-- `canonical_url`: conservative deduplication value;
-- `raw_text`: owner/client-supplied text;
-- `user_note`: owner reason;
-- `summary`: generated interpretation.
+Portable JSON export schema `2026-09-19.1` includes full
+`urlAcquisitions` history for each item. CSV includes a readable
+`url_acquisition` summary for the current matching generation. Clean-target
+restore validates item ownership and restores those rows, permanent purge removes
+them, and the rebuildable FTS projection indexes the current `acquired_text` as
+`source_text`.
 
-`fetched_final_url` is source-acquisition evidence and never changes duplicate
-identity. `acquired_text` is fetched source evidence and must not be copied into
-`raw_text`.
-
-URL acquisition statuses, coverage values, safe error codes, retry rules, privacy
-eligibility, and fetch budgets are defined in
-[URL_ACQUISITION_CONTRACT.md](URL_ACQUISITION_CONTRACT.md).
-
-When BG-10 makes these records durable, portable JSON export/restore must include
-them and its schema version must advance. Search must index acquired source text
-through a rebuildable FTS projection rather than mutating raw source fields. Purge
-must remove acquisition evidence with the item.
+Statuses, coverage values, safe error codes, retry rules and network budgets remain
+defined by [URL_ACQUISITION_CONTRACT.md](URL_ACQUISITION_CONTRACT.md).
 
 ## Planned item and review API
 
@@ -200,8 +190,10 @@ generation.
   `pending` plus a future `available_at`.
 - `POST /api/v1/jobs/:id/retry?kind=processing|sync`: admin-only, bounded to
   three manual retries. It rejects deleted items, paused optional processing,
-  stale privacy snapshots, ineligible hosted processing and deleted Notion
-  pages.
+  stale privacy snapshots, ineligible hosted processing, deleted Notion pages,
+  and `acquire_url` jobs. URL-source retry needs a new generation-aware
+  acquisition command and remains BG-11 work rather than reusing immutable
+  evidence under the same acquisition job ID.
 - `POST /api/v1/items/:id/notion/recreate`: admin-only owner approval for a
   confirmed deleted/missing Notion page.
 - `POST /api/v1/worker/jobs/lease`: local-worker token; body contains

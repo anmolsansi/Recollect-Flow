@@ -100,6 +100,20 @@ export class EnrichService {
       );
     }
 
+    const sourceEvidence = await this.db
+      .prepare(
+        `SELECT ua.acquired_text
+         FROM url_acquisitions ua
+         JOIN items i ON i.id = ua.item_id
+         WHERE ua.item_id = ?1
+           AND ua.source_revision = i.source_revision
+           AND ua.privacy_level_snapshot = i.privacy_level
+         ORDER BY ua.completed_at DESC, ua.id DESC
+         LIMIT 1`,
+      )
+      .bind(job.itemId)
+      .first<{ acquired_text: string | null }>();
+
     const extractionRows = await this.db
       .prepare(
         `SELECT extracted_text, image_description
@@ -120,6 +134,7 @@ export class EnrichService {
       itemRow.title,
       itemRow.user_note,
       itemRow.raw_text,
+      sourceEvidence?.acquired_text,
       ...extractions,
     ]
       .filter(Boolean)

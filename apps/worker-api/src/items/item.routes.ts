@@ -95,7 +95,7 @@ export function itemRoutes() {
                 edit_version, captured_at, created_at, updated_at, deleted_at,
                 deleted_from_lifecycle_status, duplicate_of, suggested_action,
                 review_at, coverage, why_it_matters, notion_page_id,
-                notion_missing_at
+                notion_missing_at, source_revision
          FROM items WHERE id = ?1`,
       )
       .bind(itemId)
@@ -105,6 +105,7 @@ export function itemRoutes() {
     const [
       attachments,
       extractions,
+      urlAcquisitions,
       captureEvents,
       providerUsage,
       feedback,
@@ -128,6 +129,40 @@ export function itemRoutes() {
                   updated_at
            FROM extraction_records WHERE item_id = ?1
            ORDER BY updated_at DESC LIMIT 100`,
+        )
+        .bind(itemId)
+        .all(),
+      db
+        .prepare(
+          `SELECT ua.id, ua.job_id, ua.source_revision, ua.source_url_snapshot,
+                  ua.privacy_level_snapshot, ua.status, ua.coverage,
+                  ua.fetched_final_url, ua.http_status, ua.content_type,
+                  ua.response_bytes, ua.redirect_count, ua.attempt_count,
+                  ua.duration_ms, ua.network_io_skipped_by_policy, ua.source_title,
+                  ua.source_description, ua.source_site_name,
+                  ua.source_canonical_hint_url, ua.acquired_text,
+                  ua.acquired_text_hash, ua.extracted_characters, ua.error_code,
+                  ua.retryable, ua.parser_name, ua.parser_version, ua.started_at,
+                  ua.completed_at, ua.created_at,
+                  CASE
+                    WHEN ua.source_revision = i.source_revision
+                     AND ua.privacy_level_snapshot = i.privacy_level
+                     AND ua.id = (
+                       SELECT current.id
+                       FROM url_acquisitions current
+                       WHERE current.item_id = i.id
+                         AND current.source_revision = i.source_revision
+                         AND current.privacy_level_snapshot = i.privacy_level
+                       ORDER BY current.completed_at DESC, current.id DESC
+                       LIMIT 1
+                     )
+                    THEN 1 ELSE 0
+                  END AS is_current
+           FROM url_acquisitions ua
+           JOIN items i ON i.id = ua.item_id
+           WHERE ua.item_id = ?1
+           ORDER BY is_current DESC, ua.completed_at DESC, ua.id DESC
+           LIMIT 100`,
         )
         .bind(itemId)
         .all(),
@@ -196,6 +231,7 @@ export function itemRoutes() {
           },
           attachments: attachments.results ?? [],
           extractions: extractions.results ?? [],
+          url_acquisitions: urlAcquisitions.results ?? [],
           processing_jobs: processingJobs,
           sync_attempts: syncAttempts,
           provenance: {

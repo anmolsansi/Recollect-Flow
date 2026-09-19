@@ -36,6 +36,7 @@ export class ExportRepository {
       captures,
       attachments,
       extractions,
+      urlAcquisitions,
       jobs,
       jobResults,
       syncAttempts,
@@ -50,6 +51,9 @@ export class ExportRepository {
       this.rows('SELECT * FROM attachments ORDER BY created_at ASC, id ASC'),
       this.rows(
         'SELECT * FROM extraction_records ORDER BY created_at ASC, id ASC',
+      ),
+      this.rows(
+        'SELECT * FROM url_acquisitions ORDER BY completed_at ASC, id ASC',
       ),
       this.rows(
         'SELECT * FROM processing_jobs ORDER BY created_at ASC, id ASC',
@@ -78,6 +82,7 @@ export class ExportRepository {
       captures: groupByItem(captures),
       attachments: groupByItem(attachments),
       extractions: groupByItem(extractions),
+      urlAcquisitions: groupByItem(urlAcquisitions),
       jobs: groupByItem(jobs),
       jobResults: groupByItem(jobResults, '__item_id'),
       syncAttempts: groupByItem(syncAttempts),
@@ -97,6 +102,7 @@ export class ExportRepository {
           captureEvents: grouped.captures.get(itemId) ?? [],
           attachments: grouped.attachments.get(itemId) ?? [],
           extractions: grouped.extractions.get(itemId) ?? [],
+          urlAcquisitions: grouped.urlAcquisitions.get(itemId) ?? [],
           processingJobs: grouped.jobs.get(itemId) ?? [],
           processingJobResults: grouped.jobResults.get(itemId) ?? [],
           syncAttempts: grouped.syncAttempts.get(itemId) ?? [],

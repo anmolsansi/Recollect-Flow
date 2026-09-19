@@ -6,6 +6,7 @@ const RESTORABLE_TABLES = new Set([
   'capture_events',
   'attachments',
   'extraction_records',
+  'url_acquisitions',
   'processing_jobs',
   'processing_job_results',
   'sync_attempts',
@@ -66,6 +67,7 @@ export class RestoreRepository {
       'items',
       'capture_events',
       'attachments',
+      'url_acquisitions',
       'processing_jobs',
       'sync_attempts',
     ]) {
@@ -156,6 +158,9 @@ export class RestoreRepository {
     }
     for (const key of item.deduplicationKeys) {
       await this.insertRecord('item_deduplication_keys', key);
+    }
+    for (const acquisition of item.urlAcquisitions) {
+      await this.insertRecord('url_acquisitions', acquisition);
     }
     for (const job of item.processingJobs) {
       await this.insertRecord(

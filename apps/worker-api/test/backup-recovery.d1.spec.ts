@@ -2,6 +2,7 @@ import { applyD1Migrations, env } from 'cloudflare:test';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { BackupService } from '../src/recovery/backup.service';
+import { PORTABLE_EXPORT_VERSION } from '../src/recovery/recovery.types';
 
 const ITEM_ID = 'ope228-backup-live-item';
 
@@ -54,7 +55,7 @@ describe('OPE-228 hosted backup workflow', () => {
 
     expect(backup).toMatchObject({
       state: 'complete',
-      schemaVersion: '2026-08-10.1',
+      schemaVersion: PORTABLE_EXPORT_VERSION,
       expiresAt: '2026-09-09T06:05:00.000Z',
       failureCode: null,
     });
@@ -76,7 +77,7 @@ describe('OPE-228 hosted backup workflow', () => {
     expect(downloaded.artifact.id).toBe(backup.id);
     expect(JSON.parse(downloaded.content)).toMatchObject({
       format: 'recollectflow-portable-export',
-      schemaVersion: '2026-08-10.1',
+      schemaVersion: PORTABLE_EXPORT_VERSION,
       itemCount: 1,
     });
 

@@ -5,6 +5,9 @@ import type { RouteDecision } from './policy.service';
 interface ItemRow {
   id: string;
   edit_version: number;
+  source_type: string;
+  source_url: string | null;
+  source_revision: number;
 }
 
 export interface PolicyRepository {
@@ -27,7 +30,7 @@ export class D1PolicyRepository implements PolicyRepository {
   ): Promise<number> {
     const item = await this.database
       .prepare(
-        'SELECT id, edit_version FROM items WHERE id = ?1 AND deleted_at IS NULL',
+        'SELECT id, edit_version, source_type, source_url, source_revision FROM items WHERE id = ?1 AND deleted_at IS NULL',
       )
       .bind(itemId)
       .first<ItemRow>();
@@ -102,12 +105,18 @@ export class D1PolicyRepository implements PolicyRepository {
           .prepare(
             `INSERT INTO processing_jobs (
                id, item_id, job_type, status, available_at, created_at, updated_at,
-               privacy_level_snapshot, provider_eligibility, policy_version,
+               input_hash, privacy_level_snapshot, provider_eligibility, policy_version,
                credential_source, hosted_processing_consent,
                zero_data_retention_required, data_collection_denied
              )
-             SELECT ?1, ?2, 'enrich', 'pending', ?3, ?3, ?3, ?4, ?5, ?6,
-                    ?7, ?8, ?9, ?10
+             SELECT ?1, ?2,
+                    CASE WHEN source_type = 'url' AND source_url IS NOT NULL
+                      THEN 'acquire_url' ELSE 'enrich' END,
+                    'pending', ?3, ?3, ?3,
+                    CASE WHEN source_type = 'url' AND source_url IS NOT NULL
+                      THEN 'url-source-v1:' || source_revision
+                      ELSE 'privacy-reprocess' END,
+                    ?4, ?5, ?6, ?7, ?8, ?9, ?10
              FROM items WHERE id = ?2 AND updated_at = ?3`,
           )
           .bind(

@@ -1257,6 +1257,36 @@ source must remain inspectable and searchable after the Worker exits.
 enrichment service, migration files, item detail, FTS synchronization, export/restore
 and purge services.
 
+### Implemented BG-10 architecture
+
+Migration `0022_add_url_acquisition_evidence.sql` adds immutable,
+item-owned `url_acquisitions` rows plus `items.source_revision`. URL captures
+queue `acquire_url` jobs only after canonical capture persistence. The scheduled
+worker reuses `processing_jobs` leases and the BG-09 bounded fetcher. It validates
+the lease, item, purge state, source revision and privacy before the fetch and again
+through conditional D1 statements before accepting the result.
+
+Accepted evidence remains separate from `raw_text` and generated fields. One D1
+batch persists the terminal observation, conditionally creates the single eligible
+enrichment job, writes a content-free audit event, and terminally updates the
+acquisition job. URL-plus-attachment captures gate enrichment until both acquisition
+and extraction prerequisites are no longer active. Automatic transient acquisition
+is limited to three attempts.
+
+Only a current Public item may contact a source host. Unknown, Personal and
+Sensitive items complete acquisition with durable `policy_blocked` evidence and no
+network I/O. A later explicit privacy reprocess for a URL routes through
+`acquire_url` again rather than jumping directly to enrichment.
+
+Current acquired text is included explicitly in enrichment input, admin item detail,
+and the rebuildable FTS `source_text` projection. Item detail and the Web Inbox
+render the source as text/read-only values rather than trusted HTML. Evidence also
+records bounded attempt count, duration and whether privacy skipped network I/O.
+Portable export schema `2026-09-19.1`, a current-evidence CSV summary,
+clean-target restore, canonical purge and integrity scanning all include URL
+evidence. Generic same-job retry is rejected for `acquire_url`; BG-11 owns the
+generation-aware owner retry/reprocess command.
+
 ### Why fetching into memory does not complete the feature
 
 If the Worker fetches an article, generates a summary and discards the article text,

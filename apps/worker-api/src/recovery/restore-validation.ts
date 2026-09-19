@@ -35,6 +35,7 @@ export function validateRestorePlan(plan: RestorePlan): void {
     requireOwnedRows(entry.captureEvents, itemId, 'captureEvents');
     requireOwnedRows(entry.attachments, itemId, 'attachments');
     requireOwnedRows(entry.extractions, itemId, 'extractions');
+    requireOwnedRows(entry.urlAcquisitions, itemId, 'urlAcquisitions');
     requireOwnedRows(entry.processingJobs, itemId, 'processingJobs');
     requireOwnedRows(entry.syncAttempts, itemId, 'syncAttempts');
     requireOwnedRows(entry.providerUsage, itemId, 'providerUsage');
@@ -94,6 +95,7 @@ export function validateRestorePlan(plan: RestorePlan): void {
       entry.captureEvents,
       entry.attachments,
       entry.extractions,
+      entry.urlAcquisitions,
       entry.processingJobs,
       entry.syncAttempts,
       entry.providerUsage,

@@ -566,9 +566,15 @@ export class JobService {
             WHERE source.id = ?3 AND source.item_id = ?4
               AND source.lease_owner = ?5 AND source.status = 'processing'
               AND source.lease_expires_at > ?2
+              AND source.provider_eligibility <> 'none'
               AND NOT EXISTS (
                 SELECT 1 FROM processing_jobs
                 WHERE item_id = ?4 AND job_type = 'enrich'
+                  AND status IN ('pending', 'processing')
+              )
+              AND NOT EXISTS (
+                SELECT 1 FROM processing_jobs
+                WHERE item_id = ?4 AND job_type = 'acquire_url'
                   AND status IN ('pending', 'processing')
               )`,
           )

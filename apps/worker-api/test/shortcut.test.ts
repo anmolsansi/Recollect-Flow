@@ -36,6 +36,9 @@ class MemoryCaptureRepository implements CaptureRepository {
       requestFingerprint: input.requestFingerprint,
       duplicateOf: null,
       privacyLevel: input.privacy_level,
+      sourceType: input.source_type,
+      sourceUrl: input.url ?? null,
+      sourceRevision: 1,
       processingStatus: 'pending',
       attachmentId: null,
     };

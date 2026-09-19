@@ -1274,134 +1274,143 @@ These unchecked steps inherit this task's **what, why, when, where and proof** a
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
+**BG-10 candidate reconciliation:** BG-10.001 through BG-10.099 are satisfied
+on implementation head `3cf0ba6ebab8d8dd0bc0e5ec5f2cfdf0445836fd`. CI #297
+passed the complete repository gate, including 153 Node tests, 142 workerd/D1
+tests, 9 Web tests, contracts, Web build, fresh local D1 migration replay, Chrome
+availability, and the browser-download regression. Detailed evidence is recorded
+in [`BG-10_URL_EVIDENCE_CHAIN.md`](verification/BG-10_URL_EVIDENCE_CHAIN.md).
+BG-10.100 remains intentionally unchecked until PR #52 is merged and the merged
+`main` revision passes the repository gate.
+
 #### BG-10 / 01 — Establish task context
 
-- [ ] `BG-10.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-10.002` **Dependency:** Verify BG-09's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-10.003` **Baseline:** Record the actual checkout or release candidate used for BG-10.
-- [ ] `BG-10.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-10.005` **Evidence:** Check whether existing evidence already satisfies any BG-10 step; reference it instead of manufacturing work.
-- [ ] `BG-10.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-10.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-10.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-10.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-10.010` **Tracking:** Open a BG-10 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-10.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-10.002` **Dependency:** Verify BG-09's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-10.003` **Baseline:** Record the actual checkout or release candidate used for BG-10.
+- [x] `BG-10.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-10.005` **Evidence:** Check whether existing evidence already satisfies any BG-10 step; reference it instead of manufacturing work.
+- [x] `BG-10.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-10.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-10.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-10.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-10.010` **Tracking:** Open a BG-10 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-10 / 02 — Evidence schema
 
-- [ ] `BG-10.011` Inspect attachment extraction constraints.
-- [ ] `BG-10.012` Reject fake attachment workaround.
-- [ ] `BG-10.013` Choose additive URL evidence shape.
-- [ ] `BG-10.014` Define item ownership reference.
-- [ ] `BG-10.015` Define source revision identity.
-- [ ] `BG-10.016` Define fetch timestamp field.
-- [ ] `BG-10.017` Define requested/final URL fields.
-- [ ] `BG-10.018` Define parser version fields.
-- [ ] `BG-10.019` Define outcome/coverage fields.
-- [ ] `BG-10.020` Define content hash field.
+- [x] `BG-10.011` Inspect attachment extraction constraints.
+- [x] `BG-10.012` Reject fake attachment workaround.
+- [x] `BG-10.013` Choose additive URL evidence shape.
+- [x] `BG-10.014` Define item ownership reference.
+- [x] `BG-10.015` Define source revision identity.
+- [x] `BG-10.016` Define fetch timestamp field.
+- [x] `BG-10.017` Define requested/final URL fields.
+- [x] `BG-10.018` Define parser version fields.
+- [x] `BG-10.019` Define outcome/coverage fields.
+- [x] `BG-10.020` Define content hash field.
 
 #### BG-10 / 03 — Migration design
 
-- [ ] `BG-10.021` Find next available migration number.
-- [ ] `BG-10.022` Define text storage bounds.
-- [ ] `BG-10.023` Define metadata storage fields.
-- [ ] `BG-10.024` Add required foreign key.
-- [ ] `BG-10.025` Add item lookup index.
-- [ ] `BG-10.026` Define current evidence uniqueness.
-- [ ] `BG-10.027` Preserve old attachment schema.
-- [ ] `BG-10.028` Apply on fresh local database.
-- [ ] `BG-10.029` Apply on populated prior database.
-- [ ] `BG-10.030` Verify preserved source rows.
+- [x] `BG-10.021` Find next available migration number.
+- [x] `BG-10.022` Define text storage bounds.
+- [x] `BG-10.023` Define metadata storage fields.
+- [x] `BG-10.024` Add required foreign key.
+- [x] `BG-10.025` Add item lookup index.
+- [x] `BG-10.026` Define current evidence uniqueness.
+- [x] `BG-10.027` Preserve old attachment schema.
+- [x] `BG-10.028` Apply on fresh local database.
+- [x] `BG-10.029` Apply on populated prior database.
+- [x] `BG-10.030` Verify preserved source rows.
 
 #### BG-10 / 04 — Job creation
 
-- [ ] `BG-10.031` Locate capture scheduling branch.
-- [ ] `BG-10.032` Add eligible URL acquisition job.
-- [ ] `BG-10.033` Preserve raw-first response path.
-- [ ] `BG-10.034` Reuse durable job repository.
-- [ ] `BG-10.035` Preserve stable job identity.
-- [ ] `BG-10.036` Carry privacy snapshot.
-- [ ] `BG-10.037` Carry source revision.
-- [ ] `BG-10.038` Exclude deleted capture targets.
-- [ ] `BG-10.039` Avoid untracked background task.
-- [ ] `BG-10.040` Verify duplicate share scheduling behavior.
+- [x] `BG-10.031` Locate capture scheduling branch.
+- [x] `BG-10.032` Add eligible URL acquisition job.
+- [x] `BG-10.033` Preserve raw-first response path.
+- [x] `BG-10.034` Reuse durable job repository.
+- [x] `BG-10.035` Preserve stable job identity.
+- [x] `BG-10.036` Carry privacy snapshot.
+- [x] `BG-10.037` Carry source revision.
+- [x] `BG-10.038` Exclude deleted capture targets.
+- [x] `BG-10.039` Avoid untracked background task.
+- [x] `BG-10.040` Verify duplicate share scheduling behavior.
 
 #### BG-10 / 05 — Lease execution
 
-- [ ] `BG-10.041` Lease through existing service.
-- [ ] `BG-10.042` Check current owner identity.
-- [ ] `BG-10.043` Check lease validity.
-- [ ] `BG-10.044` Check current item deletion.
-- [ ] `BG-10.045` Check purge freeze state.
-- [ ] `BG-10.046` Check current privacy eligibility.
-- [ ] `BG-10.047` Fetch eligible source only.
-- [ ] `BG-10.048` Recheck eligibility before result.
-- [ ] `BG-10.049` Reject superseded source revision.
-- [ ] `BG-10.050` Avoid holding database transaction during fetch.
+- [x] `BG-10.041` Lease through existing service.
+- [x] `BG-10.042` Check current owner identity.
+- [x] `BG-10.043` Check lease validity.
+- [x] `BG-10.044` Check current item deletion.
+- [x] `BG-10.045` Check purge freeze state.
+- [x] `BG-10.046` Check current privacy eligibility.
+- [x] `BG-10.047` Fetch eligible source only.
+- [x] `BG-10.048` Recheck eligibility before result.
+- [x] `BG-10.049` Reject superseded source revision.
+- [x] `BG-10.050` Avoid holding database transaction during fetch.
 
 #### BG-10 / 06 — Result persistence
 
-- [ ] `BG-10.051` Validate acquisition result shape.
-- [ ] `BG-10.052` Persist immutable source evidence.
-- [ ] `BG-10.053` Select accepted current evidence.
-- [ ] `BG-10.054` Create eligible enrichment job atomically.
-- [ ] `BG-10.055` Avoid duplicate downstream job.
-- [ ] `BG-10.056` Persist safe limited outcome.
-- [ ] `BG-10.057` Clear completed lease correctly.
-- [ ] `BG-10.058` Preserve source capture fields.
-- [ ] `BG-10.059` Record bounded audit event.
-- [ ] `BG-10.060` Verify crash-replay convergence.
+- [x] `BG-10.051` Validate acquisition result shape.
+- [x] `BG-10.052` Persist immutable source evidence.
+- [x] `BG-10.053` Select accepted current evidence.
+- [x] `BG-10.054` Create eligible enrichment job atomically.
+- [x] `BG-10.055` Avoid duplicate downstream job.
+- [x] `BG-10.056` Persist safe limited outcome.
+- [x] `BG-10.057` Clear completed lease correctly.
+- [x] `BG-10.058` Preserve source capture fields.
+- [x] `BG-10.059` Record bounded audit event.
+- [x] `BG-10.060` Verify crash-replay convergence.
 
 #### BG-10 / 07 — Enrichment and detail
 
-- [ ] `BG-10.061` Read URL evidence explicitly.
-- [ ] `BG-10.062` Combine only approved evidence.
-- [ ] `BG-10.063` Preserve user-supplied reason.
-- [ ] `BG-10.064` Preserve owner override priority.
-- [ ] `BG-10.065` Keep generated fields separate.
-- [ ] `BG-10.066` Expose current coverage in detail.
-- [ ] `BG-10.067` Expose acquired text safely.
-- [ ] `BG-10.068` Expose safe acquisition error.
-- [ ] `BG-10.069` Preserve attachment detail compatibility.
-- [ ] `BG-10.070` Escape rendered source text.
+- [x] `BG-10.061` Read URL evidence explicitly.
+- [x] `BG-10.062` Combine only approved evidence.
+- [x] `BG-10.063` Preserve user-supplied reason.
+- [x] `BG-10.064` Preserve owner override priority.
+- [x] `BG-10.065` Keep generated fields separate.
+- [x] `BG-10.066` Expose current coverage in detail.
+- [x] `BG-10.067` Expose acquired text safely.
+- [x] `BG-10.068` Expose safe acquisition error.
+- [x] `BG-10.069` Preserve attachment detail compatibility.
+- [x] `BG-10.070` Escape rendered source text.
 
 #### BG-10 / 08 — Search integration
 
-- [ ] `BG-10.071` Identify FTS indexed fields.
-- [ ] `BG-10.072` Add acquired source text projection.
-- [ ] `BG-10.073` Update synchronization path.
-- [ ] `BG-10.074` Update rebuild script if required.
-- [ ] `BG-10.075` Test internal phrase retrieval.
-- [ ] `BG-10.076` Test AI-disabled retrieval.
-- [ ] `BG-10.077` Test evidence replacement removes stale terms.
-- [ ] `BG-10.078` Test deletion removes searchable terms.
-- [ ] `BG-10.079` Test restore recovers searchable terms.
-- [ ] `BG-10.080` Inspect query-plan behavior.
+- [x] `BG-10.071` Identify FTS indexed fields.
+- [x] `BG-10.072` Add acquired source text projection.
+- [x] `BG-10.073` Update synchronization path.
+- [x] `BG-10.074` Update rebuild script if required.
+- [x] `BG-10.075` Test internal phrase retrieval.
+- [x] `BG-10.076` Test AI-disabled retrieval.
+- [x] `BG-10.077` Test evidence replacement removes stale terms.
+- [x] `BG-10.078` Test deletion removes searchable terms.
+- [x] `BG-10.079` Test restore recovers searchable terms.
+- [x] `BG-10.080` Inspect query-plan behavior.
 
 #### BG-10 / 09 — Recovery integration
 
-- [ ] `BG-10.081` Add URL evidence to export.
-- [ ] `BG-10.082` Add evidence validation on restore.
-- [ ] `BG-10.083` Restore ownership references.
-- [ ] `BG-10.084` Apply newer purge receipts first.
-- [ ] `BG-10.085` Delete URL evidence during purge.
-- [ ] `BG-10.086` Add evidence integrity checks.
-- [ ] `BG-10.087` Test crash after evidence write.
-- [ ] `BG-10.088` Test duplicate result submission.
-- [ ] `BG-10.089` Test clean-target round trip.
-- [ ] `BG-10.090` Record complete acquisition chain proof.
+- [x] `BG-10.081` Add URL evidence to export.
+- [x] `BG-10.082` Add evidence validation on restore.
+- [x] `BG-10.083` Restore ownership references.
+- [x] `BG-10.084` Apply newer purge receipts first.
+- [x] `BG-10.085` Delete URL evidence during purge.
+- [x] `BG-10.086` Add evidence integrity checks.
+- [x] `BG-10.087` Test crash after evidence write.
+- [x] `BG-10.088` Test duplicate result submission.
+- [x] `BG-10.089` Test clean-target round trip.
+- [x] `BG-10.090` Record complete acquisition chain proof.
 
 #### BG-10 / 10 — Verify and close this task
 
-- [ ] `BG-10.091` **Review:** Compare the completed checklist with BG-10's stated outcome; identify uncovered behavior.
-- [ ] `BG-10.092` **Verification:** Run or inspect the focused proof required by BG-10; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-10.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-10.094` **Integrity:** Check that BG-10 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-10.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-10.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-10.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-10.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-10.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-10.091` **Review:** Compare the completed checklist with BG-10's stated outcome; identify uncovered behavior.
+- [x] `BG-10.092` **Verification:** Run or inspect the focused proof required by BG-10; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-10.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-10.094` **Integrity:** Check that BG-10 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-10.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-10.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-10.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-10.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-10.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-10.100` **Gate:** Check the parent completion boundary and record whether BG-11 is unlocked.
 
 ## BG-11 — 100 executable microtasks

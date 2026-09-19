@@ -90,6 +90,44 @@ export const extractionResponseSchema = z.object({
   updated_at: timestampSchema,
 });
 
+export const urlAcquisitionResponseSchema = z.object({
+  id: z.string(),
+  job_id: z.string(),
+  source_revision: z.number().int().min(1),
+  source_url_snapshot: z.string(),
+  privacy_level_snapshot: privacyLevelSchema,
+  status: z.string(),
+  coverage: z.enum([
+    'url_only',
+    'metadata_only',
+    'supplied_text',
+    'acquired_text',
+  ]),
+  fetched_final_url: z.string().nullable(),
+  http_status: z.number().int().nullable(),
+  content_type: z.string().nullable(),
+  response_bytes: z.number().int().nonnegative().nullable(),
+  redirect_count: z.number().int().nonnegative(),
+  attempt_count: z.number().int().min(1),
+  duration_ms: z.number().int().nonnegative(),
+  network_io_skipped_by_policy: z.union([z.literal(0), z.literal(1)]),
+  source_title: z.string().nullable(),
+  source_description: z.string().nullable(),
+  source_site_name: z.string().nullable(),
+  source_canonical_hint_url: z.string().nullable(),
+  acquired_text: z.string().nullable(),
+  acquired_text_hash: z.string().nullable(),
+  extracted_characters: z.number().int().nonnegative().nullable(),
+  error_code: z.string().nullable(),
+  retryable: z.union([z.literal(0), z.literal(1)]),
+  parser_name: z.string(),
+  parser_version: z.string(),
+  started_at: timestampSchema,
+  completed_at: timestampSchema,
+  created_at: timestampSchema,
+  is_current: z.union([z.literal(0), z.literal(1)]),
+});
+
 export const processingJobResponseSchema = z.object({
   id: z.string(),
   itemId: z.string(),
@@ -187,6 +225,7 @@ export const itemDetailDataSchema = z
     item: itemResponseSchema,
     attachments: z.array(attachmentResponseSchema),
     extractions: z.array(extractionResponseSchema),
+    url_acquisitions: z.array(urlAcquisitionResponseSchema),
     processing_jobs: z.array(processingJobResponseSchema),
     sync_attempts: z.array(syncAttemptResponseSchema),
     provenance: z.object({
@@ -200,6 +239,8 @@ export const itemDetailDataSchema = z
   .transform((data) => ({
     ...data,
     extraction: data.extractions[0] ?? null,
+    url_acquisition:
+      data.url_acquisitions.find((entry) => entry.is_current === 1) ?? null,
   }));
 
 export const itemDetailResponseSchema = z.object({

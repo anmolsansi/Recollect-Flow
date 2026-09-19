@@ -161,15 +161,24 @@ OPE-227 capacity-control implementation is also merged into `main` through PR #2
 
 The September audit found one clock-dependent test failure in `apps/worker-api/test/capacity-usage.d1.spec.ts`: the fixture creates August 2026 capacity windows while the `/usage` path uses the real current clock. Expired-window filtering is intentional. Repair the test clock/fixture, not the production definition of an active window.
 
-A second important processing defect exists for bare URLs. URL capture is durable, but a capture with no title, note, shared text or attachment can queue enrichment without first acquiring webpage content. The job then terminally fails with `NO_CONTENT_TO_ENRICH`.
+BG-10 repairs the prior bare-URL gap. Canonical URL capture now queues a durable
+`acquire_url` stage before enrichment. Public sources use the bounded BG-09
+fetcher; non-Public sources persist truthful policy-blocked evidence without
+source-host I/O. Acquired source evidence remains separate from owner-supplied
+`raw_text` and generated fields.
 
-Do not claim a webpage was read merely because a URL was saved. The URL-acquisition path must either obtain and persist bounded source evidence with honest coverage or produce a truthful unsupported/unavailable outcome.
+Do not claim a webpage was read merely because a URL was saved. A URL item is
+truthful only when its durable acquisition evidence records what was actually
+acquired or why acquisition was limited.
 
 ## Durable jobs and aggregate item state
 
 Reusable processing jobs provide leases, retry timing, stale recovery, bounded failures and admin/manual recovery. `retry_wait` is a projection of `pending` plus a future `available_at`, not a distinct stored status.
 
-A known consistency defect remains: a terminal processing-job failure can leave the item's aggregate `processing_status` as `pending`. The September audit reproduced this with the bare-URL `NO_CONTENT_TO_ENRICH` case.
+A known consistency defect remains: a terminal processing-job failure can leave
+the item's aggregate `processing_status` as `pending`. BG-10 removes the prior
+bare-URL `NO_CONTENT_TO_ENRICH` path, but it intentionally does not redefine the
+aggregate item-state contract. BG-12/BG-13 still own that repair.
 
 Before Priority 2 can close, define one aggregate item-state rule and ensure terminal job transitions, item detail, filters and retries agree with it.
 
@@ -203,7 +212,7 @@ The September audit exercised local export, backup hash verification, purge/rest
 
 ## Current migration and release state
 
-The repository currently contains 18 forward migration files. The latest files are:
+The repository now contains the BG-10 forward migration `0022_add_url_acquisition_evidence.sql`. Recent migration files include:
 
 - `0016_add_item_search_fts.sql`
 - `0017_add_item_review_contract.sql`
@@ -211,8 +220,11 @@ The repository currently contains 18 forward migration files. The latest files a
 - `0019_add_digest_jobs.sql`
 - `0020_add_ai_capacity_controls.sql`
 - `0021_add_recovery_workflows.sql`
+- `0022_add_url_acquisition_evidence.sql`
 
-The September audit applied all migration files through `0021` successfully to a fresh isolated local D1.
+BG-10 CI/local migration proof applies `0022` to both fresh and populated prior
+schemas. The older September audit remains historical evidence only through
+`0021`.
 
 Do **not** infer production migration state from the repository. Before any production release, compare the live migration ledger with the release candidate using a read-only check, back up production as required, obtain explicit authorization, then apply only pending forward migrations in reviewed order.
 
@@ -253,8 +265,8 @@ These correspond to Priority 1, BG-01 through BG-05, in `RECOLLECTFLOW_BUILD_GUI
 ### User workflows after Priority 1
 
 1. Browser/admin-session attachment download fails while bearer-token download succeeds.
-2. Bare-URL capture has no source-acquisition stage and can terminally fail enrichment with `NO_CONTENT_TO_ENRICH`.
-3. Terminal job failure can leave aggregate item processing state looking pending.
+2. Terminal job failure can leave aggregate item processing state looking pending.
+   The former bare-URL source-acquisition gap is repaired by BG-10.
 
 These belong to Priority 2 and must not be silently pulled into the Priority 1 verification-foundation scope, except where Priority 1 intentionally reproduces and labels them as known later defects.
 
