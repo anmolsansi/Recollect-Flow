@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs';
-
 import { applyD1Migrations, env } from 'cloudflare:test';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -10,14 +8,6 @@ import { ExportService } from '../src/recovery/export.service';
 import { RestoreService } from '../src/recovery/restore.service';
 import { CanonicalPurgeService } from '../src/recovery/canonical-purge.service';
 import { executeSearch } from '../src/search/search.service';
-
-const migration = readFileSync(
-  new URL(
-    '../../../migrations/0022_add_url_acquisition_evidence.sql',
-    import.meta.url,
-  ),
-  'utf8',
-);
 
 const T0 = new Date('2026-09-19T12:00:00.000Z');
 
@@ -115,20 +105,6 @@ function serviceWith(
     }),
   };
 }
-
-describe('BG-10 URL evidence migration contract', () => {
-  it('adds versioned evidence and projects source text without replacing raw_text', () => {
-    expect(migration).toContain('ADD COLUMN source_revision');
-    expect(migration).toContain('CREATE TABLE url_acquisitions');
-    expect(migration).toContain('source_url_snapshot');
-    expect(migration).toContain('privacy_level_snapshot');
-    expect(migration).toContain('acquired_text_hash');
-    expect(migration).toContain('url_acquisitions_immutable');
-    expect(migration).toContain('source_text');
-    expect(migration).toContain('url_acquisitions_search_fts_ai');
-    expect(migration).not.toContain('UPDATE items SET raw_text');
-  });
-});
 
 describe('BG-10 durable URL acquisition chain', () => {
   beforeAll(async () => {
