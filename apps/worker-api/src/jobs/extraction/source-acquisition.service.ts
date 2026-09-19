@@ -28,7 +28,6 @@ export interface SourceAcquisitionServiceOptions {
   now?: () => Date;
 }
 
-const ACQUISITION_JOB_TYPE = 'acquire_url';
 const PARSER_NAME = 'bounded-source-fetcher';
 const PARSER_VERSION = 'bg-09-v1';
 
