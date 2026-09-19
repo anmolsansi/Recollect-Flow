@@ -1081,7 +1081,7 @@ was read. It must not generate an endless Retry loop for an unchanged login page
 **Done when:** every outcome has a durable representation, user message and retry
 classification. This is a contract decision; the fetcher comes next.
 
-### BG-08 contract implementation — pre-merge state
+### BG-08 contract implementation — complete
 
 BG-08 is implemented as a contract-definition change on
 `agent/ope-328-bg-08-url-acquisition-contract`, tracked by GitHub #44 and Linear
@@ -1120,10 +1120,10 @@ The detailed repository reconciliation and threat/alternative review are recorde
 in
 [`docs/verification/BG-08_URL_ACQUISITION_CONTRACT.md`](verification/BG-08_URL_ACQUISITION_CONTRACT.md).
 
-BG-08.001 through BG-08.099 are reconciled on the implementation branch. BG-08.100
-remains open until this exact documentation head is green in CI, merged to `main`,
-and merged-main validation proves the parent gate. Only that final closeout unlocks
-BG-09 implementation.
+BG-08.001 through BG-08.100 are complete. Implementation PR #45 merged to
+`main` at `877172dbc10d7ba9771a6913f0758adf0a02e2f9`. Final pre-merge CI #219
+passed on the evidence-complete implementation head, and merged-main CI #220 passed
+the complete repository gate. BG-09 is therefore unlocked.
 
 ### Execution checklist
 
@@ -1167,10 +1167,12 @@ Every redirect passes through destination validation again. A safe-looking first
 URL may redirect to a forbidden target. Do not forward the owner's admin cookie,
 capture token or provider key to the source host.
 
-The earlier guide proposes initial budgets of 10 seconds, three redirects, 2 MiB
-response bytes and 100,000 extracted characters. These are design starting points,
-not existing platform guarantees. Measure the selected parser in workerd and record
-the final contract before release.
+BG-08 froze the V1 source-fetch budgets before BG-09 implementation: an
+8-second total wall-clock deadline, at most 5 redirects, at most 2 MiB of
+parser-visible response body, at most 250,000 extracted Unicode characters, and at
+most 3 automatic transient acquisition attempts for the same source/privacy
+snapshot. These are contract limits for BG-09, not evidence that the fetcher already
+exists. Any later change requires an explicit contract change backed by measurement.
 
 ### Why checking Content-Length is not sufficient
 
