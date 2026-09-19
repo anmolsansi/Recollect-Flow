@@ -17,3 +17,5 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run db:migrate:local
+      - run: google-chrome --version
+      - run: npm run browser:download:test
