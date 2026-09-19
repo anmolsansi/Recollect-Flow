@@ -528,6 +528,10 @@ describe('private attachment lifecycle', () => {
     );
 
     expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toBe('application/pdf');
+    expect(response.headers.get('Content-Disposition')).toBe(
+      'attachment; filename="read-auth.pdf"',
+    );
     expect(await response.arrayBuffer()).toEqual(bytes);
   });
 
