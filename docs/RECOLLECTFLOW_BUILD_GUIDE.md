@@ -979,10 +979,13 @@ Implementation/browser evidence lives in
 with checklist reconciliation in
 [`docs/verification/BG-07_CHECKLIST_RECONCILIATION.md`](verification/BG-07_CHECKLIST_RECONCILIATION.md).
 
-BG-07.001–.099 are complete on the implementation branch after GitHub Actions CI
-run #196 passed the full repository, migration and Chrome acceptance gates.
-BG-07.100 remains a merge/closeout gate. BG-08 is not unlocked until the validated
-implementation is merged and the final closeout is present on `main`.
+BG-07's final implementation/documentation head passed GitHub Actions CI run #208,
+including the full repository, local migration and Chrome acceptance gates.
+Implementation PR #42 merged into `main` at
+`27aa0dad8cf82c8e8c483baaf1b302c4772d170d`. The authoritative checklist is
+100/100 on a documentation-only closeout branch created directly from that merged
+application tree. When the closeout is validated and present on `main`, BG-07 is
+complete and BG-08 is unlocked.
 
 ### Execution checklist
 
