@@ -193,4 +193,3 @@ Before checking BG-07.100:
 BG-07.001–.099 are supported by repository code, automated regression tests and the
 real Chrome acceptance run. BG-07 remains **99/100** until the merge/closeout gate
 is complete.
-
