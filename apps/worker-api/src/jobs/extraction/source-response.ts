@@ -7,7 +7,7 @@ export const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
 
 export function sourceMediaType(value: string | null): string | undefined {
   if (!value) return undefined;
-  const parsed = value.split(';', 1)[0].trim().toLowerCase();
+  const parsed = value.split(';', 1)[0]?.trim().toLowerCase() ?? '';
   return parsed || undefined;
 }
 
