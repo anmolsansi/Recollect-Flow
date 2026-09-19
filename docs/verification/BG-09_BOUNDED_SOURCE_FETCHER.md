@@ -4,16 +4,31 @@ Tracking: GitHub #48 / Linear OPE-329.
 
 Task: **BG-09 — Build a bounded source fetcher**.
 
+## Final status
+
+**COMPLETE.** BG-09 implementation PR #49 merged to `main` at
+`c46cc25fe61825a3c7137c88982f19c13b5c531c`.
+
+The implementation head `c167fa32fec36f56a8cc8da82befc693bc1c23ce`
+passed the complete repository gate in CI #245 before merge. The exact merged-main
+commit then passed the complete repository gate again in CI #246.
+
+BG-10 is therefore unlocked. BG-09 does not claim BG-10 persistence/job-chain
+integration, BG-11 owner retry UX, or BG-12/BG-13 aggregate processing-state work.
+
 ## Baseline and dependency
 
 - BG-09 base: `102cd9539461fb72173dfdf6717229c789a25d29`.
-- That revision is the merged BG-08 final closeout from PR #47.
-- BG-08 is complete and explicitly unlocks BG-09.
-- Work branch: `agent/ope-329-bg-09-bounded-source-fetcher`.
-- Verification environment: deterministic injected fetch fixtures in the repository's workerd-backed Vitest suite plus normal GitHub CI.
-- No production deployment, production source host, owner credential, private URL, or uncontrolled public-site fetch is required or authorized by BG-09.
+- That revision is the merged BG-08 final closeout.
+- BG-08 was complete and explicitly unlocked BG-09.
+- Implementation branch: `agent/ope-329-bg-09-bounded-source-fetcher`.
+- Implementation PR: #49.
+- Verification environment: deterministic injected fetch fixtures in the
+  repository's workerd-backed Vitest suite plus the normal GitHub CI gate.
+- No production source host, owner credential, private URL, or uncontrolled
+  public-site fetch was required or used for acceptance.
 
-## Authoritative contract
+## Authoritative contract implemented
 
 BG-09 implements the lower-level fetch boundary frozen by
 `docs/URL_ACQUISITION_CONTRACT.md`:
@@ -31,90 +46,209 @@ BG-09 implements the lower-level fetch boundary frozen by
 - deterministic parsing with no page JavaScript execution;
 - stable safe outcomes instead of raw upstream exception/body leakage.
 
-The contract's maximum of three automatic transient attempts is handed to BG-10's
-job orchestration. BG-09 exposes transient retryability but does not implement the
-processing chain or persistence.
+The contract's maximum of three automatic transient attempts remains a BG-10
+orchestration responsibility. BG-09 exposes retryability without implementing
+persistent retry scheduling.
 
-## Existing implementation inspected
+## Implementation
 
-The repository has attachment extraction under
-`apps/worker-api/src/jobs/extraction/`, but no URL source fetcher. The attachment
-worker and `ExtractionService` must remain attachment-specific. BG-09 therefore
-adds a sibling lower-level source-fetch module rather than overloading the existing
-R2 attachment contract.
+BG-09 adds a sibling URL-acquisition boundary under
+`apps/worker-api/src/jobs/extraction/` without overloading the existing R2
+attachment extraction service.
 
-`apps/worker-api/src/captures/url-normalizer.ts` is a conservative deduplication
-normalizer. BG-09 must not reuse it as fetch admission because source acquisition
-must preserve the submitted URL and treat redirect final URLs as separate derived
-evidence.
+Implemented modules:
 
-## Staff-engineer review
+- `source-destination.ts`: platform URL parsing, scheme/credential/default-port
+  admission, normalized IPv4/IPv6 handling, blocked local/private/link-local/
+  reserved/metadata destinations, and fragment removal for outbound requests;
+- `source-fetcher.types.ts`: frozen limits plus the BG-08 acquisition status,
+  coverage, error-code, and result vocabulary;
+- `source-response.ts`: bounded stream reads, Content-Length early rejection,
+  actual-byte enforcement, cancellation, status classification, timeout helpers,
+  and login-content classification;
+- `source-document.parser.ts`: Worker-native `HTMLRewriter` parsing, safe
+  metadata extraction, script/style/navigation/hidden-content removal, plain-text
+  support, whitespace normalization, and Unicode-character truncation;
+- `source-fetcher.ts`: one total deadline, manual redirects, independent target
+  revalidation, loop/count enforcement, safe request construction, MIME admission,
+  parser integration, stable outcomes, and no raw exception leakage.
 
-### Selected parser
+`wrangler.toml` enables `global_fetch_strictly_public`.
 
-Use Cloudflare Workers' native `HTMLRewriter` rather than adding a third-party DOM
-dependency. It is runtime-native, streaming, can remove script/style/navigation
-content, and can collect deterministic text/metadata without executing page
-JavaScript.
+## Runtime destination boundary
 
-### Selected egress boundary
+BG-09 deliberately does not perform a DNS preflight followed by an independently
+resolving fetch. That pattern creates a time-of-check/time-of-use rebinding gap.
 
-Enable `global_fetch_strictly_public` so Worker global `fetch()` routes as a
-public-Internet request. Add deterministic URL/IP/hostname admission before every
-request and redirect. The code does not perform a DNS preflight followed by an
-independently resolving fetch, because that would create a DNS rebinding
-time-of-check/time-of-use gap.
+The selected Worker boundary is:
 
-The Worker runtime does not expose the resolved origin IP from ordinary global
-`fetch()` for application-side pinning. BG-09 therefore documents the exact
-boundary instead of claiming stronger DNS pinning than the runtime provides:
-literal/private/special destinations are rejected in application code, and
-hostname egress is constrained by the strict-public runtime route.
+1. reject malformed, unsupported, credential-bearing, non-default-port, literal
+   private/local/link-local/reserved/metadata, and encoded equivalent destinations
+   before network work;
+2. repeat that admission for every redirect target;
+3. use manual redirects;
+4. route global Worker fetches with
+   `global_fetch_strictly_public`, the Cloudflare runtime flag for public-Internet
+   global-fetch routing.
 
-### Port policy
+The ordinary Worker global `fetch()` API does not expose a resolved origin IP for
+application-side pinning, so BG-09 does not claim application-level DNS pinning.
+The safety guarantee is the combination of deterministic literal/special-address
+admission and the strict-public Worker egress boundary.
 
-V1 source acquisition permits only the normal HTTP(S) ports: HTTP 80 and HTTPS 443.
-The WHATWG URL parser normalizes explicit default ports away. Non-default ports are
-rejected to reduce SSRF surface and avoid turning the source fetcher into a general
-network client.
+Reference:
+<https://developers.cloudflare.com/workers/configuration/compatibility-flags/>.
 
-### Scope boundary
+## Port policy
 
-BG-09 does not add a migration, mutate `items.raw_text`, enqueue acquisition jobs,
-change FTS, alter item detail, change export/restore, or repair aggregate processing
-state. Those remain BG-10+ work.
+V1 permits only the normal HTTP(S) ports: HTTP 80 and HTTPS 443. The WHATWG URL
+parser normalizes explicit default ports away, so any remaining port is rejected.
 
-## Planned proof
+## Parser and content boundary
 
-Controlled tests must cover:
+The selected parser is Cloudflare Workers' native `HTMLRewriter`. No third-party
+DOM dependency or webpage JavaScript runtime was added.
 
-- public HTML extraction and metadata;
-- plain text;
-- relative/multi-hop redirects;
-- redirect loops and redirect limits;
-- unsafe literal and encoded destinations;
-- unsupported schemes, credentials, and ports;
-- unsupported MIME;
-- false/missing Content-Length and streamed overflow;
-- one total timeout budget;
-- 401/403/login-form behavior;
-- transient 429/5xx/network outcomes;
-- malformed and empty HTML;
+The parser:
+
+- accepts only HTML, XHTML, or plain text admitted by the fetcher;
+- removes script and style content;
+- removes common navigation/header/footer/aside boilerplate and explicitly hidden
+  content;
+- extracts bounded title, description, site-name, and canonical-hint metadata;
+- resolves a source canonical hint as metadata only;
+- extracts normalized readable text;
+- truncates extracted text to the frozen 250,000-character maximum;
+- treats prompt-injection-shaped page text as inert source evidence.
+
+## Byte, redirect, and time enforcement
+
+The fetcher:
+
+- starts one abort controller/deadline before the first request;
+- reuses that signal across the redirect chain and body read;
+- rejects an advertised body above the byte limit early;
+- does not trust Content-Length;
+- counts actual bytes presented by the response stream;
+- cancels a streamed/chunked response on overflow;
+- adds no second decompression step, so the limit applies to bytes in the
+  parser-visible runtime body stream;
+- bounds parser input at 2 MiB;
+- enforces at most five redirects;
+- detects redirect loops;
+- rechecks the total timeout after parsing before returning success.
+
+## Failure and privacy behavior
+
+Stable outcomes/error codes cover:
+
+- unsafe destination;
+- login/access requirement;
+- stable unavailable page;
+- timeout;
+- network failure;
+- rate limit;
+- upstream 5xx;
+- unsupported content;
+- oversized content;
+- redirect limit/loop;
+- empty content;
+- parser failure.
+
+Raw exception messages, response bodies, signed query values, application cookies,
+authorization headers, capture/admin tokens, local-worker tokens, and provider keys
+are not returned as error details or copied into outbound source requests.
+
+The source fetcher does not mutate the capture or canonical item on failure. Durable
+acquisition persistence and capture/job-chain integration remain BG-10, so BG-09
+cannot convert a failed optional fetch into loss of the already-saved capture.
+
+## Controlled regression proof
+
+The workerd-backed test suite covers:
+
+- normal HTML extraction and safe metadata;
+- bounded plain text;
+- relative and multi-hop redirects;
+- manual redirect mode and final derived URL;
+- redirect loops and redirect-count exhaustion;
+- unsafe redirected targets;
+- unsupported schemes, embedded credentials, non-default ports, malformed URLs,
+  private/local/link-local/reserved IPv4/IPv6, metadata endpoints, and unusual
+  IPv4 spellings;
+- unsupported binary MIME;
+- advertised oversize rejection without body consumption;
+- missing Content-Length with streamed/chunked overflow cancellation;
+- one total abort signal/deadline;
+- 401/403/login-form outcomes;
+- 404/410;
+- 429 and 5xx retryable outcomes;
+- metadata-only and empty pages;
+- malformed HTML;
+- prompt-injection-shaped text remaining plain evidence;
+- normalized parser failure;
+- normalized thrown network failure;
 - extracted-text truncation;
-- source canonical hints as metadata only;
-- prompt-injection-shaped page text remaining plain data;
-- absence of Cookie, Authorization, capture/admin/local-worker tokens, or provider
-  keys from outbound requests.
+- absence of Authorization, Cookie, API-key, capture-token, and admin-token headers
+  from the outbound request.
 
-## Verification state
+## Scope integrity
 
-Initial repository/source reconciliation: **PASS**.
+BG-09 does not:
 
-Implementation: **IN PROGRESS**.
+- add the BG-10 `url_acquisitions` migration;
+- persist acquisition evidence;
+- overwrite `items.raw_text`;
+- change FTS;
+- enqueue source-acquisition jobs;
+- change item-detail projection;
+- change export/restore/purge behavior;
+- implement owner retry/reprocessing UX;
+- bypass authentication, CAPTCHA, bot protection, or platform controls;
+- execute page JavaScript;
+- deploy or acceptance-test against arbitrary live websites;
+- repair BG-12/BG-13 aggregate processing state.
 
-Focused workerd proof: **PENDING**.
+## Microcommit and CI history
 
-Repository CI: **PENDING**.
+The implementation was kept as reviewable microcommits. CI failures were preserved
+and repaired rather than bypassed:
 
-BG-09.100 remains open until the implementation is merged and merged-main CI
-proves the completion boundary.
+- early runs exposed repository Prettier differences;
+- a temporary branch-only Prettier diagnostic emitted the repository's exact pinned
+  formatting output and was removed before completion;
+- CI #241 reached strict TypeScript and exposed tuple/index/Worker-body typing
+  issues;
+- four focused microcommits repaired those type boundaries;
+- CI #245 passed the full repository gate at
+  `c167fa32fec36f56a8cc8da82befc693bc1c23ce`;
+- PR #49 merged the implementation to `main` at
+  `c46cc25fe61825a3c7137c88982f19c13b5c531c`;
+- merged-main CI #246 passed the same complete gate.
+
+CI #245:
+<https://github.com/anmolsansi/Recollect-Flow/actions/runs/35440693680>
+
+Merged-main CI #246:
+<https://github.com/anmolsansi/Recollect-Flow/actions/runs/35440816676>
+
+Both successful gates include:
+
+- `npm ci`;
+- `npm run check`, covering Prettier, ESLint, TypeScript, release smoke,
+  Node tests, workerd-backed D1 tests, contracts, web lint/tests, and web build;
+- isolated local D1 migration replay;
+- Chrome availability;
+- real browser-download regression.
+
+## Final reconciliation
+
+BG-09.001 through BG-09.100 are satisfied.
+
+The selected runtime boundary and its limitation are documented without claiming
+DNS pinning the Worker API does not provide. Required rejection and limited-coverage
+outcomes remain truthful. No application secret reaches the controlled fetch spy.
+The implementation preserves BG-08 source/provenance distinctions and does not pull
+BG-10+ persistence/recovery work into BG-09.
+
+**BG-10 is unlocked.**
