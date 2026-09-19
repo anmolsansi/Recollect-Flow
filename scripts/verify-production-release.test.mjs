@@ -63,6 +63,7 @@ async function createVerifierServer({
   let rawFixtureText = null;
   let uploadedBytes = Buffer.alloc(0);
   let uploadedChecksum = null;
+  let uploadedFilename = null;
   const privacyRequests = [];
   const detailVersions = [];
   const captureEvents = [];
@@ -121,6 +122,7 @@ async function createVerifierServer({
   const server = createServer(async (request, response) => {
     const requestUrl = new URL(request.url, 'http://127.0.0.1');
     const authorization = request.headers.authorization;
+    const cookie = request.headers.cookie;
     const bodyBuffer = await readRequestBody(request);
     let body = null;
     if (
@@ -465,6 +467,7 @@ async function createVerifierServer({
       request.method === 'POST' &&
       requestUrl.pathname === '/api/v1/uploads/init'
     ) {
+      uploadedFilename = body?.filename ?? null;
       json(response, 201, {
         data: {
           attachment_id: attachmentId,
@@ -508,9 +511,12 @@ async function createVerifierServer({
       request.method === 'GET' &&
       requestUrl.pathname === `/api/v1/attachments/${attachmentId}/content`
     ) {
+      const validSignedSession =
+        cookie === 'admin_session=authenticated.test-signature';
       if (
         authorization !== `Bearer ${CAPTURE_TOKEN}` &&
-        authorization !== `Bearer ${ADMIN_TOKEN}`
+        authorization !== `Bearer ${ADMIN_TOKEN}` &&
+        !validSignedSession
       ) {
         json(response, 401, { error: { code: 'UNAUTHENTICATED' } });
         return;
@@ -518,6 +524,9 @@ async function createVerifierServer({
       response.writeHead(200, {
         'Content-Type': 'application/pdf',
         'Content-Length': String(uploadedBytes.length),
+        'Content-Disposition': `attachment; filename="${uploadedFilename}"`,
+        'Cache-Control': 'private, no-store',
+        'X-Content-Type-Options': 'nosniff',
       });
       response.end(uploadedBytes);
       return;
