@@ -372,6 +372,29 @@ describe('OPE-246 durable D1 jobs', () => {
     ).rejects.toMatchObject({ code: 'JOB_NOT_LEASABLE' });
   });
 
+  it('rejects generic manual retry for immutable URL acquisition evidence', async () => {
+    const admin = new JobAdminService(env.DB);
+    await insertItem('acquisition-retry-item');
+    await insertProcessingJob(
+      'acquisition-retry-job',
+      'acquisition-retry-item',
+      { status: 'failed' },
+    );
+    await env.DB.prepare(
+      `UPDATE processing_jobs
+       SET job_type = 'acquire_url', input_hash = 'url-source-v1:1'
+       WHERE id = 'acquisition-retry-job'`,
+    ).run();
+
+    await expect(
+      admin.manuallyRetryProcessingJob(
+        'acquisition-retry-job',
+        'admin:test',
+        T0,
+      ),
+    ).rejects.toMatchObject({ code: 'OWNER_APPROVAL_REQUIRED' });
+  });
+
   it('blocks manual retry for deletion, quota pause, stale privacy, and retry exhaustion', async () => {
     const admin = new JobAdminService(env.DB);
     await insertItem('deleted-item', { deletedAt: T0.toISOString() });
