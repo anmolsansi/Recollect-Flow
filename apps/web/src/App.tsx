@@ -799,7 +799,8 @@ function ItemDetail() {
               {job.jobType}: {job.visibleStatus}{' '}
               {job.lastErrorCode ? `(${job.lastErrorCode})` : ''}
             </span>
-            {job.visibleStatus === 'failed' && (
+            {job.visibleStatus === 'failed' &&
+              job.jobType !== 'acquire_url' && (
               <button
                 className="btn btn-outline"
                 disabled={saving}
