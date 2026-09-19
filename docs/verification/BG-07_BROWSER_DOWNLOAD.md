@@ -148,11 +148,11 @@ The runner used:
 
 The real Chrome story reported `login-proof-passed` with three prepared fixtures.
 
-| Fixture | Saved bytes | SHA-256 verification |
-| --- | ---: | --- |
-| PDF | 641 | exact uploaded hash matched |
-| PNG | 68 | exact uploaded hash matched |
-| text | 76 | exact uploaded hash matched |
+| Fixture | Saved bytes | SHA-256 verification        |
+| ------- | ----------: | --------------------------- |
+| PDF     |         641 | exact uploaded hash matched |
+| PNG     |          68 | exact uploaded hash matched |
+| text    |          76 | exact uploaded hash matched |
 
 The PDF was downloaded again after a page reload with the same byte count and hash.
 The browser retained the signed session across reload.
