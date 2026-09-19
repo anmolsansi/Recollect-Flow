@@ -529,7 +529,6 @@ integrity checks treat them as item-owned evidence.
 BG-11 owns explicit retry/reprocess UX. BG-10 intentionally does not add a public
 retry command.
 
-
 ### BG-10 implementation notes
 
 The durable BG-10 evidence row also records `attempt_count`, `duration_ms`,

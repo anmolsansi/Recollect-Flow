@@ -801,20 +801,20 @@ function ItemDetail() {
             </span>
             {job.visibleStatus === 'failed' &&
               job.jobType !== 'acquire_url' && (
-              <button
-                className="btn btn-outline"
-                disabled={saving}
-                onClick={() =>
-                  void mutate(
-                    `/jobs/${job.id}/retry?kind=processing`,
-                    { method: 'POST' },
-                    'Processing job queued for retry.',
-                  )
-                }
-              >
-                Retry
-              </button>
-            )}
+                <button
+                  className="btn btn-outline"
+                  disabled={saving}
+                  onClick={() =>
+                    void mutate(
+                      `/jobs/${job.id}/retry?kind=processing`,
+                      { method: 'POST' },
+                      'Processing job queued for retry.',
+                    )
+                  }
+                >
+                  Retry
+                </button>
+              )}
           </div>
         ))}
         {detail.sync_attempts.map((attempt) => (

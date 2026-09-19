@@ -239,12 +239,8 @@ describe('follow-up migration contracts', () => {
       'length(source_url_snapshot) BETWEEN 1 AND 2048',
     );
     expect(urlAcquisitionMigration).toContain('response_bytes <= 2097152');
-    expect(urlAcquisitionMigration).toContain(
-      'redirect_count BETWEEN 0 AND 5',
-    );
-    expect(urlAcquisitionMigration).toContain(
-      'attempt_count BETWEEN 1 AND 3',
-    );
+    expect(urlAcquisitionMigration).toContain('redirect_count BETWEEN 0 AND 5');
+    expect(urlAcquisitionMigration).toContain('attempt_count BETWEEN 1 AND 3');
     expect(urlAcquisitionMigration).toContain(
       'length(acquired_text) <= 250000',
     );
