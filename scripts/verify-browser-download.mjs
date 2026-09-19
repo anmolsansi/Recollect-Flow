@@ -137,6 +137,16 @@ async function downloadFixture({
   };
 }
 
+async function browserFetchStatus(client, sessionId, path) {
+  return client.evaluate(
+    sessionId,
+    `fetch(${JSON.stringify(path)}, { credentials: 'include' }).then(async (response) => {
+      await response.arrayBuffer();
+      return response.status;
+    })`,
+  );
+}
+
 async function main() {
   let runtime = null;
   let chrome = null;
@@ -290,12 +300,104 @@ async function main() {
       navigateFirst: false,
     });
 
+    await navigate(client, sessionId, runtime.webOrigin);
+    await client.waitForExpression(
+      sessionId,
+      `[...document.querySelectorAll('button')].some(
+        (button) => button.textContent?.trim() === 'Logout',
+      )`,
+      { description: 'Logout button before session teardown' },
+    );
+    await client.evaluate(
+      sessionId,
+      `[...document.querySelectorAll('button')]
+        .find((button) => button.textContent?.trim() === 'Logout')
+        ?.click()`,
+    );
+    await client.waitForExpression(
+      sessionId,
+      `Boolean(document.querySelector('input[type="password"]'))`,
+      { timeoutMs: 15_000, description: 'login form after logout' },
+    );
+
+    const protectedPath = `/api/v1/attachments/${reloadFixture.attachmentId}/content`;
+    const logoutStatus = await browserFetchStatus(
+      client,
+      sessionId,
+      protectedPath,
+    );
+    assert.equal(logoutStatus, 401, 'Logged-out browser read must be denied.');
+
+    const tamperedCookie = await client.send(
+      'Network.setCookie',
+      {
+        name: 'admin_session',
+        value: 'authenticated.tampered',
+        url: runtime.webOrigin,
+        path: '/',
+        httpOnly: true,
+        sameSite: 'Strict',
+      },
+      sessionId,
+    );
+    assert.notEqual(
+      tamperedCookie.success,
+      false,
+      'Chrome rejected the synthetic tampered-cookie fixture.',
+    );
+    const tamperedStatus = await browserFetchStatus(
+      client,
+      sessionId,
+      protectedPath,
+    );
+    assert.equal(tamperedStatus, 401, 'Tampered browser session must be denied.');
+
+    await client.send(
+      'Network.deleteCookies',
+      { name: 'admin_session', url: runtime.webOrigin },
+      sessionId,
+    );
+    await client.send(
+      'Network.setCookie',
+      {
+        name: 'admin_session',
+        value: 'authenticated.expired-fixture',
+        url: runtime.webOrigin,
+        path: '/',
+        httpOnly: true,
+        sameSite: 'Strict',
+        expires: Math.floor(Date.now() / 1000) - 60,
+      },
+      sessionId,
+    );
+    const expiredCookies = await client.send(
+      'Network.getCookies',
+      { urls: [runtime.webOrigin] },
+      sessionId,
+    );
+    assert.equal(
+      expiredCookies.cookies?.some((cookie) => cookie.name === 'admin_session'),
+      false,
+      'Expired admin_session fixture must not remain an active browser cookie.',
+    );
+    const expiredStatus = await browserFetchStatus(
+      client,
+      sessionId,
+      protectedPath,
+    );
+    assert.equal(expiredStatus, 401, 'Expired browser session must be denied.');
+
     console.log(
       JSON.stringify({
         status: 'login-proof-passed',
         fixtures_prepared: fixtures.length,
         downloads,
         reload_download: reloadDownload,
+        session_failures: {
+          logout_status: logoutStatus,
+          tampered_status: tamperedStatus,
+          expired_status: expiredStatus,
+        },
         admin_session: {
           http_only: sessionCookie.httpOnly,
           same_site: sessionCookie.sameSite,
