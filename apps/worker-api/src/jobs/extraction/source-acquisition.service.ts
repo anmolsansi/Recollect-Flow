@@ -163,6 +163,10 @@ export class SourceAcquisitionService {
       : null;
     const acquiredTextHash = acquiredText ? await sha256(acquiredText) : null;
     const evidenceId = crypto.randomUUID();
+    const terminalJobStatus = outcome.retryable ? 'failed' : 'complete';
+    const terminalAttempts = outcome.retryable
+      ? context.attempts + 1
+      : context.attempts;
 
     const statements: D1PreparedStatement[] = [
       this.db
@@ -321,6 +325,7 @@ export class SourceAcquisitionService {
             coverage,
             error_code: outcome.errorCode ?? null,
             retryable: outcome.retryable,
+            job_status: terminalJobStatus,
           }),
           completedIso,
           context.jobId,
@@ -328,24 +333,27 @@ export class SourceAcquisitionService {
       this.db
         .prepare(
           `UPDATE processing_jobs
-           SET status = 'complete',
+           SET status = ?1,
+               attempts = ?2,
                lease_owner = NULL,
                lease_expires_at = NULL,
-               completed_at = ?1,
-               last_error_code = ?2,
+               completed_at = ?3,
+               last_error_code = ?4,
                result_version = 'url-acquisition-v1',
-               updated_at = ?1
-           WHERE id = ?3
-             AND item_id = ?4
+               updated_at = ?3
+           WHERE id = ?5
+             AND item_id = ?6
              AND job_type = 'acquire_url'
              AND status = 'processing'
-             AND lease_owner = ?5
-             AND lease_expires_at > ?1
+             AND lease_owner = ?7
+             AND lease_expires_at > ?3
              AND EXISTS (
-               SELECT 1 FROM url_acquisitions WHERE job_id = ?3
+               SELECT 1 FROM url_acquisitions WHERE job_id = ?5
              )`,
         )
         .bind(
+          terminalJobStatus,
+          terminalAttempts,
           completedIso,
           outcome.errorCode ?? null,
           context.jobId,
