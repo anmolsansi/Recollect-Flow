@@ -65,6 +65,13 @@ const digestMigration = readFileSync(
   new URL('../../../migrations/0019_add_digest_jobs.sql', import.meta.url),
   'utf8',
 );
+const urlAcquisitionMigration = readFileSync(
+  new URL(
+    '../../../migrations/0022_add_url_acquisition_evidence.sql',
+    import.meta.url,
+  ),
+  'utf8',
+);
 
 describe('0001_initial migration contract', () => {
   it('creates every V1 durability table', () => {
@@ -217,6 +224,20 @@ describe('follow-up migration contracts', () => {
     expect(searchMigration).toContain('json_valid(NEW.topics_json)');
     expect(searchMigration).toContain('json_valid(NEW.people)');
     expect(searchMigration).toContain('json_valid(NEW.companies)');
+  });
+
+  it('adds durable URL evidence and projects current acquired source text', () => {
+    expect(urlAcquisitionMigration).toContain('ADD COLUMN source_revision');
+    expect(urlAcquisitionMigration).toContain('CREATE TABLE url_acquisitions');
+    expect(urlAcquisitionMigration).toContain('source_url_snapshot');
+    expect(urlAcquisitionMigration).toContain('privacy_level_snapshot');
+    expect(urlAcquisitionMigration).toContain('acquired_text_hash');
+    expect(urlAcquisitionMigration).toContain('url_acquisitions_immutable');
+    expect(urlAcquisitionMigration).toContain('source_text');
+    expect(urlAcquisitionMigration).toContain(
+      'url_acquisitions_search_fts_ai',
+    );
+    expect(urlAcquisitionMigration).not.toContain('UPDATE items SET raw_text');
   });
 
   it('adds durable, lease-protected and auditable digest delivery state', () => {
