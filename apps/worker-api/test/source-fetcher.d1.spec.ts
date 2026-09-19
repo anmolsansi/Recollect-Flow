@@ -393,6 +393,31 @@ describe('BG-09 bounded source fetcher', () => {
     },
   );
 
+  it('normalizes parser failures without retrying or leaking parser details', async () => {
+    const outcome = await new SourceFetcher({
+      fetchImpl: fetchSequence([
+        htmlResponse('<html><main>Source body</main></html>'),
+      ]),
+      parseImpl: async () => {
+        throw new Error(
+          'parser exploded near https://signed.example.org/?secret=hidden',
+        );
+      },
+    }).fetch('https://public.example.org/parse-failure');
+
+    expect(outcome).toEqual({
+      status: 'parse_failed',
+      coverage: 'url_only',
+      retryable: false,
+      errorCode: 'SOURCE_PARSE_FAILED',
+      fetchedFinalUrl: 'https://public.example.org/parse-failure',
+      httpStatus: 200,
+      contentType: 'text/html',
+      responseBytes: 37,
+      redirectCount: 0,
+    });
+  });
+
   it(
     'never forwards application credentials or arbitrary client headers',
     async () => {
