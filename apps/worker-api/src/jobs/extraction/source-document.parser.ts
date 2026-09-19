@@ -33,7 +33,10 @@ function truncateUnicode(value: string, maximum: number): string {
   return characters.slice(0, maximum).join('');
 }
 
-function cleanMetadata(value: string | null, maximum: number): string | undefined {
+function cleanMetadata(
+  value: string | null,
+  maximum: number,
+): string | undefined {
   if (!value) return undefined;
   const cleaned = cleanWhitespace(value);
   if (!cleaned) return undefined;
