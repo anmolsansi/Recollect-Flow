@@ -362,8 +362,20 @@ Security/privacy boundary review: **PASS**.
 Scope review: **PASS**. Runtime files, migrations, dependencies, deployment
 configuration, and secrets are unchanged.
 
-Full repository CI before this evidence-only commit: **PASS — CI #218**.
+Full repository CI before the final implementation evidence commit:
+**PASS — CI #218**.
 
-The evidence-only final head must pass CI again before PR #45 is merged. The final
-BG-08.100 parent gate remains pending until the contract PR is merged, merged-main
-validation is green, and the final closeout records BG-09 as unlocked.
+Evidence-complete implementation-head CI: **PASS — CI #219** at
+`1e8d1344beaa6ec21fcb139c4651db70c93d24e5`.
+
+Implementation PR #45 merged to `main` at
+`877172dbc10d7ba9771a6913f0758adf0a02e2f9` while preserving the microcommit
+history.
+
+Merged-main validation: **PASS — CI #220**. The run passed `npm ci`,
+`npm run check`, isolated local D1 migrations, Chrome availability, and the real
+browser-download regression.
+
+BG-08.100 is therefore proved complete. BG-09 is unlocked. BG-08 does not claim the
+BG-09 fetcher, BG-10 persistence/migration, BG-11 owner retry UX, or BG-12/BG-13
+aggregate processing-state work.
