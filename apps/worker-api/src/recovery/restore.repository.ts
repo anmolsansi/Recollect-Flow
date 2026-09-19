@@ -67,6 +67,7 @@ export class RestoreRepository {
       'items',
       'capture_events',
       'attachments',
+      'url_acquisitions',
       'processing_jobs',
       'sync_attempts',
     ]) {
