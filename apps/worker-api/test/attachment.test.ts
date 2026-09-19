@@ -830,6 +830,46 @@ describe('private attachment lifecycle', () => {
     expect(repository.attachments.get(id)?.status).toBe('deleted');
   });
 
+  it('returns controlled responses for missing and deleted attachment records', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+
+    const missing = await app.request(
+      '/api/v1/attachments/00000000-0000-0000-0000-000000000000/content',
+      { headers: { Cookie: cookie } },
+      env,
+    );
+    expect(missing.status).toBe(404);
+    expect(await missing.json()).toMatchObject({
+      error: { code: 'NOT_FOUND' },
+    });
+
+    const { id } = await createFinalizedPdf(app, env);
+    const deleted = await app.request(
+      `/api/v1/attachments/${id}`,
+      {
+        method: 'DELETE',
+        headers: { Authorization: 'Bearer admin-secret' },
+      },
+      env,
+    );
+    expect(deleted.status).toBe(204);
+    expect(r2.objects.size).toBe(0);
+
+    const afterDelete = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Cookie: cookie } },
+      env,
+    );
+    expect(afterDelete.status).toBe(404);
+    expect(await afterDelete.json()).toMatchObject({
+      error: { code: 'NOT_FOUND' },
+    });
+  });
+
   it('keeps unavailable attachment bytes hidden after successful authentication', async () => {
     const repository = new MemoryAttachmentRepository();
     const r2 = memoryBucket();
