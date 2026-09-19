@@ -1274,14 +1274,13 @@ These unchecked steps inherit this task's **what, why, when, where and proof** a
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
-**BG-10 candidate reconciliation:** BG-10.001 through BG-10.099 are satisfied
-on implementation head `3cf0ba6ebab8d8dd0bc0e5ec5f2cfdf0445836fd`. CI #297
-passed the complete repository gate, including 153 Node tests, 142 workerd/D1
-tests, 9 Web tests, contracts, Web build, fresh local D1 migration replay, Chrome
-availability, and the browser-download regression. Detailed evidence is recorded
+**BG-10 final reconciliation:** BG-10.001 through BG-10.100 are satisfied.
+PR #52 merged to `main` at
+`a065c91b650b6b123d3468542e47e723f8a2383f`. Candidate CI #299 passed on
+`7e2537d454fccb071995b249bbdf4e1e6e9c5dd6`, and merged-main CI #300 passed
+the complete repository gate at the merge revision. Detailed evidence is recorded
 in [`BG-10_URL_EVIDENCE_CHAIN.md`](verification/BG-10_URL_EVIDENCE_CHAIN.md).
-BG-10.100 remains intentionally unchecked until PR #52 is merged and the merged
-`main` revision passes the repository gate.
+BG-11 is unlocked.
 
 #### BG-10 / 01 — Establish task context
 
@@ -1411,7 +1410,7 @@ BG-10.100 remains intentionally unchecked until PR #52 is merged and the merged
 - [x] `BG-10.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-10.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-10.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-10.100` **Gate:** Check the parent completion boundary and record whether BG-11 is unlocked.
+- [x] `BG-10.100` **Gate:** Check the parent completion boundary and record whether BG-11 is unlocked.
 
 ## BG-11 — 100 executable microtasks
 
