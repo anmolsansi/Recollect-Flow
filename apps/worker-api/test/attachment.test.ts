@@ -623,6 +623,42 @@ describe('private attachment lifecycle', () => {
     expect(await response.arrayBuffer()).toEqual(bytes);
   });
 
+  it('preserves finalized reads while rejecting disallowed lifecycle states', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const { id } = await createFinalizedPdf(app, env);
+    const cookie = await createAdminSessionCookie(app, env);
+    const attachment = repository.attachments.get(id);
+    if (!attachment) throw new Error('fixture not created');
+
+    const finalized = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Cookie: cookie } },
+      env,
+    );
+    expect(finalized.status).toBe(200);
+
+    for (const status of [
+      'pending',
+      'uploaded',
+      'orphaned',
+      'deleted',
+    ] as AttachmentStatus[]) {
+      attachment.status = status;
+      const response = await app.request(
+        `/api/v1/attachments/${id}/content`,
+        { headers: { Cookie: cookie } },
+        env,
+      );
+      expect(response.status).toBe(404);
+      expect(await response.json()).toMatchObject({
+        error: { code: 'NOT_FOUND' },
+      });
+    }
+  });
+
   it('rejects invalid and local-worker bearer credentials for attachment reads', async () => {
     const repository = new MemoryAttachmentRepository();
     const r2 = memoryBucket();
