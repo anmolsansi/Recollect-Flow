@@ -976,134 +976,142 @@ These unchecked steps inherit this task's **what, why, when, where and proof** a
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
+**BG-08 reconciliation, pre-merge:** BG-08.001 through BG-08.099 are
+satisfied by the source inspection, frozen contract, privacy/ADR/API/use-case
+propagation, security review, and verification record in
+[`BG-08_URL_ACQUISITION_CONTRACT.md`](verification/BG-08_URL_ACQUISITION_CONTRACT.md).
+No runtime fetch/migration work is claimed. BG-08.100 intentionally remains open
+until the exact contract branch is merged and merged-main validation proves the
+parent gate before BG-09 is unlocked.
+
 #### BG-08 / 01 — Establish task context
 
-- [ ] `BG-08.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-08.002` **Dependency:** Verify BG-07's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-08.003` **Baseline:** Record the actual checkout or release candidate used for BG-08.
-- [ ] `BG-08.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-08.005` **Evidence:** Check whether existing evidence already satisfies any BG-08 step; reference it instead of manufacturing work.
-- [ ] `BG-08.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-08.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-08.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-08.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-08.010` **Tracking:** Open a BG-08 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-08.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-08.002` **Dependency:** Verify BG-07's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-08.003` **Baseline:** Record the actual checkout or release candidate used for BG-08.
+- [x] `BG-08.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-08.005` **Evidence:** Check whether existing evidence already satisfies any BG-08 step; reference it instead of manufacturing work.
+- [x] `BG-08.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-08.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-08.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-08.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-08.010` **Tracking:** Open a BG-08 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-08 / 02 — Source concepts
 
-- [ ] `BG-08.011` Identify submitted original URL.
-- [ ] `BG-08.012` Identify conservative canonical URL.
-- [ ] `BG-08.013` Identify redirect final URL.
-- [ ] `BG-08.014` Identify user-supplied text.
-- [ ] `BG-08.015` Identify fetched page text.
-- [ ] `BG-08.016` Identify fetched metadata.
-- [ ] `BG-08.017` Identify generated summary.
-- [ ] `BG-08.018` Identify capture event provenance.
-- [ ] `BG-08.019` Separate each field authority.
-- [ ] `BG-08.020` Document immutability boundaries.
+- [x] `BG-08.011` Identify submitted original URL.
+- [x] `BG-08.012` Identify conservative canonical URL.
+- [x] `BG-08.013` Identify redirect final URL.
+- [x] `BG-08.014` Identify user-supplied text.
+- [x] `BG-08.015` Identify fetched page text.
+- [x] `BG-08.016` Identify fetched metadata.
+- [x] `BG-08.017` Identify generated summary.
+- [x] `BG-08.018` Identify capture event provenance.
+- [x] `BG-08.019` Separate each field authority.
+- [x] `BG-08.020` Document immutability boundaries.
 
 #### BG-08 / 03 — Outcome vocabulary
 
-- [ ] `BG-08.021` List acquired-text outcome.
-- [ ] `BG-08.022` List metadata-only outcome.
-- [ ] `BG-08.023` List unavailable-page outcome.
-- [ ] `BG-08.024` List forbidden-destination outcome.
-- [ ] `BG-08.025` List login-required outcome.
-- [ ] `BG-08.026` List timeout outcome.
-- [ ] `BG-08.027` List unsupported-content outcome.
-- [ ] `BG-08.028` List empty-extraction outcome.
-- [ ] `BG-08.029` Compare existing coverage enums.
-- [ ] `BG-08.030` Propose only necessary new values.
+- [x] `BG-08.021` List acquired-text outcome.
+- [x] `BG-08.022` List metadata-only outcome.
+- [x] `BG-08.023` List unavailable-page outcome.
+- [x] `BG-08.024` List forbidden-destination outcome.
+- [x] `BG-08.025` List login-required outcome.
+- [x] `BG-08.026` List timeout outcome.
+- [x] `BG-08.027` List unsupported-content outcome.
+- [x] `BG-08.028` List empty-extraction outcome.
+- [x] `BG-08.029` Compare existing coverage enums.
+- [x] `BG-08.030` Propose only necessary new values.
 
 #### BG-08 / 04 — Privacy contract
 
-- [ ] `BG-08.031` Read approved privacy matrix.
-- [ ] `BG-08.032` Distinguish fetching from AI.
-- [ ] `BG-08.033` Identify external host disclosure.
-- [ ] `BG-08.034` Define Public fetch eligibility.
-- [ ] `BG-08.035` Define Unknown URL retention.
-- [ ] `BG-08.036` Define Personal fetch behavior.
-- [ ] `BG-08.037` Define Sensitive fetch behavior.
-- [ ] `BG-08.038` Preserve no-unapproved-hosted-processing rule.
-- [ ] `BG-08.039` Record unresolved policy choice explicitly.
-- [ ] `BG-08.040` Confirm default does not become Public.
+- [x] `BG-08.031` Read approved privacy matrix.
+- [x] `BG-08.032` Distinguish fetching from AI.
+- [x] `BG-08.033` Identify external host disclosure.
+- [x] `BG-08.034` Define Public fetch eligibility.
+- [x] `BG-08.035` Define Unknown URL retention.
+- [x] `BG-08.036` Define Personal fetch behavior.
+- [x] `BG-08.037` Define Sensitive fetch behavior.
+- [x] `BG-08.038` Preserve no-unapproved-hosted-processing rule.
+- [x] `BG-08.039` Record unresolved policy choice explicitly.
+- [x] `BG-08.040` Confirm default does not become Public.
 
 #### BG-08 / 05 — Content eligibility
 
-- [ ] `BG-08.041` Define usable acquired text.
-- [ ] `BG-08.042` Define usable supplied text.
-- [ ] `BG-08.043` Define metadata-only interpretation limit.
-- [ ] `BG-08.044` Define title-only summary limit.
-- [ ] `BG-08.045` Prevent imagined article content.
-- [ ] `BG-08.046` Preserve supplied reason separately.
-- [ ] `BG-08.047` Preserve source attribution.
-- [ ] `BG-08.048` Define empty input completion.
-- [ ] `BG-08.049` Define minimum enrichment evidence.
-- [ ] `BG-08.050` Document deterministic no-AI path.
+- [x] `BG-08.041` Define usable acquired text.
+- [x] `BG-08.042` Define usable supplied text.
+- [x] `BG-08.043` Define metadata-only interpretation limit.
+- [x] `BG-08.044` Define title-only summary limit.
+- [x] `BG-08.045` Prevent imagined article content.
+- [x] `BG-08.046` Preserve supplied reason separately.
+- [x] `BG-08.047` Preserve source attribution.
+- [x] `BG-08.048` Define empty input completion.
+- [x] `BG-08.049` Define minimum enrichment evidence.
+- [x] `BG-08.050` Document deterministic no-AI path.
 
 #### BG-08 / 06 — Fetch budgets
 
-- [ ] `BG-08.051` Inventory existing runtime limits.
-- [ ] `BG-08.052` Propose wall-clock timeout.
-- [ ] `BG-08.053` Propose redirect count bound.
-- [ ] `BG-08.054` Propose response byte bound.
-- [ ] `BG-08.055` Propose extracted character bound.
-- [ ] `BG-08.056` Define compressed-body handling.
-- [ ] `BG-08.057` Define cancellation behavior.
-- [ ] `BG-08.058` Define parser content-type allowlist.
-- [ ] `BG-08.059` Label proposed values clearly.
-- [ ] `BG-08.060` Record measurement acceptance criteria.
+- [x] `BG-08.051` Inventory existing runtime limits.
+- [x] `BG-08.052` Propose wall-clock timeout.
+- [x] `BG-08.053` Propose redirect count bound.
+- [x] `BG-08.054` Propose response byte bound.
+- [x] `BG-08.055` Propose extracted character bound.
+- [x] `BG-08.056` Define compressed-body handling.
+- [x] `BG-08.057` Define cancellation behavior.
+- [x] `BG-08.058` Define parser content-type allowlist.
+- [x] `BG-08.059` Label proposed values clearly.
+- [x] `BG-08.060` Record measurement acceptance criteria.
 
 #### BG-08 / 07 — Failure classification
 
-- [ ] `BG-08.061` Separate transient network failures.
-- [ ] `BG-08.062` Separate permanent destination denials.
-- [ ] `BG-08.063` Separate login-required outcomes.
-- [ ] `BG-08.064` Separate unsupported formats.
-- [ ] `BG-08.065` Separate empty successful responses.
-- [ ] `BG-08.066` Define safe error codes.
-- [ ] `BG-08.067` Define retryable outcome set.
-- [ ] `BG-08.068` Define maximum retry policy reference.
-- [ ] `BG-08.069` Define owner next actions.
-- [ ] `BG-08.070` Preserve Saved semantics throughout.
+- [x] `BG-08.061` Separate transient network failures.
+- [x] `BG-08.062` Separate permanent destination denials.
+- [x] `BG-08.063` Separate login-required outcomes.
+- [x] `BG-08.064` Separate unsupported formats.
+- [x] `BG-08.065` Separate empty successful responses.
+- [x] `BG-08.066` Define safe error codes.
+- [x] `BG-08.067` Define retryable outcome set.
+- [x] `BG-08.068` Define maximum retry policy reference.
+- [x] `BG-08.069` Define owner next actions.
+- [x] `BG-08.070` Preserve Saved semantics throughout.
 
 #### BG-08 / 08 — Instagram story
 
-- [ ] `BG-08.071` Define URL-only save example.
-- [ ] `BG-08.072` Preserve personal reason.
-- [ ] `BG-08.073` Show honest source coverage.
-- [ ] `BG-08.074` Avoid watched-video wording.
-- [ ] `BG-08.075` Avoid invented transcript wording.
-- [ ] `BG-08.076` Explain screenshot alternative.
-- [ ] `BG-08.077` Explain supplied-text alternative.
-- [ ] `BG-08.078` Preserve platform access boundaries.
-- [ ] `BG-08.079` Keep login bypass excluded.
-- [ ] `BG-08.080` Write expected owner-visible result.
+- [x] `BG-08.071` Define URL-only save example.
+- [x] `BG-08.072` Preserve personal reason.
+- [x] `BG-08.073` Show honest source coverage.
+- [x] `BG-08.074` Avoid watched-video wording.
+- [x] `BG-08.075` Avoid invented transcript wording.
+- [x] `BG-08.076` Explain screenshot alternative.
+- [x] `BG-08.077` Explain supplied-text alternative.
+- [x] `BG-08.078` Preserve platform access boundaries.
+- [x] `BG-08.079` Keep login bypass excluded.
+- [x] `BG-08.080` Write expected owner-visible result.
 
 #### BG-08 / 09 — Contract propagation
 
-- [ ] `BG-08.081` Map outcome to storage.
-- [ ] `BG-08.082` Map outcome to item detail.
-- [ ] `BG-08.083` Map outcome to FTS behavior.
-- [ ] `BG-08.084` Map outcome to job state.
-- [ ] `BG-08.085` Map outcome to retries.
-- [ ] `BG-08.086` Map outcome to export.
-- [ ] `BG-08.087` Map outcome to purge.
-- [ ] `BG-08.088` Map outcome to tests.
-- [ ] `BG-08.089` Record approved versus proposed fields.
-- [ ] `BG-08.090` Prepare fetcher implementation contract.
+- [x] `BG-08.081` Map outcome to storage.
+- [x] `BG-08.082` Map outcome to item detail.
+- [x] `BG-08.083` Map outcome to FTS behavior.
+- [x] `BG-08.084` Map outcome to job state.
+- [x] `BG-08.085` Map outcome to retries.
+- [x] `BG-08.086` Map outcome to export.
+- [x] `BG-08.087` Map outcome to purge.
+- [x] `BG-08.088` Map outcome to tests.
+- [x] `BG-08.089` Record approved versus proposed fields.
+- [x] `BG-08.090` Prepare fetcher implementation contract.
 
 #### BG-08 / 10 — Verify and close this task
 
-- [ ] `BG-08.091` **Review:** Compare the completed checklist with BG-08's stated outcome; identify uncovered behavior.
-- [ ] `BG-08.092` **Verification:** Run or inspect the focused proof required by BG-08; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-08.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-08.094` **Integrity:** Check that BG-08 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-08.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-08.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-08.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-08.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-08.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-08.091` **Review:** Compare the completed checklist with BG-08's stated outcome; identify uncovered behavior.
+- [x] `BG-08.092` **Verification:** Run or inspect the focused proof required by BG-08; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-08.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-08.094` **Integrity:** Check that BG-08 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-08.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-08.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-08.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-08.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-08.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-08.100` **Gate:** Check the parent completion boundary and record whether BG-09 is unlocked.
 
 ## BG-09 — 100 executable microtasks
