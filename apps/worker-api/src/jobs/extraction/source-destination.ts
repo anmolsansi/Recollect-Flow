@@ -76,9 +76,7 @@ function isBlockedIpv4(parts: [number, number, number, number]): boolean {
     [ipv4ToInt([224, 0, 0, 0]), 4],
     [ipv4ToInt([240, 0, 0, 0]), 4],
   ];
-  return ranges.some(([network, prefix]) =>
-    inIpv4Cidr(value, network, prefix),
-  );
+  return ranges.some(([network, prefix]) => inIpv4Cidr(value, network, prefix));
 }
 
 function parseIpv6(hostname: string): number[] | null {
@@ -91,7 +89,8 @@ function parseIpv6(hostname: string): number[] | null {
     if (!ipv4) return null;
     const high = (ipv4[0] << 8) | ipv4[1];
     const low = (ipv4[2] << 8) | ipv4[3];
-    value = `${value.slice(0, lastColon)}:${high.toString(16)}:${low.toString(16)}`;
+    value =
+      `${value.slice(0, lastColon)}:${high.toString(16)}:${low.toString(16)}`;
   }
 
   const halves = value.split('::');
@@ -161,8 +160,7 @@ function isBlockedIpv6(parts: number[]): boolean {
   if (parts[0] === 0x2002) return true;
 
   const isMappedIpv4 =
-    parts.slice(0, 5).every((part) => part === 0) &&
-    parts[5] === 0xffff;
+    parts.slice(0, 5).every((part) => part === 0) && parts[5] === 0xffff;
   if (isMappedIpv4) {
     return isBlockedIpv4([
       parts[6] >> 8,
