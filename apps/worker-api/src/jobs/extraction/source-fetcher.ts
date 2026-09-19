@@ -1,6 +1,17 @@
 import { validateSourceDestination } from './source-destination';
 import { parseSourceDocument } from './source-document.parser';
 import {
+  abortableSourceOperation,
+  cancelSourceBody,
+  classifySourceHttpStatus,
+  isSourceLoginDocument,
+  readBoundedSourceBody,
+  REDIRECT_STATUSES,
+  sourceAbortError,
+  sourceMediaType,
+  sourceMetadataCoverage,
+} from './source-response';
+import {
   SOURCE_FETCH_CONTENT_TYPES,
   SOURCE_FETCH_LIMITS,
   type SourceFetch,
@@ -8,199 +19,11 @@ import {
   type SourceFetchOutcome,
 } from './source-fetcher.types';
 
-const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
-
-function mediaType(value: string | null): string | undefined {
-  if (!value) return undefined;
-  const parsed = value.split(';', 1)[0].trim().toLowerCase();
-  return parsed || undefined;
-}
-
-function metadataCoverage(
-  metadata: SourceFetchMetadata,
-): 'metadata_only' | 'url_only' {
-  return metadata.title ||
-    metadata.description ||
-    metadata.siteName ||
-    metadata.canonicalHintUrl
-    ? 'metadata_only'
-    : 'url_only';
-}
-
-async function cancelBody(response: Response): Promise<void> {
-  try {
-    await response.body?.cancel();
-  } catch {
-    // Cancellation is best-effort after the outcome is already determined.
-  }
-}
-
-function abortError(signal: AbortSignal): Error {
-  const error = new Error('Source fetch aborted');
-  error.name = 'AbortError';
-  if (!signal.aborted) {
-    return error;
-  }
-  return error;
-}
-
-async function abortable<T>(
-  promise: Promise<T>,
-  signal: AbortSignal,
-): Promise<T> {
-  if (signal.aborted) throw abortError(signal);
-
-  return new Promise<T>((resolve, reject) => {
-    const onAbort = () => reject(abortError(signal));
-    signal.addEventListener('abort', onAbort, { once: true });
-    promise.then(
-      (value) => {
-        signal.removeEventListener('abort', onAbort);
-        resolve(value);
-      },
-      (error: unknown) => {
-        signal.removeEventListener('abort', onAbort);
-        reject(error);
-      },
-    );
-  });
-}
-
-async function readBoundedBody(
-  response: Response,
-  maximumBytes: number,
-  signal: AbortSignal,
-): Promise<{ bytes?: Uint8Array; tooLarge: boolean }> {
-  const advertised = response.headers.get('content-length');
-  if (advertised) {
-    const length = Number(advertised);
-    if (Number.isFinite(length) && length > maximumBytes) {
-      await cancelBody(response);
-      return { tooLarge: true };
-    }
-  }
-
-  if (!response.body) {
-    return { bytes: new Uint8Array(), tooLarge: false };
-  }
-
-  const reader = response.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-
-  try {
-    while (true) {
-      const { done, value } = await abortable(reader.read(), signal);
-      if (done) break;
-      if (!value) continue;
-
-      if (total + value.byteLength > maximumBytes) {
-        await reader.cancel();
-        return { tooLarge: true };
-      }
-
-      total += value.byteLength;
-      chunks.push(value);
-    }
-  } catch (error) {
-    try {
-      await reader.cancel();
-    } catch {
-      // The read failure is the authoritative outcome.
-    }
-    throw error;
-  }
-
-  const combined = new Uint8Array(total);
-  let offset = 0;
-  for (const chunk of chunks) {
-    combined.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  return { bytes: combined, tooLarge: false };
-}
-
-function isLoginDocument(text: string, title: string | undefined): boolean {
-  const candidate = `${title ?? ''}\n${text}`.toLowerCase();
-  return /\b(log[ -]?in|sign[ -]?in|password|authenticate)\b/.test(candidate);
-}
-
-function statusOutcome(
-  status: number,
-  finalUrl: string,
-  redirectCount: number,
-): SourceFetchOutcome | null {
-  if (status === 401) {
-    return {
-      status: 'login_required',
-      coverage: 'url_only',
-      retryable: false,
-      errorCode: 'SOURCE_LOGIN_REQUIRED',
-      fetchedFinalUrl: finalUrl,
-      httpStatus: status,
-      redirectCount,
-    };
-  }
-  if (status === 403) {
-    return {
-      status: 'login_required',
-      coverage: 'url_only',
-      retryable: false,
-      errorCode: 'SOURCE_ACCESS_DENIED',
-      fetchedFinalUrl: finalUrl,
-      httpStatus: status,
-      redirectCount,
-    };
-  }
-  if (status === 404 || status === 410) {
-    return {
-      status: 'unavailable',
-      coverage: 'url_only',
-      retryable: false,
-      errorCode: 'SOURCE_NOT_FOUND',
-      fetchedFinalUrl: finalUrl,
-      httpStatus: status,
-      redirectCount,
-    };
-  }
-  if (status === 429) {
-    return {
-      status: 'rate_limited',
-      coverage: 'url_only',
-      retryable: true,
-      errorCode: 'SOURCE_RATE_LIMITED',
-      fetchedFinalUrl: finalUrl,
-      httpStatus: status,
-      redirectCount,
-    };
-  }
-  if (status >= 500 && status <= 599) {
-    return {
-      status: 'server_error',
-      coverage: 'url_only',
-      retryable: true,
-      errorCode: 'SOURCE_SERVER_ERROR',
-      fetchedFinalUrl: finalUrl,
-      httpStatus: status,
-      redirectCount,
-    };
-  }
-  if (status >= 400) {
-    return {
-      status: 'unavailable',
-      coverage: 'url_only',
-      retryable: false,
-      errorCode: 'SOURCE_ACCESS_DENIED',
-      fetchedFinalUrl: finalUrl,
-      httpStatus: status,
-      redirectCount,
-    };
-  }
-  return null;
-}
+type SourceParser = typeof parseSourceDocument;
 
 export interface SourceFetcherOptions {
   fetchImpl?: SourceFetch;
+  parseImpl?: SourceParser;
   deadlineMs?: number;
   maximumRedirects?: number;
   maximumResponseBytes?: number;
@@ -209,6 +32,7 @@ export interface SourceFetcherOptions {
 
 export class SourceFetcher {
   private readonly fetchImpl: SourceFetch;
+  private readonly parseImpl: SourceParser;
   private readonly deadlineMs: number;
   private readonly maximumRedirects: number;
   private readonly maximumResponseBytes: number;
@@ -216,6 +40,7 @@ export class SourceFetcher {
 
   constructor(options: SourceFetcherOptions = {}) {
     this.fetchImpl = options.fetchImpl ?? fetch;
+    this.parseImpl = options.parseImpl ?? parseSourceDocument;
     this.deadlineMs = options.deadlineMs ?? SOURCE_FETCH_LIMITS.totalDeadlineMs;
     this.maximumRedirects =
       options.maximumRedirects ?? SOURCE_FETCH_LIMITS.maxRedirects;
@@ -246,7 +71,7 @@ export class SourceFetcher {
 
     try {
       while (true) {
-        if (controller.signal.aborted) throw abortError(controller.signal);
+        if (controller.signal.aborted) throw sourceAbortError();
 
         const destination = validateSourceDestination(current);
         if (!destination.allowed) {
@@ -281,14 +106,14 @@ export class SourceFetcher {
           },
         });
 
-        const response = await abortable(
+        const response = await abortableSourceOperation(
           this.fetchImpl(request),
           controller.signal,
         );
 
         if (REDIRECT_STATUSES.has(response.status)) {
           const location = response.headers.get('location');
-          await cancelBody(response);
+          await cancelSourceBody(response);
 
           if (!location) {
             return {
@@ -346,18 +171,18 @@ export class SourceFetcher {
           continue;
         }
 
-        const classified = statusOutcome(
+        const classified = classifySourceHttpStatus(
           response.status,
           current.href,
           redirectCount,
         );
         if (classified) {
-          await cancelBody(response);
+          await cancelSourceBody(response);
           return classified;
         }
 
         if (response.status === 204 || response.status === 205) {
-          await cancelBody(response);
+          await cancelSourceBody(response);
           return {
             status: 'empty',
             coverage: 'url_only',
@@ -369,9 +194,11 @@ export class SourceFetcher {
           };
         }
 
-        const contentType = mediaType(response.headers.get('content-type'));
+        const contentType = sourceMediaType(
+          response.headers.get('content-type'),
+        );
         if (!contentType || !SOURCE_FETCH_CONTENT_TYPES.has(contentType)) {
-          await cancelBody(response);
+          await cancelSourceBody(response);
           return {
             status: 'unsupported_content',
             coverage: 'url_only',
@@ -384,7 +211,7 @@ export class SourceFetcher {
           };
         }
 
-        const body = await readBoundedBody(
+        const body = await readBoundedSourceBody(
           response,
           this.maximumResponseBytes,
           controller.signal,
@@ -403,12 +230,31 @@ export class SourceFetcher {
         }
 
         const bytes = body.bytes ?? new Uint8Array();
-        const parsed = await parseSourceDocument(
-          bytes,
-          response.headers.get('content-type') ?? contentType,
-          current.href,
-          this.maximumExtractedCharacters,
-        );
+        let parsed: Awaited<ReturnType<SourceParser>>;
+        try {
+          parsed = await this.parseImpl(
+            bytes,
+            response.headers.get('content-type') ?? contentType,
+            current.href,
+            this.maximumExtractedCharacters,
+          );
+        } catch {
+          if (controller.signal.aborted) throw sourceAbortError();
+          return {
+            status: 'parse_failed',
+            coverage: 'url_only',
+            retryable: false,
+            errorCode: 'SOURCE_PARSE_FAILED',
+            fetchedFinalUrl: current.href,
+            httpStatus: response.status,
+            contentType,
+            responseBytes: bytes.byteLength,
+            redirectCount,
+          };
+        }
+
+        if (controller.signal.aborted) throw sourceAbortError();
+
         const metadata: SourceFetchMetadata = {
           title: parsed.title,
           description: parsed.description,
@@ -418,11 +264,11 @@ export class SourceFetcher {
 
         if (
           parsed.hasPasswordInput &&
-          isLoginDocument(parsed.text, parsed.title)
+          isSourceLoginDocument(parsed.text, parsed.title)
         ) {
           return {
             status: 'login_required',
-            coverage: metadataCoverage(metadata),
+            coverage: sourceMetadataCoverage(metadata),
             retryable: false,
             errorCode: 'SOURCE_LOGIN_REQUIRED',
             fetchedFinalUrl: current.href,
@@ -435,7 +281,7 @@ export class SourceFetcher {
         }
 
         if (!parsed.text) {
-          const coverage = metadataCoverage(metadata);
+          const coverage = sourceMetadataCoverage(metadata);
           if (coverage === 'metadata_only') {
             return {
               status: 'metadata_only',
