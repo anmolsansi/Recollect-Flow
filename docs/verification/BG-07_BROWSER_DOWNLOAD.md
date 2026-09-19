@@ -46,6 +46,21 @@ The task will combine four evidence layers:
 
 The browser story must exercise PDF, PNG and generic text fixtures, compare saved byte length and SHA-256, retain a valid session across reload, and deny new private reads after logout or invalid session state.
 
+## Authoritative checklist mapping
+
+The 100-step BG-07 checklist is treated as the acceptance inventory, not as a reason to manufacture 100 unrelated code changes. The implementation microtasks in GitHub #41 group those steps by executable boundary:
+
+- task context and contract: BG-07.001–.010;
+- route integration and metadata: BG-07.011–.030;
+- private caching and session behavior: BG-07.031–.050;
+- exact byte proof: BG-07.051–.060;
+- reload/logout/invalid session behavior: BG-07.061–.070;
+- object lifecycle and safe failures: BG-07.071–.080;
+- regression/browser evidence: BG-07.081–.090;
+- review, verification and closeout: BG-07.091–.100.
+
+A checklist item is marked complete only when repository evidence actually supports it. BG-06 evidence is reused for already-proved authorization facts instead of reimplementing them.
+
 ## Status
 
 Implementation started. No BG-07 completion claim is made until the browser story, repository checks and authoritative checklist reconciliation are green.
