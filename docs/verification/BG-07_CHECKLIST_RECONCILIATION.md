@@ -1,18 +1,22 @@
 # BG-07 — Checklist Reconciliation
 
-Status: **99 / 100 complete before merge**
+Status: **100 / 100 complete when this closeout record is present on `main`**
 
 Tracking: GitHub #41 / PR #42 / Linear OPE-327
 
 Task base `main`: `cb660e359abe36949040bca5d843b7a3d9d660d3`
 
-Technical implementation/browser gate: GitHub Actions CI run #196 on
-`1ae56558d0919ea6452e73869c8daeb06795c72a`
+Final implementation/browser gate: GitHub Actions CI run #208 on
+`2f3a9ba36643398059066925dbba3b1be4fb38e7`
+
+Implementation PR #42 merged into `main` at
+`27aa0dad8cf82c8e8c483baaf1b302c4772d170d`. This documentation-only
+closeout branch was created directly from that exact merged commit.
 
 This record maps the authoritative `BG-07.001`–`BG-07.100` checklist to
-concrete code, tests and sanitized CI evidence. Items .001–.099 are satisfied on
-the task branch. BG-07.100 remains intentionally open until the implementation is
-merged and the post-merge closeout proves the parent completion boundary.
+concrete code, tests and sanitized CI evidence. Implementation PR #42 is merged,
+and the closeout branch marks BG-07.100 complete. This record becomes authoritative
+when the closeout is merged to `main`.
 
 ## Evidence index
 
@@ -33,7 +37,8 @@ merged and the post-merge closeout proves the parent completion boundary.
   lifecycle.
 - `scripts/browser-acceptance-fixtures.mjs` — synthetic PDF/PNG/text fixtures.
 - `scripts/verify-browser-download.mjs` — real browser acceptance.
-- GitHub Actions CI run #196 — exact technical/browser gate.
+- GitHub Actions CI run #208 — final implementation/browser gate.
+- `docs/verification/BG-07_FINAL_CLOSEOUT.md` — merged implementation identity and final parent boundary.
 
 ## Group reconciliation
 
@@ -108,7 +113,7 @@ For each saved file it compares exact byte length and SHA-256 with the original
 fixture. It also checks a basic file signature/structure appropriate to the fixture
 type and the browser-suggested filename.
 
-CI #196 recorded 641 PDF bytes, 68 PNG bytes and 76 text bytes with exact matching
+CI #208 recorded 641 PDF bytes, 68 PNG bytes and 76 text bytes with exact matching
 synthetic hashes. Fixtures remain available for the whole acceptance run and are
 removed only with the owned temporary runtime during cleanup.
 
@@ -152,7 +157,7 @@ The final task-owned diff was reviewed against the build-guide outcome. Required
 negative states remain truthful, and BG-07 does not broaden upload/delete authority,
 expose credentials, add token URLs, change database schema or deploy production.
 
-GitHub Actions CI run #196 passed:
+GitHub Actions CI run #208 passed:
 
 - formatting, lint and root typecheck;
 - 6/6 release-verifier regressions;
@@ -175,21 +180,24 @@ The repository's inherited npm advisory count remains 10 findings, 3 moderate an
 7 high. That unrelated dependency-maintenance concern is recorded, not silently
 expanded into BG-07.
 
-### BG-07.100 — Merge and parent completion boundary: pending
+### BG-07.100 — Merge and parent completion boundary: complete on closeout branch
 
-BG-07.100 requires the validated implementation to merge and the post-merge
-closeout to establish that the parent boundary is durably complete.
+Final implementation/documentation head
+`2f3a9ba36643398059066925dbba3b1be4fb38e7` passed GitHub Actions CI run
+#208. PR #42 then merged successfully into `main` at
+`27aa0dad8cf82c8e8c483baaf1b302c4772d170d`.
 
-Before checking BG-07.100:
+The closeout branch was created directly from that exact merged application tree and
+changes only documentation/checklist state. The authoritative checklist now marks
+BG-07.100 complete. The closeout pull request must pass normal repository CI before
+merge, so the repository does not treat an unvalidated documentation state as final.
 
-1. the documentation-complete PR head must pass CI;
-2. PR #42 must merge;
-3. a closeout branch must be created from the exact merged `main` SHA;
-4. the closeout gate must pass normal repository CI;
-5. final closeout evidence must mark BG-07 100/100 and explicitly unlock BG-08.
+When this reconciliation and `BG-07_FINAL_CLOSEOUT.md` are present on `main`,
+BG-07 is durably 100/100 and BG-08 is unlocked.
 
-## Pre-merge conclusion
+## Final closeout conclusion
 
-BG-07.001–.099 are supported by repository code, automated regression tests and the
-real Chrome acceptance run. BG-07 remains **99/100** until the merge/closeout gate
-is complete.
+BG-07.001–.100 are supported by merged repository code, automated regression tests,
+the real Chrome acceptance run and the exact merged implementation identity. This
+100/100 conclusion is authoritative when the documentation-only closeout is merged
+to `main`.
