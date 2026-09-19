@@ -207,13 +207,21 @@ async function initialize(
   };
 }
 
-async function createFinalizedPdf(app: ReturnType<typeof createApp>, env: Env) {
-  const bytes = new TextEncoder().encode('%PDF-1.7\nread-auth-fixture').buffer;
+async function createFinalizedAttachment(
+  app: ReturnType<typeof createApp>,
+  env: Env,
+  fixture: {
+    filename: string;
+    mimeType: string;
+    sourceType: 'file' | 'image';
+    bytes: ArrayBuffer;
+  },
+) {
   const initialized = await initialize(app, env, {
-    filename: 'read-auth.pdf',
-    mime_type: 'application/pdf',
-    size_bytes: bytes.byteLength,
-    source_type: 'file',
+    filename: fixture.filename,
+    mime_type: fixture.mimeType,
+    size_bytes: fixture.bytes.byteLength,
+    source_type: fixture.sourceType,
   });
   expect(initialized.response.status).toBe(201);
   const id = initialized.body.data.attachment_id;
@@ -224,10 +232,10 @@ async function createFinalizedPdf(app: ReturnType<typeof createApp>, env: Env) {
       method: 'PUT',
       headers: {
         Authorization: 'Bearer capture-secret',
-        'Content-Type': 'application/pdf',
-        'Content-Length': String(bytes.byteLength),
+        'Content-Type': fixture.mimeType,
+        'Content-Length': String(fixture.bytes.byteLength),
       },
-      body: bytes,
+      body: fixture.bytes,
     },
     env,
   );
@@ -247,7 +255,16 @@ async function createFinalizedPdf(app: ReturnType<typeof createApp>, env: Env) {
   );
   expect(finalized.status).toBe(200);
 
-  return { id, bytes };
+  return { id, bytes: fixture.bytes };
+}
+
+async function createFinalizedPdf(app: ReturnType<typeof createApp>, env: Env) {
+  return createFinalizedAttachment(app, env, {
+    filename: 'read-auth.pdf',
+    mimeType: 'application/pdf',
+    sourceType: 'file',
+    bytes: new TextEncoder().encode('%PDF-1.7\nread-auth-fixture').buffer,
+  });
 }
 
 async function createAdminSessionCookie(
