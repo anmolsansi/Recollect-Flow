@@ -28,6 +28,10 @@ CREATE TABLE url_acquisitions (
   content_type TEXT,
   response_bytes INTEGER CHECK (response_bytes IS NULL OR response_bytes >= 0),
   redirect_count INTEGER NOT NULL DEFAULT 0 CHECK (redirect_count >= 0),
+  attempt_count INTEGER NOT NULL CHECK (attempt_count >= 1),
+  duration_ms INTEGER NOT NULL CHECK (duration_ms >= 0),
+  network_io_skipped_by_policy INTEGER NOT NULL
+    CHECK (network_io_skipped_by_policy IN (0, 1)),
   source_title TEXT,
   source_description TEXT,
   source_site_name TEXT,
