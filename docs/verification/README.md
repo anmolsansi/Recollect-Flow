@@ -126,15 +126,17 @@ Closeout PR #40 passed GitHub Actions CI run #180. When this entry is present on
 
 ### BG-07 — browser attachment download
 
-Status: **99/100 pre-merge; implementation/browser proof green**
+Status: **100/100 complete when this closeout entry is present on `main`**
 
 - Primary evidence: [`BG-07_BROWSER_DOWNLOAD.md`](BG-07_BROWSER_DOWNLOAD.md)
 - Checklist reconciliation: [`BG-07_CHECKLIST_RECONCILIATION.md`](BG-07_CHECKLIST_RECONCILIATION.md)
-- GitHub tracking: issue #41 / implementation PR #42
+- Final closeout: [`BG-07_FINAL_CLOSEOUT.md`](BG-07_FINAL_CLOSEOUT.md)
+- GitHub tracking: issue #41 / merged implementation PR #42
 - Linear tracking: OPE-327
 - Task base `main`: `cb660e359abe36949040bca5d843b7a3d9d660d3`
-- Full technical/browser gate: GitHub Actions CI run #196
-- Verified implementation head: `1ae56558d0919ea6452e73869c8daeb06795c72a`
+- Final implementation/browser gate: GitHub Actions CI run #208
+- Final implementation head: `2f3a9ba36643398059066925dbba3b1be4fb38e7`
+- Merged implementation `main`: `27aa0dad8cf82c8e8c483baaf1b302c4772d170d`
 
 BG-07 preserves the BG-06 read-authorization contract and the existing same-origin
 Web Download anchor. It adds stronger attachment response/lifecycle regressions,
@@ -145,10 +147,11 @@ text originals through the actual anchor. Byte length and SHA-256 match, reload
 retains the valid session, and logout/tampered/expired session states receive fresh
 `401` responses.
 
-CI #196 passed the repository quality gate, local migrations, Chrome availability
-and `browser:download:test`. BG-07.001–.099 are reconciled. BG-07.100 remains
-open until PR #42 is merged and the post-merge closeout proves the parent boundary.
-BG-08 remains locked until that closeout is on `main`.
+Implementation PR #42 is merged. CI #208 passed the repository quality gate, local
+migrations, Chrome availability and `browser:download:test`. The authoritative
+checklist is 100/100 on a documentation-only closeout branch created directly from
+the merged implementation SHA. When this entry is present on `main`, GitHub #41
+and Linear OPE-327 can close and BG-08 is unlocked.
 
 ## Evidence rules
 
