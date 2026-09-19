@@ -1,6 +1,6 @@
 # BG-07 — Browser Download Verification
 
-Status: **implementation verified; merge/closeout gate pending**
+Status: **implementation merged; final closeout gate pending**
 
 Tracking: GitHub #41 / PR #42 / Linear OPE-327
 
@@ -203,15 +203,14 @@ Each correction was committed separately. No quality check was bypassed.
 
 ## Completion boundary
 
-The technical implementation and browser evidence are now green. BG-07 is not yet
-100/100 because the final checklist item requires the validated implementation to
-merge and the post-merge closeout to prove the parent boundary.
+The technical implementation and browser evidence are green, and implementation PR
+#42 is merged into `main` at
+`27aa0dad8cf82c8e8c483baaf1b302c4772d170d`. The final implementation head
+passed CI run #208 before merge.
 
-Before BG-08 is unlocked:
+A documentation-only closeout branch now starts directly from that exact merged
+application tree. The authoritative checklist marks BG-07.100 complete on the
+closeout branch, but the 100/100 state is authoritative only after the closeout
+pull request passes normal repository CI and this evidence is present on `main`.
 
-1. reconcile BG-07.001–.099 against this evidence;
-2. obtain a green documentation-complete PR head;
-3. merge PR #42;
-4. create a documentation-only closeout from the exact merged `main` head;
-5. pass the closeout CI gate;
-6. mark BG-07.100 complete and close GitHub #41 / Linear OPE-327.
+At that point GitHub #41 and Linear OPE-327 can close, and BG-08 is unlocked.
