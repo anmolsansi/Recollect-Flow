@@ -976,13 +976,15 @@ These unchecked steps inherit this task's **what, why, when, where and proof** a
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
-**BG-08 reconciliation, pre-merge:** BG-08.001 through BG-08.099 are
-satisfied by the source inspection, frozen contract, privacy/ADR/API/use-case
-propagation, security review, and verification record in
+**BG-08 final reconciliation:** BG-08.001 through BG-08.100 are satisfied.
+The URL acquisition contract merged through PR #45 at
+`877172dbc10d7ba9771a6913f0758adf0a02e2f9`. Final pre-merge CI #219 passed on
+the evidence-complete implementation head, and merged-main CI #220 passed the full
+repository gate. The source inspection, frozen contract, privacy/ADR/API/use-case
+propagation, security review, and final verification record are in
 [`BG-08_URL_ACQUISITION_CONTRACT.md`](verification/BG-08_URL_ACQUISITION_CONTRACT.md).
-No runtime fetch/migration work is claimed. BG-08.100 intentionally remains open
-until the exact contract branch is merged and merged-main validation proves the
-parent gate before BG-09 is unlocked.
+No BG-09 fetcher or BG-10 persistence implementation is claimed. BG-09 is now
+unlocked by the proved BG-08 parent gate.
 
 #### BG-08 / 01 — Establish task context
 
@@ -1112,7 +1114,7 @@ parent gate before BG-09 is unlocked.
 - [x] `BG-08.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-08.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-08.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-08.100` **Gate:** Check the parent completion boundary and record whether BG-09 is unlocked.
+- [x] `BG-08.100` **Gate:** Check the parent completion boundary and record whether BG-09 is unlocked.
 
 ## BG-09 — 100 executable microtasks
 
