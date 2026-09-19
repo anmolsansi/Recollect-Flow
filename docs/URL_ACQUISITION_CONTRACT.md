@@ -528,3 +528,18 @@ integrity checks treat them as item-owned evidence.
 
 BG-11 owns explicit retry/reprocess UX. BG-10 intentionally does not add a public
 retry command.
+
+
+### BG-10 implementation notes
+
+The durable BG-10 evidence row also records `attempt_count`, `duration_ms`,
+and `network_io_skipped_by_policy`. D1 constrains URL/metadata/text sizes,
+redirect count, response bytes, and the three-attempt automatic retry ceiling so
+portable restore cannot bypass the service-layer bounds.
+
+Portable JSON remains the complete history. CSV exposes a compact current
+`url_acquisition` summary for owner-readable export.
+
+The preexisting generic failed-job retry endpoint rejects `acquire_url` jobs.
+Reusing the same job ID would conflict with immutable one-observation-per-job
+evidence. BG-11 owns the explicit generation-aware retry/reprocess command.
