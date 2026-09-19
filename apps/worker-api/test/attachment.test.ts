@@ -532,6 +532,10 @@ describe('private attachment lifecycle', () => {
     expect(response.headers.get('Content-Disposition')).toBe(
       'attachment; filename="read-auth.pdf"',
     );
+    expect(response.headers.get('Content-Length')).toBe(String(bytes.byteLength));
+    expect(response.headers.get('Cache-Control')).toBe('private, no-store');
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
+    expect(response.headers.get('ETag')).toBe('"test-etag"');
     expect(await response.arrayBuffer()).toEqual(bytes);
   });
 
