@@ -34,9 +34,7 @@ function parseIpv4(hostname: string): [number, number, number, number] | null {
 
   const numbers = parts.map((part) => Number(part));
   if (
-    numbers.some(
-      (part) => !Number.isInteger(part) || part < 0 || part > 255,
-    )
+    numbers.some((part) => !Number.isInteger(part) || part < 0 || part > 255)
   ) {
     return null;
   }
@@ -45,10 +43,7 @@ function parseIpv4(hostname: string): [number, number, number, number] | null {
 
 function ipv4ToInt(parts: [number, number, number, number]): number {
   return (
-    ((parts[0] << 24) >>> 0) +
-    (parts[1] << 16) +
-    (parts[2] << 8) +
-    parts[3]
+    ((parts[0] << 24) >>> 0) + (parts[1] << 16) + (parts[2] << 8) + parts[3]
   );
 }
 
@@ -89,8 +84,7 @@ function parseIpv6(hostname: string): number[] | null {
     if (!ipv4) return null;
     const high = (ipv4[0] << 8) | ipv4[1];
     const low = (ipv4[2] << 8) | ipv4[3];
-    value =
-      `${value.slice(0, lastColon)}:${high.toString(16)}:${low.toString(16)}`;
+    value = `${value.slice(0, lastColon)}:${high.toString(16)}:${low.toString(16)}`;
   }
 
   const halves = value.split('::');
@@ -133,11 +127,7 @@ function isBlockedIpv6(parts: number[]): boolean {
   if ((parts[0] & 0xffc0) === 0xfec0) return true;
   if ((parts[0] & 0xff00) === 0xff00) return true;
 
-  if (
-    parts[0] === 0x0064 &&
-    parts[1] === 0xff9b &&
-    parts[2] === 0x0001
-  ) {
+  if (parts[0] === 0x0064 && parts[1] === 0xff9b && parts[2] === 0x0001) {
     return true;
   }
   if (
@@ -149,11 +139,7 @@ function isBlockedIpv6(parts: number[]): boolean {
     return true;
   }
   if (parts[0] === 0x2001 && parts[1] === 0x0000) return true;
-  if (
-    parts[0] === 0x2001 &&
-    parts[1] >= 0x0010 &&
-    parts[1] <= 0x002f
-  ) {
+  if (parts[0] === 0x2001 && parts[1] >= 0x0010 && parts[1] <= 0x002f) {
     return true;
   }
   if (parts[0] === 0x2001 && parts[1] === 0x0db8) return true;
