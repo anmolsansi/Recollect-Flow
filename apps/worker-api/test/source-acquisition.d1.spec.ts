@@ -142,13 +142,17 @@ describe('BG-10 durable URL acquisition chain', () => {
     expect(fetch).not.toHaveBeenCalled();
 
     const evidence = await env.DB.prepare(
-      `SELECT status, coverage, error_code
+      `SELECT status, coverage, error_code, attempt_count, duration_ms,
+              network_io_skipped_by_policy
        FROM url_acquisitions WHERE item_id = 'policy-blocked-item'`,
     ).first<Record<string, unknown>>();
     expect(evidence).toMatchObject({
       status: 'policy_blocked',
       coverage: 'url_only',
       error_code: 'SOURCE_FETCH_POLICY_BLOCKED',
+      attempt_count: 1,
+      duration_ms: 0,
+      network_io_skipped_by_policy: 1,
     });
 
     const enrich = await env.DB.prepare(
@@ -450,6 +454,13 @@ describe('BG-10 durable URL acquisition chain', () => {
       () => new Date(T0.getTime() + 10_000),
     ).buildJson();
     expect(exported.items[0]?.urlAcquisitions).toHaveLength(1);
+
+    const csv = await new ExportService(
+      env.DB,
+      () => new Date(T0.getTime() + 10_000),
+    ).buildCsv();
+    expect(csv.split('\r\n')[0]).toContain('url_acquisition');
+    expect(csv).toContain('acquired_text');
 
     await clearState();
     const restored = await new RestoreService(
