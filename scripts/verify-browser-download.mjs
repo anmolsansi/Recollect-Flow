@@ -87,10 +87,13 @@ async function downloadFixture({
   runtime,
   fixture,
   downloadDir,
+  navigateFirst = true,
 }) {
   await resetDownloadDirectory(downloadDir);
   const itemUrl = `${runtime.webOrigin}/items/${fixture.itemId}`;
-  await navigate(client, sessionId, itemUrl);
+  if (navigateFirst) {
+    await navigate(client, sessionId, itemUrl);
+  }
   const expectedHref = `/api/v1/attachments/${fixture.attachmentId}/content`;
   const selector = `a[href="${expectedHref}"]`;
   await client.waitForExpression(
@@ -252,11 +255,47 @@ async function main() {
       );
     }
 
+    const reloadFixture = fixtures[0];
+    assert.ok(reloadFixture, 'Expected a PDF fixture for reload verification.');
+    await navigate(
+      client,
+      sessionId,
+      `${runtime.webOrigin}/items/${reloadFixture.itemId}`,
+    );
+    await client.send('Page.reload', { ignoreCache: true }, sessionId);
+    await client.waitForExpression(
+      sessionId,
+      `Boolean(document.querySelector(${JSON.stringify(
+        `a[href="/api/v1/attachments/${reloadFixture.attachmentId}/content"]`,
+      )}))`,
+      { timeoutMs: 15_000, description: 'Download link after page reload' },
+    );
+
+    const reloadedCookies = await client.send(
+      'Network.getCookies',
+      { urls: [runtime.webOrigin] },
+      sessionId,
+    );
+    assert.ok(
+      reloadedCookies.cookies?.some((cookie) => cookie.name === 'admin_session'),
+      'Authenticated session did not survive page reload.',
+    );
+
+    const reloadDownload = await downloadFixture({
+      client,
+      sessionId,
+      runtime,
+      fixture: reloadFixture,
+      downloadDir,
+      navigateFirst: false,
+    });
+
     console.log(
       JSON.stringify({
         status: 'login-proof-passed',
         fixtures_prepared: fixtures.length,
         downloads,
+        reload_download: reloadDownload,
         admin_session: {
           http_only: sessionCookie.httpOnly,
           same_site: sessionCookie.sameSite,
