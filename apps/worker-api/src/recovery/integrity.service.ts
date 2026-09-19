@@ -46,6 +46,7 @@ export class IntegrityService {
     const runId = await this.repository.start(this.now());
     try {
       await this.checkAttachments(runId);
+      await this.checkUrlEvidence(runId);
       await this.checkNotion(runId);
       await this.checkPurgeWorkflows(runId);
       await this.checkBackups(runId);
@@ -110,6 +111,60 @@ export class IntegrityService {
           this.now(),
         );
       }
+    }
+  }
+
+  private async checkUrlEvidence(runId: string): Promise<void> {
+    const orphaned = await this.db
+      .prepare(
+        `SELECT ua.id, ua.item_id
+         FROM url_acquisitions ua
+         LEFT JOIN items i ON i.id = ua.item_id
+         WHERE i.id IS NULL`,
+      )
+      .all<{ id: string; item_id: string }>();
+
+    for (const evidence of orphaned.results) {
+      await this.repository.addFinding(
+        runId,
+        {
+          findingType: 'url_evidence_item_missing',
+          severity: 'error',
+          itemId: evidence.item_id,
+          externalRef: evidence.id,
+        },
+        this.now(),
+      );
+    }
+
+    const drift = await this.db
+      .prepare(
+        `SELECT i.id
+         FROM items i
+         LEFT JOIN item_search_fts f ON f.rowid = i.rowid
+         WHERE i.deleted_at IS NULL
+           AND COALESCE(f.source_text, '') != COALESCE((
+             SELECT ua.acquired_text
+             FROM url_acquisitions ua
+             WHERE ua.item_id = i.id
+               AND ua.source_revision = i.source_revision
+               AND ua.privacy_level_snapshot = i.privacy_level
+             ORDER BY ua.completed_at DESC, ua.id DESC
+             LIMIT 1
+           ), '')`,
+      )
+      .all<{ id: string }>();
+
+    for (const item of drift.results) {
+      await this.repository.addFinding(
+        runId,
+        {
+          findingType: 'url_evidence_search_projection_drift',
+          severity: 'error',
+          itemId: item.id,
+        },
+        this.now(),
+      );
     }
   }
 
