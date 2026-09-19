@@ -26,14 +26,44 @@ const CSV_COLUMNS = [
   'captured_at',
   'deleted_at',
   'attachments',
+  'url_acquisition',
   'processing_jobs',
   'sync_attempts',
 ] as const;
+
+function currentUrlAcquisition(
+  item: PortableItemExport,
+): Record<string, unknown> | null {
+  const sourceRevision = item.item.source_revision;
+  const privacyLevel = item.item.privacy_level;
+  const current = [...item.urlAcquisitions]
+    .reverse()
+    .find(
+      (entry) =>
+        entry.source_revision === sourceRevision &&
+        entry.privacy_level_snapshot === privacyLevel,
+    );
+  if (!current) return null;
+  return {
+    status: current.status ?? null,
+    coverage: current.coverage ?? null,
+    completed_at: current.completed_at ?? null,
+    fetched_final_url: current.fetched_final_url ?? null,
+    content_type: current.content_type ?? null,
+    response_bytes: current.response_bytes ?? null,
+    extracted_characters: current.extracted_characters ?? null,
+    error_code: current.error_code ?? null,
+    retryable: current.retryable ?? null,
+    source_title: current.source_title ?? null,
+  };
+}
 
 function portableCsvRow(item: PortableItemExport): Record<string, unknown> {
   const row: Record<string, unknown> = {};
   for (const column of CSV_COLUMNS) {
     if (column === 'attachments') row[column] = item.attachments;
+    else if (column === 'url_acquisition')
+      row[column] = currentUrlAcquisition(item);
     else if (column === 'processing_jobs') row[column] = item.processingJobs;
     else if (column === 'sync_attempts') row[column] = item.syncAttempts;
     else row[column] = item.item[column] ?? null;
