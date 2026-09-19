@@ -840,132 +840,132 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-07 / 01 — Establish task context
 
-- [ ] `BG-07.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-07.002` **Dependency:** Verify BG-06's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-07.003` **Baseline:** Record the actual checkout or release candidate used for BG-07.
-- [ ] `BG-07.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-07.005` **Evidence:** Check whether existing evidence already satisfies any BG-07 step; reference it instead of manufacturing work.
-- [ ] `BG-07.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-07.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-07.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-07.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-07.010` **Tracking:** Open a BG-07 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-07.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-07.002` **Dependency:** Verify BG-06's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-07.003` **Baseline:** Record the actual checkout or release candidate used for BG-07.
+- [x] `BG-07.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-07.005` **Evidence:** Check whether existing evidence already satisfies any BG-07 step; reference it instead of manufacturing work.
+- [x] `BG-07.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-07.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-07.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-07.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-07.010` **Tracking:** Open a BG-07 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-07 / 02 — Route integration
 
-- [ ] `BG-07.011` Apply approved content guard.
-- [ ] `BG-07.012` Remove conflicting wildcard interception.
-- [ ] `BG-07.013` Preserve upload guard behavior.
-- [ ] `BG-07.014` Preserve deletion admin check.
-- [ ] `BG-07.015` Keep attachment ID lookup.
-- [ ] `BG-07.016` Keep private object binding.
-- [ ] `BG-07.017` Preserve lifecycle rejection rules.
-- [ ] `BG-07.018` Preserve error envelope shape.
-- [ ] `BG-07.019` Inspect route registration result.
-- [ ] `BG-07.020` Run focused cookie route test.
+- [x] `BG-07.011` Apply approved content guard.
+- [x] `BG-07.012` Remove conflicting wildcard interception.
+- [x] `BG-07.013` Preserve upload guard behavior.
+- [x] `BG-07.014` Preserve deletion admin check.
+- [x] `BG-07.015` Keep attachment ID lookup.
+- [x] `BG-07.016` Keep private object binding.
+- [x] `BG-07.017` Preserve lifecycle rejection rules.
+- [x] `BG-07.018` Preserve error envelope shape.
+- [x] `BG-07.019` Inspect route registration result.
+- [x] `BG-07.020` Run focused cookie route test.
 
 #### BG-07 / 03 — Response metadata
 
-- [ ] `BG-07.021` Read stored content type.
-- [ ] `BG-07.022` Validate safe response MIME.
-- [ ] `BG-07.023` Read stored filename.
-- [ ] `BG-07.024` Sanitize header-sensitive filename characters.
-- [ ] `BG-07.025` Set intended content disposition.
-- [ ] `BG-07.026` Preserve correct byte length.
-- [ ] `BG-07.027` Avoid user-controlled object keys.
-- [ ] `BG-07.028` Inspect download response headers.
-- [ ] `BG-07.029` Verify Unicode filename handling.
-- [ ] `BG-07.030` Verify missing metadata fails safely.
+- [x] `BG-07.021` Read stored content type.
+- [x] `BG-07.022` Validate safe response MIME.
+- [x] `BG-07.023` Read stored filename.
+- [x] `BG-07.024` Sanitize header-sensitive filename characters.
+- [x] `BG-07.025` Set intended content disposition.
+- [x] `BG-07.026` Preserve correct byte length.
+- [x] `BG-07.027` Avoid user-controlled object keys.
+- [x] `BG-07.028` Inspect download response headers.
+- [x] `BG-07.029` Verify Unicode filename handling.
+- [x] `BG-07.030` Verify missing metadata fails safely.
 
 #### BG-07 / 04 — Private caching
 
-- [ ] `BG-07.031` Inspect existing cache headers.
-- [ ] `BG-07.032` Choose authenticated cache behavior.
-- [ ] `BG-07.033` Prevent public shared caching.
-- [ ] `BG-07.034` Check proxy cache interaction.
-- [ ] `BG-07.035` Avoid token-bearing cache keys.
-- [ ] `BG-07.036` Request content after logout.
-- [ ] `BG-07.037` Check anonymous response independence.
-- [ ] `BG-07.038` Check different attachment responses.
-- [ ] `BG-07.039` Verify no cached private replay.
-- [ ] `BG-07.040` Record response caching policy.
+- [x] `BG-07.031` Inspect existing cache headers.
+- [x] `BG-07.032` Choose authenticated cache behavior.
+- [x] `BG-07.033` Prevent public shared caching.
+- [x] `BG-07.034` Check proxy cache interaction.
+- [x] `BG-07.035` Avoid token-bearing cache keys.
+- [x] `BG-07.036` Request content after logout.
+- [x] `BG-07.037` Check anonymous response independence.
+- [x] `BG-07.038` Check different attachment responses.
+- [x] `BG-07.039` Verify no cached private replay.
+- [x] `BG-07.040` Record response caching policy.
 
 #### BG-07 / 05 — Browser session
 
-- [ ] `BG-07.041` Start actual Web application.
-- [ ] `BG-07.042` Open real login form.
-- [ ] `BG-07.043` Submit dummy admin credential.
-- [ ] `BG-07.044` Verify signed session cookie created.
-- [ ] `BG-07.045` Avoid direct token injection.
-- [ ] `BG-07.046` Navigate to attachment item.
-- [ ] `BG-07.047` Locate actual Download link.
-- [ ] `BG-07.048` Follow same-origin link.
-- [ ] `BG-07.049` Capture download outcome.
-- [ ] `BG-07.050` Verify no authentication error page.
+- [x] `BG-07.041` Start actual Web application.
+- [x] `BG-07.042` Open real login form.
+- [x] `BG-07.043` Submit dummy admin credential.
+- [x] `BG-07.044` Verify signed session cookie created.
+- [x] `BG-07.045` Avoid direct token injection.
+- [x] `BG-07.046` Navigate to attachment item.
+- [x] `BG-07.047` Locate actual Download link.
+- [x] `BG-07.048` Follow same-origin link.
+- [x] `BG-07.049` Capture download outcome.
+- [x] `BG-07.050` Verify no authentication error page.
 
 #### BG-07 / 06 — Byte proof
 
-- [ ] `BG-07.051` Download valid PDF fixture.
-- [ ] `BG-07.052` Measure downloaded PDF size.
-- [ ] `BG-07.053` Compare PDF SHA-256.
-- [ ] `BG-07.054` Download image fixture.
-- [ ] `BG-07.055` Measure downloaded image size.
-- [ ] `BG-07.056` Compare image SHA-256.
-- [ ] `BG-07.057` Download supported generic file.
-- [ ] `BG-07.058` Compare generic file bytes.
-- [ ] `BG-07.059` Verify filename matches safe expectation.
-- [ ] `BG-07.060` Preserve original upload fixtures.
+- [x] `BG-07.051` Download valid PDF fixture.
+- [x] `BG-07.052` Measure downloaded PDF size.
+- [x] `BG-07.053` Compare PDF SHA-256.
+- [x] `BG-07.054` Download image fixture.
+- [x] `BG-07.055` Measure downloaded image size.
+- [x] `BG-07.056` Compare image SHA-256.
+- [x] `BG-07.057` Download supported generic file.
+- [x] `BG-07.058` Compare generic file bytes.
+- [x] `BG-07.059` Verify filename matches safe expectation.
+- [x] `BG-07.060` Preserve original upload fixtures.
 
 #### BG-07 / 07 — Session lifecycle
 
-- [ ] `BG-07.061` Reload attachment detail page.
-- [ ] `BG-07.062` Confirm session remains valid.
-- [ ] `BG-07.063` Download again after reload.
-- [ ] `BG-07.064` Log out through UI.
-- [ ] `BG-07.065` Repeat private download request.
-- [ ] `BG-07.066` Confirm new request denied.
-- [ ] `BG-07.067` Try tampered session cookie.
-- [ ] `BG-07.068` Confirm tampered request denied.
-- [ ] `BG-07.069` Try expired session cookie.
-- [ ] `BG-07.070` Confirm expired request denied.
+- [x] `BG-07.061` Reload attachment detail page.
+- [x] `BG-07.062` Confirm session remains valid.
+- [x] `BG-07.063` Download again after reload.
+- [x] `BG-07.064` Log out through UI.
+- [x] `BG-07.065` Repeat private download request.
+- [x] `BG-07.066` Confirm new request denied.
+- [x] `BG-07.067` Try tampered session cookie.
+- [x] `BG-07.068` Confirm tampered request denied.
+- [x] `BG-07.069` Try expired session cookie.
+- [x] `BG-07.070` Confirm expired request denied.
 
 #### BG-07 / 08 — Object lifecycle
 
-- [ ] `BG-07.071` Request missing attachment ID.
-- [ ] `BG-07.072` Verify controlled missing response.
-- [ ] `BG-07.073` Request purged attachment fixture.
-- [ ] `BG-07.074` Verify purged bytes unavailable.
-- [ ] `BG-07.075` Request disallowed unlinked fixture.
-- [ ] `BG-07.076` Verify lifecycle policy enforced.
-- [ ] `BG-07.077` Check traversal-shaped attachment ID.
-- [ ] `BG-07.078` Check unsafe filename fixture.
-- [ ] `BG-07.079` Verify no bucket URL leaked.
-- [ ] `BG-07.080` Verify raw credentials never exposed.
+- [x] `BG-07.071` Request missing attachment ID.
+- [x] `BG-07.072` Verify controlled missing response.
+- [x] `BG-07.073` Request purged attachment fixture.
+- [x] `BG-07.074` Verify purged bytes unavailable.
+- [x] `BG-07.075` Request disallowed unlinked fixture.
+- [x] `BG-07.076` Verify lifecycle policy enforced.
+- [x] `BG-07.077` Check traversal-shaped attachment ID.
+- [x] `BG-07.078` Check unsafe filename fixture.
+- [x] `BG-07.079` Verify no bucket URL leaked.
+- [x] `BG-07.080` Verify raw credentials never exposed.
 
 #### BG-07 / 09 — Regression evidence
 
-- [ ] `BG-07.081` Add cookie-authenticated download case.
-- [ ] `BG-07.082` Retain bearer download case.
-- [ ] `BG-07.083` Retain anonymous denial case.
-- [ ] `BG-07.084` Retain byte-equality assertion.
-- [ ] `BG-07.085` Run attachment suite.
-- [ ] `BG-07.086` Run browser download story.
-- [ ] `BG-07.087` Check PDF opens correctly.
-- [ ] `BG-07.088` Check image opens correctly.
-- [ ] `BG-07.089` Save safe response/hash evidence.
-- [ ] `BG-07.090` Record original bug resolution.
+- [x] `BG-07.081` Add cookie-authenticated download case.
+- [x] `BG-07.082` Retain bearer download case.
+- [x] `BG-07.083` Retain anonymous denial case.
+- [x] `BG-07.084` Retain byte-equality assertion.
+- [x] `BG-07.085` Run attachment suite.
+- [x] `BG-07.086` Run browser download story.
+- [x] `BG-07.087` Check PDF opens correctly.
+- [x] `BG-07.088` Check image opens correctly.
+- [x] `BG-07.089` Save safe response/hash evidence.
+- [x] `BG-07.090` Record original bug resolution.
 
 #### BG-07 / 10 — Verify and close this task
 
-- [ ] `BG-07.091` **Review:** Compare the completed checklist with BG-07's stated outcome; identify uncovered behavior.
-- [ ] `BG-07.092` **Verification:** Run or inspect the focused proof required by BG-07; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-07.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-07.094` **Integrity:** Check that BG-07 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-07.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-07.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-07.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-07.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-07.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-07.091` **Review:** Compare the completed checklist with BG-07's stated outcome; identify uncovered behavior.
+- [x] `BG-07.092` **Verification:** Run or inspect the focused proof required by BG-07; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-07.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-07.094` **Integrity:** Check that BG-07 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-07.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-07.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-07.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-07.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-07.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-07.100` **Gate:** Check the parent completion boundary and record whether BG-08 is unlocked.
 
 ## BG-08 — 100 executable microtasks
