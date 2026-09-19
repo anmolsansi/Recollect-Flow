@@ -10,9 +10,7 @@ describe('BG-09 source destination admission', () => {
 
     expect(result.allowed).toBe(true);
     if (!result.allowed) return;
-    expect(result.url.href).toBe(
-      'https://example.com/article?token=value',
-    );
+    expect(result.url.href).toBe('https://example.com/article?token=value');
   });
 
   it('rejects unsupported schemes, embedded credentials, and non-default ports', () => {
