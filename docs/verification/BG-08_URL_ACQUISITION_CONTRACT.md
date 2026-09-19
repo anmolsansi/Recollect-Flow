@@ -184,12 +184,12 @@ fields remain distinct even when one compact value is shown.
 
 Automatic source-host network I/O:
 
-| Privacy | Automatic source acquisition |
-| --- | --- |
-| Public | eligible, subject to BG-09 destination safety |
-| Unknown | no network I/O |
-| Personal | no network I/O |
-| Sensitive | no network I/O |
+| Privacy   | Automatic source acquisition                  |
+| --------- | --------------------------------------------- |
+| Public    | eligible, subject to BG-09 destination safety |
+| Unknown   | no network I/O                                |
+| Personal  | no network I/O                                |
+| Sensitive | no network I/O                                |
 
 Unknown remains the default. No automatic classification promotes it to Public.
 
