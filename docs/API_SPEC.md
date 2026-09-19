@@ -81,6 +81,62 @@ clients.
 
 Admin scope. Required input: `privacy_level` plus `derived_data_action` (`reprocess|purge`). Optional hosted-routing evidence: `ai_provider` (`openrouter|gemini`), `credential_source` (`app_managed|user_provided|none`), `hosted_processing_consent`, `zero_data_retention_enforced`, and `data_collection_denied`. The API never accepts or returns a provider secret. The operation invalidates current derived fields/jobs, records an audit event and either creates a policy-stamped enrichment job or leaves derived data purged. Personal app-managed reprocessing selects OpenRouter only when consent, ZDR and denied data collection are all explicit; otherwise it records `none`.
 
+## Planned BG-10 URL source-acquisition API projection
+
+BG-08 defines the response contract only. No new route or response field is
+implemented by BG-08.
+
+The admin item-detail response will expose the latest URL acquisition evidence as a
+separate `source_acquisition` object rather than overwriting existing source fields:
+
+```json
+{
+  "source_acquisition": {
+    "status": "login_required",
+    "coverage": "url_only",
+    "fetched_at": "2026-09-19T08:00:00.000Z",
+    "fetched_final_url": "https://example.test/login",
+    "http_status": 401,
+    "content_type": "text/html",
+    "response_bytes": 1842,
+    "extracted_characters": 0,
+    "metadata": {
+      "title": "Sign in",
+      "description": null,
+      "site_name": "Example",
+      "canonical_hint_url": null
+    },
+    "acquired_text": null,
+    "error_code": "SOURCE_LOGIN_REQUIRED",
+    "retryable": false
+  }
+}
+```
+
+The exact JSON nesting may be implemented by BG-10 only if it preserves these
+semantics and remains schema-validated.
+
+The existing fields stay distinct:
+
+- `source_url`: submitted source evidence;
+- `canonical_url`: conservative deduplication value;
+- `raw_text`: owner/client-supplied text;
+- `user_note`: owner reason;
+- `summary`: generated interpretation.
+
+`fetched_final_url` is source-acquisition evidence and never changes duplicate
+identity. `acquired_text` is fetched source evidence and must not be copied into
+`raw_text`.
+
+URL acquisition statuses, coverage values, safe error codes, retry rules, privacy
+eligibility, and fetch budgets are defined in
+[URL_ACQUISITION_CONTRACT.md](URL_ACQUISITION_CONTRACT.md).
+
+When BG-10 makes these records durable, portable JSON export/restore must include
+them and its schema version must advance. Search must index acquired source text
+through a rebuildable FTS projection rather than mutating raw source fields. Purge
+must remove acquisition evidence with the item.
+
 ## Planned item and review API
 
 - `GET /api/v1/items/:id`: authoritative item, source/derived fields, attachments, coverage, status, jobs, sync, provenance.

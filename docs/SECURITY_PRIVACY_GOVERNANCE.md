@@ -20,16 +20,56 @@ Assets: raw captures, attachments, private notes, tokens, provider credentials, 
 
 ## Classification and routing
 
-Policy version `2026-07-21.1` uses Unknown, Public, Personal, and Sensitive. Sensitive includes confidential/restricted content such as secrets, passwords, financial or medical records, immigration documents, and private conversations. Unknown is the default and fails closed.
+Policy version `2026-07-31.2` uses Unknown, Public, Personal, and Sensitive.
+Sensitive includes confidential/restricted content such as secrets, passwords,
+financial or medical records, immigration documents, and private conversations.
+Unknown is the default and fails closed.
 
-| Data class | App-managed OpenRouter                                                               | User-provided provider key                                      | Gemini free fallback                        | No AI          |
-| ---------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ------------------------------------------- | -------------- |
-| Unknown    | Never                                                                                | Never                                                           | Never                                       | Default        |
-| Public     | Default hosted route                                                                 | Allowed                                                         | Allowed when OpenRouter is unavailable      | Always allowed |
-| Personal   | Explicit hosted consent plus per-request ZDR and `data_collection=deny`; no fallback | Explicit hosted consent and the selected provider's terms apply | Never through the app-managed free fallback | Always allowed |
-| Sensitive  | Never                                                                                | Never                                                           | Never                                       | Default        |
+| Data class | App-managed OpenRouter                                                               | User-provided provider key                                | Gemini free fallback                        | Cloudflare Workers AI                                    | No AI          |
+| ---------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------- | ------------------------------------------- | -------------------------------------------------------- | -------------- |
+| Unknown    | Never                                                                                | Never                                                     | Never                                       | Approved when explicitly selected; not the default route | Default        |
+| Public     | Default hosted route                                                                 | Allowed                                                   | Allowed when OpenRouter is unavailable      | Approved                                                 | Always allowed |
+| Personal   | Explicit hosted consent plus per-request ZDR and `data_collection=deny`; no fallback | Explicit hosted consent and selected-provider terms apply | Never through the app-managed free fallback | Never                                                    | Always allowed |
+| Sensitive  | Never                                                                                | Never                                                     | Never                                       | Never                                                    | Default        |
 
-Personal routing never switches providers silently. The app-managed path is OpenRouter-only and must enforce zero data retention and deny provider data collection on every request. A user-provided key changes credential ownership, not the provider's data practices; the selected provider and applicable terms must be disclosed before consent. Gemini free is used only for Public content. Provider unavailability, missing consent, missing compliance controls, or hosted quota exhaustion fails closed to no AI. Changing classification invalidates derived fields and jobs, records an audit event, and requires an explicit `reprocess` or `purge` choice. Already transmitted provider data cannot be revoked. The owner approved this matrix on 2026-07-21 under OPE-224.
+Personal routing never switches providers silently. The app-managed Personal path is
+OpenRouter-only and must enforce zero data retention and deny provider data
+collection on every request. A user-provided key changes credential ownership, not
+the provider's data practices. The selected provider and applicable terms must be
+disclosed before consent. Gemini free is used only for Public content. Cloudflare
+Workers AI is approved by policy for Public and explicitly requested Unknown
+processing, while Unknown still defaults to no AI. Provider unavailability, missing
+consent, missing compliance controls, or hosted quota exhaustion fails closed to no
+AI. Changing classification invalidates derived fields and jobs, records an audit
+event, and requires an explicit `reprocess` or `purge` choice. Already transmitted
+provider data cannot be revoked. The current revision was approved under OPE-224.
+
+### URL source-host acquisition is a separate boundary
+
+BG-08 adds a separate rule for contacting a URL's source host. The AI matrix above
+does **not** authorize network source acquisition.
+
+For automatic V1 URL acquisition:
+
+| Privacy class | Contact captured source host automatically?      |
+| ------------- | ------------------------------------------------ |
+| Public        | Yes, only through the bounded BG-09 fetch policy |
+| Unknown       | No                                               |
+| Personal      | No                                               |
+| Sensitive     | No                                               |
+
+Unknown remains the default and must not become Public based on hostname, metadata,
+source app, or model output. A non-Public URL capture stays Saved without source-host
+network I/O and records a truthful policy-blocked acquisition outcome once BG-10
+implements persistence.
+
+Even for Public captures, BG-09 must independently reject unsafe destinations and
+redirects. Source acquisition sends no owner/site cookies, browser sessions,
+RecollectFlow tokens, or arbitrary client authorization headers. It does not execute
+JavaScript, bypass login, solve CAPTCHAs, or perform authenticated scraping.
+
+The detailed limits, status/error vocabulary, provenance rules, and owner messages
+are frozen in [URL_ACQUISITION_CONTRACT.md](URL_ACQUISITION_CONTRACT.md).
 
 ## Authentication and authorization
 
