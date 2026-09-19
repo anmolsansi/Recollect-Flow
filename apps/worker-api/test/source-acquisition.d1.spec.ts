@@ -284,6 +284,21 @@ describe('BG-10 durable URL acquisition chain', () => {
         .join(' '),
     ).toContain('quasar');
 
+    const queryPlan = await env.DB.prepare(
+      `EXPLAIN QUERY PLAN
+       SELECT i.id
+       FROM items i
+       JOIN item_search_fts fts ON fts.item_id = i.id
+       WHERE fts.item_search_fts MATCH ?1`,
+    )
+      .bind('"quasar"*')
+      .all<{ detail: string }>();
+    expect(
+      queryPlan.results.some((row) =>
+        row.detail.includes('VIRTUAL TABLE INDEX'),
+      ),
+    ).toBe(true);
+
     const enrichBeforeReplay = await env.DB.prepare(
       `SELECT COUNT(*) AS count FROM processing_jobs
        WHERE item_id = 'acquired-item' AND job_type = 'enrich'`,
