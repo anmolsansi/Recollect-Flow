@@ -19,7 +19,11 @@ import {
   normalizeContentType,
   signatureMatches,
 } from './attachment.validation';
-import { positiveInteger, safeFilename } from './attachment.utils';
+import {
+  attachmentContentDisposition,
+  positiveInteger,
+  safeFilename,
+} from './attachment.utils';
 
 export function attachmentRoutes(
   repositoryFactory: (env: Env) => AttachmentRepository = (env) =>
@@ -249,7 +253,7 @@ export function attachmentRoutes(
           'Content-Type':
             attachment.detectedContentType ?? 'application/octet-stream',
           'Content-Length': String(object.size),
-          'Content-Disposition': `attachment; filename="${safeFilename(attachment.fileName)}"`,
+          'Content-Disposition': attachmentContentDisposition(attachment.fileName),
           'Cache-Control': 'private, no-store',
           'X-Content-Type-Options': 'nosniff',
           ETag: object.httpEtag,
