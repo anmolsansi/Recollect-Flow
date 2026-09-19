@@ -7,7 +7,7 @@ ALTER TABLE items ADD COLUMN source_revision INTEGER NOT NULL DEFAULT 1
 CREATE TABLE url_acquisitions (
   id TEXT PRIMARY KEY,
   item_id TEXT NOT NULL REFERENCES items(id) ON DELETE RESTRICT,
-  job_id TEXT NOT NULL UNIQUE REFERENCES processing_jobs(id) ON DELETE RESTRICT,
+  job_id TEXT NOT NULL UNIQUE,
   source_revision INTEGER NOT NULL CHECK (source_revision >= 1),
   source_url_snapshot TEXT NOT NULL,
   privacy_level_snapshot TEXT NOT NULL
