@@ -237,6 +237,53 @@ describe('BG-10 durable URL acquisition chain', () => {
     });
   });
 
+  it('rejects a source revision that changes while fetch is in flight', async () => {
+    await seedItem('stale-revision-item', 'public');
+    await seedAcquisitionJob(
+      'stale-revision-job',
+      'stale-revision-item',
+      'public',
+    );
+    const job = await lease('stale-revision-job', 'stale-revision-owner');
+    const fetch = vi.fn(async (): Promise<SourceFetchOutcome> => {
+      await env.DB.prepare(
+        `UPDATE items
+         SET source_url = 'https://example.com/stale-revision-item-v2'
+         WHERE id = 'stale-revision-item'`,
+      ).run();
+      return {
+        status: 'acquired_text',
+        coverage: 'acquired_text',
+        retryable: false,
+        redirectCount: 0,
+        acquiredText: 'stale source text must not persist',
+        extractedCharacters: 34,
+      };
+    });
+    const service = new SourceAcquisitionService(env.DB, {
+      fetcher: { fetch },
+      now: () => new Date(T0.getTime() + 1_000),
+    });
+
+    expect(await service.process(job, 'stale-revision-owner')).toBe(false);
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    const evidence = await env.DB.prepare(
+      `SELECT id FROM url_acquisitions
+       WHERE item_id = 'stale-revision-item'`,
+    ).first();
+    expect(evidence).toBeNull();
+
+    const storedJob = await env.DB.prepare(
+      `SELECT status, last_error_code FROM processing_jobs
+       WHERE id = 'stale-revision-job'`,
+    ).first<Record<string, unknown>>();
+    expect(storedJob).toMatchObject({
+      status: 'failed',
+      last_error_code: 'SOURCE_REVISION_STALE',
+    });
+  });
+
   it('persists acquired text, indexes an internal phrase, and converges on replay', async () => {
     await seedItem('acquired-item', 'public');
     await seedAcquisitionJob('acquired-job', 'acquired-item', 'public');
