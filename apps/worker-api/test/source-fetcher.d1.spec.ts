@@ -23,7 +23,7 @@ function fetchSequence(responses: Response[]) {
 }
 
 describe('BG-09 bounded source fetcher', () => {
-  it('extracts readable HTML and safe metadata without script/style/navigation content', async () => {
+  it(\n    'extracts readable HTML and safe metadata without script/style/navigation content',\n    async () => {
     const fetchImpl = fetchSequence([
       htmlResponse(`
         <!doctype html>
@@ -92,7 +92,7 @@ describe('BG-09 bounded source fetcher', () => {
     expect(outcome.title).toBeUndefined();
   });
 
-  it('handles relative redirects manually and records only the final derived URL', async () => {
+  it(\n    'handles relative redirects manually and records only the final derived URL',\n    async () => {
     const requests: Request[] = [];
     const fetchImpl = vi.fn(async (input: RequestInfo | URL) => {
       const request = input instanceof Request ? input : new Request(input);
@@ -235,7 +235,7 @@ describe('BG-09 bounded source fetcher', () => {
     expect(cancelled).toBe(true);
   });
 
-  it('stops a chunked response when actual parser-visible bytes exceed the limit', async () => {
+  it(\n    'stops a chunked response when actual parser-visible bytes exceed the limit',\n    async () => {
     let cancelled = false;
     const encoder = new TextEncoder();
     const stream = new ReadableStream<Uint8Array>({
@@ -314,7 +314,7 @@ describe('BG-09 bounded source fetcher', () => {
     }
   });
 
-  it('classifies a deterministic login form without treating form text as acquired page content', async () => {
+  it(\n    'classifies a deterministic login form without treating form text as acquired page content',\n    async () => {
     const outcome = await new SourceFetcher({
       fetchImpl: fetchSequence([
         htmlResponse(`
@@ -367,7 +367,7 @@ describe('BG-09 bounded source fetcher', () => {
     });
   });
 
-  it('tolerates malformed HTML and preserves prompt-injection-shaped text as inert evidence', async () => {
+  it(\n    'tolerates malformed HTML and preserves prompt-injection-shaped text as inert evidence',\n    async () => {
     const outcome = await new SourceFetcher({
       fetchImpl: fetchSequence([
         htmlResponse(
@@ -382,7 +382,7 @@ describe('BG-09 bounded source fetcher', () => {
     );
   });
 
-  it('never forwards application credentials or arbitrary client headers', async () => {
+  it(\n    'never forwards application credentials or arbitrary client headers',\n    async () => {
     const seen: Request[] = [];
     const fetchImpl = vi.fn(async (input: RequestInfo | URL) => {
       const request = input instanceof Request ? input : new Request(input);
@@ -417,7 +417,7 @@ describe('BG-09 bounded source fetcher', () => {
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 
-  it('normalizes thrown network failures without exposing raw error details', async () => {
+  it(\n    'normalizes thrown network failures without exposing raw error details',\n    async () => {
     const fetchImpl = vi.fn(async () => {
       throw new Error(
         'connect ECONNRESET https://signed.example.org/?secret=do-not-return',
