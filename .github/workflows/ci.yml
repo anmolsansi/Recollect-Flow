@@ -15,11 +15,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: BG07 formatter diagnostic
-        run: |
-          npx prettier --write apps/worker-api/src/attachments/attachment.routes.ts apps/worker-api/test/attachment.test.ts scripts/browser-acceptance-fixtures.mjs scripts/browser-cdp.mjs scripts/verify-browser-download.mjs
-          git diff -- apps/worker-api/src/attachments/attachment.routes.ts apps/worker-api/test/attachment.test.ts scripts/browser-acceptance-fixtures.mjs scripts/browser-cdp.mjs scripts/verify-browser-download.mjs
-          exit 1
       - run: npm run check
       - run: npm run db:migrate:local
       - run: google-chrome --version
