@@ -1,4 +1,4 @@
-/* global process, fetch, setTimeout, clearTimeout */
+/* global process, fetch, setTimeout */
 
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdtemp, rm } from 'node:fs/promises';
@@ -206,6 +206,7 @@ export async function createLocalAcceptanceRuntime({
     const webLogs = boundedLogs(web.logs);
     throw new Error(
       `${error instanceof Error ? error.message : String(error)}\nWorker logs:\n${workerLogs}\nWeb logs:\n${webLogs}`,
+      { cause: error },
     );
   }
 
@@ -266,6 +267,7 @@ export async function launchChrome({
     await stopService({ child, logs });
     throw new Error(
       `${error instanceof Error ? error.message : String(error)}\nChrome logs:\n${boundedLogs(logs)}`,
+      { cause: error },
     );
   }
 
