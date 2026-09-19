@@ -1124,135 +1124,147 @@ These unchecked steps inherit this task's **what, why, when, where and proof** a
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
+**BG-09 final reconciliation:** BG-09.001 through BG-09.100 are satisfied.
+The bounded source fetcher merged through PR #49 at
+`c46cc25fe61825a3c7137c88982f19c13b5c531c`. Pre-merge CI #245 passed on
+`c167fa32fec36f56a8cc8da82befc693bc1c23ce`, and merged-main CI #246 passed
+the complete repository gate. Destination admission, strict-public Worker egress,
+manual redirect validation, total deadline, parser-visible byte limit, extracted
+character limit, safe MIME/parser behavior, failure normalization, credential
+isolation, and controlled workerd regression proof are recorded in
+[`BG-09_BOUNDED_SOURCE_FETCHER.md`](verification/BG-09_BOUNDED_SOURCE_FETCHER.md).
+No BG-10 persistence/job-chain work, BG-11 recovery UX, or BG-12/BG-13 aggregate
+state repair is claimed. BG-10 is now unlocked by the proved BG-09 parent gate.
+
 #### BG-09 / 01 — Establish task context
 
-- [ ] `BG-09.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-09.002` **Dependency:** Verify BG-08's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-09.003` **Baseline:** Record the actual checkout or release candidate used for BG-09.
-- [ ] `BG-09.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-09.005` **Evidence:** Check whether existing evidence already satisfies any BG-09 step; reference it instead of manufacturing work.
-- [ ] `BG-09.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-09.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-09.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-09.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-09.010` **Tracking:** Open a BG-09 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-09.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-09.002` **Dependency:** Verify BG-08's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-09.003` **Baseline:** Record the actual checkout or release candidate used for BG-09.
+- [x] `BG-09.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-09.005` **Evidence:** Check whether existing evidence already satisfies any BG-09 step; reference it instead of manufacturing work.
+- [x] `BG-09.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-09.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-09.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-09.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-09.010` **Tracking:** Open a BG-09 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-09 / 02 — URL admission
 
-- [ ] `BG-09.011` Parse with platform URL parser.
-- [ ] `BG-09.012` Reject unsupported URL schemes.
-- [ ] `BG-09.013` Reject embedded username.
-- [ ] `BG-09.014` Reject embedded password.
-- [ ] `BG-09.015` Normalize hostname representation.
-- [ ] `BG-09.016` Normalize IPv4 representations.
-- [ ] `BG-09.017` Normalize IPv6 representations.
-- [ ] `BG-09.018` Define allowed port policy.
-- [ ] `BG-09.019` Reject malformed destinations early.
-- [ ] `BG-09.020` Keep original URL evidence unchanged.
+- [x] `BG-09.011` Parse with platform URL parser.
+- [x] `BG-09.012` Reject unsupported URL schemes.
+- [x] `BG-09.013` Reject embedded username.
+- [x] `BG-09.014` Reject embedded password.
+- [x] `BG-09.015` Normalize hostname representation.
+- [x] `BG-09.016` Normalize IPv4 representations.
+- [x] `BG-09.017` Normalize IPv6 representations.
+- [x] `BG-09.018` Define allowed port policy.
+- [x] `BG-09.019` Reject malformed destinations early.
+- [x] `BG-09.020` Keep original URL evidence unchanged.
 
 #### BG-09 / 03 — Destination protection
 
-- [ ] `BG-09.021` Block loopback destinations.
-- [ ] `BG-09.022` Block private network destinations.
-- [ ] `BG-09.023` Block link-local destinations.
-- [ ] `BG-09.024` Block metadata service destinations.
-- [ ] `BG-09.025` Check encoded host bypasses.
-- [ ] `BG-09.026` Check DNS-resolution enforcement mechanism.
-- [ ] `BG-09.027` Check rebinding resistance.
-- [ ] `BG-09.028` Validate actual runtime egress behavior.
-- [ ] `BG-09.029` Choose constrained fallback if needed.
-- [ ] `BG-09.030` Document unsupported safety guarantees.
+- [x] `BG-09.021` Block loopback destinations.
+- [x] `BG-09.022` Block private network destinations.
+- [x] `BG-09.023` Block link-local destinations.
+- [x] `BG-09.024` Block metadata service destinations.
+- [x] `BG-09.025` Check encoded host bypasses.
+- [x] `BG-09.026` Check DNS-resolution enforcement mechanism.
+- [x] `BG-09.027` Check rebinding resistance.
+- [x] `BG-09.028` Validate actual runtime egress behavior.
+- [x] `BG-09.029` Choose constrained fallback if needed.
+- [x] `BG-09.030` Document unsupported safety guarantees.
 
 #### BG-09 / 04 — Redirect handling
 
-- [ ] `BG-09.031` Disable automatic unchecked redirects.
-- [ ] `BG-09.032` Read redirect Location safely.
-- [ ] `BG-09.033` Resolve relative redirect targets.
-- [ ] `BG-09.034` Validate every target independently.
-- [ ] `BG-09.035` Increment bounded redirect counter.
-- [ ] `BG-09.036` Detect redirect loop.
-- [ ] `BG-09.037` Reject forbidden redirected schemes.
-- [ ] `BG-09.038` Strip application authentication headers.
-- [ ] `BG-09.039` Preserve total request deadline.
-- [ ] `BG-09.040` Record final URL as derived evidence.
+- [x] `BG-09.031` Disable automatic unchecked redirects.
+- [x] `BG-09.032` Read redirect Location safely.
+- [x] `BG-09.033` Resolve relative redirect targets.
+- [x] `BG-09.034` Validate every target independently.
+- [x] `BG-09.035` Increment bounded redirect counter.
+- [x] `BG-09.036` Detect redirect loop.
+- [x] `BG-09.037` Reject forbidden redirected schemes.
+- [x] `BG-09.038` Strip application authentication headers.
+- [x] `BG-09.039` Preserve total request deadline.
+- [x] `BG-09.040` Record final URL as derived evidence.
 
 #### BG-09 / 05 — Time and byte limits
 
-- [ ] `BG-09.041` Start total deadline timer.
-- [ ] `BG-09.042` Apply per-operation cancellation.
-- [ ] `BG-09.043` Bound response stream bytes.
-- [ ] `BG-09.044` Validate advertised content length.
-- [ ] `BG-09.045` Handle missing content length.
-- [ ] `BG-09.046` Stop oversized chunked response.
-- [ ] `BG-09.047` Consider decompression expansion.
-- [ ] `BG-09.048` Bound parser input size.
-- [ ] `BG-09.049` Bound extracted output characters.
-- [ ] `BG-09.050` Cancel network work on rejection.
+- [x] `BG-09.041` Start total deadline timer.
+- [x] `BG-09.042` Apply per-operation cancellation.
+- [x] `BG-09.043` Bound response stream bytes.
+- [x] `BG-09.044` Validate advertised content length.
+- [x] `BG-09.045` Handle missing content length.
+- [x] `BG-09.046` Stop oversized chunked response.
+- [x] `BG-09.047` Consider decompression expansion.
+- [x] `BG-09.048` Bound parser input size.
+- [x] `BG-09.049` Bound extracted output characters.
+- [x] `BG-09.050` Cancel network work on rejection.
 
 #### BG-09 / 06 — Response admission
 
-- [ ] `BG-09.051` Inspect HTTP status class.
-- [ ] `BG-09.052` Classify transient upstream status.
-- [ ] `BG-09.053` Classify inaccessible page status.
-- [ ] `BG-09.054` Inspect response content type.
-- [ ] `BG-09.055` Accept intended HTML/text formats.
-- [ ] `BG-09.056` Reject unintended binary parsing.
-- [ ] `BG-09.057` Detect login-only content fixture.
-- [ ] `BG-09.058` Detect empty response fixture.
-- [ ] `BG-09.059` Preserve safe response metadata.
-- [ ] `BG-09.060` Avoid retaining unnecessary headers.
+- [x] `BG-09.051` Inspect HTTP status class.
+- [x] `BG-09.052` Classify transient upstream status.
+- [x] `BG-09.053` Classify inaccessible page status.
+- [x] `BG-09.054` Inspect response content type.
+- [x] `BG-09.055` Accept intended HTML/text formats.
+- [x] `BG-09.056` Reject unintended binary parsing.
+- [x] `BG-09.057` Detect login-only content fixture.
+- [x] `BG-09.058` Detect empty response fixture.
+- [x] `BG-09.059` Preserve safe response metadata.
+- [x] `BG-09.060` Avoid retaining unnecessary headers.
 
 #### BG-09 / 07 — Parser integration
 
-- [ ] `BG-09.061` Select runtime-compatible parser candidate.
-- [ ] `BG-09.062` Build parser trial bundle.
-- [ ] `BG-09.063` Run parser in workerd.
-- [ ] `BG-09.064` Remove script content.
-- [ ] `BG-09.065` Remove style content.
-- [ ] `BG-09.066` Reduce navigation boilerplate.
-- [ ] `BG-09.067` Extract safe title metadata.
-- [ ] `BG-09.068` Extract readable body text.
-- [ ] `BG-09.069` Preserve source provenance.
-- [ ] `BG-09.070` Avoid executing page JavaScript.
+- [x] `BG-09.061` Select runtime-compatible parser candidate.
+- [x] `BG-09.062` Build parser trial bundle.
+- [x] `BG-09.063` Run parser in workerd.
+- [x] `BG-09.064` Remove script content.
+- [x] `BG-09.065` Remove style content.
+- [x] `BG-09.066` Reduce navigation boilerplate.
+- [x] `BG-09.067` Extract safe title metadata.
+- [x] `BG-09.068` Extract readable body text.
+- [x] `BG-09.069` Preserve source provenance.
+- [x] `BG-09.070` Avoid executing page JavaScript.
 
 #### BG-09 / 08 — Error and privacy handling
 
-- [ ] `BG-09.071` Normalize timeout outcome.
-- [ ] `BG-09.072` Normalize oversized outcome.
-- [ ] `BG-09.073` Normalize parser failure outcome.
-- [ ] `BG-09.074` Normalize unsupported format outcome.
-- [ ] `BG-09.075` Normalize forbidden destination outcome.
-- [ ] `BG-09.076` Limit safe diagnostic details.
-- [ ] `BG-09.077` Redact signed query values.
-- [ ] `BG-09.078` Exclude credentials from outbound headers.
-- [ ] `BG-09.079` Treat page instructions as data.
-- [ ] `BG-09.080` Preserve capture after every failure.
+- [x] `BG-09.071` Normalize timeout outcome.
+- [x] `BG-09.072` Normalize oversized outcome.
+- [x] `BG-09.073` Normalize parser failure outcome.
+- [x] `BG-09.074` Normalize unsupported format outcome.
+- [x] `BG-09.075` Normalize forbidden destination outcome.
+- [x] `BG-09.076` Limit safe diagnostic details.
+- [x] `BG-09.077` Redact signed query values.
+- [x] `BG-09.078` Exclude credentials from outbound headers.
+- [x] `BG-09.079` Treat page instructions as data.
+- [x] `BG-09.080` Preserve capture after every failure.
 
 #### BG-09 / 09 — Fetcher regression
 
-- [ ] `BG-09.081` Test normal page extraction.
-- [ ] `BG-09.082` Test relative redirect chain.
-- [ ] `BG-09.083` Test redirect loop rejection.
-- [ ] `BG-09.084` Test private target rejection.
-- [ ] `BG-09.085` Test misleading MIME rejection.
-- [ ] `BG-09.086` Test chunked overflow cancellation.
-- [ ] `BG-09.087` Test timeout cancellation.
-- [ ] `BG-09.088` Test malformed HTML handling.
-- [ ] `BG-09.089` Assert no secret reaches fetch.
-- [ ] `BG-09.090` Record runtime boundary evidence.
+- [x] `BG-09.081` Test normal page extraction.
+- [x] `BG-09.082` Test relative redirect chain.
+- [x] `BG-09.083` Test redirect loop rejection.
+- [x] `BG-09.084` Test private target rejection.
+- [x] `BG-09.085` Test misleading MIME rejection.
+- [x] `BG-09.086` Test chunked overflow cancellation.
+- [x] `BG-09.087` Test timeout cancellation.
+- [x] `BG-09.088` Test malformed HTML handling.
+- [x] `BG-09.089` Assert no secret reaches fetch.
+- [x] `BG-09.090` Record runtime boundary evidence.
 
 #### BG-09 / 10 — Verify and close this task
 
-- [ ] `BG-09.091` **Review:** Compare the completed checklist with BG-09's stated outcome; identify uncovered behavior.
-- [ ] `BG-09.092` **Verification:** Run or inspect the focused proof required by BG-09; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-09.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-09.094` **Integrity:** Check that BG-09 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-09.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-09.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-09.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-09.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-09.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-09.100` **Gate:** Check the parent completion boundary and record whether BG-10 is unlocked.
+- [x] `BG-09.091` **Review:** Compare the completed checklist with BG-09's stated outcome; identify uncovered behavior.
+- [x] `BG-09.092` **Verification:** Run or inspect the focused proof required by BG-09; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-09.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-09.094` **Integrity:** Check that BG-09 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-09.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-09.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-09.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-09.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-09.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-09.100` **Gate:** Check the parent completion boundary and record whether BG-10 is unlocked.
 
 ## BG-10 — 100 executable microtasks
 
