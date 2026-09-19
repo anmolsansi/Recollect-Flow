@@ -535,6 +535,33 @@ describe('private attachment lifecycle', () => {
     expect(await response.arrayBuffer()).toEqual(bytes);
   });
 
+  it('returns exact PNG bytes through a signed admin session', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const bytes = new Uint8Array([
+      0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x42, 0x47, 0x30, 0x37,
+    ]).buffer;
+    const { id } = await createFinalizedAttachment(app, env, {
+      filename: 'browser-proof.png',
+      mimeType: 'image/png',
+      sourceType: 'image',
+      bytes,
+    });
+    const cookie = await createAdminSessionCookie(app, env);
+
+    const response = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Cookie: cookie } },
+      env,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toBe('image/png');
+    expect(await response.arrayBuffer()).toEqual(bytes);
+  });
+
   it('rejects invalid and local-worker bearer credentials for attachment reads', async () => {
     const repository = new MemoryAttachmentRepository();
     const r2 = memoryBucket();
