@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 
 import { JobService } from '../src/jobs/job.service';
 
-describe('OPE-228 recovery migration rehearsal', () => {
-  it('adds recovery workflow tables without changing populated canonical data', async () => {
+describe('BG-10 URL evidence migration rehearsal', () => {
+  it('adds URL evidence storage and FTS source text without changing populated canonical data', async () => {
     const database = (
       env as unknown as {
         OPE228_MIGRATION_DB: D1Database;
@@ -41,7 +41,7 @@ describe('OPE-228 recovery migration rehearsal', () => {
 
     const item = await database
       .prepare(
-        `SELECT id, raw_text, user_note, summary, privacy_level
+        `SELECT id, raw_text, user_note, summary, privacy_level, source_revision
          FROM items WHERE id = 'ope228-migration-item'`,
       )
       .first<{
@@ -50,6 +50,7 @@ describe('OPE-228 recovery migration rehearsal', () => {
         user_note: string;
         summary: string;
         privacy_level: string;
+        source_revision: number;
       }>();
     expect(item).toEqual({
       id: 'ope228-migration-item',
@@ -57,6 +58,7 @@ describe('OPE-228 recovery migration rehearsal', () => {
       user_note: 'preserve owner reason',
       summary: 'preserve summary',
       privacy_level: 'public',
+      source_revision: 1,
     });
 
     const job = await database
@@ -75,6 +77,7 @@ describe('OPE-228 recovery migration rehearsal', () => {
       'restore_runs',
       'integrity_runs',
       'integrity_findings',
+      'url_acquisitions',
     ]) {
       const row = await database
         .prepare(
@@ -84,6 +87,14 @@ describe('OPE-228 recovery migration rehearsal', () => {
         .first<{ name: string }>();
       expect(row?.name).toBe(table);
     }
+
+
+    const ftsColumns = await database
+      .prepare('PRAGMA table_info(item_search_fts)')
+      .all<{ name: string }>();
+    expect(ftsColumns.results.map((column) => column.name)).toContain(
+      'source_text',
+    );
 
     const foreignKeyIssues = await database
       .prepare('PRAGMA foreign_key_check')
