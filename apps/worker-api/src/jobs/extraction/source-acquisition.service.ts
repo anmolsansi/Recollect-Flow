@@ -408,15 +408,11 @@ export class SourceAcquisitionService {
     if (!currentContext) return false;
     if (
       currentContext.sourceUrl !== context.sourceUrl ||
-      currentContext.inputHash !== expectedInputHash(currentContext.sourceRevision) ||
+      currentContext.inputHash !==
+        expectedInputHash(currentContext.sourceRevision) ||
       currentContext.privacyLevel !== currentContext.privacyLevelSnapshot
     ) {
-      await this.rejectStaleContext(
-        job,
-        ownerId,
-        currentContext,
-        resultAt,
-      );
+      await this.rejectStaleContext(job, ownerId, currentContext, resultAt);
       return false;
     }
 
