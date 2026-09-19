@@ -15,23 +15,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Format BG-07 docs for proof
-        run: |
-          npx prettier --write \
-            docs/verification/BG-07_BROWSER_DOWNLOAD.md \
-            docs/verification/BG-07_CHECKLIST_RECONCILIATION.md \
-            docs/RECOLLECTFLOW_BUILD_GUIDE.md \
-            docs/verification/README.md \
-            docs/RECOLLECTFLOW_MICROTASK_CHECKLIST.md
-      - name: Show BG-07 formatter delta
-        run: |
-          git diff --check
-          git diff -- \
-            docs/verification/BG-07_BROWSER_DOWNLOAD.md \
-            docs/verification/BG-07_CHECKLIST_RECONCILIATION.md \
-            docs/RECOLLECTFLOW_BUILD_GUIDE.md \
-            docs/verification/README.md \
-            docs/RECOLLECTFLOW_MICROTASK_CHECKLIST.md
       - run: npm run check
       - run: npm run db:migrate:local
       - run: google-chrome --version
