@@ -1081,6 +1081,50 @@ was read. It must not generate an endless Retry loop for an unchanged login page
 **Done when:** every outcome has a durable representation, user message and retry
 classification. This is a contract decision; the fetcher comes next.
 
+### BG-08 contract implementation — pre-merge state
+
+BG-08 is implemented as a contract-definition change on
+`agent/ope-328-bg-08-url-acquisition-contract`, tracked by GitHub #44 and Linear
+OPE-328. It intentionally adds no fetcher, migration, dependency, production
+network call or deployment.
+
+The frozen contract is
+[`docs/URL_ACQUISITION_CONTRACT.md`](URL_ACQUISITION_CONTRACT.md). It establishes:
+
+- submitted URL/capture-event evidence as immutable;
+- conservative `canonical_url` as deduplication-only;
+- fetched final URL, fetched metadata and acquired page text as separately versioned
+  acquisition evidence;
+- a dedicated future URL-acquisition record instead of overwriting
+  `items.raw_text`;
+- `url_only`, `metadata_only`, `supplied_text`, and `acquired_text` URL
+  coverage meanings;
+- explicit acquisition outcomes and safe error codes;
+- Public-only automatic source-host network access, separate from AI-provider
+  routing; Unknown/Personal/Sensitive remain Saved without automatic source fetch;
+- deterministic HTTP(S)-only behavior with no browser cookies, JS, login bypass or
+  authenticated scraping;
+- an 8-second total deadline, 5 redirects, 2 MiB parser-visible body, 250,000
+  extracted characters, and 3 automatic transient attempts;
+- an initial parser allowlist of HTML, XHTML and plain text;
+- retries only for timeout/network/429/5xx conditions;
+- truthful owner messages and Instagram URL-only behavior;
+- future BG-10 propagation into item detail, a separate source-text FTS projection,
+  export/restore, purge and job chaining.
+
+The contract also prevents a terminal URL-only capture from scheduling enrichment
+that can only produce `NO_CONTENT_TO_ENRICH`. Metadata/title/reason alone do not
+justify a fabricated page summary.
+
+The detailed repository reconciliation and threat/alternative review are recorded
+in
+[`docs/verification/BG-08_URL_ACQUISITION_CONTRACT.md`](verification/BG-08_URL_ACQUISITION_CONTRACT.md).
+
+BG-08.001 through BG-08.099 are reconciled on the implementation branch. BG-08.100
+remains open until this exact documentation head is green in CI, merged to `main`,
+and merged-main validation proves the parent gate. Only that final closeout unlocks
+BG-09 implementation.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-08](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-08--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
