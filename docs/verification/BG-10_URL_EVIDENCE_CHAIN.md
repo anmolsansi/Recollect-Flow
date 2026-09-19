@@ -1,5 +1,7 @@
 # BG-10 — Durable URL evidence and processing-chain verification
 
+Status: **implementation candidate complete; merge gate pending.**
+
 Tracking: GitHub #51 / Linear OPE-330.
 
 Base branch: `main`  
@@ -77,20 +79,21 @@ current source evidence. Privacy changes similarly make rows with the old
 1. migration contract and the rule that BG-10 does not overwrite `raw_text`;
 2. policy-blocked acquisition with zero source-host calls;
 3. stale privacy snapshot rejection before source-host I/O;
-4. durable acquired text and SHA-256 evidence;
-5. an internal phrase found through FTS independently of AI plus
+4. source-revision changes during fetch are rejected before stale evidence can persist;
+5. durable acquired text and SHA-256 evidence;
+6. an internal phrase found through FTS independently of AI plus
    `EXPLAIN QUERY PLAN` evidence that the keyword path uses the FTS virtual
    table index;
-6. source-revision replacement immediately removing stale search terms;
-7. crash/replay convergence with one evidence row, one acquisition-completion
+7. source-revision replacement immediately removing stale search terms;
+8. crash/replay convergence with one evidence row, one acquisition-completion
    audit event and one active downstream enrichment job;
-8. transient retry followed by a terminal failed third attempt with durable
+9. transient retry followed by a terminal failed third attempt with durable
    outcome evidence;
-9. fail-closed AI routing producing no doomed enrichment work;
-10. portable JSON/CSV export plus clean restore preserving source evidence and
+10. fail-closed AI routing producing no doomed enrichment work;
+11. portable JSON/CSV export plus clean restore preserving source evidence and
     FTS usability;
-11. permanent purge removing URL evidence and its searchable terms;
-12. generic manual retry rejection for immutable acquisition-job evidence.
+12. permanent purge removing URL evidence and its searchable terms;
+13. generic manual retry rejection for immutable acquisition-job evidence.
 
 `apps/worker-api/test/recovery-migration.d1.spec.ts` applies the final migration
 to a populated prior schema and verifies canonical item/job data survives, the
@@ -99,7 +102,20 @@ contains `source_text`, and foreign keys remain clean.
 
 ## Verification gate
 
-The implementation is not considered complete until the branch PR has passed the
-repository CI gate, the authoritative BG-10 100-microtask checklist is reconciled,
-and merged `main` is verified. CI evidence and the final merge SHA are appended
-during closeout.
+Implementation head `3cf0ba6ebab8d8dd0bc0e5ec5f2cfdf0445836fd` passed
+repository CI #297:
+<https://github.com/anmolsansi/Recollect-Flow/actions/runs/35451281805>.
+
+The successful gate includes:
+
+- Prettier, lint, strict TypeScript, shared-contract checks, and Web production build;
+- 153 Node tests across 24 files;
+- 142 workerd/D1 tests across 35 files;
+- 9 Web tests across 2 files;
+- fresh local D1 migration replay through `0022_add_url_acquisition_evidence.sql`;
+- Chrome availability and the real browser-download regression.
+
+The authoritative checklist is reconciled through BG-10.099. BG-10.100 remains
+open until PR #52 is merged and the merged `main` revision passes the complete
+repository gate. Final merge evidence is recorded in the PR/GitHub/Linear closeout
+and then reflected in the checklist gate.
