@@ -6,13 +6,15 @@ on:
       - agent/ope-330-bg-10-url-evidence-chain
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   format:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: agent/ope-330-bg-10-url-evidence-chain
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -21,14 +23,14 @@ jobs:
       - name: Format BG-10 files
         run: |
           npx prettier --write             apps/worker-api/src/jobs/extraction/source-acquisition.service.ts             apps/worker-api/src/jobs/extraction/source-acquisition.worker.ts             apps/worker-api/test/recovery-migration.d1.spec.ts             apps/worker-api/test/source-acquisition.d1.spec.ts             docs/RECOLLECTFLOW_BUILD_GUIDE.md             docs/URL_ACQUISITION_CONTRACT.md             packages/contracts/src/item.ts
-      - uses: actions/upload-artifact@v4
-        with:
-          name: bg10-prettier-output
-          path: |
-            apps/worker-api/src/jobs/extraction/source-acquisition.service.ts
-            apps/worker-api/src/jobs/extraction/source-acquisition.worker.ts
-            apps/worker-api/test/recovery-migration.d1.spec.ts
-            apps/worker-api/test/source-acquisition.d1.spec.ts
-            docs/RECOLLECTFLOW_BUILD_GUIDE.md
-            docs/URL_ACQUISITION_CONTRACT.md
-            packages/contracts/src/item.ts
+      - name: Commit formatting if needed
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             apps/worker-api/src/jobs/extraction/source-acquisition.service.ts             apps/worker-api/src/jobs/extraction/source-acquisition.worker.ts             apps/worker-api/test/recovery-migration.d1.spec.ts             apps/worker-api/test/source-acquisition.d1.spec.ts             docs/RECOLLECTFLOW_BUILD_GUIDE.md             docs/URL_ACQUISITION_CONTRACT.md             packages/contracts/src/item.ts
+          git commit -m "style(bg-10): apply repository formatting (#51)"
+          git push origin HEAD:agent/ope-330-bg-10-url-evidence-chain
