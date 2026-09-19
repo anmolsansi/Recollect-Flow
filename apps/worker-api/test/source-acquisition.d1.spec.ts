@@ -369,12 +369,7 @@ describe('BG-10 durable URL acquisition chain', () => {
     });
     expect(search.data.map((entry) => entry.id)).not.toContain('revision-item');
 
-    await seedAcquisitionJob(
-      'revision-job-v2',
-      'revision-item',
-      'public',
-      2,
-    );
+    await seedAcquisitionJob('revision-job-v2', 'revision-item', 'public', 2);
     const secondJob = await lease(
       'revision-job-v2',
       'revision-owner-v2',
@@ -398,7 +393,9 @@ describe('BG-10 durable URL acquisition chain', () => {
       limit: 10,
       captured_to: '2026-09-20T00:00:00.000Z',
     });
-    expect(freshSearch.data.map((entry) => entry.id)).toContain('revision-item');
+    expect(freshSearch.data.map((entry) => entry.id)).toContain(
+      'revision-item',
+    );
 
     const staleSearch = await executeSearch(env.DB, {
       q: 'saffronobsoletephrase',

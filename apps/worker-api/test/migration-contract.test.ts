@@ -234,17 +234,11 @@ describe('follow-up migration contracts', () => {
     expect(urlAcquisitionMigration).toContain('acquired_text_hash');
     expect(urlAcquisitionMigration).toContain('attempt_count');
     expect(urlAcquisitionMigration).toContain('duration_ms');
-    expect(urlAcquisitionMigration).toContain(
-      'network_io_skipped_by_policy',
-    );
+    expect(urlAcquisitionMigration).toContain('network_io_skipped_by_policy');
     expect(urlAcquisitionMigration).toContain('url_acquisitions_immutable');
     expect(urlAcquisitionMigration).toContain('source_text');
-    expect(urlAcquisitionMigration).toContain(
-      'url_acquisitions_search_fts_ai',
-    );
-    expect(urlAcquisitionMigration).not.toContain(
-      'UPDATE items SET raw_text',
-    );
+    expect(urlAcquisitionMigration).toContain('url_acquisitions_search_fts_ai');
+    expect(urlAcquisitionMigration).not.toContain('UPDATE items SET raw_text');
   });
 
   it('adds durable, lease-protected and auditable digest delivery state', () => {

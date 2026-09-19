@@ -719,10 +719,8 @@ function ItemDetail() {
             </p>
             <p>
               <strong>Completed:</strong>{' '}
-              {new Date(
-                detail.url_acquisition.completed_at,
-              ).toLocaleString()} · <strong>Attempt:</strong>{' '}
-              {detail.url_acquisition.attempt_count} ·{' '}
+              {new Date(detail.url_acquisition.completed_at).toLocaleString()} ·{' '}
+              <strong>Attempt:</strong> {detail.url_acquisition.attempt_count} ·{' '}
               <strong>Duration:</strong> {detail.url_acquisition.duration_ms} ms
             </p>
             {detail.url_acquisition.fetched_final_url && (
