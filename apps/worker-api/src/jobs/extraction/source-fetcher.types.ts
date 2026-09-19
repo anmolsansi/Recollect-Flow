@@ -30,10 +30,7 @@ export type SourceAcquisitionStatus =
   | 'parse_failed';
 
 export type SourceCoverage =
-  | 'url_only'
-  | 'metadata_only'
-  | 'supplied_text'
-  | 'acquired_text';
+  'url_only' | 'metadata_only' | 'supplied_text' | 'acquired_text';
 
 export type SourceFetchErrorCode =
   | 'SOURCE_FETCH_POLICY_BLOCKED'
