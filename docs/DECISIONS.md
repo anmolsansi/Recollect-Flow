@@ -141,3 +141,45 @@ Routine rotation policy:
 - indefinite dual-token operation is prohibited.
 
 If compromise is suspected, the old credential is revoked immediately with no overlap regardless of the normal rotation window. Rotation and retirement events must be auditable without recording token values.
+
+## BG-08 URL source-acquisition decisions — approved 2026-09-19
+
+### ADR-034 — Automatic source fetching is Public-only and separate from AI routing
+
+Automatic server-side requests to a captured source URL are allowed only when the
+current D1-owned privacy classification is explicitly `public`. Unknown, Personal,
+and Sensitive captures remain durable but do not contact the source host
+automatically.
+
+This is a separate boundary from provider routing. A provider may be approved for a
+privacy class without granting source-host access, and source fetching may be allowed
+without granting any AI call. No hostname, metadata, model result, or source app may
+silently promote Unknown to Public.
+
+### ADR-035 — URL acquisition evidence is versioned separately from canonical capture evidence
+
+Submitted URL, conservative canonical URL, capture-event text/reason, fetched final
+URL, fetched metadata, acquired page text, and generated interpretation are distinct
+authorities.
+
+BG-10 will persist URL acquisition evidence in an item-owned versioned record rather
+than overwriting `items.raw_text` or changing `items.canonical_url`. Redirect final
+URLs and source-provided canonical hints are evidence only and never deduplication
+keys. This preserves retry/re-acquisition history and prevents derived observations
+from rewriting the owner's original capture.
+
+### ADR-036 — V1 URL acquisition is a bounded deterministic fetch, not a browser
+
+The BG-09 fetcher is limited to HTTP(S), manually validated redirects, no owner/site
+credentials, no JavaScript execution, and no login/CAPTCHA bypass. The initial
+budgets are an 8-second total wall-clock deadline, at most 5 redirects, at most
+2 MiB of parser-visible response body, at most 250,000 extracted Unicode
+characters, and at most 3 automatic transient acquisition attempts for the same
+source/privacy snapshot.
+
+The initial parser allowlist is `text/html`, `application/xhtml+xml`, and
+`text/plain`. Binary URL responses remain outside this contract and can be captured
+through the existing attachment path.
+
+Detailed outcome, error, retry, API, search, export, purge, and owner-message rules
+are defined in [URL_ACQUISITION_CONTRACT.md](URL_ACQUISITION_CONTRACT.md).
