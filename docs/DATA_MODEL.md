@@ -18,6 +18,22 @@ One immutable record for every share attempt accepted under a new idempotency ke
 
 Item relationship, opaque R2 key, safe display filename, detected/declared MIME, byte size, checksum, dimensions/page/duration metadata, upload/link/extraction state, privacy, creation/purge timestamps. Unlinked attachments expire.
 
+### UrlAcquisition
+
+BG-10 stores each accepted URL-source observation as an immutable, item-owned
+`url_acquisitions` row. It records the source URL and privacy snapshots, source
+revision, bounded fetch outcome, final URL, HTTP/content metadata, parser identity,
+safe error code, acquired text and its SHA-256. It never replaces
+`items.raw_text`, which remains owner/client-supplied evidence. Current evidence is
+the newest row whose `source_revision` and `privacy_level_snapshot` still match
+the canonical item.
+
+A URL capture queues an `acquire_url` processing job after the capture commit.
+Only a current Public snapshot contacts the source host. Unknown, Personal and
+Sensitive snapshots persist `policy_blocked` evidence without network I/O. The
+worker fetches outside D1, then accepts evidence only while its lease, item,
+privacy, source revision and purge state are still current.
+
 ### ProcessingJob
 
 Item/attachment/content-version scope, job type, provider eligibility, state, priority, attempt count, available time, lease owner/expiry/heartbeat, input hash, result version, safe error code, created/updated/completed timestamps.
@@ -101,10 +117,12 @@ Every processing job snapshots policy version, eligible provider, credential sou
 - Pending jobs by state/available/priority.
 - Migration `0016_add_item_search_fts.sql` adds the rebuildable FTS5
   `item_search_fts` projection across `title`, `raw_text`, `user_note`,
-  `summary`, `topics`, `project`, `people`, and `companies`. It uses the
+  `summary`, `topics`, `project`, `people`, `companies`, and the current URL
+  acquisition `source_text`. It uses the
   `unicode61` tokenizer for lexical search independent of AI embeddings and is
-  synchronized from canonical `items` rows by insert, relevant-update, and
-  delete triggers. `items` remains the source of truth for privacy and deletion.
+  synchronized from canonical `items` rows and URL-acquisition insert/delete
+  triggers. The rebuild script derives `source_text` from current URL evidence.
+  `items` remains the source of truth for privacy and deletion.
 - OPE-228 indexes backup retention, active purge workflows, purge-step leases,
   receipt timestamps, and restore/integrity run chronology. These operational
   tables contain identifiers and safe state, not backup payload bytes.
