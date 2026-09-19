@@ -1,8 +1,8 @@
 # URL Source Acquisition Contract
 
-Status: **BG-08 approved design contract. Not implemented by BG-08.**
+Status: **BG-08 approved design contract, implemented by BG-09/BG-10.**
 
-Tracking: GitHub #44 / Linear OPE-328.
+Design tracking: GitHub #44 / Linear OPE-328. Implementation tracking: GitHub #51 / Linear OPE-330.
 
 Base revision: `f1d1025a11b0a78f54ae511a2e428a8d81f754ca`.
 
@@ -378,7 +378,7 @@ Example:
 > transcript or Reel content. Add a screenshot or text if you want that evidence to
 > be searchable.
 
-## 14. Planned propagation into BG-10
+## 14. BG-10 propagation
 
 BG-10 must make the contract durable without silently changing current source fields.
 
@@ -504,3 +504,28 @@ BG-08 does not become incomplete merely because BG-09/BG-10 code does not yet ex
 Its output is the explicit contract those tasks must implement. Conversely, BG-09 is
 not unlocked by prose alone until the BG-08 contract branch passes repository CI and
 its merged closeout records the parent gate.
+
+
+## 15. Implemented BG-10 persistence binding
+
+BG-10 binds this contract to migration `0022_add_url_acquisition_evidence.sql`.
+The durable evidence table is `url_acquisitions`, keyed by immutable row ID and a
+unique acquisition `job_id`. It stores the source/privacy snapshots, source
+revision, status/coverage, bounded response metadata, deterministic source metadata,
+acquired text/hash, safe error/retry state, parser identity and timestamps.
+
+The active acquisition job type is `acquire_url`. Its `input_hash` is
+`url-source-v1:<source_revision>`. Acceptance is conditional on the current
+processing lease, undeleted/non-purging item, unchanged source URL/revision and the
+same privacy snapshot. Fetching happens outside D1. Evidence persistence, eligible
+enrichment handoff, audit evidence and acquisition-job terminal transition are
+submitted together as one D1 batch.
+
+The current lexical projection adds `source_text` to `item_search_fts`. It is
+derived from the newest URL evidence whose source revision and privacy snapshot
+match the current item. The rebuild script uses the same derivation. Portable
+export schema `2026-09-19.1` includes URL acquisitions, and restore, purge and
+integrity checks treat them as item-owned evidence.
+
+BG-11 owns explicit retry/reprocess UX. BG-10 intentionally does not add a public
+retry command.
