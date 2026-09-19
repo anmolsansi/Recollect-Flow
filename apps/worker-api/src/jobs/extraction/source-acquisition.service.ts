@@ -403,6 +403,23 @@ export class SourceAcquisitionService {
       rawOutcome = await this.fetcher.fetch(context.sourceUrl);
     }
 
+    const resultAt = this.now();
+    const currentContext = await this.context(job, ownerId, resultAt);
+    if (!currentContext) return false;
+    if (
+      currentContext.sourceUrl !== context.sourceUrl ||
+      currentContext.inputHash !== expectedInputHash(currentContext.sourceRevision) ||
+      currentContext.privacyLevel !== currentContext.privacyLevelSnapshot
+    ) {
+      await this.rejectStaleContext(
+        job,
+        ownerId,
+        currentContext,
+        resultAt,
+      );
+      return false;
+    }
+
     const parsed = sourceFetchOutcomeSchema.safeParse(rawOutcome);
     if (!parsed.success) {
       await this.jobs.failProcessingJob(
@@ -417,7 +434,8 @@ export class SourceAcquisitionService {
 
     if (
       outcome.retryable &&
-      context.attempts + 1 < SOURCE_FETCH_LIMITS.maxAutomaticTransientAttempts
+      currentContext.attempts + 1 <
+      SOURCE_FETCH_LIMITS.maxAutomaticTransientAttempts
     ) {
       await this.jobs.failProcessingJob(
         job.id,
@@ -431,7 +449,7 @@ export class SourceAcquisitionService {
     }
 
     return this.persistOutcome(
-      context,
+      currentContext,
       ownerId,
       outcome,
       startedAt,
