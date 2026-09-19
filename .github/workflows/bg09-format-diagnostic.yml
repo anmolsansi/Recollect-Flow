@@ -1,0 +1,28 @@
+name: BG09 Format Diagnostic
+
+on:
+  push:
+    branches:
+      - agent/ope-329-bg-09-bounded-source-fetcher
+
+jobs:
+  prettier-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Print exact Prettier diff
+        run: |
+          npx prettier --write \
+            apps/worker-api/src/jobs/extraction/source-destination.ts \
+            apps/worker-api/src/jobs/extraction/source-fetcher.types.ts \
+            apps/worker-api/test/source-fetcher.d1.spec.ts
+          git diff -- \
+            apps/worker-api/src/jobs/extraction/source-destination.ts \
+            apps/worker-api/src/jobs/extraction/source-fetcher.types.ts \
+            apps/worker-api/test/source-fetcher.d1.spec.ts
+          test -z "$(git status --short)"
