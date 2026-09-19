@@ -10,20 +10,29 @@ BEGIN TRANSACTION;
 DELETE FROM item_search_fts;
 
 INSERT INTO item_search_fts(
-  rowid, item_id, title, raw_text, user_note, summary, topics, project, people, companies
+  rowid, item_id, title, raw_text, user_note, summary, topics, project, people, companies, source_text
 ) SELECT
-  rowid,
-  id,
-  title,
-  raw_text,
-  user_note,
-  summary,
-  CASE WHEN json_valid(topics_json) THEN (SELECT group_concat(value, ' ') FROM json_each(topics_json)) ELSE '' END,
-  project,
-  CASE WHEN json_valid(people) THEN (SELECT group_concat(value, ' ') FROM json_each(people)) ELSE '' END,
-  CASE WHEN json_valid(companies) THEN (SELECT group_concat(value, ' ') FROM json_each(companies)) ELSE '' END
-FROM items
-WHERE deleted_at IS NULL;
+  i.rowid,
+  i.id,
+  i.title,
+  i.raw_text,
+  i.user_note,
+  i.summary,
+  CASE WHEN json_valid(i.topics_json) THEN (SELECT group_concat(value, ' ') FROM json_each(i.topics_json)) ELSE '' END,
+  i.project,
+  CASE WHEN json_valid(i.people) THEN (SELECT group_concat(value, ' ') FROM json_each(i.people)) ELSE '' END,
+  CASE WHEN json_valid(i.companies) THEN (SELECT group_concat(value, ' ') FROM json_each(i.companies)) ELSE '' END,
+  (
+    SELECT ua.acquired_text
+    FROM url_acquisitions ua
+    WHERE ua.item_id = i.id
+      AND ua.source_revision = i.source_revision
+      AND ua.privacy_level_snapshot = i.privacy_level
+    ORDER BY ua.completed_at DESC, ua.id DESC
+    LIMIT 1
+  )
+FROM items i
+WHERE i.deleted_at IS NULL;
 
 COMMIT;
 
