@@ -946,6 +946,44 @@ After:  Login -> open item -> Download -> original bytes and safe filename
 **Done when:** the exact browser failure is gone, bytes match, and anonymous access
 still fails. Record both the browser story and the route authorization matrix.
 
+### Implemented BG-07 browser contract
+
+BG-07 preserves the BG-06 authorization decision and the existing Web anchor. The
+attachment route continues to accept a capture bearer, admin bearer or verified
+signed admin session cookie for eligible content reads. Upload and delete boundaries
+remain unchanged.
+
+The download response now has explicit regression coverage for exact bytes, MIME,
+Content-Length, ETag, `private, no-store`, `nosniff`, safe ASCII filenames and
+Unicode `filename*` handling. Hostile filename metadata cannot inject response
+headers. Missing, deleted/purged, unavailable and missing-object states remain
+controlled failures, and attachment IDs never become R2 keys.
+
+The release verifier treats signed-cookie download as a required pass rather than a
+known unavailable stage. Its regression suite also proves that a cookie-path `401`
+fails release smoke.
+
+The dedicated `browser:download:test` acceptance starts isolated local Wrangler
+state, the real Worker, the real Vite app and headless Chrome. It logs in through the
+actual password form, verifies the HttpOnly `admin_session`, navigates to real item
+detail pages and clicks the existing same-origin Download anchor. PDF, PNG and text
+fixtures must save with the expected filename, byte length and SHA-256.
+
+The same browser story verifies reload continuity plus fresh `401` denial after
+logout, a tampered session and an expired session. The synthetic admin token is not
+stored in browser local/session storage and no credential is added to the download
+URL.
+
+Implementation/browser evidence lives in
+[`docs/verification/BG-07_BROWSER_DOWNLOAD.md`](verification/BG-07_BROWSER_DOWNLOAD.md),
+with checklist reconciliation in
+[`docs/verification/BG-07_CHECKLIST_RECONCILIATION.md`](verification/BG-07_CHECKLIST_RECONCILIATION.md).
+
+BG-07.001–.099 are complete on the implementation branch after GitHub Actions CI
+run #196 passed the full repository, migration and Chrome acceptance gates.
+BG-07.100 remains a merge/closeout gate. BG-08 is not unlocked until the validated
+implementation is merged and the final closeout is present on `main`.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-07](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-07--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.

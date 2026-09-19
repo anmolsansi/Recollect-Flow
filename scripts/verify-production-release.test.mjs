@@ -53,6 +53,7 @@ async function createVerifierServer({
   malformedInitialVersion = false,
   forceCurrentConflictPrivacyLevel = null,
   healthFailureEchoSecrets = false,
+  rejectBrowserCookieDownload = false,
 } = {}) {
   let itemVersion = 1;
   let privacyLevel = 'unknown';
@@ -63,6 +64,7 @@ async function createVerifierServer({
   let rawFixtureText = null;
   let uploadedBytes = Buffer.alloc(0);
   let uploadedChecksum = null;
+  let uploadedFilename = null;
   const privacyRequests = [];
   const detailVersions = [];
   const captureEvents = [];
@@ -121,6 +123,7 @@ async function createVerifierServer({
   const server = createServer(async (request, response) => {
     const requestUrl = new URL(request.url, 'http://127.0.0.1');
     const authorization = request.headers.authorization;
+    const cookie = request.headers.cookie;
     const bodyBuffer = await readRequestBody(request);
     let body = null;
     if (
@@ -465,6 +468,7 @@ async function createVerifierServer({
       request.method === 'POST' &&
       requestUrl.pathname === '/api/v1/uploads/init'
     ) {
+      uploadedFilename = body?.filename ?? null;
       json(response, 201, {
         data: {
           attachment_id: attachmentId,
@@ -508,9 +512,13 @@ async function createVerifierServer({
       request.method === 'GET' &&
       requestUrl.pathname === `/api/v1/attachments/${attachmentId}/content`
     ) {
+      const validSignedSession =
+        !rejectBrowserCookieDownload &&
+        cookie === 'admin_session=authenticated.test-signature';
       if (
         authorization !== `Bearer ${CAPTURE_TOKEN}` &&
-        authorization !== `Bearer ${ADMIN_TOKEN}`
+        authorization !== `Bearer ${ADMIN_TOKEN}` &&
+        !validSignedSession
       ) {
         json(response, 401, { error: { code: 'UNAUTHENTICATED' } });
         return;
@@ -518,6 +526,9 @@ async function createVerifierServer({
       response.writeHead(200, {
         'Content-Type': 'application/pdf',
         'Content-Length': String(uploadedBytes.length),
+        'Content-Disposition': `attachment; filename="${uploadedFilename}"`,
+        'Cache-Control': 'private, no-store',
+        'X-Content-Type-Options': 'nosniff',
       });
       response.end(uploadedBytes);
       return;
@@ -596,7 +607,7 @@ test('release verifier reports staged BG-04 success without hiding known unavail
     assert.equal(result.stage_summary.overall, 'passed');
     assert.equal(result.stage_summary.counts.failed, 0);
     assert.ok(result.stage_summary.counts.passed >= 20);
-    assert.ok(result.stage_summary.counts.unavailable >= 4);
+    assert.ok(result.stage_summary.counts.unavailable >= 3);
 
     assert.equal(result.exact_replay_status, 200);
     assert.equal(result.exact_replay, true);
@@ -624,7 +635,7 @@ test('release verifier reports staged BG-04 success without hiding known unavail
 
     assert.equal(
       findStage(result, 'browser-cookie-attachment-download').status,
-      'unavailable',
+      'passed',
     );
     assert.equal(
       findStage(result, 'provider-adapter-execution').status,
@@ -655,6 +666,23 @@ test('release verifier reports staged BG-04 success without hiding known unavail
     assert.equal(state.itemVersion, 16);
     assert.equal(state.deleted, false);
     assert.match(state.title, /^BG-04 release smoke /);
+  } finally {
+    await server.close();
+  }
+});
+
+test('release verifier fails if the signed-cookie attachment path regresses', async () => {
+  const server = await createVerifierServer({
+    rejectBrowserCookieDownload: true,
+  });
+  try {
+    await assert.rejects(runVerifier(server), (error) => {
+      assert.equal(error.code, 1);
+      assert.match(error.stderr, /browser-cookie-attachment-download/);
+      assert.match(error.stderr, /expected 200, got 401/);
+      assert.match(error.stderr, /RELEASE_SMOKE_SUMMARY/);
+      return true;
+    });
   } finally {
     await server.close();
   }

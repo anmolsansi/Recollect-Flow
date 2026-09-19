@@ -1015,7 +1015,12 @@ async function main() {
     },
   );
 
-  await runBrowserCookieProbe(attachmentId);
+  await runBrowserCookieProbe({
+    attachmentId,
+    expectedBytes: byteRoundTripPdfBytes,
+    expectedSha256: byteRoundTripChecksum,
+    expectedFilename: `recollect-release-${runId}.pdf`,
+  });
 
   const beforeEdit = sensitiveChange.current;
   await runStage(
@@ -1243,75 +1248,83 @@ function healthBodyIsOk(body) {
   return body?.data?.status === 'ok';
 }
 
-async function runBrowserCookieProbe(attachmentId) {
-  const stage = {
-    name: 'browser-cookie-attachment-download',
-    status: 'running',
-    started_at: new Date().toISOString(),
-    expected_http: [
+async function runBrowserCookieProbe({
+  attachmentId,
+  expectedBytes,
+  expectedSha256,
+  expectedFilename,
+}) {
+  return runStage(
+    'browser-cookie-attachment-download',
+    [
       { method: 'POST', path: '/api/v1/admin/session', status: 200 },
       {
         method: 'GET',
         path: `/api/v1/attachments/${attachmentId}/content`,
-        desired_status: 200,
-        known_current_status: 401,
+        status: 200,
       },
     ],
-    http: [],
-  };
-  stageResults.push(stage);
-  activeStage = stage;
-  try {
-    const { response } = await jsonRequest(
-      '/api/v1/admin/session',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: adminToken }),
-      },
-      200,
-      'browser-cookie-login',
-    );
-    const setCookie = response.headers.get('set-cookie');
-    assert(
-      setCookie,
-      'Admin session login did not set an admin_session cookie.',
-    );
-    const cookie = setCookie.split(';', 1)[0];
-
-    const download = await fetch(
-      requestUrl(`/api/v1/attachments/${attachmentId}/content`),
-      { headers: { Cookie: cookie } },
-    );
-    recordHttp(
-      'GET',
-      `/api/v1/attachments/${attachmentId}/content`,
-      200,
-      download.status,
-    );
-    await download.arrayBuffer();
-    if (download.status === 200) {
-      stage.status = 'passed';
-      stage.reason =
-        'Browser-cookie attachment download is now supported; remove the BG-07 unavailable marker after dedicated BG-07 browser acceptance.';
-    } else {
-      assert(
-        download.status === 401,
-        `Browser-cookie download known-gap probe expected current 401, got ${download.status}.`,
+    async () => {
+      const { response } = await jsonRequest(
+        '/api/v1/admin/session',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: adminToken }),
+        },
+        200,
+        'browser-cookie-login',
       );
-      stage.status = 'unavailable';
-      stage.reason =
-        'Known BG-07 gap: attachment content is guarded by bearer capture/admin auth before the admin_session cookie can authorize browser download.';
-    }
-    stage.finished_at = new Date().toISOString();
-  } catch (error) {
-    stage.status = 'failed';
-    stage.finished_at = new Date().toISOString();
-    stage.error = safeErrorMessage(error);
-    throw error;
-  } finally {
-    activeStage = null;
-  }
+      const setCookie = response.headers.get('set-cookie');
+      assert(
+        setCookie,
+        'Admin session login did not set an admin_session cookie.',
+      );
+      const cookie = setCookie.split(';', 1)[0];
+
+      const download = await binaryRequest(
+        `/api/v1/attachments/${attachmentId}/content`,
+        { headers: { Cookie: cookie } },
+        200,
+        'browser-cookie-attachment-download',
+      );
+      assert(
+        download.bytes.byteLength === expectedBytes.byteLength,
+        'Browser-cookie download byte length did not match the uploaded fixture.',
+      );
+      const downloadedChecksum = createHash('sha256')
+        .update(download.bytes)
+        .digest('hex');
+      assert(
+        downloadedChecksum === expectedSha256,
+        'Browser-cookie download SHA-256 did not match the uploaded fixture.',
+      );
+      assert(
+        download.response.headers.get('content-type') === 'application/pdf',
+        'Browser-cookie download returned an unexpected Content-Type.',
+      );
+      assert(
+        download.response.headers.get('content-length') ===
+          String(expectedBytes.byteLength),
+        'Browser-cookie download returned an unexpected Content-Length.',
+      );
+      assert(
+        download.response.headers.get('content-disposition') ===
+          `attachment; filename="${expectedFilename}"`,
+        'Browser-cookie download returned an unexpected Content-Disposition.',
+      );
+      assert(
+        download.response.headers.get('cache-control') === 'private, no-store',
+        'Browser-cookie download must remain private and non-cacheable.',
+      );
+      assert(
+        download.response.headers.get('x-content-type-options') === 'nosniff',
+        'Browser-cookie download must preserve nosniff.',
+      );
+
+      return { sha256: downloadedChecksum };
+    },
+  );
 }
 
 try {

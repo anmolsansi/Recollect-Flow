@@ -124,6 +124,32 @@ documentation-only closeout branch based exactly on the merged implementation SH
 Closeout PR #40 passed GitHub Actions CI run #180. When this entry is present on
 `main`, GitHub #38 / Linear OPE-326 can close and BG-07 is durably unlocked.
 
+### BG-07 — browser attachment download
+
+Status: **99/100 pre-merge; implementation/browser proof green**
+
+- Primary evidence: [`BG-07_BROWSER_DOWNLOAD.md`](BG-07_BROWSER_DOWNLOAD.md)
+- Checklist reconciliation: [`BG-07_CHECKLIST_RECONCILIATION.md`](BG-07_CHECKLIST_RECONCILIATION.md)
+- GitHub tracking: issue #41 / implementation PR #42
+- Linear tracking: OPE-327
+- Task base `main`: `cb660e359abe36949040bca5d843b7a3d9d660d3`
+- Full technical/browser gate: GitHub Actions CI run #196
+- Verified implementation head: `1ae56558d0919ea6452e73869c8daeb06795c72a`
+
+BG-07 preserves the BG-06 read-authorization contract and the existing same-origin
+Web Download anchor. It adds stronger attachment response/lifecycle regressions,
+requires signed-cookie download to pass release smoke, and adds an isolated real
+Chrome acceptance story. Chrome logs in through the actual form, uses the HttpOnly
+signed admin session, opens real item detail pages and downloads exact PDF, PNG and
+text originals through the actual anchor. Byte length and SHA-256 match, reload
+retains the valid session, and logout/tampered/expired session states receive fresh
+`401` responses.
+
+CI #196 passed the repository quality gate, local migrations, Chrome availability
+and `browser:download:test`. BG-07.001–.099 are reconciled. BG-07.100 remains
+open until PR #42 is merged and the post-merge closeout proves the parent boundary.
+BG-08 remains locked until that closeout is on `main`.
+
 ## Evidence rules
 
 - Tie claims to a revision and environment.

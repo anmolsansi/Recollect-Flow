@@ -207,13 +207,21 @@ async function initialize(
   };
 }
 
-async function createFinalizedPdf(app: ReturnType<typeof createApp>, env: Env) {
-  const bytes = new TextEncoder().encode('%PDF-1.7\nread-auth-fixture').buffer;
+async function createFinalizedAttachment(
+  app: ReturnType<typeof createApp>,
+  env: Env,
+  fixture: {
+    filename: string;
+    mimeType: string;
+    sourceType: 'file' | 'image';
+    bytes: ArrayBuffer;
+  },
+) {
   const initialized = await initialize(app, env, {
-    filename: 'read-auth.pdf',
-    mime_type: 'application/pdf',
-    size_bytes: bytes.byteLength,
-    source_type: 'file',
+    filename: fixture.filename,
+    mime_type: fixture.mimeType,
+    size_bytes: fixture.bytes.byteLength,
+    source_type: fixture.sourceType,
   });
   expect(initialized.response.status).toBe(201);
   const id = initialized.body.data.attachment_id;
@@ -224,10 +232,10 @@ async function createFinalizedPdf(app: ReturnType<typeof createApp>, env: Env) {
       method: 'PUT',
       headers: {
         Authorization: 'Bearer capture-secret',
-        'Content-Type': 'application/pdf',
-        'Content-Length': String(bytes.byteLength),
+        'Content-Type': fixture.mimeType,
+        'Content-Length': String(fixture.bytes.byteLength),
       },
-      body: bytes,
+      body: fixture.bytes,
     },
     env,
   );
@@ -247,7 +255,16 @@ async function createFinalizedPdf(app: ReturnType<typeof createApp>, env: Env) {
   );
   expect(finalized.status).toBe(200);
 
-  return { id, bytes };
+  return { id, bytes: fixture.bytes };
+}
+
+async function createFinalizedPdf(app: ReturnType<typeof createApp>, env: Env) {
+  return createFinalizedAttachment(app, env, {
+    filename: 'read-auth.pdf',
+    mimeType: 'application/pdf',
+    sourceType: 'file',
+    bytes: new TextEncoder().encode('%PDF-1.7\nread-auth-fixture').buffer,
+  });
 }
 
 async function createAdminSessionCookie(
@@ -511,7 +528,139 @@ describe('private attachment lifecycle', () => {
     );
 
     expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toBe('application/pdf');
+    expect(response.headers.get('Content-Disposition')).toBe(
+      'attachment; filename="read-auth.pdf"',
+    );
+    expect(response.headers.get('Content-Length')).toBe(
+      String(bytes.byteLength),
+    );
+    expect(response.headers.get('Cache-Control')).toBe('private, no-store');
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
+    expect(response.headers.get('ETag')).toBe('"test-etag"');
     expect(await response.arrayBuffer()).toEqual(bytes);
+  });
+
+  it('returns exact PNG bytes through a signed admin session', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const bytes = new Uint8Array([
+      0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x42, 0x47, 0x30, 0x37,
+    ]).buffer;
+    const { id } = await createFinalizedAttachment(app, env, {
+      filename: 'browser-proof.png',
+      mimeType: 'image/png',
+      sourceType: 'image',
+      bytes,
+    });
+    const cookie = await createAdminSessionCookie(app, env);
+
+    const response = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Cookie: cookie } },
+      env,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toBe('image/png');
+    expect(await response.arrayBuffer()).toEqual(bytes);
+  });
+
+  it('returns exact generic text bytes through a signed admin session', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const bytes = new TextEncoder().encode(
+      'BG-07 generic browser download proof',
+    ).buffer;
+    const { id } = await createFinalizedAttachment(app, env, {
+      filename: 'browser-proof.txt',
+      mimeType: 'text/plain',
+      sourceType: 'file',
+      bytes,
+    });
+    const cookie = await createAdminSessionCookie(app, env);
+
+    const response = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Cookie: cookie } },
+      env,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toBe('text/plain');
+    expect(await response.arrayBuffer()).toEqual(bytes);
+  });
+
+  it('encodes Unicode filenames and blocks header injection', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const bytes = new TextEncoder().encode('safe filename proof').buffer;
+    const { id } = await createFinalizedAttachment(app, env, {
+      filename: 'résumé🙂"\r\nInjected: yes.txt',
+      mimeType: 'text/plain',
+      sourceType: 'file',
+      bytes,
+    });
+    const cookie = await createAdminSessionCookie(app, env);
+
+    const response = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Cookie: cookie } },
+      env,
+    );
+
+    expect(response.status).toBe(200);
+    const disposition = response.headers.get('Content-Disposition');
+    expect(disposition).toContain('attachment; filename="');
+    expect(disposition).toContain("filename*=UTF-8''");
+    expect(disposition).toContain('%C3%A9');
+    expect(disposition).toContain('%F0%9F%99%82');
+    expect(disposition).not.toContain('\r');
+    expect(disposition).not.toContain('\n');
+    expect(response.headers.get('Injected')).toBeNull();
+    expect(await response.arrayBuffer()).toEqual(bytes);
+  });
+
+  it('preserves finalized reads while rejecting disallowed lifecycle states', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const { id } = await createFinalizedPdf(app, env);
+    const cookie = await createAdminSessionCookie(app, env);
+    const attachment = repository.attachments.get(id);
+    if (!attachment) throw new Error('fixture not created');
+
+    const finalized = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Cookie: cookie } },
+      env,
+    );
+    expect(finalized.status).toBe(200);
+
+    for (const status of [
+      'pending',
+      'uploaded',
+      'orphaned',
+      'deleted',
+    ] as AttachmentStatus[]) {
+      attachment.status = status;
+      const response = await app.request(
+        `/api/v1/attachments/${id}/content`,
+        { headers: { Cookie: cookie } },
+        env,
+      );
+      expect(response.status).toBe(404);
+      expect(await response.json()).toMatchObject({
+        error: { code: 'NOT_FOUND' },
+      });
+    }
   });
 
   it('rejects invalid and local-worker bearer credentials for attachment reads', async () => {
@@ -683,6 +832,66 @@ describe('private attachment lifecycle', () => {
     );
     expect(adminDelete.status).toBe(204);
     expect(repository.attachments.get(id)?.status).toBe('deleted');
+  });
+
+  it('returns controlled responses for missing and deleted attachment records', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+
+    const missing = await app.request(
+      '/api/v1/attachments/00000000-0000-0000-0000-000000000000/content',
+      { headers: { Cookie: cookie } },
+      env,
+    );
+    expect(missing.status).toBe(404);
+    expect(await missing.json()).toMatchObject({
+      error: { code: 'NOT_FOUND' },
+    });
+
+    const { id } = await createFinalizedPdf(app, env);
+    const deleted = await app.request(
+      `/api/v1/attachments/${id}`,
+      {
+        method: 'DELETE',
+        headers: { Authorization: 'Bearer admin-secret' },
+      },
+      env,
+    );
+    expect(deleted.status).toBe(204);
+    expect(r2.objects.size).toBe(0);
+
+    const afterDelete = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Cookie: cookie } },
+      env,
+    );
+    expect(afterDelete.status).toBe(404);
+    expect(await afterDelete.json()).toMatchObject({
+      error: { code: 'NOT_FOUND' },
+    });
+  });
+
+  it('does not leak object keys or credentials for traversal-shaped IDs', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+
+    const response = await app.request(
+      '/api/v1/attachments/%2E%2E%2Fprivate%2Fsecret/content',
+      { headers: { Cookie: cookie } },
+      env,
+    );
+    expect(response.status).toBe(404);
+    const body = await response.text();
+    expect(body).not.toContain('private/');
+    expect(body).not.toContain('capture-secret');
+    expect(body).not.toContain('admin-secret');
+    expect(body).not.toContain('local-worker-secret');
   });
 
   it('keeps unavailable attachment bytes hidden after successful authentication', async () => {
