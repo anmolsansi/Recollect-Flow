@@ -157,9 +157,15 @@ async function parseHtml(
     .on('[hidden]', remove)
     .on('[aria-hidden="true"]', remove)
     .transform(
-      new Response(body, {
-        headers: { 'content-type': contentType },
-      }),
+      new Response(
+        body.buffer.slice(
+          body.byteOffset,
+          body.byteOffset + body.byteLength,
+        ) as ArrayBuffer,
+        {
+          headers: { 'content-type': contentType },
+        },
+      ),
     );
 
   const text = new DocumentTextHandler();
@@ -181,9 +187,9 @@ export async function parseSourceDocument(
   body: Uint8Array,
   contentType: string,
   finalUrl: string,
-  maximumCharacters = SOURCE_FETCH_LIMITS.maxExtractedCharacters,
+  maximumCharacters: number = SOURCE_FETCH_LIMITS.maxExtractedCharacters,
 ): Promise<ParsedSourceDocument> {
-  const mediaType = contentType.split(';', 1)[0].trim().toLowerCase();
+  const mediaType = contentType.split(';', 1)[0]?.trim().toLowerCase() ?? '';
 
   if (mediaType === 'text/plain') {
     const normalized = cleanWhitespace(new TextDecoder().decode(body));
