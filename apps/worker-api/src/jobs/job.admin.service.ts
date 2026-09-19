@@ -198,6 +198,13 @@ export class JobAdminService {
         'Optional processing is currently paused.',
       );
     }
+    if (job.job_type === 'acquire_url') {
+      throw new AppError(
+        409,
+        'OWNER_APPROVAL_REQUIRED',
+        'URL acquisition requires generation-aware reprocessing.',
+      );
+    }
     if (job.privacy_level !== job.privacy_level_snapshot) {
       throw new AppError(
         409,
