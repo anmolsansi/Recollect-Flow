@@ -870,6 +870,26 @@ describe('private attachment lifecycle', () => {
     });
   });
 
+  it('does not leak object keys or credentials for traversal-shaped IDs', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+
+    const response = await app.request(
+      '/api/v1/attachments/%2E%2E%2Fprivate%2Fsecret/content',
+      { headers: { Cookie: cookie } },
+      env,
+    );
+    expect(response.status).toBe(404);
+    const body = await response.text();
+    expect(body).not.toContain('private/');
+    expect(body).not.toContain('capture-secret');
+    expect(body).not.toContain('admin-secret');
+    expect(body).not.toContain('local-worker-secret');
+  });
+
   it('keeps unavailable attachment bytes hidden after successful authentication', async () => {
     const repository = new MemoryAttachmentRepository();
     const r2 = memoryBucket();
