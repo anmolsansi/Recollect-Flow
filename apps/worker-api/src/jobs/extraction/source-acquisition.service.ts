@@ -317,7 +317,8 @@ export class SourceAcquisitionService {
            )
            SELECT ?1, ?2, 'url_acquisition_completed', 'worker', ?3, ?4
            WHERE EXISTS (
-             SELECT 1 FROM url_acquisitions WHERE job_id = ?5
+             SELECT 1 FROM url_acquisitions
+             WHERE id = ?5 AND job_id = ?6
            )`,
         )
         .bind(
@@ -333,6 +334,7 @@ export class SourceAcquisitionService {
             job_status: terminalJobStatus,
           }),
           completedIso,
+          evidenceId,
           context.jobId,
         ),
       this.db
