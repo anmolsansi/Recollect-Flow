@@ -53,8 +53,7 @@ function ipv4ToInt(parts: [number, number, number, number]): number {
 }
 
 function inIpv4Cidr(value: number, network: number, prefix: number): boolean {
-  const mask =
-    prefix === 0 ? 0 : (0xffffffff << (32 - prefix)) >>> 0;
+  const mask = prefix === 0 ? 0 : (0xffffffff << (32 - prefix)) >>> 0;
   return (value & mask) === (network & mask);
 }
 
