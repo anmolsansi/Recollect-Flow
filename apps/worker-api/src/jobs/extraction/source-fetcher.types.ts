@@ -17,6 +17,7 @@ export type SourceAcquisitionStatus =
   | 'metadata_only'
   | 'unavailable'
   | 'destination_blocked'
+  | 'policy_blocked'
   | 'login_required'
   | 'timeout'
   | 'network_error'
@@ -28,9 +29,14 @@ export type SourceAcquisitionStatus =
   | 'empty'
   | 'parse_failed';
 
-export type SourceCoverage = 'url_only' | 'metadata_only' | 'acquired_text';
+export type SourceCoverage =
+  | 'url_only'
+  | 'metadata_only'
+  | 'supplied_text'
+  | 'acquired_text';
 
 export type SourceFetchErrorCode =
+  | 'SOURCE_FETCH_POLICY_BLOCKED'
   | 'SOURCE_DESTINATION_BLOCKED'
   | 'SOURCE_LOGIN_REQUIRED'
   | 'SOURCE_NOT_FOUND'
