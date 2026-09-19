@@ -46,7 +46,10 @@ function verifyFileSignature(fixture, bytes) {
     );
     return;
   }
-  assert.match(bytes.toString('utf8'), /^RecollectFlow BG-07 generic download proof /);
+  assert.match(
+    bytes.toString('utf8'),
+    /^RecollectFlow BG-07 generic download proof /,
+  );
 }
 
 async function resetDownloadDirectory(downloadDir) {
@@ -287,7 +290,9 @@ async function main() {
       sessionId,
     );
     assert.ok(
-      reloadedCookies.cookies?.some((cookie) => cookie.name === 'admin_session'),
+      reloadedCookies.cookies?.some(
+        (cookie) => cookie.name === 'admin_session',
+      ),
       'Authenticated session did not survive page reload.',
     );
 
@@ -350,7 +355,11 @@ async function main() {
       sessionId,
       protectedPath,
     );
-    assert.equal(tamperedStatus, 401, 'Tampered browser session must be denied.');
+    assert.equal(
+      tamperedStatus,
+      401,
+      'Tampered browser session must be denied.',
+    );
 
     await client.send(
       'Network.deleteCookies',
