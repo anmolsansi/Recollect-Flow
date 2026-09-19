@@ -587,6 +587,38 @@ describe('private attachment lifecycle', () => {
     expect(await response.arrayBuffer()).toEqual(bytes);
   });
 
+  it('encodes Unicode filenames and blocks header injection', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const bytes = new TextEncoder().encode('safe filename proof').buffer;
+    const { id } = await createFinalizedAttachment(app, env, {
+      filename: 'résumé🙂"\r\nInjected: yes.txt',
+      mimeType: 'text/plain',
+      sourceType: 'file',
+      bytes,
+    });
+    const cookie = await createAdminSessionCookie(app, env);
+
+    const response = await app.request(
+      `/api/v1/attachments/${id}/content`,
+      { headers: { Cookie: cookie } },
+      env,
+    );
+
+    expect(response.status).toBe(200);
+    const disposition = response.headers.get('Content-Disposition');
+    expect(disposition).toContain('attachment; filename="');
+    expect(disposition).toContain("filename*=UTF-8''");
+    expect(disposition).toContain('%C3%A9');
+    expect(disposition).toContain('%F0%9F%99%82');
+    expect(disposition).not.toContain('\r');
+    expect(disposition).not.toContain('\n');
+    expect(response.headers.get('Injected')).toBeNull();
+    expect(await response.arrayBuffer()).toEqual(bytes);
+  });
+
   it('rejects invalid and local-worker bearer credentials for attachment reads', async () => {
     const repository = new MemoryAttachmentRepository();
     const r2 = memoryBucket();
