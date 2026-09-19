@@ -215,4 +215,3 @@ Before BG-08 is unlocked:
 4. create a documentation-only closeout from the exact merged `main` head;
 5. pass the closeout CI gate;
 6. mark BG-07.100 complete and close GitHub #41 / Linear OPE-327.
-
