@@ -32,11 +32,19 @@ BG-10 adds a durable URL-source evidence layer without fabricating attachment ro
   the final enrichment handoff;
 - enrichment consumes current acquired source text without copying it into
   `items.raw_text` or bypassing field overrides;
-- item detail exposes URL acquisition history and a current-evidence projection;
-- FTS includes current acquired text in `source_text` and the rebuild script
-  derives the same projection;
-- portable export schema `2026-09-19.1`, clean-target restore, canonical purge
-  and integrity scanning include URL evidence.
+- item detail exposes URL acquisition history, bounded execution observability,
+  and a current-evidence projection; the Web Inbox renders acquired source text
+  through React text/read-only form values rather than executable markup;
+- FTS includes current acquired text in `source_text`, source-revision changes
+  remove stale terms immediately, and the rebuild script derives the same
+  projection;
+- portable export schema `2026-09-19.1`, current-evidence CSV summary,
+  clean-target restore, canonical purge and integrity scanning include URL
+  evidence;
+- D1 enforces the frozen response/text/redirect/attempt bounds in addition to
+  service-layer validation;
+- generic same-job admin retry rejects `acquire_url`; generation-aware owner
+  retry remains explicitly scoped to BG-11.
 
 ## Data authority
 
@@ -70,13 +78,19 @@ current source evidence. Privacy changes similarly make rows with the old
 2. policy-blocked acquisition with zero source-host calls;
 3. stale privacy snapshot rejection before source-host I/O;
 4. durable acquired text and SHA-256 evidence;
-5. an internal phrase found through FTS independently of AI;
-6. crash/replay convergence with one evidence row and one active downstream
-   enrichment job;
-7. transient retry followed by a terminal failed third attempt with durable
+5. an internal phrase found through FTS independently of AI plus
+   `EXPLAIN QUERY PLAN` evidence that the keyword path uses the FTS virtual
+   table index;
+6. source-revision replacement immediately removing stale search terms;
+7. crash/replay convergence with one evidence row, one acquisition-completion
+   audit event and one active downstream enrichment job;
+8. transient retry followed by a terminal failed third attempt with durable
    outcome evidence;
-8. portable JSON export/clean restore preserving source text and FTS usability;
-9. permanent purge removing URL evidence and its searchable terms.
+9. fail-closed AI routing producing no doomed enrichment work;
+10. portable JSON/CSV export plus clean restore preserving source evidence and
+    FTS usability;
+11. permanent purge removing URL evidence and its searchable terms;
+12. generic manual retry rejection for immutable acquisition-job evidence.
 
 `apps/worker-api/test/recovery-migration.d1.spec.ts` applies the final migration
 to a populated prior schema and verifies canonical item/job data survives, the
