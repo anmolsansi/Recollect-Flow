@@ -333,16 +333,25 @@ It does not:
 That boundary is intentional. Implementing those changes in BG-08 would collapse
 three sequential build-guide tasks and make review/rollback harder.
 
-## Microcommits before checklist closeout
+## Microcommit and CI review before checklist closeout
 
-1. `2c4efab` — define the URL acquisition contract.
-2. `e3dd5e1` — freeze BG-08 ADRs.
-3. `d3dc24a` — reconcile AI policy documentation and separate source-fetch privacy.
-4. `739cb4e` — make website/Instagram flows coverage-honest.
-5. `e18248a` — define the planned item-detail acquisition projection.
+The implementation branch keeps the contract work reviewable as atomic commits.
+The first eight commits define and propagate the contract, commits 9–13 repair only
+the Markdown formatting that CI identified, and this evidence update records the
+validated pre-merge state.
 
-This evidence record is the sixth logical microcommit. Checklist reconciliation and
-build-guide status are separate commits so each change remains reviewable.
+CI history is intentionally preserved rather than hidden:
+
+- CI #212 rejected three BG-08 Markdown files at Prettier.
+- CI #215 proved the privacy document was fixed and rejected the remaining two
+  formatting differences.
+- temporary diagnostic PR #46 ran the repository's pinned Prettier version to print
+  the exact remaining rewrite and was closed without merge.
+- CI #218 passed the complete repository gate at
+  `f99b365df88d697dcc2d1289cadf95d65603d82d`: `npm ci`, `npm run check`
+  (format, lint, typecheck, API/D1 tests, contract checks, web lint/tests/build),
+  isolated local D1 migrations, Chrome availability, and the real browser-download
+  regression.
 
 ## Verification state
 
@@ -353,8 +362,8 @@ Security/privacy boundary review: **PASS**.
 Scope review: **PASS**. Runtime files, migrations, dependencies, deployment
 configuration, and secrets are unchanged.
 
-PR CI: **pending until the implementation PR is opened on the completed branch
-head**.
+Full repository CI before this evidence-only commit: **PASS — CI #218**.
 
-The final BG-08.100 parent gate remains pending until the contract PR is merged,
-merged-main validation is green, and the final closeout records BG-09 as unlocked.
+The evidence-only final head must pass CI again before PR #45 is merged. The final
+BG-08.100 parent gate remains pending until the contract PR is merged, merged-main
+validation is green, and the final closeout records BG-09 as unlocked.
