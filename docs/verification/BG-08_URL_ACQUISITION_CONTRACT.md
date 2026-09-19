@@ -307,8 +307,8 @@ The contract includes acceptance cases for:
 - unsafe/private/reserved destination;
 - Unknown/Personal/Sensitive policy block with zero network I/O;
 - unsupported binary type;
-- >2 MiB body;
-- >5 redirects;
+- > 2 MiB body;
+- > 5 redirects;
 - empty page;
 - Instagram login wall;
 - owner-supplied text when fetch is unavailable;
