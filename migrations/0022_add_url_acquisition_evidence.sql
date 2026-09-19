@@ -9,7 +9,8 @@ CREATE TABLE url_acquisitions (
   item_id TEXT NOT NULL REFERENCES items(id) ON DELETE RESTRICT,
   job_id TEXT NOT NULL UNIQUE,
   source_revision INTEGER NOT NULL CHECK (source_revision >= 1),
-  source_url_snapshot TEXT NOT NULL,
+  source_url_snapshot TEXT NOT NULL
+    CHECK (length(source_url_snapshot) BETWEEN 1 AND 2048),
   privacy_level_snapshot TEXT NOT NULL
     CHECK (privacy_level_snapshot IN ('unknown', 'public', 'personal', 'sensitive')),
   status TEXT NOT NULL CHECK (status IN (
@@ -21,30 +22,42 @@ CREATE TABLE url_acquisitions (
   coverage TEXT NOT NULL CHECK (coverage IN (
     'url_only', 'metadata_only', 'supplied_text', 'acquired_text'
   )),
-  fetched_final_url TEXT,
+  fetched_final_url TEXT
+    CHECK (fetched_final_url IS NULL OR length(fetched_final_url) <= 8192),
   http_status INTEGER CHECK (
     http_status IS NULL OR (http_status >= 100 AND http_status <= 599)
   ),
-  content_type TEXT,
-  response_bytes INTEGER CHECK (response_bytes IS NULL OR response_bytes >= 0),
-  redirect_count INTEGER NOT NULL DEFAULT 0 CHECK (redirect_count >= 0),
-  attempt_count INTEGER NOT NULL CHECK (attempt_count >= 1),
+  content_type TEXT
+    CHECK (content_type IS NULL OR length(content_type) <= 255),
+  response_bytes INTEGER CHECK (
+    response_bytes IS NULL OR (response_bytes >= 0 AND response_bytes <= 2097152)
+  ),
+  redirect_count INTEGER NOT NULL DEFAULT 0
+    CHECK (redirect_count BETWEEN 0 AND 5),
+  attempt_count INTEGER NOT NULL CHECK (attempt_count BETWEEN 1 AND 3),
   duration_ms INTEGER NOT NULL CHECK (duration_ms >= 0),
   network_io_skipped_by_policy INTEGER NOT NULL
     CHECK (network_io_skipped_by_policy IN (0, 1)),
-  source_title TEXT,
-  source_description TEXT,
-  source_site_name TEXT,
-  source_canonical_hint_url TEXT,
-  acquired_text TEXT,
-  acquired_text_hash TEXT,
+  source_title TEXT
+    CHECK (source_title IS NULL OR length(source_title) <= 2000),
+  source_description TEXT
+    CHECK (source_description IS NULL OR length(source_description) <= 8000),
+  source_site_name TEXT
+    CHECK (source_site_name IS NULL OR length(source_site_name) <= 1000),
+  source_canonical_hint_url TEXT
+    CHECK (source_canonical_hint_url IS NULL OR length(source_canonical_hint_url) <= 8192),
+  acquired_text TEXT
+    CHECK (acquired_text IS NULL OR length(acquired_text) <= 250000),
+  acquired_text_hash TEXT
+    CHECK (acquired_text_hash IS NULL OR length(acquired_text_hash) = 64),
   extracted_characters INTEGER CHECK (
-    extracted_characters IS NULL OR extracted_characters >= 0
+    extracted_characters IS NULL OR
+    (extracted_characters >= 0 AND extracted_characters <= 250000)
   ),
-  error_code TEXT,
+  error_code TEXT CHECK (error_code IS NULL OR length(error_code) <= 80),
   retryable INTEGER NOT NULL DEFAULT 0 CHECK (retryable IN (0, 1)),
-  parser_name TEXT NOT NULL,
-  parser_version TEXT NOT NULL,
+  parser_name TEXT NOT NULL CHECK (length(parser_name) BETWEEN 1 AND 100),
+  parser_version TEXT NOT NULL CHECK (length(parser_version) BETWEEN 1 AND 100),
   started_at TEXT NOT NULL,
   completed_at TEXT NOT NULL,
   created_at TEXT NOT NULL
