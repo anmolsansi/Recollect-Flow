@@ -16,7 +16,9 @@ function mediaType(value: string | null): string | undefined {
   return parsed || undefined;
 }
 
-function metadataCoverage(metadata: SourceFetchMetadata): 'metadata_only' | 'url_only' {
+function metadataCoverage(
+  metadata: SourceFetchMetadata,
+): 'metadata_only' | 'url_only' {
   return metadata.title ||
     metadata.description ||
     metadata.siteName ||
@@ -475,7 +477,10 @@ export class SourceFetcher {
         };
       }
     } catch (error) {
-      if (controller.signal.aborted || (error instanceof Error && error.name === 'AbortError')) {
+      if (
+        controller.signal.aborted ||
+        (error instanceof Error && error.name === 'AbortError')
+      ) {
         return {
           status: 'timeout',
           coverage: 'url_only',
