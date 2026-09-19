@@ -37,17 +37,17 @@ The system must preserve these invariants:
 
 The following fields and behavior already exist and are not redefined by BG-08:
 
-| Existing behavior | Authority today | BG-08 rule |
-| --- | --- | --- |
-| submitted URL | `items.source_url` plus per-share `capture_events.source_url` | preserve unchanged |
-| conservative canonical URL | `items.canonical_url` | keep for deduplication only |
-| user-supplied shared text | `raw_text` on the canonical item and capture-event evidence | never overwrite with fetched text |
-| owner reason | item/capture-event user note fields | preserve separately from source content |
-| generated summary | `items.summary` | derived interpretation, never source evidence |
-| attachment extraction | `extraction_records` | existing attachment evidence, not URL acquisition |
-| extraction `coverage` string | extraction-record detail such as `full`, `none`, or page ranges | do not reuse as the URL acquisition state machine |
-| lexical search | D1 FTS5 projection over item fields | extend in BG-10 without mutating raw evidence |
-| enrichment input | title + note + raw text + successful extraction text | BG-10 must stop treating a bare URL as if page text had been acquired |
+| Existing behavior            | Authority today                                                 | BG-08 rule                                                            |
+| ---------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------- |
+| submitted URL                | `items.source_url` plus per-share `capture_events.source_url`   | preserve unchanged                                                    |
+| conservative canonical URL   | `items.canonical_url`                                           | keep for deduplication only                                           |
+| user-supplied shared text    | `raw_text` on the canonical item and capture-event evidence     | never overwrite with fetched text                                     |
+| owner reason                 | item/capture-event user note fields                             | preserve separately from source content                               |
+| generated summary            | `items.summary`                                                 | derived interpretation, never source evidence                         |
+| attachment extraction        | `extraction_records`                                            | existing attachment evidence, not URL acquisition                     |
+| extraction `coverage` string | extraction-record detail such as `full`, `none`, or page ranges | do not reuse as the URL acquisition state machine                     |
+| lexical search               | D1 FTS5 projection over item fields                             | extend in BG-10 without mutating raw evidence                         |
+| enrichment input             | title + note + raw text + successful extraction text            | BG-10 must stop treating a bare URL as if page text had been acquired |
 
 At this baseline, a bare URL can reach enrichment with no usable text and terminate
 as `NO_CONTENT_TO_ENRICH`. BG-08 does not hide that defect. It defines the contract
@@ -57,17 +57,17 @@ that BG-09 through BG-11 must use to replace it.
 
 The implementation must keep these concepts separate:
 
-| Concept | Meaning | Mutability / authority |
-| --- | --- | --- |
-| submitted URL | exact address supplied by the owner/client | immutable capture evidence |
-| canonical URL | conservative normalized value used to locate duplicate canonical items | derived from submitted URL; never rewritten from redirects |
-| fetched final URL | final HTTP(S) destination after an approved redirect chain | versioned acquisition evidence; never a dedupe key |
-| user-supplied text | text explicitly supplied by the owner/client with the capture | immutable source evidence |
-| owner reason | why the owner saved the item | immutable per capture event; not page content |
-| fetched metadata | title, description, site name, canonical hint observed from the fetched response | versioned acquisition evidence |
-| acquired page text | parser-produced text from the fetched response | versioned acquisition evidence |
-| generated summary/topics/action | model or deterministic interpretation | derived data, never evidence |
-| capture event | one share/save event including its own submitted evidence | immutable provenance |
+| Concept                         | Meaning                                                                          | Mutability / authority                                     |
+| ------------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| submitted URL                   | exact address supplied by the owner/client                                       | immutable capture evidence                                 |
+| canonical URL                   | conservative normalized value used to locate duplicate canonical items           | derived from submitted URL; never rewritten from redirects |
+| fetched final URL               | final HTTP(S) destination after an approved redirect chain                       | versioned acquisition evidence; never a dedupe key         |
+| user-supplied text              | text explicitly supplied by the owner/client with the capture                    | immutable source evidence                                  |
+| owner reason                    | why the owner saved the item                                                     | immutable per capture event; not page content              |
+| fetched metadata                | title, description, site name, canonical hint observed from the fetched response | versioned acquisition evidence                             |
+| acquired page text              | parser-produced text from the fetched response                                   | versioned acquisition evidence                             |
+| generated summary/topics/action | model or deterministic interpretation                                            | derived data, never evidence                               |
+| capture event                   | one share/save event including its own submitted evidence                        | immutable provenance                                       |
 
 A source-provided canonical hint is metadata. It must not silently replace
 `items.canonical_url`, merge items, or rewrite earlier capture events.
@@ -122,23 +122,23 @@ logs, metrics labels, exception messages, or public diagnostics.
 `status` is the latest terminal domain outcome for one acquisition execution. Job
 state remains a separate concept.
 
-| Status | Meaning | Job terminal behavior | Retry class |
-| --- | --- | --- | --- |
-| `acquired_text` | supported page text was acquired | complete | none |
-| `metadata_only` | safe metadata was acquired but no usable page body | complete | none by default |
-| `unavailable` | source returned a stable unavailable result such as 404/410 | complete | none |
-| `destination_blocked` | scheme/address/redirect destination violates fetch security policy | complete | none |
-| `policy_blocked` | current privacy classification does not permit contacting the source host | complete without network I/O | none until policy/input changes |
-| `login_required` | source requires authentication or access the fetcher is not allowed to provide | complete | none until input/access model changes |
-| `timeout` | approved network request did not complete inside the total fetch budget | retry pending, then failed after budget | transient |
-| `network_error` | DNS/connect/reset/temporary network failure | retry pending, then failed after budget | transient |
-| `rate_limited` | source responds 429, optionally with bounded Retry-After | retry pending, then failed after budget | transient |
-| `server_error` | source responds 5xx | retry pending, then failed after budget | transient |
-| `unsupported_content` | response type is outside the V1 parser allowlist | complete | none |
-| `too_large` | response exceeds the V1 byte limit | complete | none |
-| `redirect_limit` | redirect loop/count exceeds the V1 limit | complete | none |
-| `empty` | request succeeded but deterministic extraction produced no usable evidence | complete | none |
-| `parse_failed` | supported response cannot be parsed safely | complete | none unless a later parser version changes |
+| Status                | Meaning                                                                        | Job terminal behavior                   | Retry class                                |
+| --------------------- | ------------------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------ |
+| `acquired_text`       | supported page text was acquired                                               | complete                                | none                                       |
+| `metadata_only`       | safe metadata was acquired but no usable page body                             | complete                                | none by default                            |
+| `unavailable`         | source returned a stable unavailable result such as 404/410                    | complete                                | none                                       |
+| `destination_blocked` | scheme/address/redirect destination violates fetch security policy             | complete                                | none                                       |
+| `policy_blocked`      | current privacy classification does not permit contacting the source host      | complete without network I/O            | none until policy/input changes            |
+| `login_required`      | source requires authentication or access the fetcher is not allowed to provide | complete                                | none until input/access model changes      |
+| `timeout`             | approved network request did not complete inside the total fetch budget        | retry pending, then failed after budget | transient                                  |
+| `network_error`       | DNS/connect/reset/temporary network failure                                    | retry pending, then failed after budget | transient                                  |
+| `rate_limited`        | source responds 429, optionally with bounded Retry-After                       | retry pending, then failed after budget | transient                                  |
+| `server_error`        | source responds 5xx                                                            | retry pending, then failed after budget | transient                                  |
+| `unsupported_content` | response type is outside the V1 parser allowlist                               | complete                                | none                                       |
+| `too_large`           | response exceeds the V1 byte limit                                             | complete                                | none                                       |
+| `redirect_limit`      | redirect loop/count exceeds the V1 limit                                       | complete                                | none                                       |
+| `empty`               | request succeeded but deterministic extraction produced no usable evidence     | complete                                | none                                       |
+| `parse_failed`        | supported response cannot be parsed safely                                     | complete                                | none unless a later parser version changes |
 
 A completed acquisition job can legitimately carry a limited or unavailable domain
 outcome. “Complete” means the acquisition decision finished, not that page text was
@@ -175,12 +175,12 @@ not the same as the existing free-form attachment extraction `coverage` string.
 
 BG-10 must expose a machine-readable URL coverage value with these meanings:
 
-| Coverage | Meaning |
-| --- | --- |
-| `url_only` | submitted URL, capture provenance, and owner reason are available, but no source metadata/body or supplied source text is available |
-| `metadata_only` | source metadata was acquired, but no page body or supplied source text is available |
-| `supplied_text` | owner/client supplied source text is available; this does not prove the live page was fetched |
-| `acquired_text` | deterministic source acquisition produced page text |
+| Coverage        | Meaning                                                                                                                             |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `url_only`      | submitted URL, capture provenance, and owner reason are available, but no source metadata/body or supplied source text is available |
+| `metadata_only` | source metadata was acquired, but no page body or supplied source text is available                                                 |
+| `supplied_text` | owner/client supplied source text is available; this does not prove the live page was fetched                                       |
+| `acquired_text` | deterministic source acquisition produced page text                                                                                 |
 
 When more than one evidence type exists, the strongest coverage value may be shown
 for compact UI, but the underlying provenance fields remain separate. An acquired
@@ -235,12 +235,12 @@ It must:
 These values are the BG-08 contract for BG-09. They are intentionally small and may
 change only through an explicit contract change backed by measurement.
 
-| Budget | V1 value | Reason |
-| --- | ---: | --- |
-| total wall-clock budget | 8 seconds | bounds Worker occupancy across the whole redirect chain |
-| redirects | 5 maximum | enough for ordinary canonical redirects without unbounded loops |
-| response body | 2 MiB maximum as delivered to the parser | bounds memory/work for article-style text pages |
-| extracted text | 250,000 Unicode characters maximum | aligns with the existing extraction-result upper bound |
+| Budget                       | V1 value                                      | Reason                                                                      |
+| ---------------------------- | --------------------------------------------: | --------------------------------------------------------------------------- |
+| total wall-clock budget      | 8 seconds                                     | bounds Worker occupancy across the whole redirect chain                     |
+| redirects                    | 5 maximum                                     | enough for ordinary canonical redirects without unbounded loops             |
+| response body                | 2 MiB maximum as delivered to the parser      | bounds memory/work for article-style text pages                             |
+| extracted text               | 250,000 Unicode characters maximum            | aligns with the existing extraction-result upper bound                      |
 | automatic transient attempts | 3 maximum for the same source/policy snapshot | prevents the generic job ceiling from becoming an endless source retry loop |
 
 A declared `Content-Length` above 2 MiB can be rejected early, but the header is
@@ -340,18 +340,18 @@ not bypass privacy, destination, byte, content-type, or credential boundaries.
 
 ## 12. Owner-visible outcomes
 
-| Outcome | Owner-visible result | Suggested next action |
-| --- | --- | --- |
-| acquired text | “Saved. Page text was acquired and is available for search.” | none |
-| metadata only | “Saved. I could read page metadata, but not the page body.” | supply text or screenshot if needed |
-| unavailable/not found | “Saved. The link is kept, but the page is unavailable.” | check the link or supply evidence |
-| login required | “Saved. This page requires login, so only the link and your supplied evidence are available.” | supply text, screenshot, or file |
-| privacy blocks fetch | “Saved. Source fetching is off for this privacy level.” | keep as-is or explicitly reclassify if appropriate |
-| blocked destination | “Saved. The source address is not allowed for server fetching.” | keep URL or supply evidence |
-| timeout/network/server error after retries | “Saved. The source could not be reached after bounded retries.” | retry later |
-| unsupported content | “Saved. This URL returns a format the page fetcher does not read.” | capture the supported file directly |
-| too large | “Saved. The page exceeded the safe fetch limit.” | supply selected text or a smaller supported source |
-| empty | “Saved. The page returned no usable text.” | supply text or screenshot |
+| Outcome                                    | Owner-visible result                                                                          | Suggested next action                              |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| acquired text                              | “Saved. Page text was acquired and is available for search.”                                  | none                                               |
+| metadata only                              | “Saved. I could read page metadata, but not the page body.”                                   | supply text or screenshot if needed                |
+| unavailable/not found                      | “Saved. The link is kept, but the page is unavailable.”                                       | check the link or supply evidence                  |
+| login required                             | “Saved. This page requires login, so only the link and your supplied evidence are available.” | supply text, screenshot, or file                   |
+| privacy blocks fetch                       | “Saved. Source fetching is off for this privacy level.”                                       | keep as-is or explicitly reclassify if appropriate |
+| blocked destination                        | “Saved. The source address is not allowed for server fetching.”                               | keep URL or supply evidence                        |
+| timeout/network/server error after retries | “Saved. The source could not be reached after bounded retries.”                               | retry later                                        |
+| unsupported content                        | “Saved. This URL returns a format the page fetcher does not read.”                            | capture the supported file directly                |
+| too large                                  | “Saved. The page exceeded the safe fetch limit.”                                              | supply selected text or a smaller supported source |
+| empty                                      | “Saved. The page returned no usable text.”                                                    | supply text or screenshot                          |
 
 “Saved” refers to canonical capture durability, not successful optional processing.
 
@@ -476,23 +476,23 @@ data and cannot alter processing instructions.
 
 BG-09/BG-10 are expected to prove at least these cases:
 
-| Case | Expected acquisition | Expected coverage | Automatic retry |
-| --- | --- | --- | --- |
-| public HTML article with body | `acquired_text` | `acquired_text` | no |
-| public HTML with metadata but no body | `metadata_only` | `metadata_only` | no |
-| public 404/410 | `unavailable` | `url_only` | no |
-| public 401/403/login wall | `login_required` | `url_only` | no |
-| public 429 | `rate_limited` until retry budget exhausted | `url_only` unless supplied text exists | yes, max 3 |
-| public 5xx | `server_error` until retry budget exhausted | `url_only` unless supplied text exists | yes, max 3 |
-| timeout | `timeout` until retry budget exhausted | `url_only` unless supplied text exists | yes, max 3 |
-| private/reserved destination | `destination_blocked` | `url_only` | no |
-| Unknown/Personal/Sensitive item | `policy_blocked` with zero network I/O | supplied-text if present, otherwise `url_only` | no |
-| binary/unsupported response | `unsupported_content` | supplied-text if present, otherwise `url_only` | no |
-| >2 MiB body | `too_large` | supplied-text if present, otherwise `url_only` | no |
-| >5 redirects | `redirect_limit` | supplied-text if present, otherwise `url_only` | no |
-| empty supported response | `empty` | supplied-text if present, otherwise `url_only` | no |
-| Instagram requiring login | `login_required` | supplied-text if present, otherwise `url_only` | no |
-| URL + owner-supplied text, fetch unavailable | acquisition outcome remains truthful | `supplied_text` | based only on acquisition outcome |
+| Case                                         | Expected acquisition                        | Expected coverage                              | Automatic retry                   |
+| -------------------------------------------- | ------------------------------------------- | ---------------------------------------------- | --------------------------------- |
+| public HTML article with body                | `acquired_text`                             | `acquired_text`                                | no                                |
+| public HTML with metadata but no body        | `metadata_only`                             | `metadata_only`                                | no                                |
+| public 404/410                               | `unavailable`                               | `url_only`                                     | no                                |
+| public 401/403/login wall                    | `login_required`                            | `url_only`                                     | no                                |
+| public 429                                   | `rate_limited` until retry budget exhausted | `url_only` unless supplied text exists         | yes, max 3                        |
+| public 5xx                                   | `server_error` until retry budget exhausted | `url_only` unless supplied text exists         | yes, max 3                        |
+| timeout                                      | `timeout` until retry budget exhausted      | `url_only` unless supplied text exists         | yes, max 3                        |
+| private/reserved destination                 | `destination_blocked`                       | `url_only`                                     | no                                |
+| Unknown/Personal/Sensitive item              | `policy_blocked` with zero network I/O      | supplied-text if present, otherwise `url_only` | no                                |
+| binary/unsupported response                  | `unsupported_content`                       | supplied-text if present, otherwise `url_only` | no                                |
+| >2 MiB body                                  | `too_large`                                 | supplied-text if present, otherwise `url_only` | no                                |
+| >5 redirects                                 | `redirect_limit`                            | supplied-text if present, otherwise `url_only` | no                                |
+| empty supported response                     | `empty`                                     | supplied-text if present, otherwise `url_only` | no                                |
+| Instagram requiring login                    | `login_required`                            | supplied-text if present, otherwise `url_only` | no                                |
+| URL + owner-supplied text, fetch unavailable | acquisition outcome remains truthful        | `supplied_text`                                | based only on acquisition outcome |
 
 ## 17. Completion boundary
 
