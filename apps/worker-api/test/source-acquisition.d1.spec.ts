@@ -62,6 +62,7 @@ async function seedAcquisitionJob(
   id: string,
   itemId: string,
   privacySnapshot: 'unknown' | 'public' | 'personal' | 'sensitive',
+  sourceRevision = 1,
 ): Promise<void> {
   await env.DB.prepare(
     `INSERT INTO processing_jobs (
@@ -71,11 +72,17 @@ async function seedAcquisitionJob(
        data_collection_denied
      ) VALUES (
        ?1, ?2, 'acquire_url', 'pending', 0, ?3, ?3, ?3,
-       'url-source-v1:1', ?4, 'cloudflare', 'test-policy',
+       ?4, ?5, 'cloudflare', 'test-policy',
        'none', 0, 0, 1
      )`,
   )
-    .bind(id, itemId, T0.toISOString(), privacySnapshot)
+    .bind(
+      id,
+      itemId,
+      T0.toISOString(),
+      `url-source-v1:${sourceRevision}`,
+      privacySnapshot,
+    )
     .run();
 }
 
@@ -260,9 +267,103 @@ describe('BG-10 durable URL acquisition chain', () => {
          (SELECT COUNT(*) FROM url_acquisitions
           WHERE item_id = 'acquired-item') AS evidence_count,
          (SELECT COUNT(*) FROM processing_jobs
-          WHERE item_id = 'acquired-item' AND job_type = 'enrich') AS enrich_count`,
-    ).first<{ evidence_count: number; enrich_count: number }>();
-    expect(counts).toEqual({ evidence_count: 1, enrich_count: 1 });
+          WHERE item_id = 'acquired-item' AND job_type = 'enrich') AS enrich_count,
+         (SELECT COUNT(*) FROM audit_events
+          WHERE item_id = 'acquired-item'
+            AND event_type = 'url_acquisition_completed') AS audit_count`,
+    ).first<{
+      evidence_count: number;
+      enrich_count: number;
+      audit_count: number;
+    }>();
+    expect(counts).toEqual({
+      evidence_count: 1,
+      enrich_count: 1,
+      audit_count: 1,
+    });
+  });
+
+  it('drops stale source terms when the URL generation changes', async () => {
+    await seedItem('revision-item', 'public');
+    await seedAcquisitionJob('revision-job-v1', 'revision-item', 'public');
+    const firstJob = await lease('revision-job-v1', 'revision-owner-v1');
+    const firstRun = serviceWith({
+      status: 'acquired_text',
+      coverage: 'acquired_text',
+      retryable: false,
+      redirectCount: 0,
+      acquiredText: 'old source carries saffronobsoletephrase',
+      extractedCharacters: 39,
+    }).service;
+    expect(await firstRun.process(firstJob, 'revision-owner-v1')).toBe(true);
+
+    let search = await executeSearch(env.DB, {
+      q: 'saffronobsoletephrase',
+      limit: 10,
+      captured_to: '2026-09-20T00:00:00.000Z',
+    });
+    expect(search.data.map((entry) => entry.id)).toContain('revision-item');
+
+    await env.DB.prepare(
+      `UPDATE items
+       SET source_url = 'https://example.com/revision-item-v2',
+           updated_at = ?1
+       WHERE id = 'revision-item'`,
+    )
+      .bind(new Date(T0.getTime() + 2_000).toISOString())
+      .run();
+
+    const item = await env.DB.prepare(
+      `SELECT source_revision FROM items WHERE id = 'revision-item'`,
+    ).first<{ source_revision: number }>();
+    expect(item?.source_revision).toBe(2);
+
+    search = await executeSearch(env.DB, {
+      q: 'saffronobsoletephrase',
+      limit: 10,
+      captured_to: '2026-09-20T00:00:00.000Z',
+    });
+    expect(search.data.map((entry) => entry.id)).not.toContain('revision-item');
+
+    await seedAcquisitionJob(
+      'revision-job-v2',
+      'revision-item',
+      'public',
+      2,
+    );
+    const secondJob = await lease(
+      'revision-job-v2',
+      'revision-owner-v2',
+      new Date(T0.getTime() + 3_000),
+    );
+    const secondRun = serviceWith(
+      {
+        status: 'acquired_text',
+        coverage: 'acquired_text',
+        retryable: false,
+        redirectCount: 0,
+        acquiredText: 'new source carries indigofreshphrase',
+        extractedCharacters: 36,
+      },
+      new Date(T0.getTime() + 4_000),
+    ).service;
+    expect(await secondRun.process(secondJob, 'revision-owner-v2')).toBe(true);
+
+    const freshSearch = await executeSearch(env.DB, {
+      q: 'indigofreshphrase',
+      limit: 10,
+      captured_to: '2026-09-20T00:00:00.000Z',
+    });
+    expect(freshSearch.data.map((entry) => entry.id)).toContain('revision-item');
+
+    const staleSearch = await executeSearch(env.DB, {
+      q: 'saffronobsoletephrase',
+      limit: 10,
+      captured_to: '2026-09-20T00:00:00.000Z',
+    });
+    expect(staleSearch.data.map((entry) => entry.id)).not.toContain(
+      'revision-item',
+    );
   });
 
   it('retries transient failures and persists the exhausted terminal outcome', async () => {
