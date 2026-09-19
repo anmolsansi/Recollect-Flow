@@ -15,14 +15,18 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Print exact Prettier diff
+      - name: Print exact Prettier files
         run: |
-          npx prettier --write \
-            apps/worker-api/src/jobs/extraction/source-destination.ts \
-            apps/worker-api/src/jobs/extraction/source-fetcher.types.ts \
+          files=(
+            apps/worker-api/src/jobs/extraction/source-destination.ts
+            apps/worker-api/src/jobs/extraction/source-fetcher.types.ts
             apps/worker-api/test/source-fetcher.d1.spec.ts
-          git diff -- \
-            apps/worker-api/src/jobs/extraction/source-destination.ts \
-            apps/worker-api/src/jobs/extraction/source-fetcher.types.ts \
-            apps/worker-api/test/source-fetcher.d1.spec.ts
+          )
+          npx prettier --write "${files[@]}"
+          for file in "${files[@]}"; do
+            echo "BG09_FORMAT_BEGIN:${file}"
+            base64 -w0 "${file}"
+            echo
+            echo "BG09_FORMAT_END:${file}"
+          done
           test -z "$(git status --short)"
