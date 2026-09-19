@@ -505,7 +505,6 @@ Its output is the explicit contract those tasks must implement. Conversely, BG-0
 not unlocked by prose alone until the BG-08 contract branch passes repository CI and
 its merged closeout records the parent gate.
 
-
 ## 15. Implemented BG-10 persistence binding
 
 BG-10 binds this contract to migration `0022_add_url_acquisition_evidence.sql`.

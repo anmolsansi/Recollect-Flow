@@ -90,7 +90,6 @@ export const extractionResponseSchema = z.object({
   updated_at: timestampSchema,
 });
 
-
 export const urlAcquisitionResponseSchema = z.object({
   id: z.string(),
   job_id: z.string(),
@@ -237,7 +236,8 @@ export const itemDetailDataSchema = z
   .transform((data) => ({
     ...data,
     extraction: data.extractions[0] ?? null,
-    url_acquisition: data.url_acquisitions.find((entry) => entry.is_current === 1) ?? null,
+    url_acquisition:
+      data.url_acquisitions.find((entry) => entry.is_current === 1) ?? null,
   }));
 
 export const itemDetailResponseSchema = z.object({

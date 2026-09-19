@@ -88,7 +88,6 @@ describe('BG-10 URL evidence migration rehearsal', () => {
       expect(row?.name).toBe(table);
     }
 
-
     const ftsColumns = await database
       .prepare('PRAGMA table_info(item_search_fts)')
       .all<{ name: string }>();

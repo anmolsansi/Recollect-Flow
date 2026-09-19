@@ -12,7 +12,10 @@ import { CanonicalPurgeService } from '../src/recovery/canonical-purge.service';
 import { executeSearch } from '../src/search/search.service';
 
 const migration = readFileSync(
-  new URL('../../../migrations/0022_add_url_acquisition_evidence.sql', import.meta.url),
+  new URL(
+    '../../../migrations/0022_add_url_acquisition_evidence.sql',
+    import.meta.url,
+  ),
   'utf8',
 );
 
@@ -250,7 +253,8 @@ describe('BG-10 durable URL acquisition chain', () => {
     expect(
       search.data
         .find((entry) => entry.id === 'acquired-item')
-        ?.snippet.segments.map((segment) => segment.text).join(' '),
+        ?.snippet.segments.map((segment) => segment.text)
+        .join(' '),
     ).toContain('quasar');
 
     const enrichBeforeReplay = await env.DB.prepare(

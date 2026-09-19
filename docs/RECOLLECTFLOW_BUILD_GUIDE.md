@@ -1283,7 +1283,6 @@ and the rebuildable FTS `source_text` projection. Portable export schema
 `2026-09-19.1`, clean-target restore, canonical purge and integrity scanning all
 include URL evidence.
 
-
 ### Why fetching into memory does not complete the feature
 
 If the Worker fetches an article, generates a summary and discards the article text,

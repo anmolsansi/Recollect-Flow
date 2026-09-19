@@ -1,9 +1,15 @@
 import { sha256 } from '../../captures/hash';
 import type { PrivacyLevel } from '../../policy/policy.service';
 import { JobService, type JobRecord } from '../job.service';
-import { sourceFetchOutcomeSchema, type ValidatedSourceFetchOutcome } from './source-acquisition.schema';
+import {
+  sourceFetchOutcomeSchema,
+  type ValidatedSourceFetchOutcome,
+} from './source-acquisition.schema';
 import { SourceFetcher } from './source-fetcher';
-import { SOURCE_FETCH_LIMITS, type SourceFetchOutcome } from './source-fetcher.types';
+import {
+  SOURCE_FETCH_LIMITS,
+  type SourceFetchOutcome,
+} from './source-fetcher.types';
 
 interface AcquisitionContext {
   itemId: string;

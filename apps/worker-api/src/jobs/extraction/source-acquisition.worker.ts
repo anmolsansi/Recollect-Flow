@@ -6,12 +6,7 @@ export async function processSourceAcquisitionJobs(env: Env): Promise<void> {
   const jobs = new JobService(env.DB);
   const service = new SourceAcquisitionService(env.DB);
   const ownerId = crypto.randomUUID();
-  const leased = await jobs.leaseProcessingJobs(
-    'acquire_url',
-    ownerId,
-    5,
-    10,
-  );
+  const leased = await jobs.leaseProcessingJobs('acquire_url', ownerId, 5, 10);
 
   for (const job of leased) {
     try {
