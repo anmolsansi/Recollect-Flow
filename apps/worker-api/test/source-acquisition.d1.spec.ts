@@ -162,6 +162,46 @@ describe('BG-10 durable URL acquisition chain', () => {
     expect(enrich?.count).toBe(0);
   });
 
+  it('does not enqueue enrichment when the AI policy snapshot is fail-closed', async () => {
+    await seedItem(
+      'policy-none-item',
+      'unknown',
+      'owner supplied evidence remains usable',
+    );
+    await seedAcquisitionJob('policy-none-job', 'policy-none-item', 'unknown');
+    await env.DB.prepare(
+      `UPDATE processing_jobs
+       SET provider_eligibility = 'none'
+       WHERE id = 'policy-none-job'`,
+    ).run();
+    const job = await lease('policy-none-job', 'policy-none-owner');
+    const fetch = vi.fn(async () => {
+      throw new Error('network fetch must not run');
+    });
+    const service = new SourceAcquisitionService(env.DB, {
+      fetcher: { fetch },
+      now: () => new Date(T0.getTime() + 1_000),
+    });
+
+    expect(await service.process(job, 'policy-none-owner')).toBe(true);
+    expect(fetch).not.toHaveBeenCalled();
+
+    const evidence = await env.DB.prepare(
+      `SELECT status, coverage FROM url_acquisitions
+       WHERE item_id = 'policy-none-item'`,
+    ).first<{ status: string; coverage: string }>();
+    expect(evidence).toEqual({
+      status: 'policy_blocked',
+      coverage: 'supplied_text',
+    });
+
+    const enrich = await env.DB.prepare(
+      `SELECT COUNT(*) AS count FROM processing_jobs
+       WHERE item_id = 'policy-none-item' AND job_type = 'enrich'`,
+    ).first<{ count: number }>();
+    expect(enrich?.count).toBe(0);
+  });
+
   it('rejects a stale privacy snapshot before network I/O or evidence persistence', async () => {
     await seedItem('stale-policy-item', 'public');
     await seedAcquisitionJob('stale-policy-job', 'stale-policy-item', 'public');
