@@ -235,12 +235,12 @@ It must:
 These values are the BG-08 contract for BG-09. They are intentionally small and may
 change only through an explicit contract change backed by measurement.
 
-| Budget                       | V1 value                                      | Reason                                                                      |
+| Budget                       |                                      V1 value | Reason                                                                      |
 | ---------------------------- | --------------------------------------------: | --------------------------------------------------------------------------- |
-| total wall-clock budget      | 8 seconds                                     | bounds Worker occupancy across the whole redirect chain                     |
-| redirects                    | 5 maximum                                     | enough for ordinary canonical redirects without unbounded loops             |
-| response body                | 2 MiB maximum as delivered to the parser      | bounds memory/work for article-style text pages                             |
-| extracted text               | 250,000 Unicode characters maximum            | aligns with the existing extraction-result upper bound                      |
+| total wall-clock budget      |                                     8 seconds | bounds Worker occupancy across the whole redirect chain                     |
+| redirects                    |                                     5 maximum | enough for ordinary canonical redirects without unbounded loops             |
+| response body                |      2 MiB maximum as delivered to the parser | bounds memory/work for article-style text pages                             |
+| extracted text               |            250,000 Unicode characters maximum | aligns with the existing extraction-result upper bound                      |
 | automatic transient attempts | 3 maximum for the same source/policy snapshot | prevents the generic job ceiling from becoming an endless source retry loop |
 
 A declared `Content-Length` above 2 MiB can be rejected early, but the header is
