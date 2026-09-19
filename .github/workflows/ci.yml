@@ -15,6 +15,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Show BG-08 Prettier diff
+        run: |
+          npx prettier --write docs/URL_ACQUISITION_CONTRACT.md docs/verification/BG-08_URL_ACQUISITION_CONTRACT.md
+          git diff -- docs/URL_ACQUISITION_CONTRACT.md docs/verification/BG-08_URL_ACQUISITION_CONTRACT.md
+          exit 1
       - run: npm run check
       - run: npm run db:migrate:local
       - run: google-chrome --version
