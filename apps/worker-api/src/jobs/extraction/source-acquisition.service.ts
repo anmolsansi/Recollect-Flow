@@ -134,6 +134,7 @@ export class SourceAcquisitionService {
     job: JobRecord,
     ownerId: string,
     context: AcquisitionContext,
+    at: Date,
   ): Promise<boolean> {
     if (context.inputHash !== expectedInputHash(context.sourceRevision)) {
       return this.jobs.failProcessingJob(
@@ -141,6 +142,8 @@ export class SourceAcquisitionService {
         ownerId,
         'SOURCE_REVISION_STALE',
         false,
+        SOURCE_FETCH_LIMITS.maxAutomaticTransientAttempts,
+        at,
       );
     }
     if (context.privacyLevel !== context.privacyLevelSnapshot) {
@@ -149,6 +152,8 @@ export class SourceAcquisitionService {
         ownerId,
         'SOURCE_POLICY_STALE',
         false,
+        SOURCE_FETCH_LIMITS.maxAutomaticTransientAttempts,
+        at,
       );
     }
     return false;
@@ -387,7 +392,7 @@ export class SourceAcquisitionService {
       context.inputHash !== expectedInputHash(context.sourceRevision) ||
       context.privacyLevel !== context.privacyLevelSnapshot
     ) {
-      await this.rejectStaleContext(job, ownerId, context);
+      await this.rejectStaleContext(job, ownerId, context, startedAt);
       return false;
     }
 
