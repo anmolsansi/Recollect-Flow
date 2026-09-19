@@ -270,6 +270,7 @@ export class SourceAcquisitionService {
              AND i.deleted_at IS NULL
              AND i.source_revision = ?7
              AND i.privacy_level = ?8
+             AND source.provider_eligibility <> 'none'
              AND EXISTS (
                SELECT 1 FROM url_acquisitions ua
                WHERE ua.job_id = source.id
