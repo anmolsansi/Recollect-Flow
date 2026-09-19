@@ -181,7 +181,7 @@ export async function createLocalAcceptanceRuntime({
     npmExecutable,
     [
       'run',
-      'dev:web',
+      'dev',
       '--',
       '--host',
       '127.0.0.1',
@@ -189,7 +189,7 @@ export async function createLocalAcceptanceRuntime({
       String(webPort),
       '--strictPort',
     ],
-    { cwd: rootDir },
+    { cwd: join(rootDir, 'apps/web') },
   );
 
   try {
