@@ -180,6 +180,7 @@ export class SourceAcquisitionService {
              id, item_id, job_id, source_revision, source_url_snapshot,
              privacy_level_snapshot, status, coverage, fetched_final_url,
              http_status, content_type, response_bytes, redirect_count,
+             attempt_count, duration_ms, network_io_skipped_by_policy,
              source_title, source_description, source_site_name,
              source_canonical_hint_url, acquired_text, acquired_text_hash,
              extracted_characters, error_code, retryable, parser_name,
@@ -188,21 +189,21 @@ export class SourceAcquisitionService {
            SELECT
              ?1, i.id, j.id, i.source_revision, i.source_url, i.privacy_level,
              ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14,
-             ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?21
+             ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?24
            FROM processing_jobs j
            JOIN items i ON i.id = j.item_id
-           WHERE j.id = ?22
-             AND j.item_id = ?23
+           WHERE j.id = ?25
+             AND j.item_id = ?26
              AND j.job_type = 'acquire_url'
              AND j.status = 'processing'
-             AND j.lease_owner = ?24
-             AND j.lease_expires_at > ?21
-             AND j.input_hash = ?25
-             AND j.privacy_level_snapshot = ?26
+             AND j.lease_owner = ?27
+             AND j.lease_expires_at > ?24
+             AND j.input_hash = ?28
+             AND j.privacy_level_snapshot = ?29
              AND i.deleted_at IS NULL
-             AND i.source_url = ?27
-             AND i.source_revision = ?28
-             AND i.privacy_level = ?26
+             AND i.source_url = ?30
+             AND i.source_revision = ?31
+             AND i.privacy_level = ?29
              AND NOT EXISTS (
                SELECT 1 FROM purge_workflows p
                WHERE p.item_id = i.id
@@ -219,6 +220,9 @@ export class SourceAcquisitionService {
           outcome.contentType ?? null,
           outcome.responseBytes ?? null,
           outcome.redirectCount,
+          context.attempts + 1,
+          Math.max(0, completedAt.getTime() - startedAt.getTime()),
+          context.privacyLevel === 'public' ? 0 : 1,
           outcome.title ?? null,
           outcome.description ?? null,
           outcome.siteName ?? null,
