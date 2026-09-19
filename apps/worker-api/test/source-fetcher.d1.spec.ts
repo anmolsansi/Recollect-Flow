@@ -73,8 +73,10 @@ describe('BG-09 bounded source fetcher', () => {
     },
   );
 
-  it('supports bounded plain text without inventing HTML metadata', async () => {
-    const fetchImpl = fetchSequence([
+  it(
+    'supports bounded plain text without inventing HTML metadata',
+    async () => {
+      const fetchImpl = fetchSequence([
       new Response('Plain\n\n source   evidence', {
         headers: { 'content-type': 'text/plain; charset=utf-8' },
       }),
@@ -88,8 +90,9 @@ describe('BG-09 bounded source fetcher', () => {
     expect(outcome.status).toBe('acquired_text');
     expect(outcome.acquiredText).toBe('Plain\nsource');
     expect(outcome.extractedCharacters).toBe(12);
-    expect(outcome.title).toBeUndefined();
-  });
+      expect(outcome.title).toBeUndefined();
+    },
+  );
 
   it(
     'handles relative redirects manually and records only the final derived URL',
@@ -393,8 +396,10 @@ describe('BG-09 bounded source fetcher', () => {
     },
   );
 
-  it('normalizes parser failures without retrying or leaking parser details', async () => {
-    const outcome = await new SourceFetcher({
+  it(
+    'normalizes parser failures without retrying or leaking parser details',
+    async () => {
+      const outcome = await new SourceFetcher({
       fetchImpl: fetchSequence([
         htmlResponse('<html><main>Source body</main></html>'),
       ]),
@@ -414,9 +419,10 @@ describe('BG-09 bounded source fetcher', () => {
       httpStatus: 200,
       contentType: 'text/html',
       responseBytes: 37,
-      redirectCount: 0,
-    });
-  });
+        redirectCount: 0,
+      });
+    },
+  );
 
   it(
     'never forwards application credentials or arbitrary client headers',
@@ -443,8 +449,10 @@ describe('BG-09 bounded source fetcher', () => {
     },
   );
 
-  it('fails closed before network work for unsafe initial destinations', async () => {
-    const fetchImpl = vi.fn() as unknown as typeof fetch;
+  it(
+    'fails closed before network work for unsafe initial destinations',
+    async () => {
+      const fetchImpl = vi.fn() as unknown as typeof fetch;
     const outcome = await new SourceFetcher({ fetchImpl }).fetch(
       'http://0x7f000001/private',
     );
@@ -453,8 +461,9 @@ describe('BG-09 bounded source fetcher', () => {
       status: 'destination_blocked',
       errorCode: 'SOURCE_DESTINATION_BLOCKED',
     });
-    expect(fetchImpl).not.toHaveBeenCalled();
-  });
+      expect(fetchImpl).not.toHaveBeenCalled();
+    },
+  );
 
   it(
     'normalizes thrown network failures without exposing raw error details',
