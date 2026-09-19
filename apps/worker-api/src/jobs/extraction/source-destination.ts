@@ -74,7 +74,18 @@ function isBlockedIpv4(parts: [number, number, number, number]): boolean {
   return ranges.some(([network, prefix]) => inIpv4Cidr(value, network, prefix));
 }
 
-function parseIpv6(hostname: string): number[] | null {
+type Ipv6Parts = [
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+];
+
+function parseIpv6(hostname: string): Ipv6Parts | null {
   let value = hostname;
   if (!value.includes(':')) return null;
 
@@ -103,20 +114,21 @@ function parseIpv6(hostname: string): number[] | null {
     return parsed;
   };
 
-  const left = parseHalf(halves[0]);
+  const left = parseHalf(halves[0] ?? '');
   const right = parseHalf(halves[1] ?? '');
   if (!left || !right) return null;
 
   if (halves.length === 1) {
-    return left.length === 8 ? left : null;
+    return left.length === 8 ? (left as Ipv6Parts) : null;
   }
 
   const missing = 8 - left.length - right.length;
   if (missing < 1) return null;
-  return [...left, ...Array<number>(missing).fill(0), ...right];
+  const expanded = [...left, ...Array<number>(missing).fill(0), ...right];
+  return expanded.length === 8 ? (expanded as Ipv6Parts) : null;
 }
 
-function isBlockedIpv6(parts: number[]): boolean {
+function isBlockedIpv6(parts: Ipv6Parts): boolean {
   if (parts.length !== 8) return true;
 
   const firstSevenZero = parts.slice(0, 7).every((part) => part === 0);
