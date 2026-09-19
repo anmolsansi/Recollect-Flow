@@ -53,6 +53,7 @@ async function createVerifierServer({
   malformedInitialVersion = false,
   forceCurrentConflictPrivacyLevel = null,
   healthFailureEchoSecrets = false,
+  rejectBrowserCookieDownload = false,
 } = {}) {
   let itemVersion = 1;
   let privacyLevel = 'unknown';
@@ -512,6 +513,7 @@ async function createVerifierServer({
       requestUrl.pathname === `/api/v1/attachments/${attachmentId}/content`
     ) {
       const validSignedSession =
+        !rejectBrowserCookieDownload &&
         cookie === 'admin_session=authenticated.test-signature';
       if (
         authorization !== `Bearer ${CAPTURE_TOKEN}` &&
@@ -605,7 +607,7 @@ test('release verifier reports staged BG-04 success without hiding known unavail
     assert.equal(result.stage_summary.overall, 'passed');
     assert.equal(result.stage_summary.counts.failed, 0);
     assert.ok(result.stage_summary.counts.passed >= 20);
-    assert.ok(result.stage_summary.counts.unavailable >= 4);
+    assert.ok(result.stage_summary.counts.unavailable >= 3);
 
     assert.equal(result.exact_replay_status, 200);
     assert.equal(result.exact_replay, true);
@@ -633,7 +635,7 @@ test('release verifier reports staged BG-04 success without hiding known unavail
 
     assert.equal(
       findStage(result, 'browser-cookie-attachment-download').status,
-      'unavailable',
+      'passed',
     );
     assert.equal(
       findStage(result, 'provider-adapter-execution').status,
@@ -664,6 +666,23 @@ test('release verifier reports staged BG-04 success without hiding known unavail
     assert.equal(state.itemVersion, 16);
     assert.equal(state.deleted, false);
     assert.match(state.title, /^BG-04 release smoke /);
+  } finally {
+    await server.close();
+  }
+});
+
+test('release verifier fails if the signed-cookie attachment path regresses', async () => {
+  const server = await createVerifierServer({
+    rejectBrowserCookieDownload: true,
+  });
+  try {
+    await assert.rejects(runVerifier(server), (error) => {
+      assert.equal(error.code, 1);
+      assert.match(error.stderr, /browser-cookie-attachment-download/);
+      assert.match(error.stderr, /expected 200, got 401/);
+      assert.match(error.stderr, /RELEASE_SMOKE_SUMMARY/);
+      return true;
+    });
   } finally {
     await server.close();
   }
