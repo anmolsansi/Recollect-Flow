@@ -102,6 +102,8 @@ Each URL acquisition row keeps source evidence separate from the existing fields
   copied into `raw_text`;
 - `error_code` and `retryable`: safe operational outcome without raw exception
   text;
+- `attempt_count`, `duration_ms`, and `network_io_skipped_by_policy`:
+  bounded execution observability without source content in logs;
 - parser identity/timestamps and `is_current`.
 
 The existing fields remain distinct: `source_url` is canonical submitted source
@@ -115,10 +117,12 @@ Automatic source-host I/O occurs only for a current `public` item. For
 not call the source host. Source-host acquisition and AI-provider eligibility
 remain separate policy decisions.
 
-Portable JSON export schema `2026-09-19.1` includes `urlAcquisitions` for each
-item. Clean-target restore validates item ownership and restores those rows,
-permanent purge removes them, and the rebuildable FTS projection indexes the
-current `acquired_text` as `source_text`.
+Portable JSON export schema `2026-09-19.1` includes full
+`urlAcquisitions` history for each item. CSV includes a readable
+`url_acquisition` summary for the current matching generation. Clean-target
+restore validates item ownership and restores those rows, permanent purge removes
+them, and the rebuildable FTS projection indexes the current `acquired_text` as
+`source_text`.
 
 Statuses, coverage values, safe error codes, retry rules and network budgets remain
 defined by [URL_ACQUISITION_CONTRACT.md](URL_ACQUISITION_CONTRACT.md).
@@ -186,8 +190,10 @@ generation.
   `pending` plus a future `available_at`.
 - `POST /api/v1/jobs/:id/retry?kind=processing|sync`: admin-only, bounded to
   three manual retries. It rejects deleted items, paused optional processing,
-  stale privacy snapshots, ineligible hosted processing and deleted Notion
-  pages.
+  stale privacy snapshots, ineligible hosted processing, deleted Notion pages,
+  and `acquire_url` jobs. URL-source retry needs a new generation-aware
+  acquisition command and remains BG-11 work rather than reusing immutable
+  evidence under the same acquisition job ID.
 - `POST /api/v1/items/:id/notion/recreate`: admin-only owner approval for a
   confirmed deleted/missing Notion page.
 - `POST /api/v1/worker/jobs/lease`: local-worker token; body contains
