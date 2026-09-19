@@ -570,6 +570,11 @@ export class JobService {
                 SELECT 1 FROM processing_jobs
                 WHERE item_id = ?4 AND job_type = 'enrich'
                   AND status IN ('pending', 'processing')
+              )
+              AND NOT EXISTS (
+                SELECT 1 FROM processing_jobs
+                WHERE item_id = ?4 AND job_type = 'acquire_url'
+                  AND status IN ('pending', 'processing')
               )`,
           )
           .bind(crypto.randomUUID(), nowIso, jobId, itemId, ownerId),
