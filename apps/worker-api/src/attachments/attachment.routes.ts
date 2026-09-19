@@ -253,7 +253,9 @@ export function attachmentRoutes(
           'Content-Type':
             attachment.detectedContentType ?? 'application/octet-stream',
           'Content-Length': String(object.size),
-          'Content-Disposition': attachmentContentDisposition(attachment.fileName),
+          'Content-Disposition': attachmentContentDisposition(
+            attachment.fileName,
+          ),
           'Cache-Control': 'private, no-store',
           'X-Content-Type-Options': 'nosniff',
           ETag: object.httpEtag,
