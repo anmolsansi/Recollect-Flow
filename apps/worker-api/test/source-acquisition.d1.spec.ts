@@ -274,7 +274,7 @@ describe('BG-10 durable URL acquisition chain', () => {
       .run();
     const replayJob = {
       ...job,
-      status: 'processing',
+      status: 'processing' as const,
       leaseOwner: 'replay-owner',
     };
     expect(await service.process(replayJob, 'replay-owner')).toBe(true);
