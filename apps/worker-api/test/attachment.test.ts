@@ -532,7 +532,9 @@ describe('private attachment lifecycle', () => {
     expect(response.headers.get('Content-Disposition')).toBe(
       'attachment; filename="read-auth.pdf"',
     );
-    expect(response.headers.get('Content-Length')).toBe(String(bytes.byteLength));
+    expect(response.headers.get('Content-Length')).toBe(
+      String(bytes.byteLength),
+    );
     expect(response.headers.get('Cache-Control')).toBe('private, no-store');
     expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
     expect(response.headers.get('ETag')).toBe('"test-etag"');
@@ -571,7 +573,9 @@ describe('private attachment lifecycle', () => {
     const r2 = memoryBucket();
     const env = testEnv(r2.bucket);
     const app = createApp(unusedCaptureRepository, () => repository);
-    const bytes = new TextEncoder().encode('BG-07 generic browser download proof').buffer;
+    const bytes = new TextEncoder().encode(
+      'BG-07 generic browser download proof',
+    ).buffer;
     const { id } = await createFinalizedAttachment(app, env, {
       filename: 'browser-proof.txt',
       mimeType: 'text/plain',
