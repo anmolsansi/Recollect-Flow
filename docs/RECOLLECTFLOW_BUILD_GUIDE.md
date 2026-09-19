@@ -1131,12 +1131,20 @@ Follow the [100 microtasks for BG-08](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-08
 
 ## 15. BG-09 — Build a bounded source fetcher
 
+**Current status: Complete.** The bounded source fetcher merged through PR #49 at
+`c46cc25fe61825a3c7137c88982f19c13b5c531c`. Pre-merge CI #245 and
+merged-main CI #246 passed the complete repository gate. The detailed implementation,
+runtime-boundary review, controlled regressions, limitations, and final 100-step
+reconciliation are recorded in
+[`BG-09_BOUNDED_SOURCE_FETCHER.md`](verification/BG-09_BOUNDED_SOURCE_FETCHER.md).
+BG-10 is unlocked.
+
 **What and why.** Fetching a user-supplied address creates a new network boundary.
 It needs limits so one saved URL cannot cause unbounded downloads or access to
 private infrastructure.
 
-**When.** After BG-08. **Where.** A proposed URL acquisition module under
-`apps/worker-api/src/jobs/extraction/`; reuse repository adapter conventions.
+**When.** After BG-08. **Where.** The URL acquisition modules under
+`apps/worker-api/src/jobs/extraction/`, following repository adapter conventions.
 
 ### Why arbitrary URL fetching is a new security boundary
 
@@ -1151,7 +1159,7 @@ Checking whether a string contains `localhost` is not a destination policy.
 
 ### How the fetch operation should be divided
 
-The proposed internal flow is:
+The implemented internal flow is:
 
 ```text
 parse and authorize destination
@@ -1171,8 +1179,8 @@ BG-08 froze the V1 source-fetch budgets before BG-09 implementation: an
 8-second total wall-clock deadline, at most 5 redirects, at most 2 MiB of
 parser-visible response body, at most 250,000 extracted Unicode characters, and at
 most 3 automatic transient acquisition attempts for the same source/privacy
-snapshot. These are contract limits for BG-09, not evidence that the fetcher already
-exists. Any later change requires an explicit contract change backed by measurement.
+snapshot. BG-09 now enforces these contract limits. Any later change requires an explicit
+contract change backed by measurement.
 
 ### Why checking Content-Length is not sufficient
 
@@ -1212,9 +1220,9 @@ successful fetch of one public article.
    unsupported inputs URL-only; do not ship an unrestricted workaround.
 5. Handle redirects explicitly with a bounded count. Validate every new target and
    never forward admin/capture cookies, Authorization or provider keys.
-6. Bound total wall-clock time, response bytes and extracted characters. A proposed
-   starting budget is 10 seconds, 3 redirects, 2 MiB response bytes and 100,000
-   extracted characters; measure and record final approved values before release.
+6. Bound total wall-clock time, response bytes and extracted characters using the
+   approved BG-08 values: 8 seconds total, 5 redirects, 2 MiB parser-visible body,
+   and 250,000 extracted Unicode characters.
 7. Enforce the byte bound while reading the stream, including missing/false
    Content-Length and compressed-body expansion considerations. Cancel on overflow.
 8. Accept only intentionally supported response content types. Do not try to parse
