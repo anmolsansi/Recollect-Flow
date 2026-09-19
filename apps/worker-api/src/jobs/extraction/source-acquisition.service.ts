@@ -431,7 +431,7 @@ export class SourceAcquisitionService {
     if (
       outcome.retryable &&
       currentContext.attempts + 1 <
-      SOURCE_FETCH_LIMITS.maxAutomaticTransientAttempts
+        SOURCE_FETCH_LIMITS.maxAutomaticTransientAttempts
     ) {
       await this.jobs.failProcessingJob(
         job.id,
