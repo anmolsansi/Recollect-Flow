@@ -2,7 +2,7 @@
 
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -126,10 +126,55 @@ async function main() {
       'ADMIN_TOKEN must not be persisted in browser storage.',
     );
 
+    const primaryFixture = fixtures[0];
+    assert.ok(primaryFixture, 'Expected at least one browser fixture.');
+    const downloadDir = join(runtime.tempDir, 'downloads');
+    await mkdir(downloadDir, { recursive: true });
+    await client.send('Browser.setDownloadBehavior', {
+      behavior: 'allow',
+      downloadPath: downloadDir,
+      eventsEnabled: true,
+    });
+
+    const itemUrl = `${runtime.webOrigin}/items/${primaryFixture.itemId}`;
+    await navigate(client, sessionId, itemUrl);
+    const expectedHref = `/api/v1/attachments/${primaryFixture.attachmentId}/content`;
+    await client.waitForExpression(
+      sessionId,
+      `Boolean(document.querySelector(${JSON.stringify(
+        `a[href="${expectedHref}"]`,
+      )}))`,
+      { description: 'actual attachment Download link' },
+    );
+
+    const actualHref = await client.evaluate(
+      sessionId,
+      `document.querySelector(${JSON.stringify(
+        `a[href="${expectedHref}"]`,
+      )})?.getAttribute('href')`,
+    );
+    assert.equal(actualHref, expectedHref);
+    assert.equal(actualHref.includes('token='), false);
+    assert.equal(actualHref.includes('authorization='), false);
+
+    const downloadStarted = client.waitForEvent(
+      'Browser.downloadWillBegin',
+      (message) => message.params?.url?.endsWith(expectedHref),
+      { timeoutMs: 10_000, description: 'Download link browser request' },
+    );
+    await client.evaluate(
+      sessionId,
+      `document.querySelector(${JSON.stringify(
+        `a[href="${expectedHref}"]`,
+      )})?.click()`,
+    );
+    await downloadStarted;
+
     console.log(
       JSON.stringify({
         status: 'login-proof-passed',
         fixtures_prepared: fixtures.length,
+        download_href: expectedHref,
         admin_session: {
           http_only: sessionCookie.httpOnly,
           same_site: sessionCookie.sameSite,
