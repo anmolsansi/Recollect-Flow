@@ -44,11 +44,56 @@
 
 ### URL or website
 
-Store the original URL unchanged, derive a conservative canonical URL, and create the item even if fetch fails. Fetch uses short timeouts, safe redirects, and explicit blocked/login/deleted/timeout states. Models only receive acquired content plus user intent; unavailable page content is never invented.
+Store the submitted URL unchanged, derive the existing conservative canonical URL
+for deduplication, and create the item before optional source acquisition. Redirect
+destinations never rewrite either the submitted capture event or the canonical
+deduplication key.
+
+Automatic V1 source acquisition is eligible only for explicitly Public items. The
+source fetch is a separate privacy boundary from AI routing. Unknown, Personal, and
+Sensitive URL captures remain Saved without contacting the source host.
+
+The bounded fetcher defined by BG-08/BG-09 is deterministic HTTP(S), not a browser:
+no owner/site cookies, no RecollectFlow tokens, no JavaScript execution, no login
+bypass, and no CAPTCHA handling. Every redirect is revalidated. Login-required,
+blocked, unavailable, unsupported, empty, and exhausted transient failures remain
+truthful limited-coverage outcomes.
+
+URL-content coverage uses these BG-08 meanings:
+
+- `url_only`: the link/capture provenance exists, but no source metadata/body or
+  supplied source text is available;
+- `metadata_only`: source metadata exists but no page body or supplied source text;
+- `supplied_text`: the owner/client supplied text, but that does not prove the live
+  page was fetched;
+- `acquired_text`: deterministic source acquisition produced page text.
+
+User-supplied text, acquired page text, fetched metadata, and generated summaries
+remain separately attributable. Metadata or a title alone must not be presented as
+a summary of the page. If no usable source/supplied/attachment text exists after the
+acquisition outcome is known, processing should stop honestly instead of scheduling
+an enrichment job that can only fail `NO_CONTENT_TO_ENRICH`.
+
+See [URL_ACQUISITION_CONTRACT.md](URL_ACQUISITION_CONTRACT.md) for the complete
+outcome, retry, budget, storage, search, export, and purge contract.
 
 ### Instagram
 
-Save URL, timestamp, source app, and reason first. Use official/public metadata only when available. Coverage is one of URL_ONLY, METADATA, SCREENSHOT_TEXT, USER_TRANSCRIPT, or FULL_USER_FILE. When a link lacks visible/spoken content, guide the user to share a screenshot, lawful recording, or note. Never imply a URL-only Reel was watched.
+Save the exact URL, timestamp, source app, and owner reason first. Instagram remains
+URL/coverage-first and has no scraper promise.
+
+A simple approved Public fetch may retain deterministic public metadata when it is
+available. RecollectFlow does not sign in, reuse browser cookies, bypass access
+controls, execute the Instagram application, or claim to have watched/heard a Reel.
+A login-required result stays `url_only` unless the owner also supplied source
+text. Public metadata without body/transcript evidence is `metadata_only`.
+
+Never invent a transcript from a title or preview. When richer evidence is useful,
+guide the owner to supply text, a screenshot, or a supported file. Example:
+
+> Saved. This Instagram link is kept with your reason. I did not acquire a
+> transcript or Reel content. Add a screenshot or text if you want that evidence to
+> be searchable.
 
 ### Screenshot/image
 
