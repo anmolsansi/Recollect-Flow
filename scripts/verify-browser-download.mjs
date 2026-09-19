@@ -21,11 +21,12 @@ const adminToken = `bg07-admin-${randomUUID()}`;
 const localWorkerToken = `bg07-worker-${randomUUID()}`;
 
 async function navigate(client, sessionId, url) {
-  await client.send('Page.navigate', { url }, sessionId);
+  const expectedUrl = new URL(url).href;
+  await client.send('Page.navigate', { url: expectedUrl }, sessionId);
   await client.waitForExpression(
     sessionId,
-    `document.readyState === 'complete' && location.href === ${JSON.stringify(url)}`,
-    { timeoutMs: 15_000, description: `navigation to ${url}` },
+    `document.readyState === 'complete' && location.href === ${JSON.stringify(expectedUrl)}`,
+    { timeoutMs: 15_000, description: `navigation to ${expectedUrl}` },
   );
 }
 
