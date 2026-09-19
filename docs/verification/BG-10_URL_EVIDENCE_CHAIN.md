@@ -1,6 +1,6 @@
 # BG-10 — Durable URL evidence and processing-chain verification
 
-Status: **implementation candidate complete; merge gate pending.**
+Status: **COMPLETE.**
 
 Tracking: GitHub #51 / Linear OPE-330.
 
@@ -102,20 +102,21 @@ contains `source_text`, and foreign keys remain clean.
 
 ## Verification gate
 
-Implementation head `3cf0ba6ebab8d8dd0bc0e5ec5f2cfdf0445836fd` passed
-repository CI #297:
-<https://github.com/anmolsansi/Recollect-Flow/actions/runs/35451281805>.
+BG-10 is complete.
 
-The successful gate includes:
-
-- Prettier, lint, strict TypeScript, shared-contract checks, and Web production build;
-- 153 Node tests across 24 files;
-- 142 workerd/D1 tests across 35 files;
-- 9 Web tests across 2 files;
-- fresh local D1 migration replay through `0022_add_url_acquisition_evidence.sql`;
-- Chrome availability and the real browser-download regression.
-
-The authoritative checklist is reconciled through BG-10.099. BG-10.100 remains
-open until PR #52 is merged and the merged `main` revision passes the complete
-repository gate. Final merge evidence is recorded in the PR/GitHub/Linear closeout
-and then reflected in the checklist gate.
+- PR #52 merged to `main` at
+  `a065c91b650b6b123d3468542e47e723f8a2383f`.
+- Final candidate head `7e2537d454fccb071995b249bbdf4e1e6e9c5dd6` passed CI
+  #299:
+  <https://github.com/anmolsansi/Recollect-Flow/actions/runs/35451411456>.
+- The merged revision passed CI #300:
+  <https://github.com/anmolsansi/Recollect-Flow/actions/runs/35451510228>.
+- The successful repository gate includes Prettier, lint, strict TypeScript,
+  shared-contract checks, Web production build, 153 Node tests across 24 files,
+  142 workerd/D1 tests across 35 files, 9 Web tests across 2 files, fresh local
+  D1 migration replay through `0022_add_url_acquisition_evidence.sql`, Chrome
+  availability, and the real browser-download regression.
+- BG-10.001 through BG-10.100 are reconciled as satisfied.
+- BG-11 is unlocked.
+- No production migration, deployment, credentialed live-source probe, or other
+  production mutation was performed as part of BG-10.
