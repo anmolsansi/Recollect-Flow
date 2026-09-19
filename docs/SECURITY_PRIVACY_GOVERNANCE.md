@@ -25,12 +25,12 @@ Sensitive includes confidential/restricted content such as secrets, passwords,
 financial or medical records, immigration documents, and private conversations.
 Unknown is the default and fails closed.
 
-| Data class | App-managed OpenRouter | User-provided provider key | Gemini free fallback | Cloudflare Workers AI | No AI |
-| --- | --- | --- | --- | --- | --- |
-| Unknown | Never | Never | Never | Approved when explicitly selected; not the default route | Default |
-| Public | Default hosted route | Allowed | Allowed when OpenRouter is unavailable | Approved | Always allowed |
-| Personal | Explicit hosted consent plus per-request ZDR and `data_collection=deny`; no fallback | Explicit hosted consent and selected-provider terms apply | Never through the app-managed free fallback | Never | Always allowed |
-| Sensitive | Never | Never | Never | Never | Default |
+| Data class | App-managed OpenRouter                                                               | User-provided provider key                                | Gemini free fallback                        | Cloudflare Workers AI                                    | No AI          |
+| ---------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------- | ------------------------------------------- | -------------------------------------------------------- | -------------- |
+| Unknown    | Never                                                                                | Never                                                     | Never                                       | Approved when explicitly selected; not the default route | Default        |
+| Public     | Default hosted route                                                                 | Allowed                                                   | Allowed when OpenRouter is unavailable      | Approved                                                 | Always allowed |
+| Personal   | Explicit hosted consent plus per-request ZDR and `data_collection=deny`; no fallback | Explicit hosted consent and selected-provider terms apply | Never through the app-managed free fallback | Never                                                    | Always allowed |
+| Sensitive  | Never                                                                                | Never                                                     | Never                                       | Never                                                    | Default        |
 
 Personal routing never switches providers silently. The app-managed Personal path is
 OpenRouter-only and must enforce zero data retention and deny provider data
@@ -51,12 +51,12 @@ does **not** authorize network source acquisition.
 
 For automatic V1 URL acquisition:
 
-| Privacy class | Contact captured source host automatically? |
-| --- | --- |
-| Public | Yes, only through the bounded BG-09 fetch policy |
-| Unknown | No |
-| Personal | No |
-| Sensitive | No |
+| Privacy class | Contact captured source host automatically?      |
+| ------------- | ------------------------------------------------ |
+| Public        | Yes, only through the bounded BG-09 fetch policy |
+| Unknown       | No                                               |
+| Personal      | No                                               |
+| Sensitive     | No                                               |
 
 Unknown remains the default and must not become Public based on hostname, metadata,
 source app, or model output. A non-Public URL capture stays Saved without source-host
