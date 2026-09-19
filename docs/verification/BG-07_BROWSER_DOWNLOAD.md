@@ -1,66 +1,218 @@
-# BG-07 Browser Download Verification
+# BG-07 — Browser Download Verification
 
-## Task identity
+Status: **implementation verified; merge/closeout gate pending**
 
-- Build-guide task: **BG-07 — Make the browser Download link work**
-- Linear: OPE-327
-- GitHub: #41
-- Base branch: `main`
-- Base revision: `cb660e359abe36949040bca5d843b7a3d9d660d3`
-- Work branch: `agent/ope-327-bg-07-browser-download`
-- Dependency: BG-06 is complete and merged.
+Tracking: GitHub #41 / PR #42 / Linear OPE-327
 
-## Baseline
+Task base `main`: `cb660e359abe36949040bca5d843b7a3d9d660d3`
 
-BG-06 already owns and has merged the attachment-content authorization decision. The content route uses `requireAttachmentContentRead`, which accepts a capture bearer, admin bearer, or verified signed admin session cookie. Upload routes remain capture/admin bearer scoped, and attachment deletion keeps its narrower existing boundary.
+Work branch: `agent/ope-327-bg-07-browser-download`
 
-The Web Inbox already renders an ordinary same-origin anchor:
+## Problem and scope
+
+BG-06 already repaired the attachment-content authorization mismatch. The content
+route accepts a capture bearer, admin bearer or verified signed admin session
+cookie, while upload and delete boundaries remain intentionally narrower.
+
+The Web Inbox already used the desired same-origin link:
 
 ```text
 /api/v1/attachments/:id/content
 ```
 
-BG-07 therefore does not redesign authentication and does not replace the anchor with JavaScript token handling. The remaining work is proof across the real browser boundary plus response/lifecycle regressions.
+BG-07 therefore does not redesign authentication and does not replace the anchor
+with JavaScript token handling. It proves the real browser path and strengthens
+response/lifecycle regressions around that path.
 
-## Security boundary
+The required user story is:
 
-BG-07 must not:
+```text
+real Vite login form
+  -> signed HttpOnly admin_session cookie
+  -> real item detail page
+  -> actual Download anchor
+  -> Vite same-origin /api proxy
+  -> Worker attachment read guard
+  -> D1 attachment lookup
+  -> private local R2 object
+  -> browser-saved original bytes
+```
+
+## Security boundary preserved
+
+BG-07 does not:
 
 - append bearer or admin credentials to URLs;
-- expose the admin token to browser JavaScript;
-- expose an R2 key or bucket URL;
-- make cookie-only upload or delete requests newly valid;
-- weaken missing, expired, deleted, purged or unavailable-object behavior;
-- introduce public/shared caching for private attachment bytes.
+- expose the admin token to browser JavaScript storage;
+- expose R2 keys or bucket URLs;
+- broaden cookie-only access to upload or delete routes;
+- weaken attachment lifecycle checks;
+- introduce public/shared caching for private bytes;
+- deploy production, use live credentials or apply remote migrations.
 
-The browser acceptance environment uses only synthetic local credentials and isolated local persistence. No production deployment, remote migration or live external delivery is part of this task.
+Browser acceptance uses synthetic credentials plus isolated temporary Wrangler D1/R2
+state that is removed after the run.
 
-## Evidence plan
+## Implementation
 
-The task will combine four evidence layers:
+### Download response metadata
 
-1. route-level attachment tests for bytes, headers, lifecycle and safe failure behavior;
-2. release-smoke regression requiring the signed-cookie path to pass instead of tolerating it as unavailable;
-3. a real headless browser story that starts the actual Worker and Vite app, logs in through the real form, clicks the real Download link and checks downloaded files;
-4. full repository CI plus local migration validation.
+`apps/worker-api/src/attachments/attachment.routes.ts` continues to stream the
+private object body directly. It now delegates Content-Disposition construction to
+`attachmentContentDisposition()` in
+`apps/worker-api/src/attachments/attachment.utils.ts`.
 
-The browser story must exercise PDF, PNG and generic text fixtures, compare saved byte length and SHA-256, retain a valid session across reload, and deny new private reads after logout or invalid session state.
+The response preserves:
 
-## Authoritative checklist mapping
+- stored/detected MIME type with safe octet-stream fallback;
+- exact `Content-Length`;
+- attachment disposition with a sanitized ASCII fallback;
+- RFC 5987-style UTF-8 `filename*` when Unicode is present;
+- `Cache-Control: private, no-store`;
+- `X-Content-Type-Options: nosniff`;
+- the private object ETag.
 
-The 100-step BG-07 checklist is treated as the acceptance inventory, not as a reason to manufacture 100 unrelated code changes. The implementation microtasks in GitHub #41 group those steps by executable boundary:
+Header-control characters are removed by the existing filename sanitizer before
+the disposition is emitted. Unicode names remain recoverable through `filename*`
+without allowing response-header injection.
 
-- task context and contract: BG-07.001–.010;
-- route integration and metadata: BG-07.011–.030;
-- private caching and session behavior: BG-07.031–.050;
-- exact byte proof: BG-07.051–.060;
-- reload/logout/invalid session behavior: BG-07.061–.070;
-- object lifecycle and safe failures: BG-07.071–.080;
-- regression/browser evidence: BG-07.081–.090;
-- review, verification and closeout: BG-07.091–.100.
+### Route-level regression coverage
 
-A checklist item is marked complete only when repository evidence actually supports it. BG-06 evidence is reused for already-proved authorization facts instead of reimplementing them.
+`apps/worker-api/test/attachment.test.ts` reuses the real app router with synthetic
+in-memory attachment/R2 fixtures. BG-07 expands coverage to prove:
 
-## Status
+- signed-cookie PDF download returns exact bytes and expected response metadata;
+- signed-cookie PNG download returns exact bytes and MIME;
+- signed-cookie generic text download returns exact bytes and MIME;
+- Unicode filenames emit a safe ASCII fallback plus encoded UTF-8 filename;
+- hostile quote/CR/LF filename input cannot inject a response header;
+- finalized content remains readable while pending/uploaded/orphaned/deleted states
+  stay unavailable;
+- missing records and deleted/purged objects return controlled `404` responses;
+- traversal-shaped attachment IDs do not reveal server object keys or credentials;
+- authenticated missing backing objects remain controlled.
 
-Implementation started. No BG-07 completion claim is made until the browser story, repository checks and authoritative checklist reconciliation are green.
+BG-06 bearer compatibility, mixed-credential behavior, anonymous denial, logout
+denial, upload isolation and delete isolation remain covered by the same suite.
+
+### Release-smoke contract
+
+`scripts/verify-production-release.mjs` no longer tolerates
+`browser-cookie-attachment-download` as a known unavailable stage. The stage now
+must return HTTP 200 and prove:
+
+- exact byte length;
+- exact SHA-256;
+- PDF MIME type;
+- expected safe filename;
+- `private, no-store`;
+- `nosniff`.
+
+`scripts/verify-production-release.test.mjs` models the valid signed-cookie path
+and contains a dedicated regression proving a cookie-download `401` is a hard
+release-smoke failure.
+
+### Real browser acceptance
+
+The browser proof is dependency-free at runtime and uses Chrome DevTools Protocol:
+
+- `scripts/browser-cdp.mjs` — bounded CDP request/event client;
+- `scripts/browser-acceptance-runtime.mjs` — isolated Wrangler migration,
+  Worker/Vite lifecycle, Chrome discovery/startup and cleanup;
+- `scripts/browser-acceptance-fixtures.mjs` — synthetic PDF, 1x1 PNG and text
+  upload/finalize/link helpers;
+- `scripts/verify-browser-download.mjs` — real login, navigation, download,
+  byte/hash proof, reload and invalid-session checks.
+
+The browser harness starts the actual Web workspace directly so Vite receives
+`--host`, `--port` and `--strictPort` without nested npm argument loss. Browser
+navigation compares canonical URL forms so the root origin's trailing slash does
+not create a false timeout.
+
+The root `browser:download:test` script runs this story, and normal CI executes it
+after the repository quality and local migration gates. No Playwright/Puppeteer
+dependency is required.
+
+## Browser proof
+
+GitHub Actions CI run **#196** passed on implementation head
+`1ae56558d0919ea6452e73869c8daeb06795c72a`.
+
+The runner used:
+
+- Node 22.23.2;
+- Wrangler 4.116.0;
+- Google Chrome 152.0.7977.82;
+- isolated local D1/R2 state;
+- synthetic per-run capture/admin/local-worker credentials.
+
+The real Chrome story reported `login-proof-passed` with three prepared fixtures.
+
+| Fixture | Saved bytes | SHA-256 verification |
+| --- | ---: | --- |
+| PDF | 641 | exact uploaded hash matched |
+| PNG | 68 | exact uploaded hash matched |
+| text | 76 | exact uploaded hash matched |
+
+The PDF was downloaded again after a page reload with the same byte count and hash.
+The browser retained the signed session across reload.
+
+New private reads after invalid session states returned:
+
+- logout: `401`;
+- tampered session cookie: `401`;
+- expired browser session: `401`.
+
+The created `admin_session` was observed by Chrome as HttpOnly with
+`SameSite=Strict`. The synthetic admin token was not persisted in
+`localStorage` or `sessionStorage`.
+
+## Repository validation
+
+CI run #196 passed every required stage:
+
+- Prettier formatting: passed;
+- ESLint: passed;
+- root TypeScript typecheck: passed;
+- release-smoke regressions: 6 / 6;
+- Node Vitest: 23 files, 146 / 146 tests;
+- Worker D1 Vitest: 33 files, 116 / 116 tests;
+- shared contracts check: passed;
+- Web lint: passed;
+- Web Vitest: 2 files, 9 / 9 tests;
+- Web production build: passed;
+- local D1 migration gate: all checked-in migrations applied successfully;
+- Chrome availability check: passed;
+- `npm run browser:download:test`: passed.
+
+`npm ci` still reports the repository's inherited 10 dependency advisories
+(3 moderate, 7 high). BG-07 does not silently upgrade unrelated dependencies under
+a browser-download task. That remains separate maintenance work.
+
+## Validation iterations
+
+The browser harness exposed two CI-only integration issues before the green run:
+
+1. The first browser run showed nested npm argument forwarding stripped Vite flags.
+   The harness now runs the Web workspace directly.
+2. After Vite started, Chrome canonicalized the root origin with a trailing slash.
+   Navigation now compares canonical URL forms. ESLint then required the existing
+   Node global `URL` to be declared for that script.
+
+Each correction was committed separately. No quality check was bypassed.
+
+## Completion boundary
+
+The technical implementation and browser evidence are now green. BG-07 is not yet
+100/100 because the final checklist item requires the validated implementation to
+merge and the post-merge closeout to prove the parent boundary.
+
+Before BG-08 is unlocked:
+
+1. reconcile BG-07.001–.099 against this evidence;
+2. obtain a green documentation-complete PR head;
+3. merge PR #42;
+4. create a documentation-only closeout from the exact merged `main` head;
+5. pass the closeout CI gate;
+6. mark BG-07.100 complete and close GitHub #41 / Linear OPE-327.
+
