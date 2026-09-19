@@ -1,12 +1,12 @@
 /* global process, console */
 
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
-import { mkdir, mkdtemp, rm } from 'node:fs/promises';
+import { createHash, randomUUID } from 'node:crypto';
+import { mkdir, mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { CdpClient } from './browser-cdp.mjs';
+import { CdpClient, delay, waitUntil } from './browser-cdp.mjs';
 import {
   createLocalAcceptanceRuntime,
   launchChrome,
@@ -27,6 +27,111 @@ async function navigate(client, sessionId, url) {
     `document.readyState === 'complete' && location.href === ${JSON.stringify(url)}`,
     { timeoutMs: 15_000, description: `navigation to ${url}` },
   );
+}
+
+function digest(bytes) {
+  return createHash('sha256').update(bytes).digest('hex');
+}
+
+function verifyFileSignature(fixture, bytes) {
+  if (fixture.kind === 'pdf') {
+    assert.equal(bytes.subarray(0, 5).toString('ascii'), '%PDF-');
+    assert.match(bytes.toString('latin1'), /%%EOF\n?$/);
+    return;
+  }
+  if (fixture.kind === 'image') {
+    assert.deepEqual(
+      [...bytes.subarray(0, 8)],
+      [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+    );
+    return;
+  }
+  assert.match(bytes.toString('utf8'), /^RecollectFlow BG-07 generic download proof /);
+}
+
+async function resetDownloadDirectory(downloadDir) {
+  await rm(downloadDir, { recursive: true, force: true });
+  await mkdir(downloadDir, { recursive: true });
+}
+
+async function waitForDownloadedFile(downloadDir, expectedFilename) {
+  return waitUntil(
+    async () => {
+      const entries = await readdir(downloadDir).catch(() => []);
+      if (
+        entries.some(
+          (entry) => entry.endsWith('.crdownload') || entry.endsWith('.tmp'),
+        )
+      ) {
+        return false;
+      }
+      if (!entries.includes(expectedFilename)) return false;
+
+      const filePath = join(downloadDir, expectedFilename);
+      const first = await stat(filePath);
+      await delay(100);
+      const second = await stat(filePath);
+      return first.size === second.size && second.size > 0 ? filePath : false;
+    },
+    {
+      timeoutMs: 15_000,
+      intervalMs: 100,
+      description: `downloaded file ${expectedFilename}`,
+    },
+  );
+}
+
+async function downloadFixture({
+  client,
+  sessionId,
+  runtime,
+  fixture,
+  downloadDir,
+}) {
+  await resetDownloadDirectory(downloadDir);
+  const itemUrl = `${runtime.webOrigin}/items/${fixture.itemId}`;
+  await navigate(client, sessionId, itemUrl);
+  const expectedHref = `/api/v1/attachments/${fixture.attachmentId}/content`;
+  const selector = `a[href="${expectedHref}"]`;
+  await client.waitForExpression(
+    sessionId,
+    `Boolean(document.querySelector(${JSON.stringify(selector)}))`,
+    { description: `Download link for ${fixture.kind} fixture` },
+  );
+
+  const actualHref = await client.evaluate(
+    sessionId,
+    `document.querySelector(${JSON.stringify(selector)})?.getAttribute('href')`,
+  );
+  assert.equal(actualHref, expectedHref);
+  assert.equal(actualHref.includes('token='), false);
+  assert.equal(actualHref.includes('authorization='), false);
+
+  const downloadStarted = client.waitForEvent(
+    'Browser.downloadWillBegin',
+    (message) => message.params?.url?.endsWith(expectedHref),
+    { timeoutMs: 10_000, description: `${fixture.kind} Download link` },
+  );
+  await client.evaluate(
+    sessionId,
+    `document.querySelector(${JSON.stringify(selector)})?.click()`,
+  );
+  const started = await downloadStarted;
+  assert.equal(started.params?.suggestedFilename, fixture.filename);
+
+  const filePath = await waitForDownloadedFile(downloadDir, fixture.filename);
+  const downloaded = await readFile(filePath);
+  assert.equal(downloaded.byteLength, fixture.sizeBytes);
+  assert.equal(digest(downloaded), fixture.sha256);
+  verifyFileSignature(fixture, downloaded);
+
+  return {
+    kind: fixture.kind,
+    filename: fixture.filename,
+    size_bytes: downloaded.byteLength,
+    sha256: fixture.sha256,
+    href: expectedHref,
+  };
 }
 
 async function main() {
@@ -126,8 +231,6 @@ async function main() {
       'ADMIN_TOKEN must not be persisted in browser storage.',
     );
 
-    const primaryFixture = fixtures[0];
-    assert.ok(primaryFixture, 'Expected at least one browser fixture.');
     const downloadDir = join(runtime.tempDir, 'downloads');
     await mkdir(downloadDir, { recursive: true });
     await client.send('Browser.setDownloadBehavior', {
@@ -136,45 +239,24 @@ async function main() {
       eventsEnabled: true,
     });
 
-    const itemUrl = `${runtime.webOrigin}/items/${primaryFixture.itemId}`;
-    await navigate(client, sessionId, itemUrl);
-    const expectedHref = `/api/v1/attachments/${primaryFixture.attachmentId}/content`;
-    await client.waitForExpression(
-      sessionId,
-      `Boolean(document.querySelector(${JSON.stringify(
-        `a[href="${expectedHref}"]`,
-      )}))`,
-      { description: 'actual attachment Download link' },
-    );
-
-    const actualHref = await client.evaluate(
-      sessionId,
-      `document.querySelector(${JSON.stringify(
-        `a[href="${expectedHref}"]`,
-      )})?.getAttribute('href')`,
-    );
-    assert.equal(actualHref, expectedHref);
-    assert.equal(actualHref.includes('token='), false);
-    assert.equal(actualHref.includes('authorization='), false);
-
-    const downloadStarted = client.waitForEvent(
-      'Browser.downloadWillBegin',
-      (message) => message.params?.url?.endsWith(expectedHref),
-      { timeoutMs: 10_000, description: 'Download link browser request' },
-    );
-    await client.evaluate(
-      sessionId,
-      `document.querySelector(${JSON.stringify(
-        `a[href="${expectedHref}"]`,
-      )})?.click()`,
-    );
-    await downloadStarted;
+    const downloads = [];
+    for (const fixture of fixtures) {
+      downloads.push(
+        await downloadFixture({
+          client,
+          sessionId,
+          runtime,
+          fixture,
+          downloadDir,
+        }),
+      );
+    }
 
     console.log(
       JSON.stringify({
         status: 'login-proof-passed',
         fixtures_prepared: fixtures.length,
-        download_href: expectedHref,
+        downloads,
         admin_session: {
           http_only: sessionCookie.httpOnly,
           same_site: sessionCookie.sameSite,
