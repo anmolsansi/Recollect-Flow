@@ -415,12 +415,18 @@ describe('BG-09 bounded source fetcher', () => {
 
     expect(seen).toHaveLength(1);
     const request = seen[0];
+    expect(request).toBeDefined();
+    if (!request) throw new Error('Expected one outbound source request');
+
     expect(request.headers.get('authorization')).toBeNull();
     expect(request.headers.get('cookie')).toBeNull();
     expect(request.headers.get('x-api-key')).toBeNull();
     expect(request.headers.get('x-capture-token')).toBeNull();
     expect(request.headers.get('x-admin-token')).toBeNull();
-    expect([...request.headers.keys()]).toEqual(['accept']);
+
+    const headerNames: string[] = [];
+    request.headers.forEach((_value, name) => headerNames.push(name));
+    expect(headerNames).toEqual(['accept']);
   });
 
   it('fails closed before network work for unsafe initial destinations', async () => {
