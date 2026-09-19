@@ -232,6 +232,11 @@ describe('follow-up migration contracts', () => {
     expect(urlAcquisitionMigration).toContain('source_url_snapshot');
     expect(urlAcquisitionMigration).toContain('privacy_level_snapshot');
     expect(urlAcquisitionMigration).toContain('acquired_text_hash');
+    expect(urlAcquisitionMigration).toContain('attempt_count');
+    expect(urlAcquisitionMigration).toContain('duration_ms');
+    expect(urlAcquisitionMigration).toContain(
+      'network_io_skipped_by_policy',
+    );
     expect(urlAcquisitionMigration).toContain('url_acquisitions_immutable');
     expect(urlAcquisitionMigration).toContain('source_text');
     expect(urlAcquisitionMigration).toContain(
