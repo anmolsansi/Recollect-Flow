@@ -141,7 +141,11 @@ export async function uploadAndLinkFixture({
     body: fixture.bytes,
   });
   const uploadBody = await upload.json();
-  assert.equal(upload.status, 200, `[${fixture.kind}:upload] HTTP ${upload.status}`);
+  assert.equal(
+    upload.status,
+    200,
+    `[${fixture.kind}:upload] HTTP ${upload.status}`,
+  );
   assert.equal(uploadBody?.data?.checksum, fixture.sha256);
 
   const finalized = await jsonRequest(
