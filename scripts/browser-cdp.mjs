@@ -62,13 +62,18 @@ export class CdpClient {
 
   static async connect(webSocketUrl, timeoutMs = 10_000) {
     if (typeof WebSocket !== 'function') {
-      throw new Error('Node.js WebSocket support is required for BG-07 browser acceptance.');
+      throw new Error(
+        'Node.js WebSocket support is required for BG-07 browser acceptance.',
+      );
     }
 
     const socket = new WebSocket(webSocketUrl);
     await new Promise((resolve, reject) => {
       const timeout = setTimeout(
-        () => reject(new Error('Timed out connecting to Chrome DevTools Protocol.')),
+        () =>
+          reject(
+            new Error('Timed out connecting to Chrome DevTools Protocol.'),
+          ),
         timeoutMs,
       );
       socket.addEventListener(
