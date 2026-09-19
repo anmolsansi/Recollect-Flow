@@ -77,19 +77,19 @@ describe('BG-09 bounded source fetcher', () => {
     'supports bounded plain text without inventing HTML metadata',
     async () => {
       const fetchImpl = fetchSequence([
-      new Response('Plain\n\n source   evidence', {
-        headers: { 'content-type': 'text/plain; charset=utf-8' },
-      }),
-    ]);
+        new Response('Plain\n\n source   evidence', {
+          headers: { 'content-type': 'text/plain; charset=utf-8' },
+        }),
+      ]);
 
-    const outcome = await new SourceFetcher({
-      fetchImpl,
-      maximumExtractedCharacters: 12,
-    }).fetch('https://public.example.org/plain');
+      const outcome = await new SourceFetcher({
+        fetchImpl,
+        maximumExtractedCharacters: 12,
+      }).fetch('https://public.example.org/plain');
 
-    expect(outcome.status).toBe('acquired_text');
-    expect(outcome.acquiredText).toBe('Plain\nsource');
-    expect(outcome.extractedCharacters).toBe(12);
+      expect(outcome.status).toBe('acquired_text');
+      expect(outcome.acquiredText).toBe('Plain\nsource');
+      expect(outcome.extractedCharacters).toBe(12);
       expect(outcome.title).toBeUndefined();
     },
   );
@@ -400,25 +400,25 @@ describe('BG-09 bounded source fetcher', () => {
     'normalizes parser failures without retrying or leaking parser details',
     async () => {
       const outcome = await new SourceFetcher({
-      fetchImpl: fetchSequence([
-        htmlResponse('<html><main>Source body</main></html>'),
-      ]),
-      parseImpl: async () => {
-        throw new Error(
-          'parser exploded near https://signed.example.org/?secret=hidden',
-        );
-      },
-    }).fetch('https://public.example.org/parse-failure');
+        fetchImpl: fetchSequence([
+          htmlResponse('<html><main>Source body</main></html>'),
+        ]),
+        parseImpl: async () => {
+          throw new Error(
+            'parser exploded near https://signed.example.org/?secret=hidden',
+          );
+        },
+      }).fetch('https://public.example.org/parse-failure');
 
-    expect(outcome).toEqual({
-      status: 'parse_failed',
-      coverage: 'url_only',
-      retryable: false,
-      errorCode: 'SOURCE_PARSE_FAILED',
-      fetchedFinalUrl: 'https://public.example.org/parse-failure',
-      httpStatus: 200,
-      contentType: 'text/html',
-      responseBytes: 37,
+      expect(outcome).toEqual({
+        status: 'parse_failed',
+        coverage: 'url_only',
+        retryable: false,
+        errorCode: 'SOURCE_PARSE_FAILED',
+        fetchedFinalUrl: 'https://public.example.org/parse-failure',
+        httpStatus: 200,
+        contentType: 'text/html',
+        responseBytes: 37,
         redirectCount: 0,
       });
     },
@@ -453,14 +453,14 @@ describe('BG-09 bounded source fetcher', () => {
     'fails closed before network work for unsafe initial destinations',
     async () => {
       const fetchImpl = vi.fn() as unknown as typeof fetch;
-    const outcome = await new SourceFetcher({ fetchImpl }).fetch(
-      'http://0x7f000001/private',
-    );
+      const outcome = await new SourceFetcher({ fetchImpl }).fetch(
+        'http://0x7f000001/private',
+      );
 
-    expect(outcome).toMatchObject({
-      status: 'destination_blocked',
-      errorCode: 'SOURCE_DESTINATION_BLOCKED',
-    });
+      expect(outcome).toMatchObject({
+        status: 'destination_blocked',
+        errorCode: 'SOURCE_DESTINATION_BLOCKED',
+      });
       expect(fetchImpl).not.toHaveBeenCalled();
     },
   );
