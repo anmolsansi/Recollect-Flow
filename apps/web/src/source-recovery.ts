@@ -29,3 +29,19 @@ export function sourceStatusMessage(status: string | null): string {
     ? (MESSAGES[status] ?? 'The page result is unavailable.')
     : 'No page has been acquired yet. The original URL is still saved.';
 }
+
+/**
+ * Visible source coverage is a projection. Adding owner text cannot rewrite
+ * immutable older URL fetch evidence or pretend the source host was read.
+ */
+export function visibleSourceCoverage(
+  sourceType: string,
+  storedCoverage: string | null | undefined,
+  rawText: string | null | undefined,
+  currentAcquisitionCoverage: string | null | undefined,
+): string {
+  if (sourceType !== 'url') return storedCoverage ?? 'Unknown';
+  if (currentAcquisitionCoverage === 'acquired_text') return 'acquired_text';
+  if (rawText?.trim()) return 'supplied_text (owner-provided)';
+  return currentAcquisitionCoverage ?? storedCoverage ?? 'url_only';
+}
