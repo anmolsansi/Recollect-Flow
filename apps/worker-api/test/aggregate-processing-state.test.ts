@@ -193,6 +193,39 @@ describe('BG-12 aggregate status decision', () => {
     expect(() => evaluate({ generation: '' })).toThrow(TypeError);
   });
 
+  it('does not mistake an explicit capacity pause for runnable work', () => {
+    expect(evaluate({
+      jobs: [job('acquire_url', 'pending', {
+        deferredReason: 'capacity',
+        availableAt: '2026-10-09T19:00:00.000Z',
+      })],
+    })).toMatchObject({
+      status: 'pending', reason: 'capacity_paused',
+      nextEligibleAt: '2026-10-09T19:00:00.000Z',
+    });
+  });
+
+  it('does not fabricate a future retry time for an operational pause', () => {
+    expect(evaluate({
+      jobs: [job('acquire_url', 'pending', {
+        deferredReason: 'operational',
+      })],
+    })).toMatchObject({
+      status: 'pending', reason: 'operational_paused',
+      nextEligibleAt: null,
+    });
+  });
+
+  it('keeps a privacy pause distinct from completed content coverage', () => {
+    expect(evaluate({
+      jobs: [job('acquire_url', 'pending', {
+        deferredReason: 'privacy',
+      })],
+    })).toMatchObject({
+      status: 'pending', reason: 'policy_paused',
+    });
+  });
+
   it('shows eligible queued and delayed capacity work distinctly', () => {
     expect(evaluate({
       jobs: [job('acquire_url', 'pending')],
