@@ -98,7 +98,8 @@ export class SourceEvidenceService {
          WHERE id=?3 AND edit_version=?4 AND raw_text IS NULL AND deleted_at IS NULL
            AND source_revision=?5 AND NOT EXISTS(
              SELECT 1 FROM purge_workflows p WHERE p.item_id=items.id
-               AND p.state IN ('queued','processing','partial'))`,
+               AND p.state IN ('queued','processing','partial'))
+         RETURNING edit_version`,
         )
         .bind(supplied, at, itemId, editVersion, item.source_revision),
       this.db
@@ -157,7 +158,7 @@ export class SourceEvidenceService {
           shouldEnrich ? 1 : 0,
         ),
     ]);
-    if (results[0]?.meta.changes !== 1) {
+    if (results[0]?.results?.[0]?.edit_version !== editVersion + 1) {
       throw new AppError(
         409,
         'VERSION_CONFLICT',
@@ -230,7 +231,8 @@ export class SourceEvidenceService {
          WHERE id=?4 AND edit_version=?5 AND source_revision=?6
            AND deleted_at IS NULL AND NOT EXISTS(
              SELECT 1 FROM purge_workflows p WHERE p.item_id=items.id
-               AND p.state IN ('queued','processing','partial'))`,
+               AND p.state IN ('queued','processing','partial'))
+         RETURNING edit_version`,
         )
         .bind(
           sourceUrl,
@@ -304,7 +306,7 @@ export class SourceEvidenceService {
           nextRevision,
         ),
     ]);
-    if (results[0]?.meta.changes !== 1) {
+    if (results[0]?.results?.[0]?.edit_version !== editVersion + 1) {
       throw new AppError(
         409,
         'VERSION_CONFLICT',
