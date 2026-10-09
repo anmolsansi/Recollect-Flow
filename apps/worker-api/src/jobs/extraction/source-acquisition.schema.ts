@@ -52,6 +52,7 @@ export const sourceFetchOutcomeSchema = z
     errorCode: sourceFetchErrorCodeSchema.optional(),
     fetchedFinalUrl: z.string().url().max(8_192).optional(),
     httpStatus: z.number().int().min(100).max(599).optional(),
+    retryAfterSeconds: z.number().int().min(1).max(86_400).optional(),
     contentType: z.string().max(255).optional(),
     responseBytes: z
       .number()
