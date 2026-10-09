@@ -41,6 +41,8 @@ const CANDIDATES = `
   FROM items i
   WHERE i.source_type = 'url' AND i.source_url IS NOT NULL
     AND i.deleted_at IS NULL AND i.privacy_level = 'public'
+    AND COALESCE((SELECT enabled FROM operational_controls
+      WHERE control_key='optional_processing_paused'),0)=0
     AND NOT EXISTS (
       SELECT 1 FROM purge_workflows p
       WHERE p.item_id = i.id AND p.state IN ('queued','processing','partial')
@@ -173,6 +175,49 @@ export class SourceRecoveryService {
       actor_id: actorId, job_id: jobId, source_revision: revision,
     }),at).run();
     return { item_id: itemId, job_id: jobId, status: 'pending', created: true };
+  }
+
+
+  /** Read-only eligibility for the owner UI. The write action rechecks all guards. */
+  async eligibility(itemId: string, revision: number): Promise<{
+    eligible: boolean;
+    reason: string;
+    active_job_id: string | null;
+  }> {
+    let item: SourceItem;
+    try {
+      item = await this.item(itemId);
+      this.assertEligible(item, revision);
+    } catch (error) {
+      if (error instanceof AppError) {
+        return {eligible:false,reason:error.code,active_job_id:null};
+      }
+      throw error;
+    }
+    const currentJob = await this.db.prepare(
+      `SELECT id FROM processing_jobs WHERE item_id=?1
+        AND job_type='acquire_url' AND input_hash=?2
+        AND status IN ('pending','processing') ORDER BY created_at DESC LIMIT 1`,
+    ).bind(itemId,`url-source-v1:${revision}`).first<{id:string}>();
+    if (currentJob) {
+      return {eligible:false,reason:'SOURCE_ALREADY_QUEUED',active_job_id:currentJob.id};
+    }
+    const evidence=await this.db.prepare(
+      `SELECT status FROM url_acquisitions
+       WHERE item_id=?1 AND source_revision=?2 AND privacy_level_snapshot='public'
+       ORDER BY completed_at DESC,id DESC LIMIT 1`,
+    ).bind(itemId,revision).first<ExistingOutcome>();
+    if (!canManuallyRetrySource(evidence?.status??null)) {
+      return {eligible:false,reason:'SOURCE_NOT_RETRYABLE',active_job_id:null};
+    }
+    const count=await this.db.prepare(
+      `SELECT COUNT(*) AS n FROM processing_jobs WHERE item_id=?1
+       AND job_type='acquire_url' AND input_hash=?2 AND manual_retry_count>0`,
+    ).bind(itemId,`url-source-v1:${revision}`).first<{n:number}>();
+    if ((count?.n??0)>=MAX_MANUAL_SOURCE_RETRIES) {
+      return {eligible:false,reason:'SOURCE_RETRY_LIMIT',active_job_id:null};
+    }
+    return {eligible:true,reason:'RETRY_AVAILABLE',active_job_id:null};
   }
 
   /** Older bare URLs only. No network calls are made during preview. */
