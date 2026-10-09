@@ -29,7 +29,7 @@ import {
   latestFeedbackType,
   runVersionedAction,
 } from './item-actions';
-import { sourceStatusMessage } from './source-recovery';
+import { sourceStatusMessage, visibleSourceCoverage } from './source-recovery';
 import './index.css';
 
 type AuthState = 'checking' | 'authenticated' | 'unauthenticated';
@@ -714,7 +714,9 @@ function ItemDetail() {
           <strong>Source:</strong> {draft.source_app} / {draft.source_type}
         </p>
         <p>
-          <strong>Coverage:</strong> {draft.coverage ?? 'Unknown'}
+          <strong>Coverage:</strong>{' '}
+          {visibleSourceCoverage(draft.source_type, draft.coverage,
+            draft.raw_text, detail.url_acquisition?.coverage)}
         </p>
         <p>
           <strong>Processing:</strong> {draft.processing_status ?? 'Unknown'}
