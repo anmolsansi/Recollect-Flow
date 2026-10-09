@@ -253,7 +253,7 @@ export class SourceEvidenceService {
       ...keys.map((key) =>
         this.db
           .prepare(
-            `INSERT OR IGNORE INTO item_deduplication_keys(deduplication_key,item_id,created_at)
+            `INSERT INTO item_deduplication_keys(deduplication_key,item_id,created_at)
          SELECT ?1,?2,?3 FROM items WHERE id=?2 AND edit_version=?4
            AND source_revision=?5`,
           )
