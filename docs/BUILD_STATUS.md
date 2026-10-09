@@ -157,7 +157,6 @@ behavior belongs to BG-12/BG-13. BG-12 is unlocked, not implemented.
 See [BG-11 final closeout](verification/BG-11_FINAL_CLOSEOUT.md).
 No production migration/deployment or live source-host probing is claimed.
 
-
 ## BG-12 — deterministic aggregate state contract (PR verification)
 
 [BG-12 decision contract](verification/BG-12_AGGREGATE_STATE_CONTRACT.md)

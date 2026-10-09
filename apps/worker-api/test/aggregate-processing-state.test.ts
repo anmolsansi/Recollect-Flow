@@ -58,11 +58,15 @@ describe('BG-12 aggregate status decision', () => {
   });
 
   it('never reflects arbitrary worker error payloads into owner status', () => {
-    expect(evaluate({
-      jobs: [job('acquire_url', 'failed', {
-        lastErrorCode: '<script>alert(1)</script>',
-      })],
-    })).toMatchObject({
+    expect(
+      evaluate({
+        jobs: [
+          job('acquire_url', 'failed', {
+            lastErrorCode: '<script>alert(1)</script>',
+          }),
+        ],
+      }),
+    ).toMatchObject({
       status: 'failed',
       reason: 'required_job_failed',
       errorCode: null,
