@@ -31,11 +31,26 @@ async function press(client, sessionId, key) {
     windowsVirtualKeyCode: key === 'Tab' ? 9 : 13,
     nativeVirtualKeyCode: key === 'Tab' ? 9 : 13,
   };
-  await client.send(
-    'Input.dispatchKeyEvent',
-    { type: 'keyDown', ...params },
-    sessionId,
-  );
+  if (key === 'Enter') {
+    // Chrome's default button activation requires a character-generating
+    // keyboard event. A bare keyDown with no text can move focus but not click.
+    await client.send(
+      'Input.dispatchKeyEvent',
+      { type: 'rawKeyDown', ...params },
+      sessionId,
+    );
+    await client.send(
+      'Input.dispatchKeyEvent',
+      { type: 'char', text: '\r', unmodifiedText: '\r', ...params },
+      sessionId,
+    );
+  } else {
+    await client.send(
+      'Input.dispatchKeyEvent',
+      { type: 'keyDown', ...params },
+      sessionId,
+    );
+  }
   await client.send(
     'Input.dispatchKeyEvent',
     { type: 'keyUp', ...params },
