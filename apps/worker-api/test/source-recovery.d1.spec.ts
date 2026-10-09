@@ -366,6 +366,77 @@ describe('BG-11 source recovery', () => {
     expect((await recovery.eligibility('slow-site', 1)).eligible).toBe(false);
   });
 
+  it('compares accepted source text hashes without mutating prior revisions', async () => {
+    await seed('source-hash-item');
+    const jobs = new JobService(env.DB);
+    const retry = new SourceRecoveryService(env.DB);
+    const editor = new SourceEvidenceService(env.DB);
+    const first = await retry.retry('source-hash-item', 1, 'operator', NOW);
+    const leaseOne = (await jobs.leaseProcessingJobs(
+      'acquire_url','hash-worker-1',5,1,NOW,
+    ))[0]!;
+    expect(leaseOne.id).toBe(first.job_id);
+    const oldText='Original captured source hash bluejay';
+    const newText='Changed captured source hash redfinch';
+    const firstService=new SourceAcquisitionService(env.DB,{
+      fetcher:{fetch:vi.fn(async()=>({
+        status:'acquired_text' as const,coverage:'acquired_text' as const,
+        retryable:false,redirectCount:0,acquiredText:oldText,
+      }))},
+      now:()=>new Date(NOW.getTime()+1_000),
+    });
+    expect(await firstService.process(leaseOne,'hash-worker-1')).toBe(true);
+
+    const changed = await editor.replaceUrl(
+      'source-hash-item',1,'https://example.com/changed-content',
+      new Date(NOW.getTime()+2_000),
+    );
+    expect(changed.source_revision).toBe(2);
+    const leaseTwo=(await jobs.leaseProcessingJobs(
+      'acquire_url','hash-worker-2',5,1,new Date(NOW.getTime()+2_000),
+    ))[0]!;
+    const secondService=new SourceAcquisitionService(env.DB,{
+      fetcher:{fetch:vi.fn(async()=>({
+        status:'acquired_text' as const,coverage:'acquired_text' as const,
+        retryable:false,redirectCount:0,acquiredText:newText,
+      }))},
+      now:()=>new Date(NOW.getTime()+3_000),
+    });
+    expect(await secondService.process(leaseTwo,'hash-worker-2')).toBe(true);
+
+    const evidence = await env.DB.prepare(
+      `SELECT source_revision, acquired_text, acquired_text_hash
+       FROM url_acquisitions WHERE item_id='source-hash-item'
+       ORDER BY source_revision ASC`,
+    ).all<{source_revision:number;acquired_text:string;acquired_text_hash:string}>();
+    expect(evidence.results).toHaveLength(2);
+    expect(evidence.results.map(row=>row.source_revision)).toEqual([1,2]);
+    expect(evidence.results[0]?.acquired_text).toBe(oldText);
+    expect(evidence.results[1]?.acquired_text).toBe(newText);
+    expect(evidence.results[0]?.acquired_text_hash)
+      .not.toBe(evidence.results[1]?.acquired_text_hash);
+
+    const latest = await env.DB.prepare(
+      `SELECT details_json FROM audit_events
+       WHERE item_id='source-hash-item'
+         AND event_type='url_acquisition_completed'
+       ORDER BY created_at DESC,id DESC LIMIT 1`,
+    ).first<{details_json:string}>();
+    expect(JSON.parse(latest!.details_json))
+      .toMatchObject({source_revision:2,content_changed_from_previous:true});
+
+    const staleTerm = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM item_search_fts
+       WHERE item_search_fts MATCH 'bluejay'`,
+    ).first<{n:number}>();
+    expect(staleTerm?.n).toBe(0);
+    const currentTerm = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM item_search_fts
+       WHERE item_search_fts MATCH 'redfinch'`,
+    ).first<{n:number}>();
+    expect(currentTerm?.n).toBe(1);
+  });
+
   it('does not allow stale prior privacy to authorize a manual retry', async () => {
     await seed('changed-policy');
     await env.DB.prepare(
