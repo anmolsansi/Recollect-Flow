@@ -1564,8 +1564,8 @@ The unchecked BG-11.028 is delegated, not silently counted as implemented.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#18-bg-12--define-one-aggregate-processing-state-rule).
 
-**BG-12 contract implementation: 99/100 steps verified against the read-side rule and [PR #57](https://github.com/anmolsansi/Recollect-Flow/pull/57); the final merge gate remains unchecked.**
-The approved [state-decision truth table](verification/BG-12_AGGREGATE_STATE_CONTRACT.md) and [passing implementation CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37989348774) support these checks. BG-12 defines and tests the deterministic calculation, not BG-13's persisted writer repair.
+**BG-12 CONTRACT COMPLETE: 100/100 microtasks verified. BG-13 unlocked for separate transactional status integration.**
+The [final merged-main closeout](verification/BG-12_FINAL_CLOSEOUT.md), [state-decision truth table](verification/BG-12_AGGREGATE_STATE_CONTRACT.md), [passing PR CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37989816798), and [passing merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37990069598) support these checks. BG-12 defines and tests the deterministic calculation, not BG-13's persisted writer repair.
 BG-13 owns generation binding, D1 transition migration, and list/detail/filter runtime consistency. No production deployment was performed.
 Follow the numbered order; the group headings organize related work.
 
@@ -1697,7 +1697,7 @@ Follow the numbered order; the group headings organize related work.
 - [x] `BG-12.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-12.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-12.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-12.100` **Gate:** Check the parent completion boundary and record whether BG-13 is unlocked.
+- [x] `BG-12.100` **Gate:** Check the parent completion boundary and record whether BG-13 is unlocked.
 
 ## BG-13 — 100 executable microtasks
 
