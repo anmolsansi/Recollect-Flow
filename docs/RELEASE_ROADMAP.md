@@ -6,18 +6,21 @@ Every phase ends with a user-demonstrable gate. Infrastructure does not count as
 
 ## BG-11 acceptance gate (V1 extraction recovery)
 
-BG-11 builds on BG-08 through BG-10 and repairs owner recovery for unavailable
-pages. Its acceptance gate is a retained bookmark, distinct fetch/owner coverage,
-bounded idempotent retries, source-revision race protection, explicit-only small
-legacy reprocessing and an accessible Web recovery action. The isolated local
-browser test verifies keyboard navigation and activation in headless Chrome.
-Production deployment, actual Instagram capture, and real private content testing
-remain broader V1 launch/release gates.
+**Completed on merged `main`.** BG-11 builds on BG-08 through BG-10
+and provides owner recovery for unavailable pages. Its acceptance gate verified
+retained bookmarks, distinct fetched/owner coverage, bounded idempotent retries,
+source-revision race protection, opt-in legacy reprocessing capped at 20 items,
+and a keyboard-accessible Web recovery action in real isolated Chrome.
 
-The successor BG-12 owns the approved aggregate `items.processing_status` rule.
-BG-11 must not invent that rule or claim BG-12 complete. See
-[BG-11 verification](verification/BG-11_URL_RECOVERY.md) and the
-[BG-11 checklist](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-11--100-executable-microtasks).
+[PR #54](https://github.com/anmolsansi/Recollect-Flow/pull/54) merged at
+`dfb8af789a27ef5a3732c20955c1684341bd5c5d` and
+[merged-main CI passed](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37981181748).
+The [final closeout](verification/BG-11_FINAL_CLOSEOUT.md) documents 99
+completed checklist steps and the explicit BG-12 assignment for `BG-11.028`.
+
+**BG-12 is unlocked, not completed.** It owns the approved aggregate
+`items.processing_status` rule. Production deployment, real Instagram capture,
+and real private content testing remain separate V1 release gates.
 
 ## Product releases
 
