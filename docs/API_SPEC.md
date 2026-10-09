@@ -75,6 +75,31 @@ The Shortcut compatibility endpoint orchestrates this same private lifecycle
 server-side in one request; the staged endpoints remain available to richer
 clients.
 
+## BG-11 owner URL recovery (implemented, local/CI verified)
+
+All these routes require the existing admin session or token under `/api/v1`.
+The read-only `GET /items/:id/source/retry-eligibility?source_revision=N`
+checks current policy and source generation. The strictly validated
+`POST /items/:id/source/retry` accepts `{"source_revision":N}` and
+returns an existing active job or creates one bounded retry. Revisions,
+privacy, deletion, purge state, operational pause, and destination rules
+are rechecked at write time.
+
+`POST /items/:id/source/text` accepts `{"edit_version":N,"text":"..."}`.
+Owner text is provenance-marked and does not overwrite previous owner text or
+original capture events. `POST /items/:id/source/url` accepts
+`{"edit_version":N,"source_url":"https://example.com/new"}` and
+advances source revision while superseding stale acquisition leases.
+
+`GET /admin/source-reprocess/preview?limit=20` provides safe read-only
+candidate IDs/count. `POST /admin/source-reprocess/run` requires an explicit
+array of 1 to 20 `{item_id,source_revision}` objects and returns per-item
+outcomes. Neither migrations nor deployments automatically trigger backfill.
+The machine-readable acquisition result and owner-visible limitation are
+separate from aggregate processing status, which remains a BG-12 contract.
+
+See [BG-11 verification](verification/BG-11_URL_RECOVERY.md).
+
 ## Implemented privacy override
 
 ### `PATCH /api/v1/items/:itemId/privacy`
