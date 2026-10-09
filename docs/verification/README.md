@@ -4,17 +4,20 @@ This directory contains task-scoped verification evidence that is safe to keep i
 
 ## BG-11 — unavailable URL recovery and old-item reprocessing
 
-Status: **implementation CI-verified; merge and merged-main checks pending**.
+Status: **complete in BG-11 scope; BG-12 unlocked**.
 
-- Scope and implementation: [BG-11 URL Recovery](BG-11_URL_RECOVERY.md)
-- Tracking: [GitHub #53](https://github.com/anmolsansi/Recollect-Flow/issues/53)
-  and Linear OPE-337
-- Canonical 100-action reconciliation:
-  [BG-11 checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-11--100-executable-microtasks)
-- [Chrome keyboard and full CI acceptance run](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37980405822)
-  passed on head `7172bf746e483cd38b4439c538f57254002470fb`.
-- Final merge and merged-main CI must be recorded separately from passing PR CI.
-  Source-host production probing and production deployments remain out of scope.
+- Authoritative closeout: [BG-11 FINAL CLOSEOUT](BG-11_FINAL_CLOSEOUT.md)
+- Detailed behavior and verification: [BG-11 URL Recovery](BG-11_URL_RECOVERY.md)
+- GitHub: [issue #53](https://github.com/anmolsansi/Recollect-Flow/issues/53)
+  and [merged PR #54](https://github.com/anmolsansi/Recollect-Flow/pull/54)
+- Linear: OPE-337
+- Canonical checklist:
+  [BG-11 100-step reconciliation](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-11--100-executable-microtasks)
+  (99 checked, one explicit BG-12 aggregate-status handoff)
+- [Passing merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37981181748)
+  at merge commit `dfb8af789a27ef5a3732c20955c1684341bd5c5d`.
+- Source-host production probing, automatic backfill and deployment are not part
+  of this completion evidence. BG-12 is unlocked but must pass its own gates.
 
 ## Priority 1 — verification foundation
 

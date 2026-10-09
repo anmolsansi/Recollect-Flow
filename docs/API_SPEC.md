@@ -75,7 +75,7 @@ The Shortcut compatibility endpoint orchestrates this same private lifecycle
 server-side in one request; the staged endpoints remain available to richer
 clients.
 
-## BG-11 owner URL recovery (implemented, local/CI verified)
+## BG-11 owner URL recovery (merged and CI verified)
 
 All these routes require the existing admin session or token under `/api/v1`.
 The read-only `GET /items/:id/source/retry-eligibility?source_revision=N`

@@ -12,11 +12,13 @@ This directory is the complete product knowledge base for RecollectFlow. It cove
 
 No planned capability should be interpreted as shipped. Current evidence is maintained only in [BUILD_STATUS.md](BUILD_STATUS.md).
 
-The BG-11 implementation and evidence are indexed in
-[BG-11 URL recovery](verification/BG-11_URL_RECOVERY.md) and its
+BG-11 owner URL recovery is **complete within its approved scope** at
+[merged PR #54](https://github.com/anmolsansi/Recollect-Flow/pull/54).
+See the [final merged-main closeout](verification/BG-11_FINAL_CLOSEOUT.md),
+[detailed URL recovery evidence](verification/BG-11_URL_RECOVERY.md) and
 [canonical checklist](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-11--100-executable-microtasks).
-This is an owner-recovery stage, not a production release claim. The follow-up
-aggregate processing-status decision belongs to BG-12.
+The separate aggregate-processing-status work is deliberately assigned to
+BG-12/BG-13. This is not a production deployment or V1 release claim.
 
 ## Complete document map
 

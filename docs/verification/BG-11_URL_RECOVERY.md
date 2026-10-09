@@ -1,8 +1,10 @@
 # BG-11 — URL recovery, manual retries, and legacy backfill
 
-Status: **implementation CI-verified, pending merge**. This record describes BG-11 on
-[PR #54](https://github.com/anmolsansi/Recollect-Flow/pull/54).
-Do not infer production deployment or BG-12 unlock from this document.
+Status: **implementation complete, merged and CI-verified on `main`**. BG-12 is
+unlocked for its own work, not implemented by BG-11. The implementation was
+merged in [PR #54](https://github.com/anmolsansi/Recollect-Flow/pull/54).
+See the [final merged-main closeout](BG-11_FINAL_CLOSEOUT.md). Do not infer
+a production deployment or aggregate-status implementation from these records.
 
 Tracking: [GitHub #53](https://github.com/anmolsansi/Recollect-Flow/issues/53) /
 [Linear OPE-337](https://linear.app/openclaw-neutron/issue/OPE-337/bg-11-handle-unavailable-urls-retries-and-old-captures).
@@ -111,8 +113,9 @@ production deployment are not authorized by this implementation.
   passed. This includes 157 Node tests, 153 D1 tests, 12 Web tests,
   TypeScript, lint, formatting, contracts, local D1 migrations, original
   browser download, and new real Chrome keyboard recovery acceptance.
-- The merged-main result must be verified separately; older failed builds
-  were resolved before the passing exact-head run.
+- [Final PR-head run 37980919053](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37980919053): success on `463ee420f7e428a72e92ad4279ae12cee3e05b2a`.
+- [Merged-main run 37981181748](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37981181748): success on exact merge commit `dfb8af789a27ef5a3732c20955c1684341bd5c5d` (2026-10-09).
+  Previously failing interim revisions were fixed before the passing final gate.
 - `BG-11.028` requires the future BG-12 aggregate-status contract.
   This task intentionally does not guess aggregate status semantics.
 - `BG-11.088` passed a real isolated Chrome keyboard test: input text,
@@ -133,6 +136,9 @@ The authoritative [BG-11 checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-1
 reconciles current proof. `BG-11.028` remains an explicit BG-12
 contract/implementation handoff, because the accepted URL acquisition contract
 reserves aggregate `items.processing_status` for BG-12/BG-13.
-`BG-11.100` remains pending until the PR is merged and merged-main CI passes.
-These are not hidden failures or claims of production deployment.
-Closing the PR is separate from release smoke and deployment authorization.
+`BG-11.100` is verified by PR #54's merge and the passing merged-main CI.
+The BG-11 checklist is 99/100 checked. The only unchecked step, `BG-11.028`,
+is explicitly delegated to BG-12 by the approved aggregate-state boundary.
+All BG-11-applicable work is completed, but aggregate-state behavior is not
+claimed as implemented. Production smoke testing and deployment remain
+separate, approval-gated release work.
