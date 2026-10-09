@@ -147,15 +147,35 @@ async function main() {
       'Save supplied text',
       'Tab from owner text must focus Save supplied text',
     );
-    await press(client, sessionId, 'Enter');
-    await client.waitForExpression(
+    const saveDisabled = await client.evaluate(
       sessionId,
-      `Boolean(document.querySelector('textarea[readonly]')?.value.includes('BG11 keyboard sentinel'))`,
-      {
-        timeoutMs: 15000,
-        description: 'keyboard-triggered save persisted to item',
-      },
+      'document.activeElement?.disabled',
     );
+    assert.equal(saveDisabled, false, 'Save must be enabled after typing');
+    await press(client, sessionId, 'Enter');
+    try {
+      await client.waitForExpression(
+        sessionId,
+        `Boolean(document.querySelector('textarea[readonly]')?.value.includes('BG11 keyboard sentinel'))`,
+        {
+          timeoutMs: 12000,
+          description: 'keyboard-triggered save persisted to item',
+        },
+      );
+    } catch (saveError) {
+      const diagnostics = await client.evaluate(sessionId, `(() => ({
+        error: [...document.querySelectorAll('p')].map(p => p.textContent?.trim())
+          .filter(s => s && (s.includes('failed') || s.includes('Error') ||
+          s.includes('Source') || s.includes('Invalid') || s.includes('changed'))).slice(0,8),
+        saveDisabled: [...document.querySelectorAll('button')].find(b =>
+          b.textContent?.trim() === 'Save supplied text')?.disabled,
+        keyboardFocus: document.activeElement?.tagName,
+        readonly: document.querySelector('textarea[readonly]')?.value?.length ?? 0,
+      }))()`);
+      throw new Error(`Keyboard recovery did not persist: ${JSON.stringify(diagnostics)}`, {
+        cause: saveError,
+      });
+    }
     const state = await client.evaluate(
       sessionId,
       `({
