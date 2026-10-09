@@ -433,13 +433,18 @@ export class SourceAcquisitionService {
       currentContext.attempts + 1 <
         SOURCE_FETCH_LIMITS.maxAutomaticTransientAttempts
     ) {
+      const failureTime = this.now();
+      const retryAt = outcome.retryAfterSeconds
+        ? new Date(failureTime.getTime() + outcome.retryAfterSeconds * 1000)
+        : undefined;
       await this.jobs.failProcessingJob(
         job.id,
         ownerId,
         outcome.errorCode ?? 'SOURCE_NETWORK_ERROR',
         true,
         SOURCE_FETCH_LIMITS.maxAutomaticTransientAttempts,
-        this.now(),
+        failureTime,
+        retryAt,
       );
       return false;
     }
