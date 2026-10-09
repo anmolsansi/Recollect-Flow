@@ -261,6 +261,20 @@ export class SourceEvidenceService {
           )
           .bind(key, itemId, at, editVersion + 1, nextRevision),
       ),
+      // The existing partial unique index allows one active acquisition per item.
+      // Retire old-generation leases atomically before enqueueing the new job.
+      // In-flight workers are rejected by the BG-10 revision/lease check.
+      this.db
+        .prepare(
+          `UPDATE processing_jobs
+           SET status='failed',
+               last_error_code='SOURCE_REVISION_SUPERSEDED',
+               lease_owner=NULL,lease_expires_at=NULL,
+               completed_at=?1,updated_at=?1
+           WHERE item_id=?2 AND job_type='acquire_url'
+             AND input_hash<>?3 AND status IN ('pending','processing')`,
+        )
+        .bind(at,itemId,`url-source-v1:${nextRevision}`),
       this.db
         .prepare(
           `INSERT INTO processing_jobs(
