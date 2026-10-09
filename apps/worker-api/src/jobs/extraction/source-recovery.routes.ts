@@ -4,9 +4,20 @@ import type { AppContext } from '../../env';
 import { requireAdminToken } from '../../shared/auth';
 import { AppError } from '../../shared/errors';
 import { SourceRecoveryService } from './source-recovery.service';
+import { SourceEvidenceService } from './source-evidence.service';
 
 const revisionSchema = z.object({
   source_revision: z.number().int().min(1),
+}).strict();
+
+const ownerTextSchema = z.object({
+  edit_version: z.number().int().min(1),
+  text: z.string().trim().min(1).max(250_000),
+}).strict();
+
+const sourceUrlSchema = z.object({
+  edit_version: z.number().int().min(1),
+  source_url: z.string().url().max(2048),
 }).strict();
 
 const backfillSchema = z.object({
@@ -41,6 +52,20 @@ export function sourceRecoveryRoutes() {
       data: result,
       meta: { request_id: context.get('requestId') },
     });
+  });
+
+  router.post('/items/:id/source/text',requireAdminToken,async context => {
+    const input = await parseBody(context,ownerTextSchema);
+    const result = await new SourceEvidenceService(context.env.DB)
+      .supplyText(context.req.param('id'),input.edit_version,input.text);
+    return context.json({data:result,meta:{request_id:context.get('requestId')}});
+  });
+
+  router.post('/items/:id/source/url',requireAdminToken,async context => {
+    const input = await parseBody(context,sourceUrlSchema);
+    const result = await new SourceEvidenceService(context.env.DB)
+      .replaceUrl(context.req.param('id'),input.edit_version,input.source_url);
+    return context.json({data:result,meta:{request_id:context.get('requestId')}});
   });
 
   router.get('/admin/source-reprocess/preview',requireAdminToken,async context => {
