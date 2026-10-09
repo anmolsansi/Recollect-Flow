@@ -91,7 +91,7 @@ export class SourceEvidenceService {
       existingJob.provider_eligibility !== null &&
       existingJob.provider_eligibility !== 'none';
     const jobId = crypto.randomUUID();
-    const results = await this.db.batch([
+    const results = await this.db.batch<{ edit_version: number }>([
       this.db
         .prepare(
           `UPDATE items SET raw_text=?1, edit_version=edit_version+1,updated_at=?2
@@ -223,7 +223,7 @@ export class SourceEvidenceService {
     const at = now.toISOString();
     const jobId = crypto.randomUUID();
     const nextRevision = item.source_revision + 1;
-    const results = await this.db.batch([
+    const results = await this.db.batch<{ edit_version: number }>([
       this.db
         .prepare(
           `UPDATE items SET source_url=?1,canonical_url=?2,
