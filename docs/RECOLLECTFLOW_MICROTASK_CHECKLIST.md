@@ -1423,12 +1423,11 @@ Implementation choices remain proposals until resolved in the relevant step.
 **BG-11 verification checkpoint:** Code changes and synthetic workerd tests are
 recorded in [BG-11 URL recovery](verification/BG-11_URL_RECOVERY.md).
 A task checkbox is checked only when its code/contract proof was inspected.
-Open exceptions: `BG-11.028` requires BG-12's approved aggregate status
-contract; `BG-11.072` awaits the latest hash-comparison CI run;
-`BG-11.088` needs a live keyboard-accessibility check;
-`BG-11.097` awaits the final exact-head CI evidence; and `BG-11.100`
-requires the final merge and release-gate decision. Do not mark these
-as tested until the respective evidence exists.
+Current exceptions: `BG-11.028` is assigned to BG-12 by the approved
+URL acquisition contract and remains unchecked rather than falsely claimed.
+`BG-11.100` requires a real PR merge and verified post-merge CI run.
+The exact-head PR CI and actual Chrome keyboard test are documented in
+[BG-11 URL recovery](verification/BG-11_URL_RECOVERY.md).
 
 #### BG-11 / 01 — Establish task context
 
@@ -1524,7 +1523,7 @@ as tested until the respective evidence exists.
 #### BG-11 / 08 — Source replacement races
 
 - [x] `BG-11.071` Hash newly acquired content.
-- [ ] `BG-11.072` Compare prior accepted hash.
+- [x] `BG-11.072` Compare prior accepted hash.
 - [x] `BG-11.073` Identify source revision change.
 - [x] `BG-11.074` Preserve old fetch timestamp.
 - [x] `BG-11.075` Define current evidence selection.
@@ -1543,7 +1542,7 @@ as tested until the respective evidence exists.
 - [x] `BG-11.085` Show next eligible retry time.
 - [x] `BG-11.086` Hide meaningless Retry control.
 - [x] `BG-11.087` Explain supplying screenshot/text.
-- [ ] `BG-11.088` Verify keyboard-accessible next action.
+- [x] `BG-11.088` Verify keyboard-accessible next action.
 - [x] `BG-11.089` Test recoverable failure then success.
 - [x] `BG-11.090` Record URL-only acceptance evidence.
 
@@ -1555,7 +1554,7 @@ as tested until the respective evidence exists.
 - [x] `BG-11.094` **Integrity:** Check that BG-11 has not weakened its stated data, privacy, scope or recovery guarantees.
 - [x] `BG-11.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
 - [x] `BG-11.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-11.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-11.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-11.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-11.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-11.100` **Gate:** Check the parent completion boundary and record whether BG-12 is unlocked.
