@@ -2,6 +2,18 @@
 
 This directory contains task-scoped verification evidence that is safe to keep in the repository. It records sanitized results and links to immutable CI/audit sources rather than committing secrets, private capture content or large raw logs.
 
+## BG-11 — unavailable URL recovery and old-item reprocessing
+
+Status: **implementation and final acceptance verification on PR #54**.
+
+- Scope and implementation: [BG-11 URL Recovery](BG-11_URL_RECOVERY.md)
+- Tracking: [GitHub #53](https://github.com/anmolsansi/Recollect-Flow/issues/53)
+  and Linear OPE-337
+- Canonical 100-action reconciliation:
+  [BG-11 checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-11--100-executable-microtasks)
+- Final merge and merged-main CI must be recorded separately from passing PR CI.
+  Source-host production probing and production deployments remain out of scope.
+
 ## Priority 1 — verification foundation
 
 ### BG-01 — reproducible baseline
