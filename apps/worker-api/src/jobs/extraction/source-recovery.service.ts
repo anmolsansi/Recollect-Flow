@@ -193,7 +193,7 @@ export class SourceRecoveryService {
     const at = now.toISOString();
     const result = await this.db
       .prepare(
-        `INSERT INTO processing_jobs(
+        `INSERT OR IGNORE INTO processing_jobs(
          id,item_id,job_type,status,attempts,manual_retry_count,available_at,
          created_at,updated_at,input_hash,privacy_level_snapshot,
          provider_eligibility,policy_version,credential_source,
