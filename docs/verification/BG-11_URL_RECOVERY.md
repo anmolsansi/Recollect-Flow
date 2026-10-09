@@ -98,3 +98,29 @@ CI gate. CI evidence must be recorded here after a successful exact-head run.
 The legacy candidate preview and execution are **opt-in only**. Production
 database migrations, automatic backfills, credentialed page fetching, and a
 production deployment are not authorized by this implementation.
+
+## Automated verification and honest exceptions
+
+- [Full passing PR CI on 48e8089](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37972643315):
+  formatting, lint, TypeScript checks, 157 Node tests, 152 D1 tests,
+  9 web tests, contract checks, production Web build, local DB migrations,
+  and browser download tests.
+- [Full passing PR CI on 78c0d3e](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37972755448):
+  same checks after removal of the temporary formatter workflow.
+- The exact final head and merge result must be verified separately.
+  Earlier failed builds were resolved before the two passing runs.
+- `BG-11.028` requires the future BG-12 aggregate-status contract.
+  This task intentionally does not guess aggregate status semantics.
+- `BG-11.088` still needs a real browser keyboard-accessibility walkthrough.
+  Native buttons and labeled form fields are present, but a build is not
+  equivalent to a full manual interaction test.
+- The newer hash-change audit records whether newly acquired source text has
+  a different SHA-256 from the last accepted source. It never mutates old
+  evidence. Its exact-head CI and `BG-11.072` acceptance still need final
+  reconciliation.
+- No production or live Instagram/other website access was performed.
+  Network and privacy cases use deterministic fixtures instead.
+
+The authoritative [BG-11 checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-11--100-executable-microtasks)
+retains unchecked entries for proofs that are not yet available. Closing the
+PR is separate from release smoke validation and deployment authorization.
