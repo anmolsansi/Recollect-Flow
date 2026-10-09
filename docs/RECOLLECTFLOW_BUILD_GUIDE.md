@@ -1456,7 +1456,7 @@ item and only current source evidence.
 manual retry with changed privacy, duplicate scheduler invocation and an old
 URL-only fixture. The original capture/event remains unchanged throughout.
 
-### Implemented recovery boundary (BG-11 working branch)
+### Implemented recovery boundary (BG-11 merged and verified)
 
 The authenticated recovery endpoints and their exact request shapes are documented
 in [BG-11 URL Recovery](verification/BG-11_URL_RECOVERY.md). They build on BG-10
@@ -1481,9 +1481,15 @@ external page acquisition is limited or fails.
 - The Web item detail shows safe source failure messages, the saved original
   URL, a future retry time, and server-controlled recovery actions.
 
-The changes are in review until the PR's complete CI and reconciliation gates
-pass. The processing-status aggregate model remains BG-12/BG-13 scope.
-This task does not authorize a production deployment or live URL probing.
+BG-11's approved recovery scope was merged in
+[PR #54](https://github.com/anmolsansi/Recollect-Flow/pull/54) at
+`dfb8af789a27ef5a3732c20955c1684341bd5c5d`. The
+[merged-main CI run](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37981181748)
+passed. The [final closeout](verification/BG-11_FINAL_CLOSEOUT.md) records the
+99 checked checklist items and the deliberately delegated `BG-11.028`
+aggregate-status step. BG-12 is unlocked for its independent contract and
+implementation. Neither BG-12/BG-13 aggregate status nor a production
+migration, deployment, or live URL probe is claimed.
 
 ### Execution checklist
 
