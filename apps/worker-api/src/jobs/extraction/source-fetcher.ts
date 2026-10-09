@@ -1,4 +1,5 @@
 import { validateSourceDestination } from './source-destination';
+import { parseSourceRetryAfter } from './source-retry-after';
 import { parseSourceDocument } from './source-document.parser';
 import {
   abortableSourceOperation,
@@ -177,8 +178,13 @@ export class SourceFetcher {
           redirectCount,
         );
         if (classified) {
+          const retryAfterSeconds = classified.retryable
+            ? parseSourceRetryAfter(response.headers.get('retry-after'))
+            : undefined;
           await cancelSourceBody(response);
-          return classified;
+          return retryAfterSeconds === undefined
+            ? classified
+            : { ...classified, retryAfterSeconds };
         }
 
         if (response.status === 204 || response.status === 205) {
