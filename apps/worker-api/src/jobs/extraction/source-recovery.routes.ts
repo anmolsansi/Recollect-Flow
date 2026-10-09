@@ -54,6 +54,20 @@ export function sourceRecoveryRoutes() {
     });
   });
 
+  router.get('/items/:id/source/retry-eligibility',requireAdminToken,async context => {
+    const parsed = z.coerce.number().int().min(1)
+      .safeParse(context.req.query('source_revision'));
+    if (!parsed.success) {
+      throw new AppError(422,'VALIDATION_ERROR','source_revision is required.');
+    }
+    const result = await new SourceRecoveryService(context.env.DB)
+      .eligibility(context.req.param('id'),parsed.data);
+    return context.json({
+      data: result,
+      meta: {request_id:context.get('requestId')},
+    });
+  });
+
   router.post('/items/:id/source/text',requireAdminToken,async context => {
     const input = await parseBody(context,ownerTextSchema);
     const result = await new SourceEvidenceService(context.env.DB)
