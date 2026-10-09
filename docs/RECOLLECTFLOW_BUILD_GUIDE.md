@@ -1583,6 +1583,40 @@ that same definition.
 **Done when:** a reviewer can compute the same item state from a set of jobs.
 The proposed table becomes a tested contract, not an informal UI guess.
 
+### Adopted BG-12 aggregate decision contract
+
+**Selected approach:** use a pure, deterministic stage/job/attachment decision
+helper rather than an item-status last-writer hook or a temporary detail-only
+projection. The helper is implemented at
+`apps/worker-api/src/jobs/aggregate-processing-state.ts`; its fixed-clock
+rule fixtures live in
+`apps/worker-api/test/aggregate-processing-state.test.ts`.
+
+For one explicitly verified input/policy/source **generation**, determine
+which stages are required (`acquire_url`, `extract`, `enrich`). No-AI policy
+may omit `enrich` entirely. Ignore unrelated Notion sync and digest jobs,
+old generations, and superseded same-stage failures. A current required
+terminal failure or a failed required attachment wins; otherwise any valid
+active lease means processing, queued/deferred/missing required work means
+pending, and all deliberately required stages complete means complete.
+Deferred attempts keep the existing stored `pending` status and expose the
+next eligible time or explicit policy/capacity pause reason separately.
+Preserve `coverage` and per-attachment limitations outside the aggregate
+status. A deleted item is excluded from reconciliation, not reactivated.
+
+**Generation warning:** current DB fields `input_hash`, `policy_version`,
+`privacy_level_snapshot`, and `source_revision` are insufficient to
+identify *every* extract/enrich reprocess generation. BG-12 therefore
+requires its caller to prove the generation and does not mutate persisted
+item statuses. **BG-13 owns** the smallest durable generation marker (or
+equivalent safe binding), atomic item/job transitions, and agreement of
+list/filter/detail endpoints. Do not present BG-12 pure-unit success as
+proof that the old pending-after-job-failure database defect is already
+fixed in production.
+
+See the [BG-12 decision matrix and compatibility handoff](verification/BG-12_AGGREGATE_STATE_CONTRACT.md).
+Revisit these decisions only through a reviewed contract change.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-12](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-12--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
