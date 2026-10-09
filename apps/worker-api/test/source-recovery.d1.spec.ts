@@ -238,35 +238,61 @@ describe('BG-11 source recovery', () => {
   });
   it('requires authentication and validates the retry revision at the HTTP boundary', async () => {
     await seed('route-source');
-    const app=createApp();
-    const anonymous=await app.request(
+    const app = createApp();
+    const anonymous = await app.request(
       '/api/v1/items/route-source/source/retry',
-      {method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({source_revision:1})},env);
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source_revision: 1 }),
+      },
+      env,
+    );
     expect(anonymous.status).toBe(403);
 
-    const invalid=await app.request(
+    const invalid = await app.request(
       '/api/v1/items/route-source/source/retry',
-      {method:'POST',headers:{
-        Authorization:'Bearer test-admin-token','Content-Type':'application/json'},
-        body:JSON.stringify({source_revision:0})},env);
+      {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer test-admin-token',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ source_revision: 0 }),
+      },
+      env,
+    );
     expect(invalid.status).toBe(422);
     expect(await jobCount('route-source')).toBe(0);
 
-    const request={method:'POST',headers:{
-      Authorization:'Bearer test-admin-token','Content-Type':'application/json'},
-      body:JSON.stringify({source_revision:1})};
-    const accepted=await app.request('/api/v1/items/route-source/source/retry',request,env);
+    const request = {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer test-admin-token',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ source_revision: 1 }),
+    };
+    const accepted = await app.request(
+      '/api/v1/items/route-source/source/retry',
+      request,
+      env,
+    );
     expect(accepted.status).toBe(200);
-    const payload=await accepted.json() as {data:{created:boolean;job_id:string}};
+    const payload = (await accepted.json()) as {
+      data: { created: boolean; job_id: string };
+    };
     expect(payload.data.created).toBe(true);
 
-    const replay=await app.request('/api/v1/items/route-source/source/retry',request,env);
+    const replay = await app.request(
+      '/api/v1/items/route-source/source/retry',
+      request,
+      env,
+    );
     expect(replay.status).toBe(200);
     await expect(replay.json()).resolves.toMatchObject({
-      data:{created:false,job_id:payload.data.job_id},
+      data: { created: false, job_id: payload.data.job_id },
     });
     expect(await jobCount('route-source')).toBe(1);
   });
-
 });
