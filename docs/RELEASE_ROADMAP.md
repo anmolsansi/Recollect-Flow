@@ -4,6 +4,21 @@
 
 Every phase ends with a user-demonstrable gate. Infrastructure does not count as progress when the real workflow remains unusable. A failed gate blocks dependent work. `BUILD_STATUS.md` is the source for current completion.
 
+## BG-11 acceptance gate (V1 extraction recovery)
+
+BG-11 builds on BG-08 through BG-10 and repairs owner recovery for unavailable
+pages. Its acceptance gate is a retained bookmark, distinct fetch/owner coverage,
+bounded idempotent retries, source-revision race protection, explicit-only small
+legacy reprocessing and an accessible Web recovery action. The isolated local
+browser test verifies keyboard navigation and activation in headless Chrome.
+Production deployment, actual Instagram capture, and real private content testing
+remain broader V1 launch/release gates.
+
+The successor BG-12 owns the approved aggregate `items.processing_status` rule.
+BG-11 must not invent that rule or claim BG-12 complete. See
+[BG-11 verification](verification/BG-11_URL_RECOVERY.md) and the
+[BG-11 checklist](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-11--100-executable-microtasks).
+
 ## Product releases
 
 ### V0 — Technical spike

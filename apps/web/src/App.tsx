@@ -29,6 +29,7 @@ import {
   latestFeedbackType,
   runVersionedAction,
 } from './item-actions';
+import { sourceStatusMessage, visibleSourceCoverage } from './source-recovery';
 import './index.css';
 
 type AuthState = 'checking' | 'authenticated' | 'unauthenticated';
@@ -325,6 +326,13 @@ function ItemDetail() {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const mutationLock = useRef(false);
+  const [sourceText, setSourceText] = useState('');
+  const [replacementUrl, setReplacementUrl] = useState('');
+  const [sourceRetry, setSourceRetry] = useState<{
+    eligible: boolean;
+    reason: string;
+    active_job_id: string | null;
+  } | null>(null);
 
   const load = useCallback(
     async (signal?: AbortSignal) => {
@@ -338,6 +346,25 @@ function ItemDetail() {
         setOriginal(response.item);
         setTopicsText(response.item.topics.join(', '));
         setDuplicateTarget(response.item.duplicate_of ?? '');
+        setSourceText('');
+        setReplacementUrl(response.item.source_url ?? '');
+        if (response.item.source_type === 'url') {
+          try {
+            const eligibility = await fetchApi<{
+              eligible: boolean;
+              reason: string;
+              active_job_id: string | null;
+            }>(
+              `/items/${id}/source/retry-eligibility?source_revision=${response.item.source_revision}`,
+              { signal },
+            );
+            setSourceRetry(eligibility);
+          } catch (eligibilityError) {
+            if (!isAbortError(eligibilityError)) setSourceRetry(null);
+          }
+        } else {
+          setSourceRetry(null);
+        }
       } catch (loadError) {
         if (!isAbortError(loadError)) setError(messageFor(loadError));
       }
@@ -687,14 +714,31 @@ function ItemDetail() {
           <strong>Source:</strong> {draft.source_app} / {draft.source_type}
         </p>
         <p>
-          <strong>Coverage:</strong> {draft.coverage ?? 'Unknown'}
+          <strong>Coverage:</strong>{' '}
+          {visibleSourceCoverage(
+            draft.source_type,
+            draft.coverage,
+            draft.raw_text,
+            detail.url_acquisition?.coverage,
+          )}
         </p>
         <p>
           <strong>Processing:</strong> {draft.processing_status ?? 'Unknown'}
         </p>
         {draft.source_url && (
           <p>
-            <strong>Submitted URL:</strong> {draft.source_url}
+            <strong>Submitted URL:</strong>{' '}
+            {/^https?:\/\//i.test(draft.source_url) ? (
+              <a
+                href={draft.source_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open original URL
+              </a>
+            ) : (
+              draft.source_url
+            )}
           </p>
         )}
         {draft.canonical_url && (
@@ -746,6 +790,105 @@ function ItemDetail() {
           </div>
         ) : (
           <p>No current URL acquisition evidence.</p>
+        )}
+        {draft.source_type === 'url' && (
+          <div style={{ display: 'grid', gap: 12, marginTop: 16 }}>
+            <p role="status">
+              {sourceStatusMessage(detail.url_acquisition?.status ?? null)}
+            </p>
+            {detail.processing_jobs
+              .filter(
+                (job) =>
+                  job.jobType === 'acquire_url' &&
+                  job.visibleStatus === 'retry_wait',
+              )
+              .map((job) => (
+                <p key={job.id}>
+                  Waiting to retry after{' '}
+                  {new Date(job.availableAt).toLocaleString()}
+                </p>
+              ))}
+            {sourceRetry?.eligible && (
+              <button
+                className="btn btn-outline"
+                disabled={saving || changed}
+                onClick={() =>
+                  void mutate(
+                    `/items/${id}/source/retry`,
+                    {
+                      method: 'POST',
+                      body: JSON.stringify({
+                        source_revision: draft.source_revision,
+                      }),
+                    },
+                    'Source fetch queued. The saved bookmark remains available.',
+                  )
+                }
+              >
+                Retry page fetch
+              </button>
+            )}
+            {sourceRetry?.reason === 'SOURCE_RETRY_LIMIT' && (
+              <p>Source retry limit reached. Add text or a new URL instead.</p>
+            )}
+            {draft.raw_text == null && (
+              <div>
+                <Field label="Add text you copied from this page">
+                  <textarea
+                    className="input"
+                    rows={5}
+                    value={sourceText}
+                    onChange={(event) => setSourceText(event.target.value)}
+                    placeholder="Paste an excerpt. It will be marked as owner-supplied evidence."
+                  />
+                </Field>
+                <button
+                  className="btn btn-outline"
+                  disabled={saving || changed || !sourceText.trim()}
+                  onClick={() =>
+                    void mutateVersioned(
+                      `/items/${id}/source/text`,
+                      (edit_version) => ({ edit_version, text: sourceText }),
+                      'Owner-supplied source text saved.',
+                    )
+                  }
+                >
+                  Save supplied text
+                </button>
+              </div>
+            )}
+            <div>
+              <Field label="Replace original URL">
+                <input
+                  className="input"
+                  type="url"
+                  value={replacementUrl}
+                  onChange={(event) => setReplacementUrl(event.target.value)}
+                />
+              </Field>
+              <button
+                className="btn btn-outline"
+                disabled={
+                  saving ||
+                  changed ||
+                  !replacementUrl.trim() ||
+                  replacementUrl === draft.source_url
+                }
+                onClick={() =>
+                  void mutateVersioned(
+                    `/items/${id}/source/url`,
+                    (edit_version) => ({
+                      edit_version,
+                      source_url: replacementUrl,
+                    }),
+                    'Source URL updated. A new acquisition generation was queued.',
+                  )
+                }
+              >
+                Update source URL
+              </button>
+            </div>
+          </div>
         )}
       </Section>
 

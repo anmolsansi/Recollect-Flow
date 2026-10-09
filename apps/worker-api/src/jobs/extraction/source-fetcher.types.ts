@@ -62,6 +62,7 @@ export interface SourceFetchOutcome extends SourceFetchMetadata {
   errorCode?: SourceFetchErrorCode;
   fetchedFinalUrl?: string;
   httpStatus?: number;
+  retryAfterSeconds?: number;
   contentType?: string;
   responseBytes?: number;
   redirectCount: number;

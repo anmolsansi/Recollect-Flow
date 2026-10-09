@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import type { CaptureRepository } from './captures/capture.repository';
 import { D1CaptureRepository } from './captures/capture.repository';
 import { jobRoutes } from './jobs/job.routes';
+import { sourceRecoveryRoutes } from './jobs/extraction/source-recovery.routes';
 import { captureRoutes } from './captures/capture.routes';
 import { attachmentRoutes } from './attachments/attachment.routes';
 import type { AttachmentRepository } from './attachments/attachment.repository';
@@ -79,6 +80,7 @@ export function createApp(
   );
   app.route('/api/v1', policyRoutes(policyRepositoryFactory));
   app.route('/api/v1', jobRoutes());
+  app.route('/api/v1', sourceRecoveryRoutes());
   app.route('/api/v1', itemRoutes());
   app.route('/api/v1', searchRoutes());
   app.route('/api/v1', authRoutes());

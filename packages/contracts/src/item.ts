@@ -24,6 +24,7 @@ export const itemResponseSchema = z
     source_type: z.string(),
     source_app: z.string(),
     source_url: z.string().nullable().optional(),
+    source_revision: z.number().int().min(1),
     canonical_url: z.string().nullable().optional(),
     raw_text: z.string().nullable().optional(),
     summary: z.string().nullable().optional(),

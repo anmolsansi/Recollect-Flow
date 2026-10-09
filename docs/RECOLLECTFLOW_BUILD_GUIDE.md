@@ -1456,6 +1456,35 @@ item and only current source evidence.
 manual retry with changed privacy, duplicate scheduler invocation and an old
 URL-only fixture. The original capture/event remains unchanged throughout.
 
+### Implemented recovery boundary (BG-11 working branch)
+
+The authenticated recovery endpoints and their exact request shapes are documented
+in [BG-11 URL Recovery](verification/BG-11_URL_RECOVERY.md). They build on BG-10
+without replacing its immutable evidence storage, durable job leases, or the
+source-version guard. The original URL and capture events remain saved when
+external page acquisition is limited or fails.
+
+- Transient errors can be retried with the existing three-attempt automatic
+  limit and a bounded server `Retry-After` hint. Owner retries are limited to
+  three accepted requests for one current URL revision. Permanent failures are
+  not blindly retried.
+- Only current Public URL items that pass safe-destination, deletion, purge, and
+  operational-pause checks can be queued. Repeated requests for the same active
+  revision return the existing job.
+- Owner text is added as provenance-bearing evidence without rewriting the
+  original capture event or a previous owner-provided text value.
+- Replacing a source URL creates a new source revision. Older in-flight fetch
+  results cannot become current evidence.
+- Older unprocessed URL items can be previewed without fetching anything,
+  then explicitly reprocessed by ID, at most 20 per request. No migration or
+  deploy step automatically performs the backfill.
+- The Web item detail shows safe source failure messages, the saved original
+  URL, a future retry time, and server-controlled recovery actions.
+
+The changes are in review until the PR's complete CI and reconciliation gates
+pass. The processing-status aggregate model remains BG-12/BG-13 scope.
+This task does not authorize a production deployment or live URL probing.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-11](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-11--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.

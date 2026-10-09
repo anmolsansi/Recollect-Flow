@@ -83,3 +83,28 @@ Runs read-only checks for attachment/R2 drift, missing Notion projections, parti
 
 Returns the persisted run and findings. Integrity findings never initiate canonical deletion.
 <!-- OPE-228 END -->
+
+## BG-11 URL recovery (local/PR verified)
+
+All routes are under `/api/v1` and require an admin session or token. A capture
+token cannot call them. Request bodies are strict; all error messages are safe
+for display and never contain fetched content or signed URL parameters.
+
+| Method | Endpoint                                                | Purpose                                                                                                      |
+| ------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| GET    | `/items/:id/source/retry-eligibility?source_revision=N` | Returns current `eligible`, `reason` and `active_job_id` without side effects                                |
+| POST   | `/items/:id/source/retry`                               | With `{"source_revision":N}`, return current active job or enqueue a bounded public-safe retry               |
+| POST   | `/items/:id/source/text`                                | With `{"edit_version":N,"text":"..."}`, record owner-supplied text once without rewriting capture provenance |
+| POST   | `/items/:id/source/url`                                 | With `{"edit_version":N,"source_url":"https://..."}`, start a new source revision and suppress stale fetches |
+| GET    | `/admin/source-reprocess/preview?limit=N`               | Read-only count/IDs for at most 20 old eligible URL items                                                    |
+| POST   | `/admin/source-reprocess/run`                           | With explicit `{"items":[{"item_id":"...","source_revision":N}]}`, enqueue at most 20 candidates             |
+
+The retry endpoint enforces Public source-host privacy, safe destination,
+non-deleted/non-purging state, current revision and operational pause. Source
+acquisition has three automatic transient attempts, up to three accepted owner
+retries per URL revision, and bounded `Retry-After` handling. Backfill does not
+run from deployments or migrations.
+
+The source outcome is separate from `items.processing_status`. The aggregate
+processing-status contract remains the BG-12 milestone. See
+[BG-11 evidence](verification/BG-11_URL_RECOVERY.md).

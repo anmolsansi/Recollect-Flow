@@ -11,6 +11,21 @@ network fetcher. BG-10 persists acquisition evidence and chains processing. BG-1
 adds owner recovery and reprocessing behavior. This document deliberately does not
 claim that URL fetching exists on the BG-08 branch.
 
+## BG-11 recovery extension
+
+BG-11 implements the authenticated recovery decisions on top of this BG-08
+contract, the BG-09 fetch bounds, and BG-10 durable evidence. The current source
+revision and privacy snapshot govern which prior evidence can be considered
+current. Manual retries are limited and idempotent per active source generation.
+Owner-supplied text has separate SHA-256 provenance. Replacing a URL retains old
+capture events, supersedes older active acquisition leases and starts a new
+source revision. A preview-only, explicit-ID reprocess path is capped at 20 old
+eligible Public URL items per request.
+
+**This does not approve the BG-12 aggregate status vocabulary or an automatic
+historical backfill.** The implemented routes, browser test, and D1 failure
+cases are described in [BG-11 verification](verification/BG-11_URL_RECOVERY.md).
+
 ## 1. Problem and invariant
 
 A submitted URL is evidence that the owner saved an address. It is not evidence

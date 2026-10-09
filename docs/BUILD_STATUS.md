@@ -131,3 +131,22 @@ Acceptance coverage includes admin authorization, credential-free export, backup
 
 The exact checkpoint `f917d0d…` passed the full repository quality gate, local migration application, and Wrangler dry-run. Later acceptance-hardening/documentation commits must receive the same latest-SHA gate before this branch is declared PR-ready. Production D1 migration `0021`, production backup creation, remote purge execution, and deployment are not authorized by branch completion and remain release-gated.
 <!-- OPE-228 END -->
+
+## BG-11 URL recovery, local acceptance
+
+BG-11 is implemented and the working branch passed the repository's full
+quality gate. [CI run 37980405822](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37980405822)
+on `7172bf746e483cd38b4439c538f57254002470fb` verified
+157 Node, 153 Worker/D1, and 12 Web tests, local migrations, contracts,
+type checks, lint, build, original download and the real Chrome keyboard
+source-recovery acceptance. A URL bookmark persists through external failures;
+Public safe-source retries are bounded and generation-aware; owner text and
+replacements preserve provenance; historic URL backfill is preview-only until
+explicitly requested in batches of at most 20.
+
+BG-11's source coverage is distinct from aggregate `items.processing_status`.
+The approved acquisition contract assigns aggregation to **BG-12/BG-13**, not
+BG-11. This is an explicit downstream handoff, not an invented completion.
+No production migration, deployment, or real external website fetch was part
+of these acceptance tests. PR #54 must merge and merged-main CI must pass
+before the task's merge gate is marked complete.
