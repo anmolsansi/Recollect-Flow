@@ -21,8 +21,9 @@ Status: **complete in BG-11 scope; BG-12 unlocked**.
 
 ## BG-12 — aggregate item processing-state decision
 
-Status: **decision helper and contract implemented; final CI and merge gate pending**.
+Status: **BG-12 decision-contract complete, BG-13 unlocked**.
 
+- [BG-12 final verified merged-main closeout](BG-12_FINAL_CLOSEOUT.md)
 - Detailed [BG-12 decision table and generation handoff](BG-12_AGGREGATE_STATE_CONTRACT.md)
 - Canonical [BG-12 microtask checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-12--100-executable-microtasks)
 - GitHub [issue #56](https://github.com/anmolsansi/Recollect-Flow/issues/56)

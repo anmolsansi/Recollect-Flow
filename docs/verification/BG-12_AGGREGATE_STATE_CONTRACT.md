@@ -1,6 +1,6 @@
 # BG-12 — Aggregate item processing-status contract
 
-**Status:** BG-12 contract helper and truth-table tests passed full PR CI. Final PR-head/merged-main verification remains a separate gate.
+**Status: COMPLETE for BG-12's decision-contract scope.** [Final merged-main closeout](BG-12_FINAL_CLOSEOUT.md) records passing PR CI, actual merge, passing merged-main CI and BG-13 unlock.
 
 **Tracking:** [GitHub #56](https://github.com/anmolsansi/Recollect-Flow/issues/56) · [Linear OPE-338](https://linear.app/openclaw-neutron/issue/OPE-338/bg-12-define-one-aggregate-processing-state-rule)
 
@@ -76,10 +76,10 @@ Execute local gate: `npm ci && npm run check && npm run db:migrate:local`. Repos
 ## Verification evidence
 
 - [Full passing implementation PR CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37989348774) on `dd76578401569fe3646b82f995e708717aa95b12`: formatting, lint, TypeScript, repository unit/workerd tests, contract checks, Web build, local D1 migrations, Chrome download and URL recovery acceptance.
-- [PR #57](https://github.com/anmolsansi/Recollect-Flow/pull/57) contains the implementation and exact current documentation. The authoritative 100-action checklist is in `docs/RECOLLECTFLOW_MICROTASK_CHECKLIST.md`. Its final merge gate must not be checked until the final changes pass exact-head CI and merge into `main`.
+- [PR #57](https://github.com/anmolsansi/Recollect-Flow/pull/57) was merged at `408d415d1d54ab8a5c5668a4b19efc03f3a56171`; [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37990069598) passed. The canonical 100-action checklist is complete for the BG-12 decision scope; BG-13 remains a distinct implementation gate.
 - A code-diff review confirmed the helper is side-effect-free, the new test file exercises a fixed clock, there is no new database migration or API mutation, and all runtime cross-service status writes are still explicitly assigned to BG-13.
 - **Verified BG-12 outcome:** a reviewer can compute the same item status from the current-generation required-stage job/attachment set. **Unverified BG-13 outcome:** the persisted item status is changed atomically on each relevant job transition, and list/detail/filter agree. This is deliberately not claimed.
 
 ## Release boundary
 
-No production D1 migration, live-source probing, production backfill, external messaging, deployment, or BG-13 implementation is authorized by BG-12. Record exact CI and merge evidence before claiming BG-13 is unlocked.
+No production D1 migration, live-source probing, production backfill, external messaging, deployment, or BG-13 implementation is authorized by BG-12. BG-13 is now unlocked by the verified merged-main decision contract, not silently implemented.

@@ -22,11 +22,14 @@ completed checklist steps and the explicit BG-12 assignment for `BG-11.028`.
 `items.processing_status` rule. Production deployment, real Instagram capture,
 and real private content testing remain separate V1 release gates.
 
-## BG-12 aggregate-state contract (pre-merge verification)
+## BG-12 aggregate-state contract (merged and CI verified)
 
-BG-12 formalizes the deterministic four-value item processing status
-decision with tested required-stage, lease, future retry, optional work,
-limited coverage, old-generation and attachment failure rules.
+BG-12 has formalized and verified the deterministic four-value item
+processing status decision with tested required-stage, lease, future retry,
+optional work, limited coverage, old-generation and attachment failure rules.
+[PR #57](https://github.com/anmolsansi/Recollect-Flow/pull/57) merged, and
+[merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37990069598)
+passed. [Final closeout](verification/BG-12_FINAL_CLOSEOUT.md): 100/100 contract tasks, BG-13 unlocked.
 [Detailed contract](verification/BG-12_AGGREGATE_STATE_CONTRACT.md).
 BG-13 must add authoritative transactional generation/write reconciliation
 and keep item detail, list and filter views consistent. Until that work lands,
