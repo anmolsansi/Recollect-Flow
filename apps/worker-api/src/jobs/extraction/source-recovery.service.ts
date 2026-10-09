@@ -101,10 +101,10 @@ export class SourceRecoveryService {
     this.assertEligible(item, revision);
     const active = async () => this.db.prepare(
       `SELECT id, status FROM processing_jobs
-       WHERE item_id=?1 AND job_type='acquire_url'
+       WHERE item_id=?1 AND job_type='acquire_url' AND input_hash=?2
          AND status IN ('pending','processing')
        ORDER BY created_at DESC LIMIT 1`,
-    ).bind(itemId).first<ExistingJob>();
+    ).bind(itemId,`url-source-v1:${revision}`).first<ExistingJob>();
     const inProgress = await active();
     if (inProgress) return {
       item_id: itemId, job_id: inProgress.id,
@@ -150,7 +150,7 @@ export class SourceRecoveryService {
            WHERE p.item_id=i.id AND p.state IN ('queued','processing','partial'))
          AND NOT EXISTS(SELECT 1 FROM processing_jobs j
            WHERE j.item_id=i.id AND j.job_type='acquire_url'
-             AND j.status IN ('pending','processing'))
+             AND j.input_hash=?3 AND j.status IN ('pending','processing'))
          AND COALESCE((SELECT enabled FROM operational_controls
            WHERE control_key='optional_processing_paused'),0)=0`,
     ).bind(jobId, at, `url-source-v1:${revision}`,
