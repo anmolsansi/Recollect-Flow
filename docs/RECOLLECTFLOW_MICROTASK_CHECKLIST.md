@@ -1420,7 +1420,6 @@ The step checkboxes below were reconciled against PR #54, CI, and the scoped BG-
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
-
 **BG-11 verification checkpoint:** Code changes and synthetic workerd tests are
 recorded in [BG-11 URL recovery](verification/BG-11_URL_RECOVERY.md).
 A task checkbox is checked only when its code/contract proof was inspected.
