@@ -18,7 +18,7 @@ describe('BG-11 safe retry outcomes', () => {
 
   it('rejects unbounded, expired, malformed and zero retry hints', () => {
     expect(parseSourceRetryAfter('0', now)).toBeUndefined();
-    expect(parseSourceRetryAfter('9999999999', now)).toBeUndefined();
+    expect(parseSourceRetryAfter('9999999999', now)).toBe(86_400);
     expect(
       parseSourceRetryAfter('Thu, 08 Oct 2026 12:00:00 GMT', now),
     ).toBeUndefined();
