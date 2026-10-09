@@ -1,6 +1,6 @@
 # BG-11 — URL recovery, manual retries, and legacy backfill
 
-Status: **implementation in review**. This record describes the BG-11 change set on
+Status: **implementation CI-verified, pending merge**. This record describes BG-11 on
 [PR #54](https://github.com/anmolsansi/Recollect-Flow/pull/54).
 Do not infer production deployment or BG-12 unlock from this document.
 
@@ -107,20 +107,32 @@ production deployment are not authorized by this implementation.
   and browser download tests.
 - [Full passing PR CI on 78c0d3e](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37972755448):
   same checks after removal of the temporary formatter workflow.
-- The exact final head and merge result must be verified separately.
-  Earlier failed builds were resolved before the two passing runs.
+- [Exact-head CI on `7172bf746e483cd38b4439c538f57254002470fb`](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37980405822)
+  passed. This includes 157 Node tests, 153 D1 tests, 12 Web tests,
+  TypeScript, lint, formatting, contracts, local D1 migrations, original
+  browser download, and new real Chrome keyboard recovery acceptance.
+- The merged-main result must be verified separately; older failed builds
+  were resolved before the passing exact-head run.
 - `BG-11.028` requires the future BG-12 aggregate-status contract.
   This task intentionally does not guess aggregate status semantics.
-- `BG-11.088` still needs a real browser keyboard-accessibility walkthrough.
-  Native buttons and labeled form fields are present, but a build is not
-  equivalent to a full manual interaction test.
-- The newer hash-change audit records whether newly acquired source text has
-  a different SHA-256 from the last accepted source. It never mutates old
-  evidence. Its exact-head CI and `BG-11.072` acceptance still need final
-  reconciliation.
+- `BG-11.088` passed a real isolated Chrome keyboard test: input text,
+  Tab to an enabled Save button, Enter to submit, verified persisted owner
+  text, and verified the original URL link remains present.
+  The test performs no source-host network I/O.
+- `BG-11.072` is covered by the D1 hash-change regression. It proves two
+  different SHA-256 source hashes, preserved old evidence, a changed-content
+  audit event, and immediate stale-term FTS invalidation. The exact-head
+  CI above passed this test.
+- Later owner-supplied text is represented truthfully in Web as supplied
+  coverage without changing historical fetched-text evidence. A dedicated
+  Web regression verifies this precedence.
 - No production or live Instagram/other website access was performed.
   Network and privacy cases use deterministic fixtures instead.
 
 The authoritative [BG-11 checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-11--100-executable-microtasks)
-retains unchecked entries for proofs that are not yet available. Closing the
-PR is separate from release smoke validation and deployment authorization.
+reconciles current proof. `BG-11.028` remains an explicit BG-12
+contract/implementation handoff, because the accepted URL acquisition contract
+reserves aggregate `items.processing_status` for BG-12/BG-13.
+`BG-11.100` remains pending until the PR is merged and merged-main CI passes.
+These are not hidden failures or claims of production deployment.
+Closing the PR is separate from release smoke and deployment authorization.
