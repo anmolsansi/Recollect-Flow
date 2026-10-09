@@ -12,6 +12,12 @@ This directory is the complete product knowledge base for RecollectFlow. It cove
 
 No planned capability should be interpreted as shipped. Current evidence is maintained only in [BUILD_STATUS.md](BUILD_STATUS.md).
 
+The BG-11 implementation and evidence are indexed in
+[BG-11 URL recovery](verification/BG-11_URL_RECOVERY.md) and its
+[canonical checklist](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-11--100-executable-microtasks).
+This is an owner-recovery stage, not a production release claim. The follow-up
+aggregate processing-status decision belongs to BG-12.
+
 ## Complete document map
 
 | Document                                                                 | Authority                                                                                    |
