@@ -172,6 +172,19 @@ export class SourceAcquisitionService {
       ? outcome.acquiredText
       : null;
     const acquiredTextHash = acquiredText ? await sha256(acquiredText) : null;
+    // Compare observations without modifying any previously accepted evidence.
+    const previous = await this.db
+      .prepare(
+        `SELECT acquired_text_hash FROM url_acquisitions
+         WHERE item_id = ?1 AND acquired_text_hash IS NOT NULL
+         ORDER BY completed_at DESC, id DESC LIMIT 1`,
+      )
+      .bind(context.itemId)
+      .first<{ acquired_text_hash: string }>();
+    const contentChangedFromPrevious =
+      acquiredTextHash && previous
+        ? acquiredTextHash !== previous.acquired_text_hash
+        : null;
     const evidenceId = crypto.randomUUID();
     const terminalJobStatus = outcome.retryable ? 'failed' : 'complete';
     const terminalAttempts = outcome.retryable
@@ -340,6 +353,7 @@ export class SourceAcquisitionService {
             status: outcome.status,
             coverage,
             error_code: outcome.errorCode ?? null,
+            content_changed_from_previous: contentChangedFromPrevious,
             retryable: outcome.retryable,
             job_status: terminalJobStatus,
           }),
