@@ -163,7 +163,9 @@ async function main() {
         },
       );
     } catch (saveError) {
-      const diagnostics = await client.evaluate(sessionId, `(() => ({
+      const diagnostics = await client.evaluate(
+        sessionId,
+        `(() => ({
         error: [...document.querySelectorAll('p')].map(p => p.textContent?.trim())
           .filter(s => s && (s.includes('failed') || s.includes('Error') ||
           s.includes('Source') || s.includes('Invalid') || s.includes('changed'))).slice(0,8),
@@ -171,10 +173,14 @@ async function main() {
           b.textContent?.trim() === 'Save supplied text')?.disabled,
         keyboardFocus: document.activeElement?.tagName,
         readonly: document.querySelector('textarea[readonly]')?.value?.length ?? 0,
-      }))()`);
-      throw new Error(`Keyboard recovery did not persist: ${JSON.stringify(diagnostics)}`, {
-        cause: saveError,
-      });
+      }))()`,
+      );
+      throw new Error(
+        `Keyboard recovery did not persist: ${JSON.stringify(diagnostics)}`,
+        {
+          cause: saveError,
+        },
+      );
     }
     const state = await client.evaluate(
       sessionId,
