@@ -81,6 +81,11 @@ function validTimestamp(value: string): number {
   return time;
 }
 
+function publicErrorCode(value: string | null): string | null {
+  // Status explanations never surface arbitrary error payloads or exception text.
+  return value && /^[A-Z0-9_.-]{1,80}$/.test(value) ? value : null;
+}
+
 function result(
   status: AggregateDecision['status'],
   reason: AggregateReason,
@@ -137,7 +142,7 @@ export function decideAggregateProcessing(
     if (job?.status === 'failed') {
       return result('failed', 'required_job_failed', {
         blockingStage: stage,
-        errorCode: job.lastErrorCode,
+        errorCode: publicErrorCode(job.lastErrorCode),
       });
     }
   }
