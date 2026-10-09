@@ -84,7 +84,7 @@ Runs read-only checks for attachment/R2 drift, missing Notion projections, parti
 Returns the persisted run and findings. Integrity findings never initiate canonical deletion.
 <!-- OPE-228 END -->
 
-## BG-11 URL recovery (local/PR verified)
+## BG-11 URL recovery (merged-main CI verified)
 
 All routes are under `/api/v1` and require an admin session or token. A capture
 token cannot call them. Request bodies are strict; all error messages are safe
