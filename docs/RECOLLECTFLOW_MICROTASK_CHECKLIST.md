@@ -1416,138 +1416,149 @@ BG-11 is unlocked.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#17-bg-11--handle-unavailable-urls-retries-and-old-captures).
 
-These unchecked steps inherit this task's **what, why, when, where and proof** above.
+The step checkboxes below were reconciled against PR #54, CI, and the scoped BG-11 verification record. Unchecked steps are deliberate exceptions, not passed work.
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
+
+**BG-11 verification checkpoint:** Code changes and synthetic workerd tests are
+recorded in [BG-11 URL recovery](verification/BG-11_URL_RECOVERY.md).
+A task checkbox is checked only when its code/contract proof was inspected.
+Open exceptions: `BG-11.028` requires BG-12's approved aggregate status
+contract; `BG-11.072` awaits the latest hash-comparison CI run;
+`BG-11.088` needs a live keyboard-accessibility check;
+`BG-11.097` awaits the final exact-head CI evidence; and `BG-11.100`
+requires the final merge and release-gate decision. Do not mark these
+as tested until the respective evidence exists.
+
 #### BG-11 / 01 — Establish task context
 
-- [ ] `BG-11.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-11.002` **Dependency:** Verify BG-10's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-11.003` **Baseline:** Record the actual checkout or release candidate used for BG-11.
-- [ ] `BG-11.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-11.005` **Evidence:** Check whether existing evidence already satisfies any BG-11 step; reference it instead of manufacturing work.
-- [ ] `BG-11.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-11.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-11.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-11.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-11.010` **Tracking:** Open a BG-11 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-11.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-11.002` **Dependency:** Verify BG-10's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-11.003` **Baseline:** Record the actual checkout or release candidate used for BG-11.
+- [x] `BG-11.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-11.005` **Evidence:** Check whether existing evidence already satisfies any BG-11 step; reference it instead of manufacturing work.
+- [x] `BG-11.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-11.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-11.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-11.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-11.010` **Tracking:** Open a BG-11 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-11 / 02 — Outcome mapping
 
-- [ ] `BG-11.011` Read approved URL outcomes.
-- [ ] `BG-11.012` Classify temporary DNS failure.
-- [ ] `BG-11.013` Classify connection timeout.
-- [ ] `BG-11.014` Classify upstream server failure.
-- [ ] `BG-11.015` Classify missing page.
-- [ ] `BG-11.016` Classify login-required page.
-- [ ] `BG-11.017` Classify unsupported media.
-- [ ] `BG-11.018` Classify destination policy denial.
-- [ ] `BG-11.019` Classify empty usable content.
-- [ ] `BG-11.020` Map each to retry policy.
+- [x] `BG-11.011` Read approved URL outcomes.
+- [x] `BG-11.012` Classify temporary DNS failure.
+- [x] `BG-11.013` Classify connection timeout.
+- [x] `BG-11.014` Classify upstream server failure.
+- [x] `BG-11.015` Classify missing page.
+- [x] `BG-11.016` Classify login-required page.
+- [x] `BG-11.017` Classify unsupported media.
+- [x] `BG-11.018` Classify destination policy denial.
+- [x] `BG-11.019` Classify empty usable content.
+- [x] `BG-11.020` Map each to retry policy.
 
 #### BG-11 / 03 — Limited completion
 
-- [ ] `BG-11.021` Preserve canonical URL item.
-- [ ] `BG-11.022` Preserve original capture event.
-- [ ] `BG-11.023` Preserve supplied reason.
-- [ ] `BG-11.024` Save limited coverage outcome.
-- [ ] `BG-11.025` Prevent invented source text.
-- [ ] `BG-11.026` Prevent invented transcript.
-- [ ] `BG-11.027` Avoid unnecessary enrichment job.
+- [x] `BG-11.021` Preserve canonical URL item.
+- [x] `BG-11.022` Preserve original capture event.
+- [x] `BG-11.023` Preserve supplied reason.
+- [x] `BG-11.024` Save limited coverage outcome.
+- [x] `BG-11.025` Prevent invented source text.
+- [x] `BG-11.026` Prevent invented transcript.
+- [x] `BG-11.027` Avoid unnecessary enrichment job.
 - [ ] `BG-11.028` Apply approved aggregate status.
-- [ ] `BG-11.029` Expose safe limitation code.
-- [ ] `BG-11.030` Verify bookmark remains searchable.
+- [x] `BG-11.029` Expose safe limitation code.
+- [x] `BG-11.030` Verify bookmark remains searchable.
 
 #### BG-11 / 04 — Automatic retries
 
-- [ ] `BG-11.031` Read current retry bounds.
-- [ ] `BG-11.032` Reuse existing backoff helper.
-- [ ] `BG-11.033` Honor server retry timing.
-- [ ] `BG-11.034` Preserve maximum attempt accounting.
-- [ ] `BG-11.035` Avoid retrying unchanged login page.
-- [ ] `BG-11.036` Avoid retrying forbidden destination.
-- [ ] `BG-11.037` Retry eligible transient failure.
-- [ ] `BG-11.038` Release lease on deferral.
-- [ ] `BG-11.039` Keep raw retrieval available.
-- [ ] `BG-11.040` Verify eventual terminal outcome.
+- [x] `BG-11.031` Read current retry bounds.
+- [x] `BG-11.032` Reuse existing backoff helper.
+- [x] `BG-11.033` Honor server retry timing.
+- [x] `BG-11.034` Preserve maximum attempt accounting.
+- [x] `BG-11.035` Avoid retrying unchanged login page.
+- [x] `BG-11.036` Avoid retrying forbidden destination.
+- [x] `BG-11.037` Retry eligible transient failure.
+- [x] `BG-11.038` Release lease on deferral.
+- [x] `BG-11.039` Keep raw retrieval available.
+- [x] `BG-11.040` Verify eventual terminal outcome.
 
 #### BG-11 / 05 — Manual retry
 
-- [ ] `BG-11.041` Inspect existing retry eligibility.
-- [ ] `BG-11.042` Recheck current privacy.
-- [ ] `BG-11.043` Recheck item deletion.
-- [ ] `BG-11.044` Recheck purge freeze.
-- [ ] `BG-11.045` Recheck acquisition destination.
-- [ ] `BG-11.046` Recheck relevant capacity guard.
-- [ ] `BG-11.047` Reject stale generation retry.
-- [ ] `BG-11.048` Preserve bounded manual retry count.
-- [ ] `BG-11.049` Return specific rejection reason.
-- [ ] `BG-11.050` Verify eligible retry schedules one job.
+- [x] `BG-11.041` Inspect existing retry eligibility.
+- [x] `BG-11.042` Recheck current privacy.
+- [x] `BG-11.043` Recheck item deletion.
+- [x] `BG-11.044` Recheck purge freeze.
+- [x] `BG-11.045` Recheck acquisition destination.
+- [x] `BG-11.046` Recheck relevant capacity guard.
+- [x] `BG-11.047` Reject stale generation retry.
+- [x] `BG-11.048` Preserve bounded manual retry count.
+- [x] `BG-11.049` Return specific rejection reason.
+- [x] `BG-11.050` Verify eligible retry schedules one job.
 
 #### BG-11 / 06 — Supplied evidence
 
-- [ ] `BG-11.051` Define adding-text entry point.
-- [ ] `BG-11.052` Validate supplied text length.
-- [ ] `BG-11.053` Preserve supplied text provenance.
-- [ ] `BG-11.054` Distinguish supplied from fetched text.
-- [ ] `BG-11.055` Create new relevant processing generation.
-- [ ] `BG-11.056` Preserve older source history.
-- [ ] `BG-11.057` Avoid rewriting original share event.
-- [ ] `BG-11.058` Preserve owner summary override.
-- [ ] `BG-11.059` Update searchable evidence.
-- [ ] `BG-11.060` Show truthful new coverage.
+- [x] `BG-11.051` Define adding-text entry point.
+- [x] `BG-11.052` Validate supplied text length.
+- [x] `BG-11.053` Preserve supplied text provenance.
+- [x] `BG-11.054` Distinguish supplied from fetched text.
+- [x] `BG-11.055` Create new relevant processing generation.
+- [x] `BG-11.056` Preserve older source history.
+- [x] `BG-11.057` Avoid rewriting original share event.
+- [x] `BG-11.058` Preserve owner summary override.
+- [x] `BG-11.059` Update searchable evidence.
+- [x] `BG-11.060` Show truthful new coverage.
 
 #### BG-11 / 07 — Old-item reprocessing
 
-- [ ] `BG-11.061` Query candidate bare-URL failures.
-- [ ] `BG-11.062` Preview candidate count.
-- [ ] `BG-11.063` Preview safe candidate identifiers.
-- [ ] `BG-11.064` Exclude deleted candidates.
-- [ ] `BG-11.065` Exclude private ineligible candidates.
-- [ ] `BG-11.066` Exclude active purge candidates.
-- [ ] `BG-11.067` Bound reprocess batch size.
-- [ ] `BG-11.068` Avoid auto-fetch on deployment.
-- [ ] `BG-11.069` Resume batch without duplicates.
-- [ ] `BG-11.070` Record per-item outcomes.
+- [x] `BG-11.061` Query candidate bare-URL failures.
+- [x] `BG-11.062` Preview candidate count.
+- [x] `BG-11.063` Preview safe candidate identifiers.
+- [x] `BG-11.064` Exclude deleted candidates.
+- [x] `BG-11.065` Exclude private ineligible candidates.
+- [x] `BG-11.066` Exclude active purge candidates.
+- [x] `BG-11.067` Bound reprocess batch size.
+- [x] `BG-11.068` Avoid auto-fetch on deployment.
+- [x] `BG-11.069` Resume batch without duplicates.
+- [x] `BG-11.070` Record per-item outcomes.
 
 #### BG-11 / 08 — Source replacement races
 
-- [ ] `BG-11.071` Hash newly acquired content.
+- [x] `BG-11.071` Hash newly acquired content.
 - [ ] `BG-11.072` Compare prior accepted hash.
-- [ ] `BG-11.073` Identify source revision change.
-- [ ] `BG-11.074` Preserve old fetch timestamp.
-- [ ] `BG-11.075` Define current evidence selection.
-- [ ] `BG-11.076` Reject late superseded fetch.
-- [ ] `BG-11.077` Avoid stale term reintroduction.
-- [ ] `BG-11.078` Avoid duplicate enrichment generation.
-- [ ] `BG-11.079` Preserve canonical duplicate ownership.
-- [ ] `BG-11.080` Test overlapping re-fetch completion.
+- [x] `BG-11.073` Identify source revision change.
+- [x] `BG-11.074` Preserve old fetch timestamp.
+- [x] `BG-11.075` Define current evidence selection.
+- [x] `BG-11.076` Reject late superseded fetch.
+- [x] `BG-11.077` Avoid stale term reintroduction.
+- [x] `BG-11.078` Avoid duplicate enrichment generation.
+- [x] `BG-11.079` Preserve canonical duplicate ownership.
+- [x] `BG-11.080` Test overlapping re-fetch completion.
 
 #### BG-11 / 09 — Owner experience
 
-- [ ] `BG-11.081` Write login-required message.
-- [ ] `BG-11.082` Write unavailable-source message.
-- [ ] `BG-11.083` Write transient retry message.
-- [ ] `BG-11.084` Show original source link.
-- [ ] `BG-11.085` Show next eligible retry time.
-- [ ] `BG-11.086` Hide meaningless Retry control.
-- [ ] `BG-11.087` Explain supplying screenshot/text.
+- [x] `BG-11.081` Write login-required message.
+- [x] `BG-11.082` Write unavailable-source message.
+- [x] `BG-11.083` Write transient retry message.
+- [x] `BG-11.084` Show original source link.
+- [x] `BG-11.085` Show next eligible retry time.
+- [x] `BG-11.086` Hide meaningless Retry control.
+- [x] `BG-11.087` Explain supplying screenshot/text.
 - [ ] `BG-11.088` Verify keyboard-accessible next action.
-- [ ] `BG-11.089` Test recoverable failure then success.
-- [ ] `BG-11.090` Record URL-only acceptance evidence.
+- [x] `BG-11.089` Test recoverable failure then success.
+- [x] `BG-11.090` Record URL-only acceptance evidence.
 
 #### BG-11 / 10 — Verify and close this task
 
-- [ ] `BG-11.091` **Review:** Compare the completed checklist with BG-11's stated outcome; identify uncovered behavior.
-- [ ] `BG-11.092` **Verification:** Run or inspect the focused proof required by BG-11; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-11.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-11.094` **Integrity:** Check that BG-11 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-11.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-11.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-11.091` **Review:** Compare the completed checklist with BG-11's stated outcome; identify uncovered behavior.
+- [x] `BG-11.092` **Verification:** Run or inspect the focused proof required by BG-11; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-11.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-11.094` **Integrity:** Check that BG-11 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-11.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-11.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
 - [ ] `BG-11.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-11.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-11.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-11.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-11.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-11.100` **Gate:** Check the parent completion boundary and record whether BG-12 is unlocked.
 
 ## BG-12 — 100 executable microtasks
