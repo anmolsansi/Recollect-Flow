@@ -19,6 +19,9 @@ export type AggregateReason =
   | 'lease_active'
   | 'lease_expired'
   | 'retry_wait'
+  | 'capacity_paused'
+  | 'policy_paused'
+  | 'operational_paused'
   | 'queued'
   | 'required_stage_missing'
   | 'all_required_finished';
@@ -33,6 +36,7 @@ export interface AggregateJob {
   leaseExpiresAt: string | null;
   leaseOwner: string | null;
   lastErrorCode: string | null;
+  deferredReason?: 'capacity' | 'privacy' | 'operational' | null;
 }
 
 export interface AggregateAttachment {
@@ -160,6 +164,18 @@ export function decideAggregateProcessing(input: AggregateInput): AggregateDecis
       return result('pending', 'lease_expired', { blockingStage: stage });
     }
     if (job.status === 'pending') {
+      const pause = {
+        capacity: 'capacity_paused',
+        privacy: 'policy_paused',
+        operational: 'operational_paused',
+      } as const;
+      if (job.deferredReason) {
+        return result('pending', pause[job.deferredReason], {
+          blockingStage: stage,
+          nextEligibleAt: validTimestamp(job.availableAt) > now
+            ? job.availableAt : null,
+        });
+      }
       if (validTimestamp(job.availableAt) > now) {
         return result('pending', 'retry_wait', {
           blockingStage: stage, nextEligibleAt: job.availableAt,
