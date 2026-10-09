@@ -157,7 +157,7 @@ behavior belongs to BG-12/BG-13. BG-12 is unlocked, not implemented.
 See [BG-11 final closeout](verification/BG-11_FINAL_CLOSEOUT.md).
 No production migration/deployment or live source-host probing is claimed.
 
-## BG-12 — deterministic aggregate state contract (PR verification)
+## BG-12 — deterministic aggregate state contract (merged and CI verified)
 
 [BG-12 decision contract](verification/BG-12_AGGREGATE_STATE_CONTRACT.md)
 defines the four-value `items.processing_status` aggregation for the
@@ -176,6 +176,9 @@ if needed, and end-to-end reader consistency. No production deployment,
 migration, or live source acquisition is authorized by BG-12.
 
 BG-12 tracking: [GitHub #56](https://github.com/anmolsansi/Recollect-Flow/issues/56) /
-[PR #57](https://github.com/anmolsansi/Recollect-Flow/pull/57) /
-Linear OPE-338. Final merge and merged-main CI must be recorded after
-they actually pass; this is not yet a final closeout.
+[merged PR #57](https://github.com/anmolsansi/Recollect-Flow/pull/57) /
+Linear OPE-338. The exact implementation merge commit
+`408d415d1d54ab8a5c5668a4b19efc03f3a56171` passed
+[merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37990069598).
+The [BG-12 final closeout](verification/BG-12_FINAL_CLOSEOUT.md) verifies
+100/100 contract-level checklist steps and unlocks BG-13, not production release.
