@@ -36,7 +36,14 @@ jobs:
             apps/worker-api/src/app.ts \
             apps/web/src/source-recovery.ts \
             apps/web/src/App.tsx \
-            packages/contracts/src/item.ts
+            packages/contracts/src/item.ts \
+            apps/worker-api/src/jobs/extraction/source-retry-after.ts \
+            apps/worker-api/src/jobs/extraction/source-fetcher.types.ts \
+            apps/worker-api/src/jobs/extraction/source-fetcher.ts \
+            apps/worker-api/src/jobs/extraction/source-acquisition.schema.ts \
+            apps/worker-api/src/jobs/extraction/source-acquisition.service.ts \
+            apps/worker-api/test/source-retry-after.test.ts \
+            docs/verification/BG-11_URL_RECOVERY.md
       - name: Commit scoped formatting
         run: |
           if git diff --quiet; then exit 0; fi
@@ -48,6 +55,13 @@ jobs:
             apps/worker-api/src/jobs/extraction/source-evidence.service.ts \
             apps/worker-api/test/source-recovery.d1.spec.ts \
             apps/worker-api/src/app.ts apps/web/src/source-recovery.ts \
-            apps/web/src/App.tsx packages/contracts/src/item.ts
+            apps/web/src/App.tsx packages/contracts/src/item.ts \
+            apps/worker-api/src/jobs/extraction/source-retry-after.ts \
+            apps/worker-api/src/jobs/extraction/source-fetcher.types.ts \
+            apps/worker-api/src/jobs/extraction/source-fetcher.ts \
+            apps/worker-api/src/jobs/extraction/source-acquisition.schema.ts \
+            apps/worker-api/src/jobs/extraction/source-acquisition.service.ts \
+            apps/worker-api/test/source-retry-after.test.ts \
+            docs/verification/BG-11_URL_RECOVERY.md
           git commit -m 'style(source): format BG-11 implementation (#53)'
           git push origin HEAD:agent/bg-11-url-recovery
