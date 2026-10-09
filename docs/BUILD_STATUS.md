@@ -150,4 +150,3 @@ BG-11. This is an explicit downstream handoff, not an invented completion.
 No production migration, deployment, or real external website fetch was part
 of these acceptance tests. PR #54 must merge and merged-main CI must pass
 before the task's merge gate is marked complete.
-
