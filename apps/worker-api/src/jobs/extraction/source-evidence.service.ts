@@ -274,7 +274,7 @@ export class SourceEvidenceService {
            WHERE item_id=?2 AND job_type='acquire_url'
              AND input_hash<>?3 AND status IN ('pending','processing')`,
         )
-        .bind(at,itemId,`url-source-v1:${nextRevision}`),
+        .bind(at, itemId, `url-source-v1:${nextRevision}`),
       this.db
         .prepare(
           `INSERT INTO processing_jobs(
