@@ -22,6 +22,17 @@ completed checklist steps and the explicit BG-12 assignment for `BG-11.028`.
 `items.processing_status` rule. Production deployment, real Instagram capture,
 and real private content testing remain separate V1 release gates.
 
+## BG-12 aggregate-state contract (pre-merge verification)
+
+BG-12 formalizes the deterministic four-value item processing status
+decision with tested required-stage, lease, future retry, optional work,
+limited coverage, old-generation and attachment failure rules.
+[Detailed contract](verification/BG-12_AGGREGATE_STATE_CONTRACT.md).
+BG-13 must add authoritative transactional generation/write reconciliation
+and keep item detail, list and filter views consistent. Until that work lands,
+the existing stored item state can still disagree with terminal jobs.
+The BG-12 pure helper is not a production status repair or rollout.
+
 ## Product releases
 
 ### V0 — Technical spike
