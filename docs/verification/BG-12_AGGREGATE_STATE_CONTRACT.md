@@ -27,24 +27,24 @@ Do not use the last job writer to win, or interpret `items.updated_at` as a leas
 
 ### Decision table
 
-| Current required work | Item status | Reason / important detail |
-| --- | --- | --- |
-| Current required job terminally failed | `failed` | `required_job_failed`, stable error code and stage; wins even if another required stage has a lease |
-| Current required attachment terminally failed/empty/unsupported | `failed` | `required_attachment_failed`, attachment ID, regardless of other successful files |
-| At least one required stage has a **valid** lease | `processing` | `lease_active`; a separate stage may still be pending |
-| A processing lease is expired/has no owner | `pending` | `lease_expired`, not actively processing |
-| A required stage has no current job | `pending` | `required_stage_missing`, not falsely complete |
-| Required pending job with `availableAt` in future | `pending` | `retry_wait`, with `nextEligibleAt`; this is not stored `retry_wait` |
-| Explicit capacity, privacy, operator pause | `pending` | `capacity_paused`, `policy_paused`, `operational_paused`; optional next eligible time |
-| Ready queued required job | `pending` | `queued` |
-| All current required stages complete; required files complete or partial usable | `complete` | `all_required_finished` |
-| Current policy deliberately requires no processing | `complete` | `all_required_finished` (save-only/no-AI) |
-| Source acquisition terminally `complete` with login wall, only URL/metadata, policy restriction | `complete` when no other required work | Source coverage **still limited**; successful bookkeeping is not proof of full source text |
-| Historical failure superseded by newer same-stage/current-generation job | newer job's status | Historical failure excluded |
-| Old input/source/privacy revision failed | ignored | Must not poison new work |
-| Notion sync or digest failure | no effect | Their own health/sync state reports this independently |
-| Deleted item | `null` | `deleted_excluded`, lifecycle/purge controls govern visibility |
-| Restored item | recompute only from explicit current generation | Do not resurrect stale work or mutate lifecycle |
+| Current required work                                                                           | Item status                                     | Reason / important detail                                                                           |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Current required job terminally failed                                                          | `failed`                                        | `required_job_failed`, stable error code and stage; wins even if another required stage has a lease |
+| Current required attachment terminally failed/empty/unsupported                                 | `failed`                                        | `required_attachment_failed`, attachment ID, regardless of other successful files                   |
+| At least one required stage has a **valid** lease                                               | `processing`                                    | `lease_active`; a separate stage may still be pending                                               |
+| A processing lease is expired/has no owner                                                      | `pending`                                       | `lease_expired`, not actively processing                                                            |
+| A required stage has no current job                                                             | `pending`                                       | `required_stage_missing`, not falsely complete                                                      |
+| Required pending job with `availableAt` in future                                               | `pending`                                       | `retry_wait`, with `nextEligibleAt`; this is not stored `retry_wait`                                |
+| Explicit capacity, privacy, operator pause                                                      | `pending`                                       | `capacity_paused`, `policy_paused`, `operational_paused`; optional next eligible time               |
+| Ready queued required job                                                                       | `pending`                                       | `queued`                                                                                            |
+| All current required stages complete; required files complete or partial usable                 | `complete`                                      | `all_required_finished`                                                                             |
+| Current policy deliberately requires no processing                                              | `complete`                                      | `all_required_finished` (save-only/no-AI)                                                           |
+| Source acquisition terminally `complete` with login wall, only URL/metadata, policy restriction | `complete` when no other required work          | Source coverage **still limited**; successful bookkeeping is not proof of full source text          |
+| Historical failure superseded by newer same-stage/current-generation job                        | newer job's status                              | Historical failure excluded                                                                         |
+| Old input/source/privacy revision failed                                                        | ignored                                         | Must not poison new work                                                                            |
+| Notion sync or digest failure                                                                   | no effect                                       | Their own health/sync state reports this independently                                              |
+| Deleted item                                                                                    | `null`                                          | `deleted_excluded`, lifecycle/purge controls govern visibility                                      |
+| Restored item                                                                                   | recompute only from explicit current generation | Do not resurrect stale work or mutate lifecycle                                                     |
 
 **Failure precedence is intentionally strict for required work.** This is safer than hiding a terminal failed attachment behind an unrelated running enrichment job. A different product choice would need an approved contract change. Failures belonging to optional non-required jobs are **not** terminal blockers.
 
@@ -54,7 +54,7 @@ Do not use the last job writer to win, or interpret `items.updated_at` as a leas
 
 **Decision:** do not pretend the existing fields form a universal processing-generation key. This is **insufficient for a safe automatic database backfill**. BG-12 accepts a pure helper requiring a caller-proven `generation`. BG-13 must choose and implement the smallest explicit persisted `processing_generation` epoch for the items and relevant jobs, or provide an equally provable authoritative job/generation binding. Old ambiguous jobs must be treated as untrusted historical evidence until mapped by a bounded, auditable migration. New epoch changes must occur in the same transaction as authoritative reprocessing decisions; replay/rollback must preserve old provenance. Do not run an automatic production table-wide reconciliation based on timestamps.
 
-**Needs Architect Decision (BG-13 before state writes):** exact epoch bump events and transaction boundary spanning item source edits, privacy-route updates, owner retries, restoration, and job creation. The final DB migration and write-time guards must be accepted in BG-13. This is not a blocker to deciding and unit-testing BG-12's function, but it blocks declaring the *runtime* aggregate status repaired.
+**Needs Architect Decision (BG-13 before state writes):** exact epoch bump events and transaction boundary spanning item source edits, privacy-route updates, owner retries, restoration, and job creation. The final DB migration and write-time guards must be accepted in BG-13. This is not a blocker to deciding and unit-testing BG-12's function, but it blocks declaring the _runtime_ aggregate status repaired.
 
 ### Responsibility and compatibility
 

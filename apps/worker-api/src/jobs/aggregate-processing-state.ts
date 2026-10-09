@@ -6,10 +6,7 @@
  * BG-13 owns binding this decision to transactional D1 writers/list filters.
  */
 export type AggregateProcessingStatus =
-  | 'pending'
-  | 'processing'
-  | 'complete'
-  | 'failed';
+  'pending' | 'processing' | 'complete' | 'failed';
 
 export type ProcessingStage = 'acquire_url' | 'extract' | 'enrich';
 export type AggregateReason =
@@ -43,8 +40,14 @@ export interface AggregateAttachment {
   id: string;
   generation: string;
   required: boolean;
-  completeness: 'pending' | 'processing' | 'complete' | 'partial' |
-    'empty' | 'unsupported' | 'failed';
+  completeness:
+    | 'pending'
+    | 'processing'
+    | 'complete'
+    | 'partial'
+    | 'empty'
+    | 'unsupported'
+    | 'failed';
 }
 
 export interface AggregateInput {
@@ -100,10 +103,13 @@ function result(
  * A newer same-stage attempt supersedes its historical terminal failure.
  * Optional stages, sync attempts, and digests never block item processing.
  */
-export function decideAggregateProcessing(input: AggregateInput): AggregateDecision {
+export function decideAggregateProcessing(
+  input: AggregateInput,
+): AggregateDecision {
   const now = input.now.getTime();
   if (!Number.isFinite(now)) throw new TypeError('now must be valid');
-  if (!input.generation.trim()) throw new TypeError('generation must be specified');
+  if (!input.generation.trim())
+    throw new TypeError('generation must be specified');
   if (input.deleted) return result(null, 'deleted_excluded');
 
   const required = stages.filter((stage) =>
@@ -116,9 +122,12 @@ export function decideAggregateProcessing(input: AggregateInput): AggregateDecis
     }
     const existing = latest.get(job.stage);
     const candidateTime = validTimestamp(job.createdAt);
-    if (!existing || candidateTime > validTimestamp(existing.createdAt) ||
+    if (
+      !existing ||
+      candidateTime > validTimestamp(existing.createdAt) ||
       (candidateTime === validTimestamp(existing.createdAt) &&
-        job.id > existing.id)) {
+        job.id > existing.id)
+    ) {
       latest.set(job.stage, job);
     }
   }
@@ -133,9 +142,11 @@ export function decideAggregateProcessing(input: AggregateInput): AggregateDecis
     }
   }
   const failedAttachment = input.attachments
-    .filter((attachment) =>
-      attachment.generation === input.generation && attachment.required &&
-      ['failed', 'empty', 'unsupported'].includes(attachment.completeness),
+    .filter(
+      (attachment) =>
+        attachment.generation === input.generation &&
+        attachment.required &&
+        ['failed', 'empty', 'unsupported'].includes(attachment.completeness),
     )
     .sort((a, b) => a.id.localeCompare(b.id))[0];
   if (failedAttachment) {
@@ -149,8 +160,12 @@ export function decideAggregateProcessing(input: AggregateInput): AggregateDecis
   // waiting for capacity. An expired lease is queued/recoverable, not active.
   for (const stage of required) {
     const job = latest.get(stage);
-    if (job?.status === 'processing' && job.leaseOwner &&
-      job.leaseExpiresAt && validTimestamp(job.leaseExpiresAt) > now) {
+    if (
+      job?.status === 'processing' &&
+      job.leaseOwner &&
+      job.leaseExpiresAt &&
+      validTimestamp(job.leaseExpiresAt) > now
+    ) {
       return result('processing', 'lease_active', { blockingStage: stage });
     }
   }
@@ -158,7 +173,9 @@ export function decideAggregateProcessing(input: AggregateInput): AggregateDecis
   for (const stage of required) {
     const job = latest.get(stage);
     if (!job) {
-      return result('pending', 'required_stage_missing', { blockingStage: stage });
+      return result('pending', 'required_stage_missing', {
+        blockingStage: stage,
+      });
     }
     if (job.status === 'processing') {
       return result('pending', 'lease_expired', { blockingStage: stage });
@@ -172,13 +189,14 @@ export function decideAggregateProcessing(input: AggregateInput): AggregateDecis
       if (job.deferredReason) {
         return result('pending', pause[job.deferredReason], {
           blockingStage: stage,
-          nextEligibleAt: validTimestamp(job.availableAt) > now
-            ? job.availableAt : null,
+          nextEligibleAt:
+            validTimestamp(job.availableAt) > now ? job.availableAt : null,
         });
       }
       if (validTimestamp(job.availableAt) > now) {
         return result('pending', 'retry_wait', {
-          blockingStage: stage, nextEligibleAt: job.availableAt,
+          blockingStage: stage,
+          nextEligibleAt: job.availableAt,
         });
       }
       return result('pending', 'queued', { blockingStage: stage });
@@ -186,9 +204,11 @@ export function decideAggregateProcessing(input: AggregateInput): AggregateDecis
   }
 
   const unfinishedAttachment = input.attachments
-    .filter((attachment) =>
-      attachment.generation === input.generation && attachment.required &&
-      ['pending', 'processing'].includes(attachment.completeness),
+    .filter(
+      (attachment) =>
+        attachment.generation === input.generation &&
+        attachment.required &&
+        ['pending', 'processing'].includes(attachment.completeness),
     )
     .sort((a, b) => a.id.localeCompare(b.id))[0];
   if (unfinishedAttachment) {

@@ -1606,7 +1606,7 @@ status. A deleted item is excluded from reconciliation, not reactivated.
 
 **Generation warning:** current DB fields `input_hash`, `policy_version`,
 `privacy_level_snapshot`, and `source_revision` are insufficient to
-identify *every* extract/enrich reprocess generation. BG-12 therefore
+identify _every_ extract/enrich reprocess generation. BG-12 therefore
 requires its caller to prove the generation and does not mutate persisted
 item statuses. **BG-13 owns** the smallest durable generation marker (or
 equivalent safe binding), atomic item/job transitions, and agreement of
