@@ -1,5 +1,8 @@
 /** A server hint is an upper bounded delay, not a permission to retry. */
-export function parseSourceRetryAfter(value: string | null, now = new Date()): number | undefined {
+export function parseSourceRetryAfter(
+  value: string | null,
+  now = new Date(),
+): number | undefined {
   if (!value) return undefined;
   const trimmed = value.trim();
   if (/^\d+$/.test(trimmed)) {

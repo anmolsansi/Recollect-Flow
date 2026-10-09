@@ -24,15 +24,15 @@ and safe destination on every manual retry, then checks again when enqueuing.
 
 ## Recovery outcome matrix
 
-| Outcome | Manual retry | Owner-facing next action |
-| --- | --- | --- |
-| Timeout, network error, 429, server 5xx | Eligible, bounded | Retry the same current URL |
-| Source not yet acquired (legacy bare URL) | Eligible if Public/safe | Preview and explicitly request acquisition |
-| 401/403/login wall | No | Paste permitted text or supply a screenshot; no credentials |
-| 404/410/missing page | No blind retry | Bookmark retained; paste text or replace URL |
-| Destination/policy blocked | No | Change authorized source or privacy through the normal controls |
-| Unsupported, oversized, empty, parse failure | No | Supply an excerpt or supported file |
-| Acquired text/metadata only | No blind retry | Existing evidence remains; add owner text if useful |
+| Outcome                                      | Manual retry            | Owner-facing next action                                        |
+| -------------------------------------------- | ----------------------- | --------------------------------------------------------------- |
+| Timeout, network error, 429, server 5xx      | Eligible, bounded       | Retry the same current URL                                      |
+| Source not yet acquired (legacy bare URL)    | Eligible if Public/safe | Preview and explicitly request acquisition                      |
+| 401/403/login wall                           | No                      | Paste permitted text or supply a screenshot; no credentials     |
+| 404/410/missing page                         | No blind retry          | Bookmark retained; paste text or replace URL                    |
+| Destination/policy blocked                   | No                      | Change authorized source or privacy through the normal controls |
+| Unsupported, oversized, empty, parse failure | No                      | Supply an excerpt or supported file                             |
+| Acquired text/metadata only                  | No blind retry          | Existing evidence remains; add owner text if useful             |
 
 The backend's eligibility endpoint, not a guessed status badge, decides whether
 the Retry button is offered. A repeated request with a pending/processing
