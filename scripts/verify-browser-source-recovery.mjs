@@ -35,7 +35,7 @@ async function main() {
       headers:{Authorization:`Bearer ${captureToken}`,'Content-Type':'application/json'},
       body:JSON.stringify({
         idempotency_key:randomUUID(),source_type:'url',source_app:'bg11-keyboard',
-        source_url:itemUrl,user_reason:'synthetic accessibility proof',
+        url: itemUrl,user_reason:'synthetic accessibility proof',
         privacy_level:'personal',captured_at:new Date().toISOString(),
         client:{name:'bg11-keyboard',version:'1.0.0'},
       }),
