@@ -295,4 +295,59 @@ describe('BG-11 source recovery', () => {
     });
     expect(await jobCount('route-source')).toBe(1);
   });
+  it('keeps a bookmark through a transient timeout and then accepts only successful evidence', async () => {
+    await seed('slow-site');
+    const recovery = new SourceRecoveryService(env.DB);
+    const queued = await recovery.retry('slow-site',1,'owner',NOW);
+    const jobs = new JobService(env.DB);
+    const firstLease = (await jobs.leaseProcessingJobs('acquire_url','slow-worker',5,1,NOW))[0]!;
+    expect(firstLease.id).toBe(queued.job_id);
+    const failedFetcher = vi.fn(async () => ({
+      status:'timeout' as const,
+      coverage:'url_only' as const,
+      errorCode:'SOURCE_TIMEOUT' as const,
+      retryable:true,
+      redirectCount:0,
+    }));
+    const failed = new SourceAcquisitionService(env.DB,{
+      fetcher:{fetch:failedFetcher},
+      now:()=>new Date(NOW.getTime()+1000),
+    });
+    expect(await failed.process(firstLease,'slow-worker')).toBe(false);
+    const retryState=await env.DB.prepare(
+      `SELECT status,available_at,attempts FROM processing_jobs WHERE id=?1`,
+    ).bind(queued.job_id).first<{status:string;available_at:string;attempts:number}>();
+    expect(retryState).toMatchObject({status:'pending',attempts:1});
+    expect(new Date(retryState!.available_at).getTime()).toBeGreaterThan(NOW.getTime());
+
+    const retried=(await jobs.leaseProcessingJobs('acquire_url','retry-worker',5,1,
+      new Date(new Date(retryState!.available_at).getTime()+1000)))[0]!;
+    expect(retried.id).toBe(queued.job_id);
+    const succeeded=new SourceAcquisitionService(env.DB,{
+      fetcher:{fetch:vi.fn(async()=>({
+        status:'acquired_text' as const,coverage:'acquired_text' as const,
+        retryable:false,redirectCount:0,acquiredText:'Now readable bluebird sentinel',
+      }))},
+      now:()=>new Date(new Date(retryState!.available_at).getTime()+2000),
+    });
+    expect(await succeeded.process(retried,'retry-worker')).toBe(true);
+    const accepted=await env.DB.prepare(
+      `SELECT status,acquired_text,attempt_count FROM url_acquisitions WHERE item_id=?1`,
+    ).bind('slow-site').first<{status:string;acquired_text:string;attempt_count:number}>();
+    expect(accepted).toMatchObject({status:'acquired_text',attempt_count:2});
+    expect(accepted?.acquired_text).toContain('bluebird');
+    expect((await recovery.eligibility('slow-site',1)).eligible).toBe(false);
+  });
+
+  it('does not allow stale prior privacy to authorize a manual retry', async () => {
+    await seed('changed-policy');
+    await env.DB.prepare(
+      `UPDATE items SET privacy_level='personal' WHERE id='changed-policy'`,
+    ).run();
+    const recovery=new SourceRecoveryService(env.DB);
+    await expect(recovery.retry('changed-policy',1,'owner',NOW))
+      .rejects.toMatchObject({code:'SOURCE_POLICY_BLOCKED'});
+    expect(await jobCount('changed-policy')).toBe(0);
+  });
+
 });
