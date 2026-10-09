@@ -39,8 +39,8 @@ The exact passing merged-main CI is stronger than relying only on a successful P
 
 The [canonical BG-11 checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-11--100-executable-microtasks) has **99 checked steps and one deliberately unchecked downstream dependency**:
 
-- `BG-11.028`, *Apply approved aggregate status*, is **not BG-11 implementation evidence**. The approved [URL acquisition contract](../URL_ACQUISITION_CONTRACT.md) and [BG-12 build-guide chapter](../RECOLLECTFLOW_BUILD_GUIDE.md#18-bg-12--define-one-aggregate-processing-state-rule) explicitly assign aggregate `items.processing_status` decisions to BG-12/BG-13. No new aggregate state has been invented, implemented or claimed in BG-11.
-- `BG-11.100`, *parent gate and BG-12 unlock*, is satisfied by the merged PR and the passing `main` CI. BG-12 is available to begin at this verified source revision, subject to its own contract and acceptance requirements.
+- `BG-11.028`, _Apply approved aggregate status_, is **not BG-11 implementation evidence**. The approved [URL acquisition contract](../URL_ACQUISITION_CONTRACT.md) and [BG-12 build-guide chapter](../RECOLLECTFLOW_BUILD_GUIDE.md#18-bg-12--define-one-aggregate-processing-state-rule) explicitly assign aggregate `items.processing_status` decisions to BG-12/BG-13. No new aggregate state has been invented, implemented or claimed in BG-11.
+- `BG-11.100`, _parent gate and BG-12 unlock_, is satisfied by the merged PR and the passing `main` CI. BG-12 is available to begin at this verified source revision, subject to its own contract and acceptance requirements.
 
 This is **99/99 completed BG-11-applicable steps, plus one explicitly delegated BG-12 step**, not a claim that all 100 requirements have been implemented or that BG-12 is complete.
 
