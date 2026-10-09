@@ -328,9 +328,7 @@ export class SourceRecoveryService {
   }
 
   /** Older bare URLs only. No network calls are made during preview. */
-  async previewLegacy(
-    limit = MAX_BACKFILL_BATCH,
-  ): Promise<{
+  async previewLegacy(limit = MAX_BACKFILL_BATCH): Promise<{
     count: number;
     items: Array<{ item_id: string; source_revision: number }>;
   }> {
