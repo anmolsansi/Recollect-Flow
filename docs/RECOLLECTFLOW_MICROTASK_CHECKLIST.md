@@ -1564,138 +1564,139 @@ The unchecked BG-11.028 is delegated, not silently counted as implemented.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#18-bg-12--define-one-aggregate-processing-state-rule).
 
-These unchecked steps inherit this task's **what, why, when, where and proof** above.
+**BG-12 contract implementation: 99/100 steps verified against the read-side rule and [PR #57](https://github.com/anmolsansi/Recollect-Flow/pull/57); the final merge gate remains unchecked.**
+The approved [state-decision truth table](verification/BG-12_AGGREGATE_STATE_CONTRACT.md) and [passing implementation CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37989348774) support these checks. BG-12 defines and tests the deterministic calculation, not BG-13's persisted writer repair.
+BG-13 owns generation binding, D1 transition migration, and list/detail/filter runtime consistency. No production deployment was performed.
 Follow the numbered order; the group headings organize related work.
-Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-12 / 01 — Establish task context
 
-- [ ] `BG-12.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-12.002` **Dependency:** Verify BG-11's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-12.003` **Baseline:** Record the actual checkout or release candidate used for BG-12.
-- [ ] `BG-12.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-12.005` **Evidence:** Check whether existing evidence already satisfies any BG-12 step; reference it instead of manufacturing work.
-- [ ] `BG-12.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-12.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-12.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-12.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-12.010` **Tracking:** Open a BG-12 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-12.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-12.002` **Dependency:** Verify BG-11's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-12.003` **Baseline:** Record the actual checkout or release candidate used for BG-12.
+- [x] `BG-12.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-12.005` **Evidence:** Check whether existing evidence already satisfies any BG-12 step; reference it instead of manufacturing work.
+- [x] `BG-12.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-12.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-12.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-12.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-12.010` **Tracking:** Open a BG-12 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-12 / 02 — State inventory
 
-- [ ] `BG-12.011` Find item status writers.
-- [ ] `BG-12.012` Find job status writers.
-- [ ] `BG-12.013` Find extraction completion writers.
-- [ ] `BG-12.014` Find enrichment completion writers.
-- [ ] `BG-12.015` Find privacy reprocessing writers.
-- [ ] `BG-12.016` Find manual retry writers.
-- [ ] `BG-12.017` Find restoration writers.
-- [ ] `BG-12.018` Find list status projection.
-- [ ] `BG-12.019` Find detail status projection.
-- [ ] `BG-12.020` Find status filter predicates.
+- [x] `BG-12.011` Find item status writers.
+- [x] `BG-12.012` Find job status writers.
+- [x] `BG-12.013` Find extraction completion writers.
+- [x] `BG-12.014` Find enrichment completion writers.
+- [x] `BG-12.015` Find privacy reprocessing writers.
+- [x] `BG-12.016` Find manual retry writers.
+- [x] `BG-12.017` Find restoration writers.
+- [x] `BG-12.018` Find list status projection.
+- [x] `BG-12.019` Find detail status projection.
+- [x] `BG-12.020` Find status filter predicates.
 
 #### BG-12 / 03 — Stored vocabulary
 
-- [ ] `BG-12.021` Read database status constraint.
-- [ ] `BG-12.022` Confirm pending enum.
-- [ ] `BG-12.023` Confirm processing enum.
-- [ ] `BG-12.024` Confirm complete enum.
-- [ ] `BG-12.025` Confirm failed enum.
-- [ ] `BG-12.026` Locate retry_wait projection.
-- [ ] `BG-12.027` Keep retry_wait out of storage.
-- [ ] `BG-12.028` Identify coverage field separately.
-- [ ] `BG-12.029` Identify lifecycle field separately.
-- [ ] `BG-12.030` Identify sync status separately.
+- [x] `BG-12.021` Read database status constraint.
+- [x] `BG-12.022` Confirm pending enum.
+- [x] `BG-12.023` Confirm processing enum.
+- [x] `BG-12.024` Confirm complete enum.
+- [x] `BG-12.025` Confirm failed enum.
+- [x] `BG-12.026` Locate retry_wait projection.
+- [x] `BG-12.027` Keep retry_wait out of storage.
+- [x] `BG-12.028` Identify coverage field separately.
+- [x] `BG-12.029` Identify lifecycle field separately.
+- [x] `BG-12.030` Identify sync status separately.
 
 #### BG-12 / 04 — Current-work identity
 
-- [ ] `BG-12.031` Inspect input hash semantics.
-- [ ] `BG-12.032` Inspect policy snapshot semantics.
-- [ ] `BG-12.033` Inspect source revision semantics.
-- [ ] `BG-12.034` Identify historical failed jobs.
-- [ ] `BG-12.035` Identify superseded jobs.
-- [ ] `BG-12.036` Identify current required stages.
-- [ ] `BG-12.037` Identify optional stages.
-- [ ] `BG-12.038` Determine generation sufficiency.
-- [ ] `BG-12.039` Propose marker only if needed.
-- [ ] `BG-12.040` Define migration/backfill interpretation.
+- [x] `BG-12.031` Inspect input hash semantics.
+- [x] `BG-12.032` Inspect policy snapshot semantics.
+- [x] `BG-12.033` Inspect source revision semantics.
+- [x] `BG-12.034` Identify historical failed jobs.
+- [x] `BG-12.035` Identify superseded jobs.
+- [x] `BG-12.036` Identify current required stages.
+- [x] `BG-12.037` Identify optional stages.
+- [x] `BG-12.038` Determine generation sufficiency.
+- [x] `BG-12.039` Propose marker only if needed.
+- [x] `BG-12.040` Define migration/backfill interpretation.
 
 #### BG-12 / 05 — Failure precedence
 
-- [ ] `BG-12.041` Define required terminal failure.
-- [ ] `BG-12.042` Define optional-stage failure treatment.
-- [ ] `BG-12.043` Define parallel active work treatment.
-- [ ] `BG-12.044` Define partial attachment failure.
-- [ ] `BG-12.045` Define all-stages failed result.
-- [ ] `BG-12.046` Define failed Notion independence.
-- [ ] `BG-12.047` Define failed digest independence.
-- [ ] `BG-12.048` Define mixed historical/current failure.
-- [ ] `BG-12.049` Write deterministic precedence table.
-- [ ] `BG-12.050` Review ambiguous existing fixtures.
+- [x] `BG-12.041` Define required terminal failure.
+- [x] `BG-12.042` Define optional-stage failure treatment.
+- [x] `BG-12.043` Define parallel active work treatment.
+- [x] `BG-12.044` Define partial attachment failure.
+- [x] `BG-12.045` Define all-stages failed result.
+- [x] `BG-12.046` Define failed Notion independence.
+- [x] `BG-12.047` Define failed digest independence.
+- [x] `BG-12.048` Define mixed historical/current failure.
+- [x] `BG-12.049` Write deterministic precedence table.
+- [x] `BG-12.050` Review ambiguous existing fixtures.
 
 #### BG-12 / 06 — Active and pending
 
-- [ ] `BG-12.051` Define valid active lease.
-- [ ] `BG-12.052` Define expired active lease.
-- [ ] `BG-12.053` Define runnable pending job.
-- [ ] `BG-12.054` Define future available_at job.
-- [ ] `BG-12.055` Define capacity deferred job.
-- [ ] `BG-12.056` Define privacy paused job.
-- [ ] `BG-12.057` Define no-current-job situation.
-- [ ] `BG-12.058` Define queued downstream stage.
-- [ ] `BG-12.059` Define simultaneous pending/processing precedence.
-- [ ] `BG-12.060` Keep next retry time separate.
+- [x] `BG-12.051` Define valid active lease.
+- [x] `BG-12.052` Define expired active lease.
+- [x] `BG-12.053` Define runnable pending job.
+- [x] `BG-12.054` Define future available_at job.
+- [x] `BG-12.055` Define capacity deferred job.
+- [x] `BG-12.056` Define privacy paused job.
+- [x] `BG-12.057` Define no-current-job situation.
+- [x] `BG-12.058` Define queued downstream stage.
+- [x] `BG-12.059` Define simultaneous pending/processing precedence.
+- [x] `BG-12.060` Keep next retry time separate.
 
 #### BG-12 / 07 — Completion semantics
 
-- [ ] `BG-12.061` Define all-required-stages success.
-- [ ] `BG-12.062` Define intentional no-AI completion.
-- [ ] `BG-12.063` Define URL-only limited completion.
-- [ ] `BG-12.064` Define unsupported source completion.
-- [ ] `BG-12.065` Preserve coverage limitation separately.
-- [ ] `BG-12.066` Define empty extraction outcome.
-- [ ] `BG-12.067` Define deleted-item visibility.
-- [ ] `BG-12.068` Define restored-item reconciliation.
-- [ ] `BG-12.069` Define successful reprocess outcome.
-- [ ] `BG-12.070` Prevent historical failure poisoning.
+- [x] `BG-12.061` Define all-required-stages success.
+- [x] `BG-12.062` Define intentional no-AI completion.
+- [x] `BG-12.063` Define URL-only limited completion.
+- [x] `BG-12.064` Define unsupported source completion.
+- [x] `BG-12.065` Preserve coverage limitation separately.
+- [x] `BG-12.066` Define empty extraction outcome.
+- [x] `BG-12.067` Define deleted-item visibility.
+- [x] `BG-12.068` Define restored-item reconciliation.
+- [x] `BG-12.069` Define successful reprocess outcome.
+- [x] `BG-12.070` Prevent historical failure poisoning.
 
 #### BG-12 / 08 — Decision implementation
 
-- [ ] `BG-12.071` Choose pure helper or SQL projection.
-- [ ] `BG-12.072` Define helper input shape.
-- [ ] `BG-12.073` Pass evaluation time explicitly.
-- [ ] `BG-12.074` Sort nondeterministic inputs safely.
-- [ ] `BG-12.075` Return supported stored status.
-- [ ] `BG-12.076` Return explanation separately if needed.
-- [ ] `BG-12.077` Avoid last-writer-wins logic.
-- [ ] `BG-12.078` Avoid Notion state coupling.
-- [ ] `BG-12.079` Document required-stage identity.
-- [ ] `BG-12.080` Keep rule reusable across callers.
+- [x] `BG-12.071` Choose pure helper or SQL projection.
+- [x] `BG-12.072` Define helper input shape.
+- [x] `BG-12.073` Pass evaluation time explicitly.
+- [x] `BG-12.074` Sort nondeterministic inputs safely.
+- [x] `BG-12.075` Return supported stored status.
+- [x] `BG-12.076` Return explanation separately if needed.
+- [x] `BG-12.077` Avoid last-writer-wins logic.
+- [x] `BG-12.078` Avoid Notion state coupling.
+- [x] `BG-12.079` Document required-stage identity.
+- [x] `BG-12.080` Keep rule reusable across callers.
 
 #### BG-12 / 09 — Rule fixtures
 
-- [ ] `BG-12.081` Add terminal failure fixture.
-- [ ] `BG-12.082` Add current active lease fixture.
-- [ ] `BG-12.083` Add deferred pending fixture.
-- [ ] `BG-12.084` Add no-AI fixture.
-- [ ] `BG-12.085` Add mixed historical fixture.
-- [ ] `BG-12.086` Add multi-attachment fixture.
-- [ ] `BG-12.087` Add superseded failure fixture.
-- [ ] `BG-12.088` Add expired lease fixture.
-- [ ] `BG-12.089` Add deleted/restored fixture.
-- [ ] `BG-12.090` Verify decision table matches expectations.
+- [x] `BG-12.081` Add terminal failure fixture.
+- [x] `BG-12.082` Add current active lease fixture.
+- [x] `BG-12.083` Add deferred pending fixture.
+- [x] `BG-12.084` Add no-AI fixture.
+- [x] `BG-12.085` Add mixed historical fixture.
+- [x] `BG-12.086` Add multi-attachment fixture.
+- [x] `BG-12.087` Add superseded failure fixture.
+- [x] `BG-12.088` Add expired lease fixture.
+- [x] `BG-12.089` Add deleted/restored fixture.
+- [x] `BG-12.090` Verify decision table matches expectations.
 
 #### BG-12 / 10 — Verify and close this task
 
-- [ ] `BG-12.091` **Review:** Compare the completed checklist with BG-12's stated outcome; identify uncovered behavior.
-- [ ] `BG-12.092` **Verification:** Run or inspect the focused proof required by BG-12; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-12.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-12.094` **Integrity:** Check that BG-12 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-12.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-12.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-12.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-12.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-12.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-12.091` **Review:** Compare the completed checklist with BG-12's stated outcome; identify uncovered behavior.
+- [x] `BG-12.092` **Verification:** Run or inspect the focused proof required by BG-12; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-12.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-12.094` **Integrity:** Check that BG-12 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-12.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-12.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-12.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-12.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-12.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-12.100` **Gate:** Check the parent completion boundary and record whether BG-13 is unlocked.
 
 ## BG-13 — 100 executable microtasks

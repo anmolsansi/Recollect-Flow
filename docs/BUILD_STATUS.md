@@ -156,3 +156,26 @@ retains `BG-11.028` unchecked: approved aggregate `items.processing_status`
 behavior belongs to BG-12/BG-13. BG-12 is unlocked, not implemented.
 See [BG-11 final closeout](verification/BG-11_FINAL_CLOSEOUT.md).
 No production migration/deployment or live source-host probing is claimed.
+
+## BG-12 — deterministic aggregate state contract (PR verification)
+
+[BG-12 decision contract](verification/BG-12_AGGREGATE_STATE_CONTRACT.md)
+defines the four-value `items.processing_status` aggregation for the
+**current proved processing generation** and is implemented as a pure helper
+in `apps/worker-api/src/jobs/aggregate-processing-state.ts` with
+fixed-clock rules tests. Failure in a required stage or attachment wins;
+otherwise active leases, waiting jobs, and complete/explicitly skipped
+work produce deterministic results. Retry/capacity/policy explanations
+and source coverage remain separate from the stored status.
+
+**Important scope:** BG-12 does not fix persisted status writers or item
+list/filter/detail synchronization. Existing item and job fields cannot
+prove every historical extract/enrich generation. BG-13 owns the durable
+generation key (or equivalent), transactional job/item updates, D1 migration
+if needed, and end-to-end reader consistency. No production deployment,
+migration, or live source acquisition is authorized by BG-12.
+
+BG-12 tracking: [GitHub #56](https://github.com/anmolsansi/Recollect-Flow/issues/56) /
+[PR #57](https://github.com/anmolsansi/Recollect-Flow/pull/57) /
+Linear OPE-338. Final merge and merged-main CI must be recorded after
+they actually pass; this is not yet a final closeout.

@@ -19,6 +19,17 @@ Status: **complete in BG-11 scope; BG-12 unlocked**.
 - Source-host production probing, automatic backfill and deployment are not part
   of this completion evidence. BG-12 is unlocked but must pass its own gates.
 
+## BG-12 — aggregate item processing-state decision
+
+Status: **decision helper and contract implemented; final CI and merge gate pending**.
+
+- Detailed [BG-12 decision table and generation handoff](BG-12_AGGREGATE_STATE_CONTRACT.md)
+- Canonical [BG-12 microtask checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-12--100-executable-microtasks)
+- GitHub [issue #56](https://github.com/anmolsansi/Recollect-Flow/issues/56)
+- Linear OPE-338
+- BG-13 retains database epoch migration and atomic write/read reconciliation;
+  this contract does not claim a deployed runtime status repair.
+
 ## Priority 1 — verification foundation
 
 ### BG-01 — reproducible baseline
