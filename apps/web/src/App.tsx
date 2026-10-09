@@ -715,8 +715,12 @@ function ItemDetail() {
         </p>
         <p>
           <strong>Coverage:</strong>{' '}
-          {visibleSourceCoverage(draft.source_type, draft.coverage,
-            draft.raw_text, detail.url_acquisition?.coverage)}
+          {visibleSourceCoverage(
+            draft.source_type,
+            draft.coverage,
+            draft.raw_text,
+            detail.url_acquisition?.coverage,
+          )}
         </p>
         <p>
           <strong>Processing:</strong> {draft.processing_status ?? 'Unknown'}
