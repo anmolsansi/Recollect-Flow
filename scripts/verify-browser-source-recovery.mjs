@@ -1,4 +1,4 @@
-/* global fetch, process, Buffer */
+/* global fetch, process, console, URL */
 
 import assert from 'node:assert/strict';
 import { mkdtemp, rm } from 'node:fs/promises';
