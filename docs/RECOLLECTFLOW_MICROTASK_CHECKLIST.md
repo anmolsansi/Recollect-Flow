@@ -1416,18 +1416,19 @@ BG-11 is unlocked.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#17-bg-11--handle-unavailable-urls-retries-and-old-captures).
 
-The step checkboxes below were reconciled against PR #54, CI, and the scoped BG-11 verification record. Unchecked steps are deliberate exceptions, not passed work.
+The steps below are reconciled to merged PR #54 and its successful exact-revision merged-main CI. Exactly one deliberately unchecked item is delegated to BG-12, not claimed as BG-11 implementation.
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
-**BG-11 verification checkpoint:** Code changes and synthetic workerd tests are
-recorded in [BG-11 URL recovery](verification/BG-11_URL_RECOVERY.md).
-A task checkbox is checked only when its code/contract proof was inspected.
-Current exceptions: `BG-11.028` is assigned to BG-12 by the approved
-URL acquisition contract and remains unchecked rather than falsely claimed.
-`BG-11.100` requires a real PR merge and verified post-merge CI run.
-The exact-head PR CI and actual Chrome keyboard test are documented in
-[BG-11 URL recovery](verification/BG-11_URL_RECOVERY.md).
+**BG-11 final checkpoint:** **Complete within approved BG-11 scope, BG-12 unlocked.**
+99/100 boxes are checked with evidence. `BG-11.028` stays unchecked because
+application of the aggregate `items.processing_status` contract belongs to
+BG-12/BG-13 under the approved URL acquisition contract. The 99 checked items
+include the post-merge BG-11.100 completion gate. See
+[BG-11 final closeout](verification/BG-11_FINAL_CLOSEOUT.md),
+[detailed URL recovery evidence](verification/BG-11_URL_RECOVERY.md),
+and [passing merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37981181748).
+The unchecked BG-11.028 is delegated, not silently counted as implemented.
 
 #### BG-11 / 01 — Establish task context
 
@@ -1557,7 +1558,7 @@ The exact-head PR CI and actual Chrome keyboard test are documented in
 - [x] `BG-11.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-11.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-11.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-11.100` **Gate:** Check the parent completion boundary and record whether BG-12 is unlocked.
+- [x] `BG-11.100` **Gate:** Check the parent completion boundary and record whether BG-12 is unlocked.
 
 ## BG-12 — 100 executable microtasks
 
