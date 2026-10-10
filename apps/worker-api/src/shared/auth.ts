@@ -64,8 +64,20 @@ export async function matchesAdminSession(
 function requireSessionWriteOrigin(context: Context<AppContext>): void {
   if (['GET', 'HEAD', 'OPTIONS'].includes(context.req.method)) return;
   const origin = context.req.header('Origin');
-  const expected = new URL(context.req.url).origin;
-  if (!origin || origin === 'null' || origin !== expected) {
+  const workerOrigin = new URL(context.req.url).origin;
+  const configuredWeb = context.env.WEB_INBOX_BASE_URL;
+  let webOrigin: string | null = null;
+  if (configuredWeb) {
+    try {
+      const url = new URL(configuredWeb);
+      if (url.protocol === 'https:' || url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+        webOrigin = url.origin;
+      }
+    } catch {
+      // Invalid configuration does not grant additional origins.
+    }
+  }
+  if (!origin || origin === 'null' || (origin !== workerOrigin && origin !== webOrigin)) {
     throw new AppError(
       403,
       'ORIGIN_FORBIDDEN',
