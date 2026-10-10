@@ -47,7 +47,12 @@ guards, and bounded admin reconciliation.
 [Final closeout](verification/BG-13_FINAL_CLOSEOUT.md) includes the
 exact [PR CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38052047097)
 and [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38052191291),
-both passing. BG-14 is unlocked as the next browser acceptance task.
+both passing. BG-14 is now tracked at [issue #63](https://github.com/anmolsansi/Recollect-Flow/issues/63)
+and [PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64).
+Its [acceptance record](verification/BG-14_BROWSER_ACCEPTANCE.md)
+distinguishes the new isolated Chrome journey from unverified positive
+upstream URL acquisition. BG-15 remains locked until the full browser gate
+passes on a clean merged head.
 No live production D1 migration, historical automatic backfill or deployment
 has been performed, and none is implied by this milestone.
 
