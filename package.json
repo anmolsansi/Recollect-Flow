@@ -26,7 +26,8 @@
     "db:migrate:remote": "wrangler d1 migrations apply recollect-flow-prod --remote",
     "browser:download:test": "node scripts/verify-browser-download.mjs",
     "browser:source-recovery:test": "node scripts/verify-browser-source-recovery.mjs",
-    "browser:workflow:test": "node scripts/verify-browser-workflow.mjs"
+    "browser:workflow:test": "node scripts/verify-browser-workflow.mjs",
+    "browser:acquisition:test": "node scripts/verify-browser-acquisition.mjs"
   },
   "dependencies": {
     "hono": "^4.8.10",
