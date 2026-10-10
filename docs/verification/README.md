@@ -5,8 +5,8 @@ This directory contains task-scoped verification evidence that is safe to keep i
 ## BG-11 — unavailable URL recovery and old-item reprocessing
 
 Status at the **BG-11 completion baseline**: BG-11 complete, BG-12 unlocked.
-**Current successor status:** [BG-12 decision-contract complete](BG-12_FINAL_CLOSEOUT.md);
-BG-13 atomic persisted-state integration remains outstanding.
+**Current successor status:** [BG-12 contract complete](BG-12_FINAL_CLOSEOUT.md),
+[BG-13 persistence complete](BG-13_FINAL_CLOSEOUT.md), BG-14 unlocked.
 
 - Authoritative closeout: [BG-11 FINAL CLOSEOUT](BG-11_FINAL_CLOSEOUT.md)
 - Detailed behavior and verification: [BG-11 URL Recovery](BG-11_URL_RECOVERY.md)
@@ -31,8 +31,23 @@ Status: **BG-12 decision-contract complete, BG-13 unlocked**.
 - Canonical [BG-12 microtask checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-12--100-executable-microtasks)
 - GitHub [issue #56](https://github.com/anmolsansi/Recollect-Flow/issues/56)
 - Linear OPE-338
-- BG-13 retains database epoch migration and atomic write/read reconciliation;
-  this contract does not claim a deployed runtime status repair.
+- BG-12 did not itself implement persisted repair. Its successor BG-13
+  has now merged the epoch migration and guarded write/read reconciliation.
+
+## BG-13 — atomic persisted processing-state integration
+
+Status: **complete on main; BG-14 unlocked**.
+
+- [BG-13 final merged-main closeout](BG-13_FINAL_CLOSEOUT.md)
+- [Detailed generation, guarded worker and reconciliation contract](BG-13_ATOMIC_TRANSITIONS.md)
+- [BG-13 canonical 100-step checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-13--100-executable-microtasks)
+- [Issue #61](https://github.com/anmolsansi/Recollect-Flow/issues/61)
+- [Merged PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62)
+- [Passing exact-head PR CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38052047097)
+- [Passing merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38052191291)
+  at merge `3d1af004bc0ebfaa95645a39880b38f623d3c447`.
+- No production deployment, live URL probing or automatic historical backfill
+  is claimed by this engineering gate.
 
 ## Priority 1 — verification foundation
 
