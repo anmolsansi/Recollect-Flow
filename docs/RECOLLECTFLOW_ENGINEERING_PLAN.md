@@ -11,18 +11,18 @@ future product backlog, delivered as one roadmap and individual Markdown tickets
 
 ## Current implementation note (2026-10-10)
 
-This is a historical ticket-publication plan with its own 2026-09-20 baseline,
-not an authoritative claim about current main-branch implementation. BG-12
-has since been merged and verified. BG-13 atomic processing persistence is
-under implementation in [tracking issue #61](https://github.com/anmolsansi/Recollect-Flow/issues/61)
-and [draft PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62).
-The active acceptance checklist is
-[BG-13 in the microtask checklist](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-13--100-executable-microtasks),
-and the implementation evidence is
-[BG-13 atomic transitions](verification/BG-13_ATOMIC_TRANSITIONS.md).
-Until exact-head CI, D1 and integration checks pass, no BG-13 completion or
-successor release gate is approved. This note does not change the scope
-or completion claims of the original document-publication plan.
+This is the historical 2026-09-20 ticket-publication plan, not the
+live implementation tracker. The BG-12 decision contract and BG-13
+transactional persistence are now completed and verified on `main`.
+BG-13 was delivered by [merged PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62)
+and [tracking issue #61](https://github.com/anmolsansi/Recollect-Flow/issues/61).
+See the [BG-13 checklist](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-13--100-executable-microtasks)
+and [final verification](verification/BG-13_FINAL_CLOSEOUT.md).
+
+The latest scope-specific completion is the implementation and D1/CI
+integration, not a production rollout or automatic legacy backfill.
+BG-14 is unlocked for its separate browser acceptance gate. This update
+does not rewrite the original engineering-ticket publication scope.
 
 ## Deliverables
 
