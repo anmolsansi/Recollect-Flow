@@ -441,7 +441,8 @@ export class JobAdminService {
                lease_expires_at = NULL, last_error_code = NULL,
                manual_retry_count = manual_retry_count + 1, updated_at = ?1
            WHERE id = ?2 AND status = 'failed'
-             AND manual_retry_count = ?3${currentGuard}`,
+             AND manual_retry_count = ?3${currentGuard}
+           RETURNING id`,
         )
         .bind(nowIso, jobId, manualRetryCount),
       this.db
@@ -470,6 +471,6 @@ export class JobAdminService {
           manualRetryCount + 1,
         ),
     ]);
-    return result[0]?.meta.changes === 1;
+    return result[0]?.results?.length === 1;
   }
 }
