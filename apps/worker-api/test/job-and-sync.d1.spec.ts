@@ -239,6 +239,75 @@ describe('OPE-246 durable D1 jobs', () => {
     ).toBe(true);
   });
 
+  it('keeps item, list status, and terminal job failure consistent', async () => {
+    const itemId = 'atomic-terminal-item';
+    const jobId = 'atomic-terminal-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('pending');
+    await jobs.leaseProcessingJobs('enrich', 'atomic-worker', 5, 1, T0);
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('processing');
+    expect(
+      await jobs.failProcessingJob(
+        jobId,
+        'atomic-worker',
+        'PROVIDER_UNAVAILABLE',
+        false,
+        5,
+        T0,
+      ),
+    ).toBe(true);
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('failed');
+    expect(
+      await env.DB.prepare('SELECT derived_status FROM bg13_processing_snapshot WHERE item_id = ?1')
+        .bind(itemId)
+        .first('derived_status'),
+    ).toBe('failed');
+  });
+
+  it('retires old work and refuses stale completion after privacy epoch change', async () => {
+    const itemId = 'atomic-privacy-item';
+    const jobId = 'atomic-privacy-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'privacy-worker', 5, 1, T0);
+    await env.DB.prepare(
+      "UPDATE items SET privacy_level = 'personal' WHERE id = ?1",
+    ).bind(itemId).run();
+    expect(
+      await env.DB.prepare('SELECT processing_generation FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_generation'),
+    ).toBe(2);
+    expect(
+      await jobs.completeProcessingJob(jobId, 'privacy-worker', T0),
+    ).toBe(false);
+    expect(
+      await env.DB.prepare('SELECT last_error_code FROM processing_jobs WHERE id = ?1')
+        .bind(jobId)
+        .first('last_error_code'),
+    ).toBe('PROCESSING_SUPERSEDED');
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('pending');
+  });
+
   it('rejects expired-owner terminal failures without mutating job or audit', async () => {
     const itemId = 'expired-lease-item';
     const jobId = 'expired-lease-job';
