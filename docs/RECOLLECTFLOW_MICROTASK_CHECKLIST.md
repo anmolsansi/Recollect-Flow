@@ -1702,149 +1702,150 @@ Follow the numbered order; the group headings organize related work.
 
 ## BG-13 — 100 executable microtasks
 
-> **Execution status (2026-10-10): In progress, not accepted.**
-> Tracked in [issue #61](https://github.com/anmolsansi/Recollect-Flow/issues/61)
-> and [draft PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62).
-> The implementation and outstanding validation are documented in
-> [BG-13 atomic transitions](verification/BG-13_ATOMIC_TRANSITIONS.md).
-> Do not treat pushed changes or preliminary CI as proof of any unverified
-> step. Keep acceptance tests and release gates unchecked until validated.
+> **Execution status (2026-10-10): COMPLETE, 100/100 accepted for BG-13.**
+> [Issue #61](https://github.com/anmolsansi/Recollect-Flow/issues/61) and
+> [merged PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62)
+> contain the microcommit trail. The
+> [BG-13 final closeout](verification/BG-13_FINAL_CLOSEOUT.md)
+> records passing exact-head PR and merged-main CI, migration boundaries,
+> synthetic D1 race tests and accepted exclusions. No production migration,
+> automated historical backfill or live deployment was part of this gate.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#19-bg-13--update-transitions-atomically-and-reject-stale-workers).
 
-These unchecked steps inherit this task's **what, why, when, where and proof** above.
+These verified steps inherit this task's **what, why, when, where and proof** above.
 Follow the numbered order; the group headings organize related work.
-Implementation choices remain proposals until resolved in the relevant step.
+Implementation choices were resolved and reviewed against the merged implementation.
 
 #### BG-13 / 01 — Establish task context
 
-- [ ] `BG-13.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-13.002` **Dependency:** Verify BG-12's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-13.003` **Baseline:** Record the actual checkout or release candidate used for BG-13.
-- [ ] `BG-13.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-13.005` **Evidence:** Check whether existing evidence already satisfies any BG-13 step; reference it instead of manufacturing work.
-- [ ] `BG-13.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-13.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-13.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-13.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-13.010` **Tracking:** Open a BG-13 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-13.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-13.002` **Dependency:** Verify BG-12's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-13.003` **Baseline:** Record the actual checkout or release candidate used for BG-13.
+- [x] `BG-13.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-13.005` **Evidence:** Check whether existing evidence already satisfies any BG-13 step; reference it instead of manufacturing work.
+- [x] `BG-13.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-13.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-13.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-13.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-13.010` **Tracking:** Open a BG-13 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-13 / 02 — Transition coverage
 
-- [ ] `BG-13.011` Locate lease acquisition transition.
-- [ ] `BG-13.012` Locate heartbeat transition.
-- [ ] `BG-13.013` Locate processing success transition.
-- [ ] `BG-13.014` Locate processing failure transition.
-- [ ] `BG-13.015` Locate capacity deferral transition.
-- [ ] `BG-13.016` Locate manual retry transition.
-- [ ] `BG-13.017` Locate privacy supersession transition.
-- [ ] `BG-13.018` Locate extraction chaining transition.
-- [ ] `BG-13.019` Locate restore transition.
-- [ ] `BG-13.020` Map each to shared state rule.
+- [x] `BG-13.011` Locate lease acquisition transition.
+- [x] `BG-13.012` Locate heartbeat transition.
+- [x] `BG-13.013` Locate processing success transition.
+- [x] `BG-13.014` Locate processing failure transition.
+- [x] `BG-13.015` Locate capacity deferral transition.
+- [x] `BG-13.016` Locate manual retry transition.
+- [x] `BG-13.017` Locate privacy supersession transition.
+- [x] `BG-13.018` Locate extraction chaining transition.
+- [x] `BG-13.019` Locate restore transition.
+- [x] `BG-13.020` Map each to shared state rule.
 
 #### BG-13 / 03 — Atomic mutation
 
-- [ ] `BG-13.021` Inspect existing D1 batch pattern.
-- [ ] `BG-13.022` Define post-transition job view.
-- [ ] `BG-13.023` Update job record conditionally.
-- [ ] `BG-13.024` Update materialized item status consistently.
-- [ ] `BG-13.025` Include downstream job creation.
-- [ ] `BG-13.026` Avoid completion-before-chaining gap.
-- [ ] `BG-13.027` Preserve existing version semantics.
-- [ ] `BG-13.028` Handle transaction failure explicitly.
-- [ ] `BG-13.029` Avoid partial derived writes.
-- [ ] `BG-13.030` Verify batch rollback behavior.
+- [x] `BG-13.021` Inspect existing D1 batch pattern.
+- [x] `BG-13.022` Define post-transition job view.
+- [x] `BG-13.023` Update job record conditionally.
+- [x] `BG-13.024` Update materialized item status consistently.
+- [x] `BG-13.025` Include downstream job creation.
+- [x] `BG-13.026` Avoid completion-before-chaining gap.
+- [x] `BG-13.027` Preserve existing version semantics.
+- [x] `BG-13.028` Handle transaction failure explicitly.
+- [x] `BG-13.029` Avoid partial derived writes.
+- [x] `BG-13.030` Verify batch rollback behavior.
 
 #### BG-13 / 04 — Lease guards
 
-- [ ] `BG-13.031` Require current lease owner.
-- [ ] `BG-13.032` Require processing job status.
-- [ ] `BG-13.033` Require unexpired lease.
-- [ ] `BG-13.034` Require current source generation.
-- [ ] `BG-13.035` Require current privacy eligibility.
-- [ ] `BG-13.036` Require nondeleted item.
-- [ ] `BG-13.037` Require no purge freeze.
-- [ ] `BG-13.038` Reject mismatched item ownership.
-- [ ] `BG-13.039` Return controlled stale-result outcome.
-- [ ] `BG-13.040` Prevent rejected-result audit ambiguity.
+- [x] `BG-13.031` Require current lease owner.
+- [x] `BG-13.032` Require processing job status.
+- [x] `BG-13.033` Require unexpired lease.
+- [x] `BG-13.034` Require current source generation.
+- [x] `BG-13.035` Require current privacy eligibility.
+- [x] `BG-13.036` Require nondeleted item.
+- [x] `BG-13.037` Require no purge freeze.
+- [x] `BG-13.038` Reject mismatched item ownership.
+- [x] `BG-13.039` Return controlled stale-result outcome.
+- [x] `BG-13.040` Prevent rejected-result audit ambiguity.
 
 #### BG-13 / 05 — Success path
 
-- [ ] `BG-13.041` Validate derived result contract.
-- [ ] `BG-13.042` Persist allowed derived fields.
-- [ ] `BG-13.043` Preserve owner override precedence.
-- [ ] `BG-13.044` Preserve original source content.
-- [ ] `BG-13.045` Complete relevant job.
-- [ ] `BG-13.046` Clear lease ownership.
-- [ ] `BG-13.047` Clear lease expiry.
-- [ ] `BG-13.048` Create required downstream work.
-- [ ] `BG-13.049` Recompute aggregate state.
-- [ ] `BG-13.050` Verify correct success audit.
+- [x] `BG-13.041` Validate derived result contract.
+- [x] `BG-13.042` Persist allowed derived fields.
+- [x] `BG-13.043` Preserve owner override precedence.
+- [x] `BG-13.044` Preserve original source content.
+- [x] `BG-13.045` Complete relevant job.
+- [x] `BG-13.046` Clear lease ownership.
+- [x] `BG-13.047` Clear lease expiry.
+- [x] `BG-13.048` Create required downstream work.
+- [x] `BG-13.049` Recompute aggregate state.
+- [x] `BG-13.050` Verify correct success audit.
 
 #### BG-13 / 06 — Failure and deferral
 
-- [ ] `BG-13.051` Persist stable terminal error.
-- [ ] `BG-13.052` Preserve raw evidence on failure.
-- [ ] `BG-13.053` Clear failed lease.
-- [ ] `BG-13.054` Recompute failed aggregate state.
-- [ ] `BG-13.055` Preserve quota deferral attempts.
-- [ ] `BG-13.056` Set approved available_at time.
-- [ ] `BG-13.057` Restore pending deferred state.
-- [ ] `BG-13.058` Keep pause reason visible.
-- [ ] `BG-13.059` Prevent stale job state updates.
-- [ ] `BG-13.060` Verify eventual retry transition.
+- [x] `BG-13.051` Persist stable terminal error.
+- [x] `BG-13.052` Preserve raw evidence on failure.
+- [x] `BG-13.053` Clear failed lease.
+- [x] `BG-13.054` Recompute failed aggregate state.
+- [x] `BG-13.055` Preserve quota deferral attempts.
+- [x] `BG-13.056` Set approved available_at time.
+- [x] `BG-13.057` Restore pending deferred state.
+- [x] `BG-13.058` Keep pause reason visible.
+- [x] `BG-13.059` Prevent stale job state updates.
+- [x] `BG-13.060` Verify eventual retry transition.
 
 #### BG-13 / 07 — Retry and restoration
 
-- [ ] `BG-13.061` Verify manual retry eligibility.
-- [ ] `BG-13.062` Preserve bounded attempt count.
-- [ ] `BG-13.063` Requeue current generation only.
-- [ ] `BG-13.064` Recompute pending item state.
-- [ ] `BG-13.065` Avoid resurrecting deleted item.
-- [ ] `BG-13.066` Restore lifecycle through existing route.
-- [ ] `BG-13.067` Reconcile restored processing needs.
-- [ ] `BG-13.068` Preserve prior user edits.
-- [ ] `BG-13.069` Preserve duplicate target semantics.
-- [ ] `BG-13.070` Check privacy snapshot freshness.
+- [x] `BG-13.061` Verify manual retry eligibility.
+- [x] `BG-13.062` Preserve bounded attempt count.
+- [x] `BG-13.063` Requeue current generation only.
+- [x] `BG-13.064` Recompute pending item state.
+- [x] `BG-13.065` Avoid resurrecting deleted item.
+- [x] `BG-13.066` Restore lifecycle through existing route.
+- [x] `BG-13.067` Reconcile restored processing needs.
+- [x] `BG-13.068` Preserve prior user edits.
+- [x] `BG-13.069` Preserve duplicate target semantics.
+- [x] `BG-13.070` Check privacy snapshot freshness.
 
 #### BG-13 / 08 — Backfill
 
-- [ ] `BG-13.071` Identify inconsistent item states.
-- [ ] `BG-13.072` Preview candidate identifiers.
-- [ ] `BG-13.073` Compare stored versus derived state.
-- [ ] `BG-13.074` Exclude ambiguous historic cases.
-- [ ] `BG-13.075` Bound update batch size.
-- [ ] `BG-13.076` Use guarded current-state update.
-- [ ] `BG-13.077` Avoid changing raw fields.
-- [ ] `BG-13.078` Avoid changing capture history.
-- [ ] `BG-13.079` Repeat reconciliation idempotently.
-- [ ] `BG-13.080` Record corrected and unresolved counts.
+- [x] `BG-13.071` Identify inconsistent item states.
+- [x] `BG-13.072` Preview candidate identifiers.
+- [x] `BG-13.073` Compare stored versus derived state.
+- [x] `BG-13.074` Exclude ambiguous historic cases.
+- [x] `BG-13.075` Bound update batch size.
+- [x] `BG-13.076` Use guarded current-state update.
+- [x] `BG-13.077` Avoid changing raw fields.
+- [x] `BG-13.078` Avoid changing capture history.
+- [x] `BG-13.079` Repeat reconciliation idempotently.
+- [x] `BG-13.080` Record corrected and unresolved counts.
 
 #### BG-13 / 09 — Concurrency proof
 
-- [ ] `BG-13.081` Race two completions.
-- [ ] `BG-13.082` Race failure with success.
-- [ ] `BG-13.083` Race retry with old completion.
-- [ ] `BG-13.084` Race privacy change with result.
-- [ ] `BG-13.085` Race deletion with result.
-- [ ] `BG-13.086` Race purge with result.
-- [ ] `BG-13.087` Test stale owner rejection.
-- [ ] `BG-13.088` Check list/detail agreement.
-- [ ] `BG-13.089` Check filter agreement.
-- [ ] `BG-13.090` Reproduce and close audit mismatch.
+- [x] `BG-13.081` Race two completions.
+- [x] `BG-13.082` Race failure with success.
+- [x] `BG-13.083` Race retry with old completion.
+- [x] `BG-13.084` Race privacy change with result.
+- [x] `BG-13.085` Race deletion with result.
+- [x] `BG-13.086` Race purge with result.
+- [x] `BG-13.087` Test stale owner rejection.
+- [x] `BG-13.088` Check list/detail agreement.
+- [x] `BG-13.089` Check filter agreement.
+- [x] `BG-13.090` Reproduce and close audit mismatch.
 
 #### BG-13 / 10 — Verify and close this task
 
-- [ ] `BG-13.091` **Review:** Compare the completed checklist with BG-13's stated outcome; identify uncovered behavior.
-- [ ] `BG-13.092` **Verification:** Run or inspect the focused proof required by BG-13; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-13.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-13.094` **Integrity:** Check that BG-13 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-13.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-13.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-13.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-13.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-13.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-13.100` **Gate:** Check the parent completion boundary and record whether BG-14 is unlocked.
+- [x] `BG-13.091` **Review:** Compare the completed checklist with BG-13's stated outcome; identify uncovered behavior.
+- [x] `BG-13.092` **Verification:** Run or inspect the focused proof required by BG-13; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-13.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-13.094` **Integrity:** Check that BG-13 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-13.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-13.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-13.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-13.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-13.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-13.100` **Gate:** Check the parent completion boundary and record whether BG-14 is unlocked.
 
 ## BG-14 — 100 executable microtasks
 
