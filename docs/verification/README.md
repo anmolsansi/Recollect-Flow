@@ -4,7 +4,9 @@ This directory contains task-scoped verification evidence that is safe to keep i
 
 ## BG-11 — unavailable URL recovery and old-item reprocessing
 
-Status: **complete in BG-11 scope; BG-12 unlocked**.
+Status at the **BG-11 completion baseline**: BG-11 complete, BG-12 unlocked.
+**Current successor status:** [BG-12 decision-contract complete](BG-12_FINAL_CLOSEOUT.md);
+BG-13 atomic persisted-state integration remains outstanding.
 
 - Authoritative closeout: [BG-11 FINAL CLOSEOUT](BG-11_FINAL_CLOSEOUT.md)
 - Detailed behavior and verification: [BG-11 URL Recovery](BG-11_URL_RECOVERY.md)
