@@ -2284,81 +2284,81 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-17 / 01 — Establish task context
 
-- [ ] `BG-17.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-17.002` **Dependency:** Verify BG-16's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-17.003` **Baseline:** Record the actual checkout or release candidate used for BG-17.
-- [ ] `BG-17.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-17.005` **Evidence:** Check whether existing evidence already satisfies any BG-17 step; reference it instead of manufacturing work.
-- [ ] `BG-17.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-17.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-17.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-17.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-17.010` **Tracking:** Open a BG-17 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-17.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-17.002` **Dependency:** Verify BG-16's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-17.003` **Baseline:** Record the actual checkout or release candidate used for BG-17.
+- [x] `BG-17.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-17.005` **Evidence:** Check whether existing evidence already satisfies any BG-17 step; reference it instead of manufacturing work.
+- [x] `BG-17.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-17.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-17.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-17.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-17.010` **Tracking:** Open a BG-17 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-17 / 02 — Operation model
 
-- [ ] `BG-17.011` Define logical operation identifier.
-- [ ] `BG-17.012` Store stable idempotency key.
-- [ ] `BG-17.013` Store immutable submitted payload.
-- [ ] `BG-17.014` Store original captured_at.
-- [ ] `BG-17.015` Store selected privacy.
+- [x] `BG-17.011` Define logical operation identifier.
+- [x] `BG-17.012` Store stable idempotency key.
+- [x] `BG-17.013` Store immutable submitted payload.
+- [x] `BG-17.014` Store original captured_at.
+- [x] `BG-17.015` Store selected privacy.
 - [ ] `BG-17.016` Store optional file hash.
 - [ ] `BG-17.017` Store file byte length.
 - [ ] `BG-17.018` Store server attachment ID.
-- [ ] `BG-17.019` Store acknowledged capture ID.
-- [ ] `BG-17.020` Define operation stage enum.
+- [x] `BG-17.019` Store acknowledged capture ID.
+- [x] `BG-17.020` Define operation stage enum.
 
 #### BG-17 / 03 — Retry identity
 
-- [ ] `BG-17.021` Generate key once.
-- [ ] `BG-17.022` Reuse key after timeout.
-- [ ] `BG-17.023` Reuse key after reconnect.
-- [ ] `BG-17.024` Reuse key after reauthentication.
+- [x] `BG-17.021` Generate key once.
+- [x] `BG-17.022` Reuse key after timeout.
+- [x] `BG-17.023` Reuse key after reconnect.
+- [x] `BG-17.024` Reuse key after reauthentication.
 - [ ] `BG-17.025` Preserve payload across automatic retry.
-- [ ] `BG-17.026` Detect changed submitted payload.
-- [ ] `BG-17.027` Separate edited new draft.
-- [ ] `BG-17.028` Reconcile ambiguous old operation.
-- [ ] `BG-17.029` Prevent key reuse for changed bytes.
-- [ ] `BG-17.030` Document deliberate new-operation action.
+- [x] `BG-17.026` Detect changed submitted payload.
+- [x] `BG-17.027` Separate edited new draft.
+- [x] `BG-17.028` Reconcile ambiguous old operation.
+- [x] `BG-17.029` Prevent key reuse for changed bytes.
+- [x] `BG-17.030` Document deliberate new-operation action.
 
 #### BG-17 / 04 — Draft separation
 
-- [ ] `BG-17.031` Model editable form draft.
-- [ ] `BG-17.032` Model immutable pending submission.
-- [ ] `BG-17.033` Keep prior pending record visible.
-- [ ] `BG-17.034` Allow deliberate new draft creation.
-- [ ] `BG-17.035` Avoid overwriting pending metadata.
-- [ ] `BG-17.036` Define cancel versus discard.
-- [ ] `BG-17.037` Define success cleanup boundary.
-- [ ] `BG-17.038` Define validation correction behavior.
-- [ ] `BG-17.039` Preserve per-operation error state.
-- [ ] `BG-17.040` Avoid cross-operation result mixing.
+- [x] `BG-17.031` Model editable form draft.
+- [x] `BG-17.032` Model immutable pending submission.
+- [x] `BG-17.033` Keep prior pending record visible.
+- [x] `BG-17.034` Allow deliberate new draft creation.
+- [x] `BG-17.035` Avoid overwriting pending metadata.
+- [x] `BG-17.036` Define cancel versus discard.
+- [x] `BG-17.037` Define success cleanup boundary.
+- [x] `BG-17.038` Define validation correction behavior.
+- [x] `BG-17.039` Preserve per-operation error state.
+- [x] `BG-17.040` Avoid cross-operation result mixing.
 
 #### BG-17 / 05 — Persistence decision
 
-- [ ] `BG-17.041` Specify in-memory mode limitations.
-- [ ] `BG-17.042` Specify cross-reload requirement.
-- [ ] `BG-17.043` Select browser persistence adapter.
-- [ ] `BG-17.044` Version stored record schema.
-- [ ] `BG-17.045` Define retained content fields.
-- [ ] `BG-17.046` Define retained byte policy.
-- [ ] `BG-17.047` Define restricted-content behavior.
-- [ ] `BG-17.048` Define shared-device choice.
-- [ ] `BG-17.049` Define expiry/retention duration.
-- [ ] `BG-17.050` Document logout retention semantics.
+- [x] `BG-17.041` Specify in-memory mode limitations.
+- [x] `BG-17.042` Specify cross-reload requirement.
+- [x] `BG-17.043` Select browser persistence adapter.
+- [x] `BG-17.044` Version stored record schema.
+- [x] `BG-17.045` Define retained content fields.
+- [x] `BG-17.046` Define retained byte policy.
+- [x] `BG-17.047` Define restricted-content behavior.
+- [x] `BG-17.048` Define shared-device choice.
+- [x] `BG-17.049` Define expiry/retention duration.
+- [x] `BG-17.050` Document logout retention semantics.
 
 #### BG-17 / 06 — Persistent implementation
 
-- [ ] `BG-17.051` Open versioned browser store.
-- [ ] `BG-17.052` Write submitted operation atomically.
-- [ ] `BG-17.053` Read pending operations on startup.
-- [ ] `BG-17.054` Validate restored record shape.
-- [ ] `BG-17.055` Handle obsolete stored schema.
-- [ ] `BG-17.056` Handle corrupt draft record.
-- [ ] `BG-17.057` Avoid persisting credentials.
-- [ ] `BG-17.058` Bound stored operation count.
-- [ ] `BG-17.059` Bound stored bytes.
-- [ ] `BG-17.060` Handle storage-quota failure visibly.
+- [x] `BG-17.051` Open versioned browser store.
+- [x] `BG-17.052` Write submitted operation atomically.
+- [x] `BG-17.053` Read pending operations on startup.
+- [x] `BG-17.054` Validate restored record shape.
+- [x] `BG-17.055` Handle obsolete stored schema.
+- [x] `BG-17.056` Handle corrupt draft record.
+- [x] `BG-17.057` Avoid persisting credentials.
+- [x] `BG-17.058` Bound stored operation count.
+- [x] `BG-17.059` Bound stored bytes.
+- [x] `BG-17.060` Handle storage-quota failure visibly.
 
 #### BG-17 / 07 — File recovery
 
@@ -2375,29 +2375,29 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-17 / 08 — Owner controls
 
-- [ ] `BG-17.071` Show explicit Retry button.
-- [ ] `BG-17.072` Show explicit Discard button.
-- [ ] `BG-17.073` Explain ambiguous server outcome.
-- [ ] `BG-17.074` Keep no-Saved offline wording.
-- [ ] `BG-17.075` Show persistence failure warning.
-- [ ] `BG-17.076` Clear confirmed successful retry content.
-- [ ] `BG-17.077` Preserve unrelated queued entries.
-- [ ] `BG-17.078` Prevent background infinite retry loop.
+- [x] `BG-17.071` Show explicit Retry button.
+- [x] `BG-17.072` Show explicit Discard button.
+- [x] `BG-17.073` Explain ambiguous server outcome.
+- [x] `BG-17.074` Keep no-Saved offline wording.
+- [x] `BG-17.075` Show persistence failure warning.
+- [x] `BG-17.076` Clear confirmed successful retry content.
+- [x] `BG-17.077` Preserve unrelated queued entries.
+- [x] `BG-17.078` Prevent background infinite retry loop.
 - [ ] `BG-17.079` Bound retry cadence.
 - [ ] `BG-17.080` Handle browser session expiry.
 
 #### BG-17 / 09 — Failure proof
 
-- [ ] `BG-17.081` Drop response after server commit.
-- [ ] `BG-17.082` Retry same key.
-- [ ] `BG-17.083` Assert stable capture ID.
-- [ ] `BG-17.084` Test offline before send.
-- [ ] `BG-17.085` Test reload with durable mode.
-- [ ] `BG-17.086` Test reload with nonpersistent disclosure.
-- [ ] `BG-17.087` Test browser quota failure.
+- [x] `BG-17.081` Drop response after server commit.
+- [x] `BG-17.082` Retry same key.
+- [x] `BG-17.083` Assert stable capture ID.
+- [x] `BG-17.084` Test offline before send.
+- [x] `BG-17.085` Test reload with durable mode.
+- [x] `BG-17.086` Test reload with nonpersistent disclosure.
+- [x] `BG-17.087` Test browser quota failure.
 - [ ] `BG-17.088` Test changed-file reselection.
-- [ ] `BG-17.089` Test two simultaneous pending operations.
-- [ ] `BG-17.090` Record draft lifetime acceptance.
+- [x] `BG-17.089` Test two simultaneous pending operations.
+- [x] `BG-17.090` Record draft lifetime acceptance.
 
 #### BG-17 / 10 — Verify and close this task
 
@@ -2411,6 +2411,28 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [ ] `BG-17.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [ ] `BG-17.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-17.100` **Gate:** Check the parent completion boundary and record whether BG-18 is unlocked.
+
+### BG-17 implementation reconciliation (PR #74)
+
+The checked steps above are implemented in code and covered by repository
+quality checks, focused unit tests or the isolated Worker/D1/Chrome
+acceptance. [CI #38088631853](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38088631853)
+confirmed the new recovery-browser test passed, including stable capture ID
+on retry, offline-before-send, opted-in reload, editable draft restoration and
+the opt-out clearing path. Final all-jobs pass and merged-main status must
+still be established before checking steps 091–100.
+
+**Not yet verified or conditional:** BG-17.016–018 and BG-17.061–070
+refer to file upload state, physical bytes, hash/reselection or server file
+references. BG-18 owns the actual browser upload workflow, so these remain
+unchecked rather than being reported complete from a metadata type.
+BG-17.025 is nonapplicable as written because deliberate manual Retry is the
+chosen policy and no automatic background retries are performed.
+BG-17.079 requires a separate proof of bounded manual cadence, and BG-17.080
+a real reauthentication/resume acceptance. BG-17.088 needs BG-18's file
+reselection scenario. Final review/CI/merge/documentation steps remain open
+until their exact evidence exists. BG-18 may proceed with its independent
+preparatory work without treating file-recovery acceptance as complete.
 
 ## BG-18 — 100 executable microtasks
 
