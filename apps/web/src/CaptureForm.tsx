@@ -86,14 +86,20 @@ export function CaptureForm() {
     if (!loaded || !durable || result || pending) return;
     if (draft.privacy === 'sensitive') {
       void clearCaptureDraft().catch(() =>
-        setStorageWarning('Unable to clear previous editable draft from this device.'),
+        setStorageWarning(
+          'Unable to clear previous editable draft from this device.',
+        ),
       );
       return;
     }
     const timer = window.setTimeout(() => {
       void saveCaptureDraft(draft).catch((error: unknown) =>
-        setStorageWarning('Editable draft not retained: ' +
-          (error instanceof Error ? error.message : 'Browser storage failed.')),
+        setStorageWarning(
+          'Editable draft not retained: ' +
+            (error instanceof Error
+              ? error.message
+              : 'Browser storage failed.'),
+        ),
       );
     }, 350);
     return () => window.clearTimeout(timer);
@@ -174,8 +180,13 @@ export function CaptureForm() {
       setQueue((items) => items.filter((item) => item.id !== operation.id));
       if (!fromQueue) {
         setDraft(emptyCaptureDraft());
-        try { await clearCaptureDraft(); }
-        catch { setStorageWarning('Saved, but the old editable draft could not be cleared.'); }
+        try {
+          await clearCaptureDraft();
+        } catch {
+          setStorageWarning(
+            'Saved, but the old editable draft could not be cleared.',
+          );
+        }
       }
       try {
         await deleteCaptureOperation(operation.id);
