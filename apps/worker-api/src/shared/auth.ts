@@ -47,6 +47,41 @@ export async function matchesAdminSession(
   return cookieMatch === 'authenticated';
 }
 
+/**
+ * Signed session cookies authorize writes only from this Worker's exact origin.
+ * A missing/null Origin is rejected for cookie-backed mutations, including
+ * requests from a different subdomain on the same site.
+ * Bearer clients retain their non-browser no-Origin capability.
+ */
+function requireSessionWriteOrigin(context: Context<AppContext>): void {
+  if (['GET', 'HEAD', 'OPTIONS'].includes(context.req.method)) return;
+  const origin = context.req.header('Origin');
+  const expected = new URL(context.req.url).origin;
+  if (!origin || origin === 'null' || origin !== expected) {
+    throw new AppError(403, 'ORIGIN_FORBIDDEN', 'This browser write origin is not allowed.');
+  }
+}
+
+/**
+ * Capture/admin bearer identity takes precedence over ambient browser cookies.
+ * An invalid explicit Authorization header must never silently fall back to a
+ * valid cookie, as that hides credential errors and can confuse permission scope.
+ */
+export const requireCaptureWrite: MiddlewareHandler<AppContext> = async (
+  context,
+  next,
+) => {
+  if (context.req.header('Authorization') !== undefined) {
+    await requireCaptureToken(context, next);
+    return;
+  }
+  if (!(await matchesAdminSession(context))) {
+    throw new AppError(401, 'UNAUTHENTICATED', 'A valid capture token or owner session is required.');
+  }
+  requireSessionWriteOrigin(context);
+  await next();
+};
+
 export const requireCaptureToken: MiddlewareHandler<AppContext> = async (
   context,
   next,
@@ -111,7 +146,9 @@ export const requireAdminToken: MiddlewareHandler<AppContext> = async (
     return;
   }
 
-  if (await matchesAdminSession(context)) {
+  // Explicit bearer failures cannot borrow the browser's ambient identity.
+  if (context.req.header('Authorization') === undefined && await matchesAdminSession(context)) {
+    requireSessionWriteOrigin(context);
     await next();
     return;
   }
