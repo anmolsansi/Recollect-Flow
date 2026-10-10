@@ -53,4 +53,13 @@ BEGIN
     processing_status = CASE WHEN NEW.deleted_at IS NULL THEN 'pending'
                              ELSE NEW.processing_status END
   WHERE id = NEW.id;
+
+  -- Unblock unique active-stage slots when policy/source/restore supersedes work.
+  UPDATE processing_jobs
+  SET status = 'failed',
+      last_error_code = 'PROCESSING_SUPERSEDED',
+      lease_owner = NULL, lease_expires_at = NULL
+  WHERE item_id = NEW.id
+    AND processing_generation = OLD.processing_generation
+    AND status IN ('pending', 'processing');
 END;
