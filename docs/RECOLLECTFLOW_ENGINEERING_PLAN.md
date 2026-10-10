@@ -9,6 +9,21 @@ the planned tickets have been created or their engineering work completed.
 The requested scope is the existing 40 tasks, verified gaps, and the documented
 future product backlog, delivered as one roadmap and individual Markdown tickets.
 
+## Current implementation note (2026-10-10)
+
+This is a historical ticket-publication plan with its own 2026-09-20 baseline,
+not an authoritative claim about current main-branch implementation. BG-12
+has since been merged and verified. BG-13 atomic processing persistence is
+under implementation in [tracking issue #61](https://github.com/anmolsansi/Recollect-Flow/issues/61)
+and [draft PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62).
+The active acceptance checklist is
+[BG-13 in the microtask checklist](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-13--100-executable-microtasks),
+and the implementation evidence is
+[BG-13 atomic transitions](verification/BG-13_ATOMIC_TRANSITIONS.md).
+Until exact-head CI, D1 and integration checks pass, no BG-13 completion or
+successor release gate is approved. This note does not change the scope
+or completion claims of the original document-publication plan.
+
 ## Deliverables
 
 Create:
