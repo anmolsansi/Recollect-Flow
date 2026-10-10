@@ -152,8 +152,10 @@ owner-supplied text from acquired source text.
 
 **BG-11 is complete for its approved scope.** The
 [99/100 canonical checklist](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-11--100-executable-microtasks)
-retains `BG-11.028` unchecked: approved aggregate `items.processing_status`
-behavior belongs to BG-12/BG-13. BG-12 is unlocked, not implemented.
+retains `BG-11.028` unchecked: **BG-12 has since completed the decision
+contract**, but application of that contract to stored `items.processing_status`
+is still BG-13's responsibility. This BG-11 handoff must not be confused with
+an unresolved BG-12 contract or a completed BG-13 runtime repair.
 See [BG-11 final closeout](verification/BG-11_FINAL_CLOSEOUT.md).
 No production migration/deployment or live source-host probing is claimed.
 
