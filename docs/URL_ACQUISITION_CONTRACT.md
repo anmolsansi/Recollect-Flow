@@ -22,9 +22,14 @@ capture events, supersedes older active acquisition leases and starts a new
 source revision. A preview-only, explicit-ID reprocess path is capped at 20 old
 eligible Public URL items per request.
 
-**This does not approve the BG-12 aggregate status vocabulary or an automatic
-historical backfill.** The implemented routes, browser test, and D1 failure
-cases are described in [BG-11 verification](verification/BG-11_URL_RECOVERY.md).
+**This BG-08/BG-11 URL contract does not itself approve the aggregate status
+vocabulary or an automatic historical backfill.** The separate
+[BG-12 aggregate decision contract](verification/BG-12_AGGREGATE_STATE_CONTRACT.md)
+has since been reviewed, implemented as a pure helper, and
+[CI-verified](verification/BG-12_FINAL_CLOSEOUT.md). BG-13 still owns
+transactional status writes and any explicitly reviewed migration. The URL
+routes, browser test, and D1 recovery cases are described in
+[BG-11 verification](verification/BG-11_URL_RECOVERY.md).
 
 ## 1. Problem and invariant
 
