@@ -274,7 +274,9 @@ describe('OPE-246 durable D1 jobs', () => {
     await insertItem(itemId);
     await env.DB.prepare(
       "UPDATE items SET source_type = 'note', source_url = NULL, processing_status = 'pending' WHERE id = ?1",
-    ).bind(itemId).run();
+    )
+      .bind(itemId)
+      .run();
     await insertProcessingJob('save-only-optional-job', itemId, {
       provider: 'none',
       status: 'failed',
@@ -282,11 +284,14 @@ describe('OPE-246 durable D1 jobs', () => {
     expect(
       await env.DB.prepare(
         'SELECT derived_status FROM bg13_processing_snapshot WHERE item_id = ?1',
-      ).bind(itemId).first('derived_status'),
+      )
+        .bind(itemId)
+        .first('derived_status'),
     ).toBe('complete');
     expect(
       await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
-        .bind(itemId).first('processing_status'),
+        .bind(itemId)
+        .first('processing_status'),
     ).toBe('complete');
   });
 
@@ -298,7 +303,8 @@ describe('OPE-246 durable D1 jobs', () => {
     });
     expect(
       await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
-        .bind(itemId).first('processing_status'),
+        .bind(itemId)
+        .first('processing_status'),
     ).toBe('pending');
   });
 
@@ -310,18 +316,23 @@ describe('OPE-246 durable D1 jobs', () => {
     });
     await env.DB.prepare(
       "UPDATE processing_jobs SET job_type = 'acquire_url' WHERE id = ?1",
-    ).bind('missing-downstream-source').run();
+    )
+      .bind('missing-downstream-source')
+      .run();
     expect(
       await env.DB.prepare(
         'SELECT derived_status FROM bg13_processing_snapshot WHERE item_id = ?1',
-      ).bind(itemId).first('derived_status'),
+      )
+        .bind(itemId)
+        .first('derived_status'),
     ).toBe('pending');
     await insertProcessingJob('missing-downstream-ai', itemId, {
       status: 'complete',
     });
     expect(
       await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
-        .bind(itemId).first('processing_status'),
+        .bind(itemId)
+        .first('processing_status'),
     ).toBe('complete');
   });
 
