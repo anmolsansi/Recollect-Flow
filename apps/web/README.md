@@ -48,12 +48,43 @@ existing cookie-authenticated API helper. A successful response links directly
 to the canonical item, shows replay/duplicate reuse accurately, and displays
 processing as an independent state.
 
-If the network or server fails without a conclusive result, the form retains
-the _exact submitted payload and idempotency key_ for Retry. To modify that
-submission, choose **Start new operation**, recognizing that the first may
-already have saved. This is **in-memory only**. Persistent draft recovery and
-resolving uncertain operations across reloads belong to BG-17. Browser file
-attachments are BG-18. No production deployment is included in BG-16.
+If a request fails with an uncertain outcome, the form preserves the exact
+submitted payload, original capture time, privacy choice and idempotency key for
+**Retry original**. Do not modify a submitted operation. **Start new operation**
+creates a different draft while keeping the old retry visible. **Discard local
+retry** clears only browser state, not a server item that might have saved.
+
+## Browser capture recovery (BG-17)
+
+Cross-reload recovery is **off by default**. The owner can opt into **Keep
+unfinished captures on this device for up to seven days** on the capture screen.
+Opted-in drafts are written to versioned IndexedDB before each request. The
+browser stores URLs, text, reasons, metadata and retry keys without encryption.
+Do not opt in on shared devices. No administrator token, auth cookie, original
+file bytes or Sensitive capture is stored by this feature. An explicit logout
+clears stored operations and the preference. Turning the option off also clears
+the store. Storage may be unavailable, and cleanup is not a guaranteed backup
+or remote deletion.
+
+Up to **three** operations and **256 KB** of serialized capture recovery may
+remain on this device. Expired or malformed records are discarded when opened.
+Quota failures are shown and the active submission remains retryable in memory
+while the page is open. A lost response does not imply Saved. Once a canonical
+response is received, its retry record is cleared. On an expired session, sign
+in again and retry the unchanged operation. There is no background retry loop.
+
+BG-17 covers URL, pasted text and note submissions. BG-18 owns the actual
+file upload flow, hash/reselection and resumable server attachment references.
+Do not interpret the optional metadata record type as implemented file recovery.
+Physical-iPhone offline retention is separately gated by BG-36. No production
+deployment is implied.
+
+Focused checks: `npm run web:test`, `npm run web:build`, and
+`npm run browser:recovery:test` with local Worker/D1 and Chrome installed.
+The last test attempts loss of response after D1 commit, reload/replay with
+the same server capture ID, offline-before-send recovery, and nonpersistent
+mode clearing. The repository CI workflow runs this alongside BG-16 browser
+acceptance.
 
 Run `pnpm --filter web test` and `pnpm --filter web build` from the repo root
 to verify its validators and TypeScript build. Live-browser durability and
