@@ -86,8 +86,12 @@ async function run() {
       randomUUID() +
       '/content",{credentials:"include"}).then(r=>r.status)',
   );
-  assert.equal(missingAttachment, 404, 'Authenticated missing original must return 404');
-  report('missing-original', {status:404,corrupt_bytes_exposed:false});
+  assert.equal(
+    missingAttachment,
+    404,
+    'Authenticated missing original must return 404',
+  );
+  report('missing-original', { status: 404, corrupt_bytes_exposed: false });
 
   await show(textItemId);
   await waitFor(
