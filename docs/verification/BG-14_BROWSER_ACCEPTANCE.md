@@ -18,7 +18,7 @@ unperformed requirements are explicitly resolved.
   or Telegram/Notion send is authorized by this task.
 - Original source URL is a controlled `https://example.com/bg14-...` marker.
   **No live third-party URL fetch is performed by the new failure/retry journey.**
-  Browser login and data requests are *not* mocked.
+  Browser login and data requests are _not_ mocked.
 
 ## Architecture decision
 
@@ -57,6 +57,7 @@ a controlled **worker failure through the authenticated worker lease/fail
 routes**, not through an unguarded SQL update or a fake browser response.
 
 The new Chrome journey checks:
+
 1. signed-cookie login (HttpOnly / SameSite Strict; token absent from storage),
 2. genuine browser Inbox text search, item detail and current source evidence,
 3. visible stale-version conflict and safe refresh after concurrent owner edit,
