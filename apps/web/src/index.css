@@ -347,3 +347,38 @@ a:hover {
     padding: 1rem;
   }
 }
+
+/* BG-17: durable capture recovery is explicit, readable and keyboard reachable. */
+.capture-recovery-controls {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 800px;
+  margin-bottom: 1.25rem;
+}
+.capture-recovery-controls p {
+  margin: 0;
+}
+.capture-queued {
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  display: grid;
+  gap: 1rem;
+}
+.capture-queued h2 {
+  font-size: 1.15rem;
+  margin: 0;
+}
+.capture-queued-entry {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.capture-recovery-controls input:focus-visible,
+.capture-queued button:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 3px;
+}

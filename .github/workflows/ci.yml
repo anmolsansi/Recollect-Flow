@@ -19,6 +19,7 @@ jobs:
       - run: npm run db:migrate:local
       - run: google-chrome --version
       - run: npm run browser:capture:test
+      - run: npm run browser:recovery:test
       - run: npm run browser:download:test
       - run: npm run browser:source-recovery:test
       - run: npm run browser:workflow:test
