@@ -41,6 +41,24 @@ async function exercise() {
   });
   capturedItemId = itemId;
   assert.match(itemId, /^[0-9a-f-]{36}$/i);
+  // An independent capture event for the same canonical URL must not
+  // overwrite its identity or enqueue a second canonical fetch.
+  const duplicateId = await captureFixture(runtime.apiOrigin, captureToken, {
+    source_type: 'url',
+    url: fixtureUrl,
+    privacy_level: 'public',
+    user_reason: 'BG14 duplicate capture, preserve canonical item',
+  });
+  assert.equal(duplicateId, itemId, 'Equivalent URL must use canonical item');
+  report('canonical-duplicate', { reused_original_id: true });
+  const unavailableUrl =
+    'https://example.com/bg14-unavailable-' + randomUUID().replaceAll('-', '');
+  const unavailableId = await captureFixture(runtime.apiOrigin, captureToken, {
+    source_type: 'url',
+    url: unavailableUrl,
+    privacy_level: 'public',
+    user_reason: 'BG14 controlled unavailable page',
+  });
   // The fixture entrypoint invokes only the real acquisition service and
   // a bounded upstream fetch mock; no delivery or external network occurs.
   const scheduledRoutes = [
@@ -91,6 +109,19 @@ async function exercise() {
     source: 'test-only Worker upstream response, real parser and D1',
   });
 
+  const unavailable = await waitUntil(
+    async () => {
+      const value = await apiRequest(runtime.apiOrigin, adminToken, 'GET', '/items/' + unavailableId);
+      return value.url_acquisition ? value : false;
+    },
+    { timeoutMs: 15000, intervalMs: 350, description: 'unavailable URL evidence' },
+  );
+  assert.equal(unavailable.url_acquisition.status, 'unavailable');
+  assert.equal(unavailable.url_acquisition.coverage, 'url_only');
+  assert.equal(unavailable.item.source_url, unavailableUrl);
+  assert.equal(unavailable.url_acquisition.acquired_text, null);
+  report('unavailable-source', {status:'unavailable',coverage:'url_only',original_url:'preserved'});
+
   browser = await openBrowser(runtime);
   await login(browser, runtime.webOrigin, adminToken);
   await navigate(browser, runtime.webOrigin + '/items/' + itemId);
@@ -106,6 +137,18 @@ async function exercise() {
     'document.body.innerText.includes("acquired_text")',
     'successful acquisition status',
   );
+  await navigate(browser, runtime.webOrigin + '/items/' + unavailableId);
+  await waitFor(
+    browser,
+    'document.body.innerText.includes("The page is unavailable, but your bookmark is safe.")',
+    'unavailable URL fallback guidance',
+  );
+  await waitFor(
+    browser,
+    'document.body.innerText.includes("url_only")',
+    'limited source coverage is visible',
+  );
+  report('unavailable-browser', {fallback:'visible',source:'preserved'});
   await navigate(browser, runtime.webOrigin + '/');
   await waitFor(
     browser,
