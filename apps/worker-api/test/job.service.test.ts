@@ -37,8 +37,8 @@ describe('JobService with Real D1 Mock', () => {
     await db
       .prepare(
         `
-      INSERT INTO processing_jobs (id, item_id, job_type, status, attempts, available_at, created_at, updated_at)
-      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6, ?6)
+      INSERT INTO processing_jobs (id, item_id, job_type, status, attempts, available_at, created_at, updated_at, privacy_level_snapshot)
+      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6, ?6, 'public')
     `,
       )
       .bind(id, itemId, type, status, attempts, availableAt)
