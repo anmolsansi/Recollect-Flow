@@ -27,20 +27,31 @@ async function begin() {
   );
 }
 async function enterText(value) {
-  await evaluate(browser, 'document.querySelector(\'input[name="mode"][value="note"]\').click()');
-  await waitFor(browser,
+  await evaluate(
+    browser,
+    'document.querySelector(\'input[name="mode"][value="note"]\').click()',
+  );
+  await waitFor(
+    browser,
     'Boolean(document.querySelector(\'input[name="mode"][value="note"]\').checked)',
-    'note mode');
-  await evaluate(browser, `(() => {
+    'note mode',
+  );
+  await evaluate(
+    browser,
+    `(() => {
     const el = document.querySelector('[name="shared_text"]');
     const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
     setter.call(el, ${JSON.stringify(value)});
     el.dispatchEvent(new Event('input', { bubbles: true }));
     el.dispatchEvent(new Event('change', { bubbles: true }));
     return true;
-  })()`);
-  await waitFor(browser, `document.querySelector('[name="shared_text"]').value === ${JSON.stringify(value)}`,
-    'note field ready');
+  })()`,
+  );
+  await waitFor(
+    browser,
+    `document.querySelector('[name="shared_text"]').value === ${JSON.stringify(value)}`,
+    'note field ready',
+  );
 }
 async function countEntries() {
   return evaluate(
@@ -101,33 +112,57 @@ try {
   // successful response reaches React. The same Worker/D1 capture contract runs.
   let committed = null;
   let dropCount = 0;
-  const unsubscribe = browser.client.on('Fetch.requestPaused', async (message) => {
-    const request = message.params;
-    if (!request?.request?.url?.includes('/api/v1/captures')) {
-      await browser.client.send('Fetch.continueRequest', { requestId: request.requestId },
-        browser.sessionId);
-      return;
-    }
-    if (!dropCount) {
-      dropCount++;
-      try {
-        const payload = JSON.parse(request.request.postData);
-        const created = await apiRequest(runtime.apiOrigin, captureToken,
-          'POST', '/captures', payload, 201);
-        committed = created.capture_id;
-      } finally {
-        await browser.client.send('Fetch.failRequest', {
-          requestId: request.requestId, errorReason: 'Failed',
-        }, browser.sessionId);
+  const unsubscribe = browser.client.on(
+    'Fetch.requestPaused',
+    async (message) => {
+      const request = message.params;
+      if (!request?.request?.url?.includes('/api/v1/captures')) {
+        await browser.client.send(
+          'Fetch.continueRequest',
+          { requestId: request.requestId },
+          browser.sessionId,
+        );
+        return;
       }
-    } else {
-      await browser.client.send('Fetch.continueRequest', { requestId: request.requestId },
-        browser.sessionId);
-    }
-  });
-  await browser.client.send('Fetch.enable', {
-    patterns: [{ urlPattern: '*api/v1/captures', requestStage: 'Request' }],
-  }, browser.sessionId);
+      if (!dropCount) {
+        dropCount++;
+        try {
+          const payload = JSON.parse(request.request.postData);
+          const created = await apiRequest(
+            runtime.apiOrigin,
+            captureToken,
+            'POST',
+            '/captures',
+            payload,
+            201,
+          );
+          committed = created.capture_id;
+        } finally {
+          await browser.client.send(
+            'Fetch.failRequest',
+            {
+              requestId: request.requestId,
+              errorReason: 'Failed',
+            },
+            browser.sessionId,
+          );
+        }
+      } else {
+        await browser.client.send(
+          'Fetch.continueRequest',
+          { requestId: request.requestId },
+          browser.sessionId,
+        );
+      }
+    },
+  );
+  await browser.client.send(
+    'Fetch.enable',
+    {
+      patterns: [{ urlPattern: '*api/v1/captures', requestStage: 'Request' }],
+    },
+    browser.sessionId,
+  );
   await enterText('BG17 commit-response-lost ' + randomUUID());
   await submit();
   await waitFor(
@@ -135,8 +170,11 @@ try {
     'document.body.textContent.includes("This request may have reached the server")',
     'uncertain operation after lost response',
   );
-  await waitFor(browser, 'Boolean(document.querySelector(".capture-queued-entry"))',
-    'uncertain retry visible');
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(".capture-queued-entry"))',
+    'uncertain retry visible',
+  );
   assert.ok(committed, 'Worker committed original request');
   assert.equal(await countEntries(), 1);
   await browser.client.send('Fetch.disable', {}, browser.sessionId);
