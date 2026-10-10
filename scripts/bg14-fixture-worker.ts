@@ -21,7 +21,7 @@ const fixtureBody = `<!doctype html><html lang="en"><head><meta charset="utf-8">
 
 const fetcher = new SourceFetcher({
   fetchImpl: async (request) => {
-    const target = new URL(request.url);
+    const target = new URL(request instanceof Request ? request.url : String(request));
     if (
       target.protocol !== 'https:' ||
       target.hostname !== 'example.com' ||
