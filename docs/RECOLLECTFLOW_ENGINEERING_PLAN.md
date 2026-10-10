@@ -21,8 +21,8 @@ and [final verification](verification/BG-13_FINAL_CLOSEOUT.md).
 
 The latest scope-specific completion is the implementation and D1/CI
 integration, not a production rollout or automatic legacy backfill.
-BG-14 is in implementation review at [PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64)
-and [issue #63](https://github.com/anmolsansi/Recollect-Flow/issues/63).
+BG-14 implementation merged through [PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64)
+and is tracked by [issue #63](https://github.com/anmolsansi/Recollect-Flow/issues/63).
 The [browser acceptance record](verification/BG-14_BROWSER_ACCEPTANCE.md)
 records real Chrome signed-cookie, downloads, search and state proof,
 plus [passing upstream-mocked acquisition](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38057058035)
