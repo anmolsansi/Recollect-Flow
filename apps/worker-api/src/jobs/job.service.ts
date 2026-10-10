@@ -166,6 +166,21 @@ function auditDetails(details: Record<string, unknown>): string {
   return JSON.stringify(details);
 }
 
+// Referenced only by SQL statements against the processing_jobs table.
+// The item epoch and privacy snapshot are authoritative at commit time.
+const currentJobGuard = `EXISTS (
+  SELECT 1 FROM items i
+  WHERE i.id = processing_jobs.item_id
+    AND i.deleted_at IS NULL
+    AND i.processing_generation = processing_jobs.processing_generation
+    AND (processing_jobs.privacy_level_snapshot IS NULL
+         OR i.privacy_level = processing_jobs.privacy_level_snapshot)
+    AND NOT EXISTS (
+      SELECT 1 FROM purge_workflows p
+      WHERE p.item_id = i.id AND p.state IN ('queued', 'processing', 'partial')
+    )
+)`;
+
 export class JobService {
   constructor(private readonly db: D1Database) {}
 
@@ -870,6 +885,7 @@ export class JobService {
           : 'sync_terminally_failed';
     const retryColumn =
       table === 'sync_attempts' ? ', retry_after_at = ?8' : '';
+    const currentGuard = table === 'processing_jobs' ? ` AND ${currentJobGuard}` : '';
     const bindings: unknown[] = [
       shouldRetry ? 'pending' : 'failed',
       attempts,
@@ -888,7 +904,7 @@ export class JobService {
              last_error_code = ?4, lease_owner = NULL,
              lease_expires_at = NULL, updated_at = ?5${retryColumn}
          WHERE id = ?6 AND lease_owner = ?7 AND status = 'processing'
-           AND lease_expires_at > ?5`,
+           AND lease_expires_at > ?5${currentGuard}`,
       )
       .bind(...bindings)
       .run();
