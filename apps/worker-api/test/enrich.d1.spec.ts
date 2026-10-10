@@ -40,10 +40,10 @@ describe('EnrichService (D1 Integration)', () => {
     const item = {
       id,
       idempotency_key: id,
-      source_url: `https://example.com/${id}`,
-      canonical_url: `https://example.com/${id}`,
+      source_url: null,
+      canonical_url: null,
       source_app: 'web',
-      source_type: 'url',
+      source_type: 'note',
       title: null,
       summary: null,
       raw_text: 'Raw content here',
