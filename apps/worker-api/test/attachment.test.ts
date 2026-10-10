@@ -916,6 +916,66 @@ describe('private attachment lifecycle', () => {
 });
 
 describe('BG-15 browser upload write boundary', () => {
+  it('accepts owner-cookie raw bytes and finalize with exact Origin', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+    const bytes = new TextEncoder().encode('%PDF-1.7\\ntest').buffer;
+    const init = await app.request(
+      '/api/v1/uploads/init',
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://localhost',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename: 'owner.pdf',
+          mime_type: 'application/pdf',
+          size_bytes: bytes.byteLength,
+          source_type: 'file',
+        }),
+      },
+      env,
+    );
+    expect(init.status).toBe(201);
+    const result = await init.json<{ data: { attachment_id: string } }>();
+    const id = result.data.attachment_id;
+    const upload = await app.request(
+      `/api/v1/uploads/${id}/content`,
+      {
+        method: 'PUT',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://localhost',
+          'Content-Type': 'application/pdf',
+          'Content-Length': String(bytes.byteLength),
+        },
+        body: bytes,
+      },
+      env,
+    );
+    expect(upload.status).toBe(200);
+    const finalize = await app.request(
+      `/api/v1/uploads/${id}/finalize`,
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://localhost',
+          'Content-Type': 'application/json',
+        },
+        body: '{}',
+      },
+      env,
+    );
+    expect(finalize.status).toBe(200);
+    expect(repository.attachments.get(id)?.status).toBe('finalized');
+  });
+
   const initBody = {
     filename: 'browser.pdf',
     mime_type: 'application/pdf',
