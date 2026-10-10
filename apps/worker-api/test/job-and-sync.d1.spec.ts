@@ -715,7 +715,9 @@ describe('OPE-246 durable D1 jobs', () => {
          id, item_id, state, confirmation_digest, confirmation_expires_at,
          requested_edit_version, created_at, updated_at
        ) VALUES (?1, ?2, 'queued', 'test-digest', ?3, 1, ?3, ?3)`,
-    ).bind('purge-freeze-request', itemId, T0.toISOString()).run();
+    )
+      .bind('purge-freeze-request', itemId, T0.toISOString())
+      .run();
     const result = await jobs.submitProcessingResult(
       jobId,
       'purge-worker',
@@ -729,13 +731,18 @@ describe('OPE-246 durable D1 jobs', () => {
     );
     expect(result).toEqual({ accepted: false, replayed: false });
     expect(
-      await env.DB.prepare('SELECT COUNT(*) AS n FROM processing_job_results WHERE job_id = ?1')
-        .bind(jobId).first('n'),
+      await env.DB.prepare(
+        'SELECT COUNT(*) AS n FROM processing_job_results WHERE job_id = ?1',
+      )
+        .bind(jobId)
+        .first('n'),
     ).toBe(0);
     expect(
       await env.DB.prepare(
         "SELECT COUNT(*) AS n FROM audit_events WHERE item_id = ?1 AND event_type = 'job_result_accepted'",
-      ).bind(itemId).first('n'),
+      )
+        .bind(itemId)
+        .first('n'),
     ).toBe(0);
   });
 
