@@ -21,6 +21,9 @@ jobs:
       - run: npm run browser:download:test
       - run: npm run browser:source-recovery:test
       - run: npm run browser:workflow:test
+      - run: npm run browser:acquisition:test
+      - run: npm run browser:workflow:test
+      - run: npm run browser:acquisition:test
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
