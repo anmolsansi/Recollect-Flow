@@ -26,9 +26,11 @@ and is tracked by [issue #63](https://github.com/anmolsansi/Recollect-Flow/issue
 The [browser acceptance record](verification/BG-14_BROWSER_ACCEPTANCE.md)
 records real Chrome signed-cookie, downloads, search and state proof,
 plus [passing upstream-mocked acquisition](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38057058035)
-through the same Worker parser, D1 and browser. Final PR and merged-main CI
-remain required before BG-14/BG-15 can be marked complete.
-BG-15 remains gated until actual browser evidence closes that gap. This update
+through the same Worker parser, D1 and browser. The
+[final BG-14 closeout](verification/BG-14_FINAL_CLOSEOUT.md) cites the
+[passing PR-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061589399)
+and [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061802146).
+BG-14 is 100/100 complete and BG-15 is unlocked. This update
 does not rewrite the original engineering-ticket publication scope.
 
 ## Deliverables
