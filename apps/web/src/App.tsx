@@ -31,6 +31,7 @@ import {
 } from './item-actions';
 import { sourceStatusMessage, visibleSourceCoverage } from './source-recovery';
 import { CaptureForm } from './CaptureForm';
+import { forgetCaptureRecovery } from './capture-recovery';
 import './index.css';
 
 type AuthState = 'checking' | 'authenticated' | 'unauthenticated';
@@ -186,7 +187,16 @@ function Inbox() {
         </div>
         <button
           className="btn"
-          onClick={() => logoutAdmin().then(() => window.location.reload())}
+          onClick={async () => {
+            try {
+              await forgetCaptureRecovery();
+            } catch {
+              window.alert('Could not clear local drafts. Clear site data before using a shared device.');
+              return;
+            }
+            await logoutAdmin();
+            window.location.reload();
+          }}
         >
           Logout
         </button>
