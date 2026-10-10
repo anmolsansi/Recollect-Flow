@@ -26,6 +26,7 @@ BG-13 atomic persisted-state integration remains outstanding.
 Status: **BG-12 decision-contract complete, BG-13 unlocked**.
 
 - [BG-12 final verified merged-main closeout](BG-12_FINAL_CLOSEOUT.md)
+- [2026-10-10 audit of all 87 tracked Markdown files](BG-12_MARKDOWN_AUDIT_2026-10-10.md)
 - Detailed [BG-12 decision table and generation handoff](BG-12_AGGREGATE_STATE_CONTRACT.md)
 - Canonical [BG-12 microtask checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-12--100-executable-microtasks)
 - GitHub [issue #56](https://github.com/anmolsansi/Recollect-Flow/issues/56)
