@@ -105,7 +105,9 @@ describe('web API client', () => {
       ),
     );
 
-    await expect(fetchApi('/captures', { method: 'POST', body: '{}' })).rejects.toMatchObject({
+    await expect(
+      fetchApi('/captures', { method: 'POST', body: '{}' }),
+    ).rejects.toMatchObject({
       status: 422,
       code: 'VALIDATION_ERROR',
       details: { shared_text: 'Text is required.' },
