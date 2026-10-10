@@ -107,6 +107,13 @@ try {
   );
   await enableRecovery();
   report('durable-opt-in-not-default');
+  const unsentDraft = 'BG17 unsent owner text ' + randomUUID();
+  await enterText(unsentDraft);
+  await evaluate(browser, 'new Promise(resolve => setTimeout(resolve, 750))');
+  await begin();
+  assert.equal(await evaluate(browser, 'document.querySelector("[name=shared_text]").value'),
+    unsentDraft, 'editable unsent text should survive the opted-in reload');
+  report('editable-draft-restored');
 
   // Simulate a server-side durable commit, then drop the browser request so no
   // successful response reaches React. The same Worker/D1 capture contract runs.
