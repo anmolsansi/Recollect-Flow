@@ -41,6 +41,19 @@ export class CapacityJobService {
              lease_owner = NULL, lease_expires_at = NULL, heartbeat_at = NULL,
              updated_at = ?3
          WHERE id = ?4 AND lease_owner = ?5 AND status = 'processing'
+           AND lease_expires_at > ?3
+           AND EXISTS (
+             SELECT 1 FROM items i WHERE i.id = processing_jobs.item_id
+               AND i.deleted_at IS NULL
+               AND i.processing_generation = processing_jobs.processing_generation
+               AND (processing_jobs.privacy_level_snapshot IS NULL
+                    OR i.privacy_level = processing_jobs.privacy_level_snapshot)
+               AND NOT EXISTS (
+                 SELECT 1 FROM purge_workflows p
+                 WHERE p.item_id = i.id
+                   AND p.state IN ('queued', 'processing', 'partial')
+               )
+           )
          RETURNING item_id, attempts`,
       )
       .bind(availableIso, errorCode, nowIso, jobId, ownerId)
