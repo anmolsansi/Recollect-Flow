@@ -325,7 +325,10 @@ try {
 } catch (error) {
   const reason = error instanceof Error ? error.message : String(error);
   await recordBrowserFailure(browser, reason).catch(() => undefined);
-  console.error('BG14_BROWSER_FAILURE ' + JSON.stringify({reason, requests: safeDiagnostics(browser)}));
+  console.error(
+    'BG14_BROWSER_FAILURE ' +
+      JSON.stringify({ reason, requests: safeDiagnostics(browser) }),
+  );
   process.exitCode = 1;
 } finally {
   await browser?.close();
