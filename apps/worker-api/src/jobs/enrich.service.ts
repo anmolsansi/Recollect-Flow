@@ -269,14 +269,15 @@ export class EnrichService {
                completed_at = ?1, last_error_code = NULL, updated_at = ?1
            WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
            AND lease_expires_at > ?1
-           AND EXISTS (SELECT 1 FROM items WHERE id = ?4 AND deleted_at IS NULL AND privacy_level = ?5 AND processing_generation = processing_jobs.processing_generation AND NOT EXISTS (SELECT 1 FROM purge_workflows p WHERE p.item_id = items.id AND p.state IN ('queued', 'processing', 'partial')))`, 
+           AND EXISTS (SELECT 1 FROM items WHERE id = ?4 AND deleted_at IS NULL AND privacy_level = ?5 AND processing_generation = processing_jobs.processing_generation AND NOT EXISTS (SELECT 1 FROM purge_workflows p WHERE p.item_id = items.id AND p.state IN ('queued', 'processing', 'partial')))
+           RETURNING id`, 
           )
           .bind(now, job.id, ownerId, job.itemId, itemRow.privacy_level),
       ];
 
       const results = await this.db.batch(statements);
 
-      if (!results[3] || results[3].meta.changes === 0) {
+      if (results[3]?.results?.length !== 1) {
         return this.jobService.failProcessingJob(
           job.id,
           ownerId,
@@ -326,7 +327,7 @@ export class EnrichService {
              id, item_id, provider, model, operation, latency_ms,
              input_units, output_units, status, error_code, created_at
            ) SELECT ?1, ?2, ?3, ?4, 'enrich', ?5, 0, 0, 'failed', ?6, ?7
-             FROM items WHERE id = ?8 AND deleted_at IS NULL`,
+             FROM items WHERE id = ?8 AND deleted_at IS NULL AND NOT EXISTS (SELECT 1 FROM purge_workflows p WHERE p.item_id = items.id AND p.state IN ('queued', 'processing', 'partial'))`,
           )
           .bind(
             crypto.randomUUID(),
