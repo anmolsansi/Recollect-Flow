@@ -83,7 +83,9 @@ SELECT i.id AS item_id,
     ELSE i.processing_status
   END AS derived_status,
   EXISTS (
-    SELECT 1 FROM bg13_current_processing_stages j WHERE j.item_id = i.id
+    SELECT 1 FROM processing_jobs j
+    WHERE j.item_id = i.id
+      AND j.processing_generation = i.processing_generation
   ) AS has_current_jobs
 FROM items i;
 
