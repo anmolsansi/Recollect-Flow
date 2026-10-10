@@ -31,4 +31,13 @@ BG-16 adds a browser-first secondary capture client for URL, pasted text and not
 
 BG-17 is responsible for draft persistence, session-expiry recovery and cross-reload stable retries; BG-18 for file upload; BG-19 for follow-up fields. No production Web hosting or release gate is proven by this local acceptance. The initial feature CI runs encountered formatting, a malformed JavaScript acceptance selector, lint-global errors and an asynchronous focus assertion. These were corrected and were not hidden. The final PR-head CI passed.
 
-**Merged-main gate:** [CI #38082460334](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38082460334) is the run on implementation merge `2c4fbcdc...`. Record its outcome only after GitHub reports a completed conclusion. This record is a documentation-closeout candidate until its own exact-head and merged-main CI pass.
+## Final evidence and BG-17 handoff
+
+- **Implementation PR:** [#70](https://github.com/anmolsansi/Recollect-Flow/pull/70), 28 microcommits, merged `2c4fbcdcefbbcf30c70c82bb303d870b0e443619`.
+- **Implementation exact-head CI:** [#38082248375](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38082248375), **passed**.
+- **Implementation exact merged-main CI:** [#38082460334](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38082460334), **passed**.
+- **Documentation PR:** [#71](https://github.com/anmolsansi/Recollect-Flow/pull/71), merged `c87f3b6ca90eb39db4f25185ae071195fcc1ced8`.
+- **Documentation PR-head CI:** [#38082613761](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38082613761), **passed**.
+- **Documentation exact merged-main CI:** [#38086474190](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38086474190), **passed**.
+
+The code gate and first documentation gate are verified on actual merged main revisions. This final-checklist PR marks `BG-16.099` (documentation/traceability) and `BG-16.100` (parent gate/BG-17 unlock) as complete once merged. There is no production release or vendor integration acceptance implied. BG-17 may proceed with durable draft recovery and session-expiry resume without modifying the BG-16 save contract.
