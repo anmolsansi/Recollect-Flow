@@ -159,23 +159,56 @@ describe('BG-17 recovery record contract', () => {
   });
   it('restores an owner-approved editable draft without confusing it with submitted operations', () => {
     const record = {
-      version: 1, id: 'capture-form', updatedAt: new Date(now).toISOString(),
-      draft: { ...emptyCaptureDraft(), mode: 'note', sharedText: 'unsubmitted text', reason: 'why' },
+      version: 1,
+      id: 'capture-form',
+      updatedAt: new Date(now).toISOString(),
+      draft: {
+        ...emptyCaptureDraft(),
+        mode: 'note',
+        sharedText: 'unsubmitted text',
+        reason: 'why',
+      },
     };
-    expect(parseSavedCaptureDraft(record, now + 10)?.sharedText).toBe('unsubmitted text');
+    expect(parseSavedCaptureDraft(record, now + 10)?.sharedText).toBe(
+      'unsubmitted text',
+    );
     expect(parseSavedCaptureDraft(record, now + RECOVERY_TTL_MS)).toBeNull();
     expect(parseSavedCaptureDraft({ ...record, version: 9 }, now)).toBeNull();
   });
 
   it('does not allow sensitive, corrupt, or oversized editable drafts into recovery', () => {
     const record = {
-      version: 1, id: 'capture-form', updatedAt: new Date(now).toISOString(),
+      version: 1,
+      id: 'capture-form',
+      updatedAt: new Date(now).toISOString(),
       draft: { ...emptyCaptureDraft(), mode: 'note', sharedText: 'private' },
     };
-    expect(parseSavedCaptureDraft({ ...record, draft: { ...record.draft, privacy: 'sensitive' } }, now)).toBeNull();
-    expect(parseSavedCaptureDraft({ ...record, draft: { ...record.draft, sharedText: 'x'.repeat(100001) } }, now)).toBeNull();
-    expect(parseSavedCaptureDraft({ ...record, draft: { ...record.draft, category: 'other-not-approved' } }, now)).toBeNull();
-    expect(parseSavedCaptureDraft({ ...record, token: 'ignored' }, now)).toMatchObject({ sharedText: 'private' });
+    expect(
+      parseSavedCaptureDraft(
+        { ...record, draft: { ...record.draft, privacy: 'sensitive' } },
+        now,
+      ),
+    ).toBeNull();
+    expect(
+      parseSavedCaptureDraft(
+        {
+          ...record,
+          draft: { ...record.draft, sharedText: 'x'.repeat(100001) },
+        },
+        now,
+      ),
+    ).toBeNull();
+    expect(
+      parseSavedCaptureDraft(
+        {
+          ...record,
+          draft: { ...record.draft, category: 'other-not-approved' },
+        },
+        now,
+      ),
+    ).toBeNull();
+    expect(
+      parseSavedCaptureDraft({ ...record, token: 'ignored' }, now),
+    ).toMatchObject({ sharedText: 'private' });
   });
-
 });
