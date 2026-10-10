@@ -30,6 +30,7 @@ import {
   runVersionedAction,
 } from './item-actions';
 import { sourceStatusMessage, visibleSourceCoverage } from './source-recovery';
+import { CaptureForm } from './CaptureForm';
 import './index.css';
 
 type AuthState = 'checking' | 'authenticated' | 'unauthenticated';
@@ -177,7 +178,12 @@ function Inbox() {
       <div
         style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}
       >
-        <h1>Inbox</h1>
+        <div className="capture-heading-actions">
+          <h1>Inbox</h1>
+          <Link className="btn btn-primary" to="/capture">
+            Save something
+          </Link>
+        </div>
         <button
           className="btn"
           onClick={() => logoutAdmin().then(() => window.location.reload())}
@@ -1159,6 +1165,7 @@ function Layout() {
       </nav>
       <Routes>
         <Route path="/" element={<Inbox />} />
+        <Route path="/capture" element={<CaptureForm />} />
         <Route path="/items/:id" element={<ItemDetail />} />
       </Routes>
     </div>

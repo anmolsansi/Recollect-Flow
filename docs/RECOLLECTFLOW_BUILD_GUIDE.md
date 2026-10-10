@@ -1990,6 +1990,38 @@ or appending a temporary row to component state does not prove persistence.
 11. If `duplicate_of` is present, explain canonical reuse without claiming the new
     reason was discarded. Verify the event history preserves it.
 
+### Implemented Web capture workflow (BG-16)
+
+The authenticated Web Inbox exposes **Save something** at `/capture`.
+`apps/web/src/CaptureForm.tsx` owns the form and its accessible status
+messages. `apps/web/src/capture-model.ts` validates and maps a draft into
+the existing strict `POST /api/v1/captures` contract. The Worker remains the
+final validation and authorization boundary. The category vocabulary comes
+from `packages/contracts/src/common.ts` and is shared with the Worker.
+
+For URLs, the form submits only `url`. Pasted text and notes submit only
+`shared_text`. `user_reason` remains a separate optional owner annotation.
+`quick_category` is optional and privacy defaults to `unknown`, which does
+not authorize hosted AI. The request includes an offset-aware capture time,
+Web client identifier and current Web app version, and one UUID operation key.
+No file-upload fields or undocumented `text` property are sent.
+
+A successful response shows Saved or Already Saved according to the canonical
+response and links to `/items/:id`; optional AI/Notion processing is reported
+separately. Validation errors keep inputs, associate errors with controls and
+focus the first invalid field. During a request, editing and duplicate submit
+are disabled. A failed/uncertain request retains the identical payload/key
+for Retry **while the mounted form remains alive**. Explicit Start new operation
+clears that identity with a warning. Cross-reload preservation and
+reauthentication recovery are BG-17 scope, not yet a BG-16 guarantee.
+
+Run `npm run web:test`, `npm run web:build` and
+`npm run browser:capture:test` (requires isolated local Wrangler, D1 and
+Chrome). The browser test saves URL, note and pasted-text fixtures and queries
+the Worker for durable canonical items, plus checks mode-switch leakage,
+validation focus, duplicate capture history and mobile overflow. No live
+external page acquisition, production mutations or deployment are involved.
+
 ### What this improves
 
 A thought becomes a first-class item without an external URL. A webpage can be

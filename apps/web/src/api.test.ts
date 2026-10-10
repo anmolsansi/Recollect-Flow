@@ -88,6 +88,32 @@ describe('web API client', () => {
     });
   });
 
+  it('retains server field-level capture validation errors', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        jsonResponse(
+          {
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'The capture payload is invalid.',
+              details: { shared_text: 'Text is required.' },
+            },
+          },
+          422,
+        ),
+      ),
+    );
+
+    await expect(
+      fetchApi('/captures', { method: 'POST', body: '{}' }),
+    ).rejects.toMatchObject({
+      status: 422,
+      code: 'VALIDATION_ERROR',
+      details: { shared_text: 'Text is required.' },
+    });
+  });
+
   it('notifies the app when an authenticated session is rejected', async () => {
     const dispatchEvent = vi.fn();
     vi.stubGlobal('dispatchEvent', dispatchEvent);
