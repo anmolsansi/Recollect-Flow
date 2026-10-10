@@ -1,7 +1,7 @@
-/* global fetch, process, console, URLSearchParams, HTMLInputElement */
+/* global fetch, process, console */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { CdpClient, waitUntil } from './browser-cdp.mjs';
+import { waitUntil } from './browser-cdp.mjs';
 import { createLocalAcceptanceRuntime, runCommand } from './browser-acceptance-runtime.mjs';
 import { captureFixture, apiRequest, openBrowser, login, navigate, waitFor, evaluate, report, safeDiagnostics } from './bg14-browser-utils.mjs';
 import { recordBrowserFailure } from './bg14-browser-failure.mjs';
