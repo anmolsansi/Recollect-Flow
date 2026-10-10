@@ -45,10 +45,14 @@ export async function matchesAdminSession(
     'admin_session',
   );
   if (typeof cookieMatch !== 'string') return false;
-  const match = /^authenticated:(\\d{13})$/.exec(cookieMatch);
+  const match = /^authenticated:(\d{13})$/.exec(cookieMatch);
   if (!match) return false;
   const expiry = Number(match[1]);
-  return Number.isSafeInteger(expiry) && expiry > Date.now() && expiry <= Date.now() + 24 * 60 * 60 * 1000;
+  return (
+    Number.isSafeInteger(expiry) &&
+    expiry > Date.now() &&
+    expiry <= Date.now() + 24 * 60 * 60 * 1000
+  );
 }
 
 /**
@@ -62,7 +66,11 @@ function requireSessionWriteOrigin(context: Context<AppContext>): void {
   const origin = context.req.header('Origin');
   const expected = new URL(context.req.url).origin;
   if (!origin || origin === 'null' || origin !== expected) {
-    throw new AppError(403, 'ORIGIN_FORBIDDEN', 'This browser write origin is not allowed.');
+    throw new AppError(
+      403,
+      'ORIGIN_FORBIDDEN',
+      'This browser write origin is not allowed.',
+    );
   }
 }
 
@@ -80,7 +88,11 @@ export const requireCaptureWrite: MiddlewareHandler<AppContext> = async (
     return;
   }
   if (!(await matchesAdminSession(context))) {
-    throw new AppError(401, 'UNAUTHENTICATED', 'A valid capture token or owner session is required.');
+    throw new AppError(
+      401,
+      'UNAUTHENTICATED',
+      'A valid capture token or owner session is required.',
+    );
   }
   requireSessionWriteOrigin(context);
   await next();
@@ -151,7 +163,10 @@ export const requireAdminToken: MiddlewareHandler<AppContext> = async (
   }
 
   // Explicit bearer failures cannot borrow the browser's ambient identity.
-  if (context.req.header('Authorization') === undefined && await matchesAdminSession(context)) {
+  if (
+    context.req.header('Authorization') === undefined &&
+    (await matchesAdminSession(context))
+  ) {
     requireSessionWriteOrigin(context);
     await next();
     return;
