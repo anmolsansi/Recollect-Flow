@@ -336,7 +336,7 @@ export class JobService {
         `UPDATE processing_jobs
          SET lease_expires_at = ?1, heartbeat_at = ?2, updated_at = ?2
          WHERE id = ?3 AND lease_owner = ?4 AND status = 'processing'
-           AND lease_expires_at > ?2`,
+           AND lease_expires_at > ?2 AND ${currentJobGuard}`,
       )
       .bind(expiresAt, now.toISOString(), jobId, ownerId)
       .run();
