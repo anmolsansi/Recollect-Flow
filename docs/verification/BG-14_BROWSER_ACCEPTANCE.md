@@ -4,8 +4,8 @@ Status: **complete on main; BG-15 unlocked**. This is a task-scoped record for
 [BG-14](../RECOLLECTFLOW_BUILD_GUIDE.md#20-bg-14--prove-the-repaired-workflow-in-a-browser),
 [tracking issue #63](https://github.com/anmolsansi/Recollect-Flow/issues/63) and
 [PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64).
-Do not unlock BG-15 until clean-head, merged-main browser proof is green and
-unperformed requirements are explicitly resolved.
+[Final verified closeout](BG-14_FINAL_CLOSEOUT.md): 100/100 canonical
+checks passed, PR #64 merged and BG-15 unlocked. This is not production QA.
 
 ## Baseline and acceptance boundary
 
@@ -145,10 +145,11 @@ a fresh full CI success on its exact implementation head.
 GitHub CI runs the BG-07 PDF/PNG original-byte acceptance, BG-11 keyboard
 recovery, the new negative-to-retry/owner-edit/lifecycle journey, and the
 positive acquired-source journey. It repeats both BG-14 journeys with fresh
-fixtures to detect accidental shared-state dependence. The full PR-head
-and merged-main CI must pass before BG-14 is considered closed. Production
+fixtures to detect accidental shared-state dependence. The [exact PR-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061589399)
+and [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061802146)
+both passed before BG-14 was closed. Production
 deployment, public-site connectivity and historical backfill remain out of
-scope; BG-15 may only unlock from actually verified, merged evidence.
+scope; BG-15 is unlocked by that verified merged evidence.
 
 ## Evidence accounting
 
