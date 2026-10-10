@@ -70,14 +70,22 @@ function requireSessionWriteOrigin(context: Context<AppContext>): void {
   if (configuredWeb) {
     try {
       const url = new URL(configuredWeb);
-      if (url.protocol === 'https:' || url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+      if (
+        url.protocol === 'https:' ||
+        url.hostname === 'localhost' ||
+        url.hostname === '127.0.0.1'
+      ) {
         webOrigin = url.origin;
       }
     } catch {
       // Invalid configuration does not grant additional origins.
     }
   }
-  if (!origin || origin === 'null' || (origin !== workerOrigin && origin !== webOrigin)) {
+  if (
+    !origin ||
+    origin === 'null' ||
+    (origin !== workerOrigin && origin !== webOrigin)
+  ) {
     throw new AppError(
       403,
       'ORIGIN_FORBIDDEN',
