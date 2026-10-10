@@ -571,6 +571,7 @@ export class JobService {
                WHERE id = ?3 AND item_id = ?2 AND status = 'linked'
              )
            ON CONFLICT (attachment_id) DO UPDATE SET
+             processing_generation = (SELECT processing_generation FROM items WHERE id = excluded.item_id),
              extractor_name = excluded.extractor_name,
              extractor_version = excluded.extractor_version,
              extracted_text = excluded.extracted_text,
