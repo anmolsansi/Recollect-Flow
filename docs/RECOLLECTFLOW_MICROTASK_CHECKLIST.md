@@ -2146,120 +2146,120 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-16 / 01 — Establish task context
 
-- [ ] `BG-16.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-16.002` **Dependency:** Verify BG-15's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-16.003` **Baseline:** Record the actual checkout or release candidate used for BG-16.
-- [ ] `BG-16.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-16.005` **Evidence:** Check whether existing evidence already satisfies any BG-16 step; reference it instead of manufacturing work.
-- [ ] `BG-16.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-16.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-16.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-16.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-16.010` **Tracking:** Open a BG-16 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-16.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-16.002` **Dependency:** Verify BG-15's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-16.003` **Baseline:** Record the actual checkout or release candidate used for BG-16.
+- [x] `BG-16.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-16.005` **Evidence:** Check whether existing evidence already satisfies any BG-16 step; reference it instead of manufacturing work.
+- [x] `BG-16.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-16.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-16.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-16.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-16.010` **Tracking:** Open a BG-16 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-16 / 02 — Entry and layout
 
-- [ ] `BG-16.011` Add Save something navigation.
-- [ ] `BG-16.012` Choose capture route or panel.
-- [ ] `BG-16.013` Provide back-to-Inbox action.
-- [ ] `BG-16.014` Provide explicit cancel action.
-- [ ] `BG-16.015` Define empty form state.
-- [ ] `BG-16.016` Add URL mode control.
-- [ ] `BG-16.017` Add pasted-text mode control.
-- [ ] `BG-16.018` Add note mode control.
-- [ ] `BG-16.019` Preserve deliberate mode switching.
-- [ ] `BG-16.020` Prevent hidden stale field submission.
+- [x] `BG-16.011` Add Save something navigation.
+- [x] `BG-16.012` Choose capture route or panel.
+- [x] `BG-16.013` Provide back-to-Inbox action.
+- [x] `BG-16.014` Provide explicit cancel action.
+- [x] `BG-16.015` Define empty form state.
+- [x] `BG-16.016` Add URL mode control.
+- [x] `BG-16.017` Add pasted-text mode control.
+- [x] `BG-16.018` Add note mode control.
+- [x] `BG-16.019` Preserve deliberate mode switching.
+- [x] `BG-16.020` Prevent hidden stale field submission.
 
 #### BG-16 / 03 — Payload fields
 
-- [ ] `BG-16.021` Bind url input.
-- [ ] `BG-16.022` Bind shared_text input.
-- [ ] `BG-16.023` Bind user_reason input.
-- [ ] `BG-16.024` Bind quick_category input.
-- [ ] `BG-16.025` Bind privacy_level input.
-- [ ] `BG-16.026` Generate captured_at value.
-- [ ] `BG-16.027` Set source_app identifier.
-- [ ] `BG-16.028` Set client name.
-- [ ] `BG-16.029` Set real client version.
-- [ ] `BG-16.030` Attach logical operation key.
+- [x] `BG-16.021` Bind url input.
+- [x] `BG-16.022` Bind shared_text input.
+- [x] `BG-16.023` Bind user_reason input.
+- [x] `BG-16.024` Bind quick_category input.
+- [x] `BG-16.025` Bind privacy_level input.
+- [x] `BG-16.026` Generate captured_at value.
+- [x] `BG-16.027` Set source_app identifier.
+- [x] `BG-16.028` Set client name.
+- [x] `BG-16.029` Set real client version.
+- [x] `BG-16.030` Attach logical operation key.
 
 #### BG-16 / 04 — Privacy experience
 
-- [ ] `BG-16.031` Default privacy to Unknown.
-- [ ] `BG-16.032` Explain Unknown processing behavior.
-- [ ] `BG-16.033` Display Public option accurately.
-- [ ] `BG-16.034` Display Personal option accurately.
-- [ ] `BG-16.035` Display Sensitive option accurately.
-- [ ] `BG-16.036` Avoid automatic Public promotion.
-- [ ] `BG-16.037` Keep consent separate from classification.
-- [ ] `BG-16.038` Preserve chosen privacy during retry.
-- [ ] `BG-16.039` Show no-AI outcome honestly.
-- [ ] `BG-16.040` Verify outgoing privacy value.
+- [x] `BG-16.031` Default privacy to Unknown.
+- [x] `BG-16.032` Explain Unknown processing behavior.
+- [x] `BG-16.033` Display Public option accurately.
+- [x] `BG-16.034` Display Personal option accurately.
+- [x] `BG-16.035` Display Sensitive option accurately.
+- [x] `BG-16.036` Avoid automatic Public promotion.
+- [x] `BG-16.037` Keep consent separate from classification.
+- [x] `BG-16.038` Preserve chosen privacy during retry.
+- [x] `BG-16.039` Show no-AI outcome honestly.
+- [x] `BG-16.040` Verify outgoing privacy value.
 
 #### BG-16 / 05 — Validation
 
-- [ ] `BG-16.041` Require URL for URL mode.
-- [ ] `BG-16.042` Require nonblank note text.
-- [ ] `BG-16.043` Require nonblank pasted text.
-- [ ] `BG-16.044` Enforce URL length limit.
-- [ ] `BG-16.045` Enforce text length limit.
-- [ ] `BG-16.046` Enforce reason length limit.
-- [ ] `BG-16.047` Reuse category enum.
-- [ ] `BG-16.048` Validate source/client field bounds.
-- [ ] `BG-16.049` Show server field errors.
-- [ ] `BG-16.050` Focus first invalid input.
+- [x] `BG-16.041` Require URL for URL mode.
+- [x] `BG-16.042` Require nonblank note text.
+- [x] `BG-16.043` Require nonblank pasted text.
+- [x] `BG-16.044` Enforce URL length limit.
+- [x] `BG-16.045` Enforce text length limit.
+- [x] `BG-16.046` Enforce reason length limit.
+- [x] `BG-16.047` Reuse category enum.
+- [x] `BG-16.048` Validate source/client field bounds.
+- [x] `BG-16.049` Show server field errors.
+- [x] `BG-16.050` Focus first invalid input.
 
 #### BG-16 / 06 — Submission
 
-- [ ] `BG-16.051` Create immutable submitted payload.
-- [ ] `BG-16.052` Disable same-form repeated submit.
-- [ ] `BG-16.053` Use authenticated API helper.
-- [ ] `BG-16.054` Preserve server idempotency protection.
-- [ ] `BG-16.055` Show in-flight state.
-- [ ] `BG-16.056` Handle network failure.
-- [ ] `BG-16.057` Handle unauthorized response.
-- [ ] `BG-16.058` Handle validation rejection.
-- [ ] `BG-16.059` Preserve editable input on failure.
-- [ ] `BG-16.060` Avoid waiting for optional processing.
+- [x] `BG-16.051` Create immutable submitted payload.
+- [x] `BG-16.052` Disable same-form repeated submit.
+- [x] `BG-16.053` Use authenticated API helper.
+- [x] `BG-16.054` Preserve server idempotency protection.
+- [x] `BG-16.055` Show in-flight state.
+- [x] `BG-16.056` Handle network failure.
+- [x] `BG-16.057` Handle unauthorized response.
+- [x] `BG-16.058` Handle validation rejection.
+- [x] `BG-16.059` Preserve editable input on failure.
+- [x] `BG-16.060` Avoid waiting for optional processing.
 
 #### BG-16 / 07 — Success semantics
 
-- [ ] `BG-16.061` Read returned capture_id.
-- [ ] `BG-16.062` Read replayed flag.
-- [ ] `BG-16.063` Read duplicate_of field.
-- [ ] `BG-16.064` Show new Saved message.
-- [ ] `BG-16.065` Show Already Saved message.
-- [ ] `BG-16.066` Show optional processing status.
-- [ ] `BG-16.067` Link canonical detail page.
-- [ ] `BG-16.068` Preserve separate capture-event meaning.
-- [ ] `BG-16.069` Clear acknowledged submitted draft.
-- [ ] `BG-16.070` Keep failed operation recoverable.
+- [x] `BG-16.061` Read returned capture_id.
+- [x] `BG-16.062` Read replayed flag.
+- [x] `BG-16.063` Read duplicate_of field.
+- [x] `BG-16.064` Show new Saved message.
+- [x] `BG-16.065` Show Already Saved message.
+- [x] `BG-16.066` Show optional processing status.
+- [x] `BG-16.067` Link canonical detail page.
+- [x] `BG-16.068` Preserve separate capture-event meaning.
+- [x] `BG-16.069` Clear acknowledged submitted draft.
+- [x] `BG-16.070` Keep failed operation recoverable.
 
 #### BG-16 / 08 — Duplicate and mode tests
 
-- [ ] `BG-16.071` Submit URL fixture.
-- [ ] `BG-16.072` Submit note fixture.
-- [ ] `BG-16.073` Submit text fixture.
-- [ ] `BG-16.074` Replay identical logical operation.
-- [ ] `BG-16.075` Share canonical URL with new reason.
-- [ ] `BG-16.076` Check immutable event history.
-- [ ] `BG-16.077` Switch mode before submit.
-- [ ] `BG-16.078` Check hidden URL not submitted.
-- [ ] `BG-16.079` Check whitespace-only text rejection.
-- [ ] `BG-16.080` Check Unicode reason preservation.
+- [x] `BG-16.071` Submit URL fixture.
+- [x] `BG-16.072` Submit note fixture.
+- [x] `BG-16.073` Submit text fixture.
+- [x] `BG-16.074` Replay identical logical operation.
+- [x] `BG-16.075` Share canonical URL with new reason.
+- [x] `BG-16.076` Check immutable event history.
+- [x] `BG-16.077` Switch mode before submit.
+- [x] `BG-16.078` Check hidden URL not submitted.
+- [x] `BG-16.079` Check whitespace-only text rejection.
+- [x] `BG-16.080` Check Unicode reason preservation.
 
 #### BG-16 / 09 — Usability
 
-- [ ] `BG-16.081` Label every input.
-- [ ] `BG-16.082` Associate errors with fields.
-- [ ] `BG-16.083` Announce asynchronous success.
-- [ ] `BG-16.084` Announce asynchronous failure.
-- [ ] `BG-16.085` Preserve keyboard navigation.
-- [ ] `BG-16.086` Keep submit visible on mobile.
-- [ ] `BG-16.087` Wrap long URL text.
-- [ ] `BG-16.088` Prevent error-driven layout overflow.
-- [ ] `BG-16.089` Verify provider outage still saves.
-- [ ] `BG-16.090` Record browser creation acceptance.
+- [x] `BG-16.081` Label every input.
+- [x] `BG-16.082` Associate errors with fields.
+- [x] `BG-16.083` Announce asynchronous success.
+- [x] `BG-16.084` Announce asynchronous failure.
+- [x] `BG-16.085` Preserve keyboard navigation.
+- [x] `BG-16.086` Keep submit visible on mobile.
+- [x] `BG-16.087` Wrap long URL text.
+- [x] `BG-16.088` Prevent error-driven layout overflow.
+- [x] `BG-16.089` Verify provider outage still saves.
+- [x] `BG-16.090` Record browser creation acceptance.
 
 #### BG-16 / 10 — Verify and close this task
 
