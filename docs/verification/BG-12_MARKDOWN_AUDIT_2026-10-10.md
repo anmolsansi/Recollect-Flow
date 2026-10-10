@@ -9,17 +9,17 @@ It did **not** treat a historical phase report as a current deployment claim.
 
 ## Source-of-truth checks
 
-| Evidence | Observed result |
-| --- | --- |
-| BG-12 implementation [PR #57](https://github.com/anmolsansi/Recollect-Flow/pull/57) | Merged as `408d415d1d54ab8a5c5668a4b19efc03f3a56171` |
-| Implementation [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37990069598) | Success on same revision |
-| BG-12 final-docs [PR #58](https://github.com/anmolsansi/Recollect-Flow/pull/58) | Merged as `68e730136be7c297443ab72ca850150d01646ba1` |
-| Final-docs [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37990715310) | Success on same revision |
-| [GitHub #56](https://github.com/anmolsansi/Recollect-Flow/issues/56) | Closed, 50/50 microtasks |
-| [Linear OPE-338](https://linear.app/openclaw-neutron/issue/OPE-338/bg-12-define-one-aggregate-processing-state-rule) | Done |
-| [Canonical BG-12 microtasks](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-12--100-executable-microtasks) | 100/100 checked |
-| [BG-12 decision contract](BG-12_AGGREGATE_STATE_CONTRACT.md) | Pure typed helper, explicit verified generation, clock, precedence, separate limited URL coverage |
-| BG-13 | **Not completed**; still owns atomic persisted status transitions and list/detail/filter agreement |
+| Evidence                                                                                                             | Observed result                                                                                    |
+| -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| BG-12 implementation [PR #57](https://github.com/anmolsansi/Recollect-Flow/pull/57)                                  | Merged as `408d415d1d54ab8a5c5668a4b19efc03f3a56171`                                               |
+| Implementation [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37990069598)               | Success on same revision                                                                           |
+| BG-12 final-docs [PR #58](https://github.com/anmolsansi/Recollect-Flow/pull/58)                                      | Merged as `68e730136be7c297443ab72ca850150d01646ba1`                                               |
+| Final-docs [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37990715310)                   | Success on same revision                                                                           |
+| [GitHub #56](https://github.com/anmolsansi/Recollect-Flow/issues/56)                                                 | Closed, 50/50 microtasks                                                                           |
+| [Linear OPE-338](https://linear.app/openclaw-neutron/issue/OPE-338/bg-12-define-one-aggregate-processing-state-rule) | Done                                                                                               |
+| [Canonical BG-12 microtasks](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-12--100-executable-microtasks)               | 100/100 checked                                                                                    |
+| [BG-12 decision contract](BG-12_AGGREGATE_STATE_CONTRACT.md)                                                         | Pure typed helper, explicit verified generation, clock, precedence, separate limited URL coverage  |
+| BG-13                                                                                                                | **Not completed**; still owns atomic persisted status transitions and list/detail/filter agreement |
 
 ## Document corrections identified
 
