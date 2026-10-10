@@ -1853,7 +1853,6 @@ Implementation choices were resolved and reviewed against the merged implementat
 **Acceptance:** [passing PR-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061589399) and [BG-14 browser evidence](verification/BG-14_BROWSER_ACCEPTANCE.md).
 **Closure:** 100/100 verified. [Merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061802146) passed at `03d81805326cb6c6a3492eae323a3270a5b2baa1`; the [final closeout](verification/BG-14_FINAL_CLOSEOUT.md) records BG-15 unlocked. No production rollout is implied.
 
-
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#20-bg-14--prove-the-repaired-workflow-in-a-browser).
 
 These unchecked steps inherit this task's **what, why, when, where and proof** above.
