@@ -479,6 +479,35 @@ describe('OPE-246 durable D1 jobs', () => {
     expect(results.results).toHaveLength(1);
   });
 
+  it('rejects a byte-identical replay after the item epoch changes', async () => {
+    const itemId = 'result-replay-epoch-item';
+    const jobId = 'result-replay-epoch-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'result-owner', 5, 1, T0);
+    const input = {
+      submissionId: 'result-replay-epoch-submission',
+      inputHash: 'input-hash',
+      resultVersion: 'summary-v1',
+      result: { summary: 'old result' },
+    };
+    expect(
+      await jobs.submitProcessingResult(jobId, 'result-owner', input, T0),
+    ).toEqual({ accepted: true, replayed: false });
+    await env.DB.prepare(
+      "UPDATE items SET privacy_level = 'personal' WHERE id = ?1",
+    ).bind(itemId).run();
+    expect(
+      await jobs.submitProcessingResult(jobId, 'result-owner', input, T0),
+    ).toEqual({ accepted: false, replayed: false });
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('pending');
+  });
+
   it('keeps terminal failures bounded and policy-gates manual retries', async () => {
     await insertItem('00000000-0000-0000-0000-000000000001');
     await insertProcessingJob(
