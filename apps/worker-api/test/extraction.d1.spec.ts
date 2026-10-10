@@ -177,44 +177,58 @@ describe('Extraction Pipeline (D1 Integration)', () => {
         extracted_text, completeness, created_at, updated_at, processing_generation
        ) VALUES (?1, ?2, ?3, 'unpdf', '1.0', 'prior source',
                  'complete', ?4, ?4, 1)`,
-    ).bind('prior-epoch-record', itemId, attachmentId, at).run();
+    )
+      .bind('prior-epoch-record', itemId, attachmentId, at)
+      .run();
     await env.DB.prepare(
       'UPDATE items SET source_revision = source_revision + 1 WHERE id = ?1',
-    ).bind(itemId).run();
+    )
+      .bind(itemId)
+      .run();
     expect(
       await jobService.enqueueProcessingJob(itemId, 'extract', 'new-epoch'),
     ).toBe(true);
     const [job] = await jobService.leaseProcessingJobs(
-      'extract', 'new-epoch-worker', 5, 1,
+      'extract',
+      'new-epoch-worker',
+      5,
+      1,
     );
     expect(job).toBeDefined();
     expect(
       await jobService.submitExtractionResults(
-        job!.id, 'new-epoch-worker', itemId,
-        [{
-          attachmentId,
-          extractorName: 'unpdf',
-          extractorVersion: '1.0',
-          extractedText: 'current source',
-          completeness: 'complete',
-          coverage: 'full',
-        }],
+        job!.id,
+        'new-epoch-worker',
+        itemId,
+        [
+          {
+            attachmentId,
+            extractorName: 'unpdf',
+            extractorVersion: '1.0',
+            extractedText: 'current source',
+            completeness: 'complete',
+            coverage: 'full',
+          },
+        ],
         false,
       ),
     ).toBe(true);
     const current = await env.DB.prepare(
       'SELECT processing_generation, extracted_text FROM extraction_records WHERE attachment_id = ?1',
-    ).bind(attachmentId).first<{
-      processing_generation: number;
-      extracted_text: string;
-    }>();
+    )
+      .bind(attachmentId)
+      .first<{
+        processing_generation: number;
+        extracted_text: string;
+      }>();
     expect(current).toEqual({
       processing_generation: 2,
       extracted_text: 'current source',
     });
     expect(
       await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
-        .bind(itemId).first('processing_status'),
+        .bind(itemId)
+        .first('processing_status'),
     ).toBe('complete');
   });
 
