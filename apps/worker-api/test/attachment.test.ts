@@ -914,3 +914,49 @@ describe('private attachment lifecycle', () => {
     });
   });
 });
+
+
+describe('BG-15 browser upload write boundary', () => {
+  const initBody = {
+    filename: 'browser.pdf',
+    mime_type: 'application/pdf',
+    size_bytes: 12,
+    source_type: 'file',
+  };
+
+  it('permits a signed-in owner to initialize an upload, but not a foreign origin', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const env = testEnv(memoryBucket().bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+    const request = (origin: string) => app.request('/api/v1/uploads/init', {
+      method: 'POST',
+      headers: { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' },
+      body: JSON.stringify(initBody),
+    }, env);
+    expect((await request('https://outside.example')).status).toBe(403);
+    expect(repository.attachments.size).toBe(0);
+    expect((await request('http://localhost')).status).toBe(201);
+    expect(repository.attachments.size).toBe(1);
+  });
+
+  it('rejects a missing Origin and invalid explicit bearer even with a good cookie', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const env = testEnv(memoryBucket().bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+    const response = await app.request('/api/v1/uploads/init', {
+      method: 'POST',
+      headers: { Cookie: cookie, 'Content-Type': 'application/json' },
+      body: JSON.stringify(initBody),
+    }, env);
+    expect(response.status).toBe(403);
+    const mixed = await app.request('/api/v1/uploads/init', {
+      method: 'POST',
+      headers: { Cookie: cookie, Origin: 'http://localhost', Authorization: 'Bearer local-worker-secret', 'Content-Type': 'application/json' },
+      body: JSON.stringify(initBody),
+    }, env);
+    expect(mixed.status).toBe(401);
+    expect(repository.attachments.size).toBe(0);
+  });
+});
