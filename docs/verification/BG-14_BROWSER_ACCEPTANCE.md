@@ -16,9 +16,11 @@ unperformed requirements are explicitly resolved.
   an isolated Chrome profile, synthetic-only capture identities and random local
   bearer tokens. No production Cloudflare migration, deployment, live auth
   or Telegram/Notion send is authorized by this task.
-- Original source URL is a controlled `https://example.com/bg14-...` marker.
-  **No live third-party URL fetch is performed by the new failure/retry journey.**
-  Browser login and data requests are _not_ mocked.
+- Two controlled source cases use `https://example.com/bg14-...` URLs. The
+  positive case resolves at the test-only upstream fetch seam; the negative
+  worker-failure/retry story performs no external fetch. Browser login and
+  API/D1 requests are **never mocked**. The production fetcher and production
+  deployment entrypoint are unchanged.
 
 ## Architecture decision
 
@@ -45,9 +47,10 @@ npm ci
 npm run browser:download:test
 npm run browser:source-recovery:test
 npm run browser:workflow:test
+npm run browser:acquisition:test
 ```
 
-The three commands start isolated Worker/Vite/Chrome instances; no shared
+All four commands start isolated Worker/Vite/Chrome instances; no shared
 persistent D1 or R2 state is required. The BG-14 script creates unique text
 and public URL captures; the existing BG-07 script generates parseable PDF,
 PNG and text files and compares their downloaded exact SHA-256 and sizes after
@@ -77,34 +80,50 @@ may store one synthetic-data-only screenshot and sanitized JSON under
 All fixture/process/profile cleanup is owned by the harness and invoked in
 `finally`.
 
-## Pinned-source probe and network constraint
+## Positive acquisition: actual parser and search, upstream-only mock
 
-A separate opt-in command, `npm run browser:acquisition:test`, uses a static
-HTML fixture pinned to commit `5d210b4c28d9eeb85fa05c82dde1361d423175e9`.
-It starts the **actual scheduled Worker** on disposable local state, retires
-only the disposable fixture's Notion sync attempt to prevent outbound delivery,
-and requires source acquisition, browser detail text and Inbox search.
+The network-dependent candidate originally requested a real static HTML
+file from a pinned public GitHub revision. [Run
+38056407620](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38056407620)
+proved that approach was unreliable in local workerd: the URL job recorded
+`SOURCE_NETWORK_ERROR` and no acquisition evidence. We do **not** count
+that attempt as a pass or retry against arbitrary live websites.
 
-The focused proof executed in GitHub Actions
-[run 38056407620](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38056407620),
-but **failed**: the URL job returned pending with
-`SOURCE_NETWORK_ERROR`; no `url_acquisitions` row was committed. This
-is an explicitly **unpassed** URL-acquisition acceptance check, not a silent
-skip or proof that the Web UI is correct under successful acquisition.
-A non-network fixture or known-safe upstream mock at the worker boundary is
-still needed to validate the positive flow repeatably. The temporary focused
-workflow was removed from the PR after capturing this evidence; the opt-in
-script remains available for an environment with permitted outbound access.
+Instead, `scripts/bg14-fixture-worker.ts` is an entirely test-only Worker
+entrypoint. The browser runtime constructs a disposable Wrangler config
+(`.bg14-fixture-*.toml`) pointing to it, without changing `wrangler.toml`.
+The entrypoint uses the **same** `createApp()`, `JobService`,
+`SourceAcquisitionService`, `SourceFetcher`, D1 migrations and app routes.
+It overrides **only** the SourceFetcher's upstream `fetch` implementation,
+accepting a strict `https://example.com/bg14-fixture-<32-hex>` URL and
+returning a bounded synthetic HTML page. Unknown URLs are refused.
 
-## Important limit: upstream source acquisition
+The actual `SourceFetcher` URL validation, content-type and size limits,
+HTML parser, lease guards, source evidence write, current item projection,
+FTS synchronization, authenticated browser detail and Inbox search all run
+normally. The fixture scheduler does **not** execute Notion, Telegram,
+unrelated queue consumers or other external outbound operations. The
+original source URL and preserved owner text remain immutable under this
+test. Each run uses new local state, credentials, URL, item ID and Chrome
+profile. Temp config and state are deleted after each run.
 
-BG-14's positive acquired-HTML and internal-page search story must be
-proven using a deterministic **public** source fixture that exercises the
-real acquisition worker without bypassing SSRF controls. A localhost or
-private-address fixture would violate the fetch policy. The current test
-covers the negative worker outcome and deterministic owner-supplied text,
-**not a positive externally acquired URL response**. Do not check
-BG-14.051–.057 or the final BG-15 unlock on this evidence alone.
+[Focused GitHub Actions run 38057058035](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38057058035)
+**passed**: an actual acquisition job persisted `acquired_text`, the browser
+showed the synthetic page phrase in its acquired-source field, and a real
+Inbox query matched the precise saved item. The fixture is a deterministic
+upstream substitute, **not evidence that arbitrary production websites are
+reachable**. This is the intentionally mocked upstream boundary BG-14 calls
+for, not an HTTP response stub at the browser or application API boundary.
+
+## Repetition and remaining release boundary
+
+GitHub CI runs the BG-07 PDF/PNG original-byte acceptance, BG-11 keyboard
+recovery, the new negative-to-retry/owner-edit/lifecycle journey, and the
+positive acquired-source journey. It repeats both BG-14 journeys with fresh
+fixtures to detect accidental shared-state dependence. The full PR-head
+and merged-main CI must pass before BG-14 is considered closed. Production
+deployment, public-site connectivity and historical backfill remain out of
+scope; BG-15 may only unlock from actually verified, merged evidence.
 
 ## Evidence accounting
 
