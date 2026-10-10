@@ -33,7 +33,10 @@ const fetcher = new SourceFetcher({
       throw new Error('BG14 fixture refused an unapproved upstream request');
     }
     if (target.pathname.startsWith('/bg14-unavailable-')) {
-      return new Response('Synthetic unavailable page', {status:404, headers:{'content-type':'text/plain'}});
+      return new Response('Synthetic unavailable page', {
+        status: 404,
+        headers: { 'content-type': 'text/plain' },
+      });
     }
     return new Response(fixtureBody, {
       status: 200,
