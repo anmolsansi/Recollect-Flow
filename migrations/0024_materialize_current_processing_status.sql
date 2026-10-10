@@ -54,8 +54,30 @@ SELECT i.id AS item_id,
         AND j.status = 'complete'
         AND (er.id IS NULL OR er.completeness NOT IN ('complete', 'partial'))
     ) THEN 'pending'
+    -- A current URL capture needs a current acquisition record before it can
+    -- be considered complete, even if an optional sibling job finished.
+    WHEN i.source_type = 'url' AND i.source_url IS NOT NULL
+      AND NOT EXISTS (
+        SELECT 1 FROM bg13_current_processing_stages j
+        WHERE j.item_id = i.id AND j.job_type = 'acquire_url'
+      ) THEN 'pending'
+    -- Each linked file requires an extraction stage and current evidence.
+    WHEN EXISTS (
+      SELECT 1 FROM attachments a
+      WHERE a.item_id = i.id AND a.status = 'linked'
+    ) AND NOT EXISTS (
+      SELECT 1 FROM bg13_current_processing_stages j
+      WHERE j.item_id = i.id AND j.job_type = 'extract'
+    ) THEN 'pending'
     WHEN EXISTS (
       SELECT 1 FROM bg13_current_processing_stages j WHERE j.item_id = i.id
+    ) THEN 'complete'
+    -- The capture scheduler also records deliberately skipped optional AI
+    -- stages with provider_eligibility = none. They do not block save-only.
+    WHEN EXISTS (
+      SELECT 1 FROM processing_jobs j
+      WHERE j.item_id = i.id
+        AND j.processing_generation = i.processing_generation
     ) THEN 'complete'
     -- Legacy rows without proven current jobs must NOT be guessed complete.
     ELSE i.processing_status
