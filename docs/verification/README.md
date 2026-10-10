@@ -1,5 +1,21 @@
 # Verification Evidence Index
 
+## BG-15 — browser write authorization (merged)
+
+[PR #66](https://github.com/anmolsansi/Recollect-Flow/pull/66) merged
+the signed-session owner write capability with configured trusted Web Origin
+checks, server-enforced cookie expiry and distinct bearer scopes.
+[Exact PR-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38063926575)
+and [implementation merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38064153798)
+both passed. See [BG-15 auth matrix](BG-15_BROWSER_WRITE_AUTH.md)
+and [BG-15 closeout](BG-15_FINAL_CLOSEOUT.md).
+
+The BG-15 checklist reconciles 92/100 steps. BG-15.073–.079 are delegated
+to the BG-16–BG-18 form/draft/upload UI tasks and BG-15.089 is a follow-up
+URL secret scan. These are not claimed as performed. Earlier BG-06 entries
+below describe their historical state before BG-15 and no longer describe
+the current capture/upload cookie write permission.
+
 This directory contains task-scoped verification evidence that is safe to keep in the repository. It records sanitized results and links to immutable CI/audit sources rather than committing secrets, private capture content or large raw logs.
 
 ## BG-11 — unavailable URL recovery and old-item reprocessing

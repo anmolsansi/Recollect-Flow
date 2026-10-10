@@ -62,8 +62,9 @@ has been performed, and none is implied by this milestone.
 
 ## BG-15 browser write-authentication checkpoint
 
-BG-15 implementation is proposed in
-[PR #66](https://github.com/anmolsansi/Recollect-Flow/pull/66).
+BG-15 authentication implementation has merged through
+[PR #66](https://github.com/anmolsansi/Recollect-Flow/pull/66),
+with [passing exact-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38063926575).
 This work gives signed owner sessions permission to write through existing
 capture and upload routes when the browser's Origin matches the Worker origin.
 Capture and admin bearer clients retain the established no-Origin path.
@@ -72,9 +73,10 @@ invalid bearer, expired session or worker-scoped credential does not gain
 capture permission.
 
 [BG-15 verification notes](verification/BG-15_BROWSER_WRITE_AUTH.md)
-record the authorization matrix and remaining proof. The BG-16 creation-form
-task remains blocked until BG-15 tests, checklist reconciliation and
-merged-main CI pass. No production deployment is implied.
+and [final closeout](verification/BG-15_FINAL_CLOSEOUT.md) record the
+92 verified checklist items and the deferred Web form and secret URL checks.
+BG-16 requires the completed merged-main and documentation gate. No
+production deployment is implied.
 
 ## Product releases
 

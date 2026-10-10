@@ -1991,6 +1991,15 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 ## BG-15 — 100 executable microtasks
 
+### BG-15 evidence reconciliation (October 10, 2026)
+
+- **92/100 verified or resolved.** Do not interpret this as 100 browser form actions delivered.
+- [Implementation PR #66](https://github.com/anmolsansi/Recollect-Flow/pull/66) merged at `389d5f7f899ce07b878cb475bf25f2e84fa1cf07` after [passing exact-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38063926575).
+- BG-15.073–.079 remain unchecked because no browser capture/upload form exists yet. BG-16, BG-17, and BG-18 own in-flight draft recovery, attachment identity, reauthentication and safe retry UI. This is an explicit boundary, not evidence that UI behavior was tested.
+- BG-15.089 remains unchecked pending a dedicated browser URL/query-string secret scan; BG-14's existing browser storage scan establishes BG-15.088.
+- BG-15.100 is reconciled using [passing merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38064153798) on implementation merge `389d5f7f899ce07b878cb475bf25f2e84fa1cf07`. Final docs PR CI and merged-main verification are tracked separately.
+- [Auth matrix and evidence](verification/BG-15_BROWSER_WRITE_AUTH.md) records signed-cookie write behavior and the strict Worker/configured-Web Origin allowlist. This authorization milestone does not deploy V1 or authorize production data changes.
+
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#21-bg-15--define-browser-write-authentication).
 
 These unchecked steps inherit this task's **what, why, when, where and proof** above.
@@ -1999,99 +2008,99 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-15 / 01 — Establish task context
 
-- [ ] `BG-15.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-15.002` **Dependency:** Verify BG-14's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-15.003` **Baseline:** Record the actual checkout or release candidate used for BG-15.
-- [ ] `BG-15.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-15.005` **Evidence:** Check whether existing evidence already satisfies any BG-15 step; reference it instead of manufacturing work.
-- [ ] `BG-15.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-15.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-15.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-15.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-15.010` **Tracking:** Open a BG-15 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-15.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-15.002` **Dependency:** Verify BG-14's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-15.003` **Baseline:** Record the actual checkout or release candidate used for BG-15.
+- [x] `BG-15.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-15.005` **Evidence:** Check whether existing evidence already satisfies any BG-15 step; reference it instead of manufacturing work.
+- [x] `BG-15.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-15.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-15.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-15.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-15.010` **Tracking:** Open a BG-15 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-15 / 02 — Write inventory
 
-- [ ] `BG-15.011` Identify browser capture POST.
-- [ ] `BG-15.012` Identify upload initialization POST.
-- [ ] `BG-15.013` Identify upload content PUT.
-- [ ] `BG-15.014` Identify finalize POST.
-- [ ] `BG-15.015` Identify optional cleanup operation.
-- [ ] `BG-15.016` Identify project follow-up PATCH.
-- [ ] `BG-15.017` Identify review-date PATCH.
-- [ ] `BG-15.018` Identify privacy mutation.
-- [ ] `BG-15.019` Identify session refresh path.
-- [ ] `BG-15.020` Record existing credential requirements.
+- [x] `BG-15.011` Identify browser capture POST.
+- [x] `BG-15.012` Identify upload initialization POST.
+- [x] `BG-15.013` Identify upload content PUT.
+- [x] `BG-15.014` Identify finalize POST.
+- [x] `BG-15.015` Identify optional cleanup operation.
+- [x] `BG-15.016` Identify project follow-up PATCH.
+- [x] `BG-15.017` Identify review-date PATCH.
+- [x] `BG-15.018` Identify privacy mutation.
+- [x] `BG-15.019` Identify session refresh path.
+- [x] `BG-15.020` Record existing credential requirements.
 
 #### BG-15 / 03 — Route design
 
-- [ ] `BG-15.021` Compare shared-route option.
-- [ ] `BG-15.022` Compare wrapper necessity.
-- [ ] `BG-15.023` Reuse canonical capture service.
-- [ ] `BG-15.024` Reuse attachment lifecycle service.
-- [ ] `BG-15.025` Avoid duplicated persistence logic.
-- [ ] `BG-15.026` Define cookie-authenticated capability.
-- [ ] `BG-15.027` Keep admin-only operations protected.
-- [ ] `BG-15.028` Preserve capture token permissions.
-- [ ] `BG-15.029` Preserve local-worker permissions.
-- [ ] `BG-15.030` Document selected route contract.
+- [x] `BG-15.021` Compare shared-route option.
+- [x] `BG-15.022` Compare wrapper necessity.
+- [x] `BG-15.023` Reuse canonical capture service.
+- [x] `BG-15.024` Reuse attachment lifecycle service.
+- [x] `BG-15.025` Avoid duplicated persistence logic.
+- [x] `BG-15.026` Define cookie-authenticated capability.
+- [x] `BG-15.027` Keep admin-only operations protected.
+- [x] `BG-15.028` Preserve capture token permissions.
+- [x] `BG-15.029` Preserve local-worker permissions.
+- [x] `BG-15.030` Document selected route contract.
 
 #### BG-15 / 04 — Cookie requests
 
-- [ ] `BG-15.031` Reuse signed-cookie validation.
-- [ ] `BG-15.032` Check session expiry.
-- [ ] `BG-15.033` Check valid issuance key.
-- [ ] `BG-15.034` Reject malformed cookie.
-- [ ] `BG-15.035` Reject tampered signature.
-- [ ] `BG-15.036` Preserve HttpOnly behavior.
-- [ ] `BG-15.037` Preserve secure production cookie.
-- [ ] `BG-15.038` Define missing-session response.
-- [ ] `BG-15.039` Keep JSON error envelope.
-- [ ] `BG-15.040` Avoid JavaScript credential recovery.
+- [x] `BG-15.031` Reuse signed-cookie validation.
+- [x] `BG-15.032` Check session expiry.
+- [x] `BG-15.033` Check valid issuance key.
+- [x] `BG-15.034` Reject malformed cookie.
+- [x] `BG-15.035` Reject tampered signature.
+- [x] `BG-15.036` Preserve HttpOnly behavior.
+- [x] `BG-15.037` Preserve secure production cookie.
+- [x] `BG-15.038` Define missing-session response.
+- [x] `BG-15.039` Keep JSON error envelope.
+- [x] `BG-15.040` Avoid JavaScript credential recovery.
 
 #### BG-15 / 05 — Origin protection
 
-- [ ] `BG-15.041` Identify expected application origin.
-- [ ] `BG-15.042` Validate mutation Origin behavior.
-- [ ] `BG-15.043` Define missing Origin cookie behavior.
-- [ ] `BG-15.044` Define null Origin behavior.
-- [ ] `BG-15.045` Define trusted proxy assumptions.
-- [ ] `BG-15.046` Prevent arbitrary origin reflection.
-- [ ] `BG-15.047` Select CSRF mechanism if needed.
-- [ ] `BG-15.048` Test same-site alternate-origin request.
-- [ ] `BG-15.049` Test disallowed browser origin.
-- [ ] `BG-15.050` Document permitted mutation sources.
+- [x] `BG-15.041` Identify expected application origin.
+- [x] `BG-15.042` Validate mutation Origin behavior.
+- [x] `BG-15.043` Define missing Origin cookie behavior.
+- [x] `BG-15.044` Define null Origin behavior.
+- [x] `BG-15.045` Define trusted proxy assumptions.
+- [x] `BG-15.046` Prevent arbitrary origin reflection.
+- [x] `BG-15.047` Select CSRF mechanism if needed.
+- [x] `BG-15.048` Test same-site alternate-origin request.
+- [x] `BG-15.049` Test disallowed browser origin.
+- [x] `BG-15.050` Document permitted mutation sources.
 
 #### BG-15 / 06 — Bearer compatibility
 
-- [ ] `BG-15.051` Permit legitimate no-Origin bearer client.
-- [ ] `BG-15.052` Validate bearer scope first.
-- [ ] `BG-15.053` Avoid trusting client name.
-- [ ] `BG-15.054` Preserve Shortcut capture route.
-- [ ] `BG-15.055` Preserve Shortcut upload behavior.
-- [ ] `BG-15.056` Check mixed cookie/bearer precedence.
-- [ ] `BG-15.057` Reject worker token on capture.
-- [ ] `BG-15.058` Reject capture token on admin operations.
-- [ ] `BG-15.059` Preserve constant-time comparison.
-- [ ] `BG-15.060` Record backwards-compatible results.
+- [x] `BG-15.051` Permit legitimate no-Origin bearer client.
+- [x] `BG-15.052` Validate bearer scope first.
+- [x] `BG-15.053` Avoid trusting client name.
+- [x] `BG-15.054` Preserve Shortcut capture route.
+- [x] `BG-15.055` Preserve Shortcut upload behavior.
+- [x] `BG-15.056` Check mixed cookie/bearer precedence.
+- [x] `BG-15.057` Reject worker token on capture.
+- [x] `BG-15.058` Reject capture token on admin operations.
+- [x] `BG-15.059` Preserve constant-time comparison.
+- [x] `BG-15.060` Record backwards-compatible results.
 
 #### BG-15 / 07 — Body handling
 
-- [ ] `BG-15.061` Validate JSON content handling.
-- [ ] `BG-15.062` Validate raw byte PUT handling.
-- [ ] `BG-15.063` Bound body parsing where supported.
-- [ ] `BG-15.064` Preserve upload checksum validation.
-- [ ] `BG-15.065` Preserve strict schema errors.
-- [ ] `BG-15.066` Return actionable validation fields.
-- [ ] `BG-15.067` Reject malformed JSON safely.
-- [ ] `BG-15.068` Reject wrong content type appropriately.
-- [ ] `BG-15.069` Avoid logging submitted body.
-- [ ] `BG-15.070` Check authorization occurs before work.
+- [x] `BG-15.061` Validate JSON content handling.
+- [x] `BG-15.062` Validate raw byte PUT handling.
+- [x] `BG-15.063` Bound body parsing where supported.
+- [x] `BG-15.064` Preserve upload checksum validation.
+- [x] `BG-15.065` Preserve strict schema errors.
+- [x] `BG-15.066` Return actionable validation fields.
+- [x] `BG-15.067` Reject malformed JSON safely.
+- [x] `BG-15.068` Reject wrong content type appropriately.
+- [x] `BG-15.069` Avoid logging submitted body.
+- [x] `BG-15.070` Check authorization occurs before work.
 
 #### BG-15 / 08 — Web integration
 
-- [ ] `BG-15.071` Keep credentials include setting.
-- [ ] `BG-15.072` Reuse global auth-required event.
+- [x] `BG-15.071` Keep credentials include setting.
+- [x] `BG-15.072` Reuse global auth-required event.
 - [ ] `BG-15.073` Preserve pending capture operation.
 - [ ] `BG-15.074` Preserve pending upload identifier.
 - [ ] `BG-15.075` Show reauthentication action.
@@ -2099,33 +2108,33 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [ ] `BG-15.077` Avoid duplicate upload initialization.
 - [ ] `BG-15.078` Avoid duplicate capture submission.
 - [ ] `BG-15.079` Clear session-only UI safely.
-- [ ] `BG-15.080` Verify logout behavior.
+- [x] `BG-15.080` Verify logout behavior.
 
 #### BG-15 / 09 — Boundary tests
 
-- [ ] `BG-15.081` Test cookie capture success.
-- [ ] `BG-15.082` Test cookie upload success.
-- [ ] `BG-15.083` Test anonymous capture denial.
-- [ ] `BG-15.084` Test capture bearer compatibility.
-- [ ] `BG-15.085` Test cross-origin mutation denial.
-- [ ] `BG-15.086` Test session expiry mid-upload.
-- [ ] `BG-15.087` Test scope-confused request denial.
-- [ ] `BG-15.088` Scan browser storage for token.
+- [x] `BG-15.081` Test cookie capture success.
+- [x] `BG-15.082` Test cookie upload success.
+- [x] `BG-15.083` Test anonymous capture denial.
+- [x] `BG-15.084` Test capture bearer compatibility.
+- [x] `BG-15.085` Test cross-origin mutation denial.
+- [x] `BG-15.086` Test session expiry mid-upload.
+- [x] `BG-15.087` Test scope-confused request denial.
+- [x] `BG-15.088` Scan browser storage for token.
 - [ ] `BG-15.089` Scan URL for token.
-- [ ] `BG-15.090` Record complete write permission matrix.
+- [x] `BG-15.090` Record complete write permission matrix.
 
 #### BG-15 / 10 — Verify and close this task
 
-- [ ] `BG-15.091` **Review:** Compare the completed checklist with BG-15's stated outcome; identify uncovered behavior.
-- [ ] `BG-15.092` **Verification:** Run or inspect the focused proof required by BG-15; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-15.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-15.094` **Integrity:** Check that BG-15 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-15.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-15.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-15.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-15.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-15.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-15.100` **Gate:** Check the parent completion boundary and record whether BG-16 is unlocked.
+- [x] `BG-15.091` **Review:** Compare the completed checklist with BG-15's stated outcome; identify uncovered behavior.
+- [x] `BG-15.092` **Verification:** Run or inspect the focused proof required by BG-15; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-15.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-15.094` **Integrity:** Check that BG-15 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-15.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-15.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-15.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-15.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-15.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-15.100` **Gate:** Check the parent completion boundary and record whether BG-16 is unlocked.
 
 ## BG-16 — 100 executable microtasks
 
