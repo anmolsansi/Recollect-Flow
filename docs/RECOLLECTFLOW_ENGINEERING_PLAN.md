@@ -33,6 +33,23 @@ and [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/3
 BG-14 is 100/100 complete and BG-15 is unlocked. This update
 does not rewrite the original engineering-ticket publication scope.
 
+## BG-15 browser write-authentication checkpoint
+
+BG-14 is verified complete. BG-15 is implemented on
+`agent/bg-15-browser-write-auth` and tracked by
+[issue #65](https://github.com/anmolsansi/Recollect-Flow/issues/65) and
+[PR #66](https://github.com/anmolsansi/Recollect-Flow/pull/66).
+
+The change reuses existing capture and attachment services, adds cookie-based
+owner write authorization with exact Origin checks, preserves explicit
+capture/admin bearer identity and local-worker isolation, and binds signed
+sessions to a server-validated expiry. The
+[write boundary evidence](verification/BG-15_BROWSER_WRITE_AUTH.md)
+records tests and operational constraints.
+
+Do not mark BG-15 complete or unlock BG-16 without passing CI and reconciling
+the canonical 100-step checklist against proven behavior.
+
 ## Deliverables
 
 Create:
