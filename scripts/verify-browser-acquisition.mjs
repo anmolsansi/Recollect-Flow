@@ -159,16 +159,40 @@ try {
       JSON.stringify({ reason, requests: safeDiagnostics(browser) }),
   );
   const jobs = runtime
-    ? await apiRequest(runtime.apiOrigin, adminToken, 'GET', '/jobs?kind=processing&type=acquire_url').catch(() => null)
+    ? await apiRequest(
+        runtime.apiOrigin,
+        adminToken,
+        'GET',
+        '/jobs?kind=processing&type=acquire_url',
+      ).catch(() => null)
     : null;
-  const item = capturedItemId && runtime
-    ? await apiRequest(runtime.apiOrigin, adminToken, 'GET', '/items/' + capturedItemId).catch(() => null)
-    : null;
-  console.error('BG14_SOURCE_DIAGNOSTICS ' + JSON.stringify({
-    jobs: jobs?.jobs?.map(j => ({status:j.status,job_type:j.jobType,last_error_code:j.lastErrorCode})),
-    acquisition_status:item?.url_acquisition?.status ?? null,
-    worker_events:(runtime?.worker?.logs ?? []).filter(v=>/url_acquisition|scheduled_cron|SOURCE_|Error|error|Warning/.test(v)).slice(-16),
-  }));
+  const item =
+    capturedItemId && runtime
+      ? await apiRequest(
+          runtime.apiOrigin,
+          adminToken,
+          'GET',
+          '/items/' + capturedItemId,
+        ).catch(() => null)
+      : null;
+  console.error(
+    'BG14_SOURCE_DIAGNOSTICS ' +
+      JSON.stringify({
+        jobs: jobs?.jobs?.map((j) => ({
+          status: j.status,
+          job_type: j.jobType,
+          last_error_code: j.lastErrorCode,
+        })),
+        acquisition_status: item?.url_acquisition?.status ?? null,
+        worker_events: (runtime?.worker?.logs ?? [])
+          .filter((v) =>
+            /url_acquisition|scheduled_cron|SOURCE_|Error|error|Warning/.test(
+              v,
+            ),
+          )
+          .slice(-16),
+      }),
+  );
   process.exitCode = 1;
 } finally {
   await browser?.close();
