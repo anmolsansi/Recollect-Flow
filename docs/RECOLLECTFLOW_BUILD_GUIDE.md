@@ -1487,9 +1487,10 @@ BG-11's approved recovery scope was merged in
 [merged-main CI run](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37981181748)
 passed. The [final closeout](verification/BG-11_FINAL_CLOSEOUT.md) records the
 99 checked checklist items and the deliberately delegated `BG-11.028`
-aggregate-status step. BG-12 is unlocked for its independent contract and
-implementation. Neither BG-12/BG-13 aggregate status nor a production
-migration, deployment, or live URL probe is claimed.
+aggregate-status step. **At this BG-11 checkpoint**, BG-12 was unlocked
+but not implemented. BG-12's [decision contract is now verified](verification/BG-12_FINAL_CLOSEOUT.md);
+BG-13 must still apply it to atomic persisted state. Neither BG-11 nor
+BG-12 evidence claims a production migration, deployment, or live URL probe.
 
 ### Execution checklist
 
@@ -1504,7 +1505,7 @@ must not say “waiting” forever when all relevant work slips have finished or
 **Where.** `items.processing_status`, job services, item detail/search contracts,
 manual retries, extraction/enrichment workers.
 
-### Proposed aggregate rules to finalize before coding
+### Original BG-12 proposals (now resolved by the adopted decision contract)
 
 The current stored enum is `pending`, `processing`, `complete`, `failed`.
 `retry_wait` is a job/API projection, not a stored status. Reuse this enum unless a
@@ -1536,8 +1537,9 @@ terminal failure that prevents a required result is failed; required results
 persisted successfully are complete. Resolve mixed states explicitly: if one
 required job failed while another is running, decide whether the UI first shows
 failure or ongoing work with a failure detail. Record that choice and test it.
-These are proposed semantics, not a claim that the current implementation already
-uses this aggregation.
+These were pre-implementation questions; the tested, adopted BG-12 rule is
+specified below. Current persisted item-status writes do not yet use that rule
+until BG-13 completes the integration.
 
 ### Separate stored state from useful presentation
 
@@ -1546,7 +1548,9 @@ future retry time can produce a “Waiting to retry” presentation without addi
 fifth database enum. The response should explain the reason and next eligible
 time using job evidence. Do not infer waiting merely from an old updated_at value.
 
-Use a small example table as the contract before implementation:
+The original requirements were captured in this example table. The final
+[decision table](verification/BG-12_AGGREGATE_STATE_CONTRACT.md#decision-table)
+now controls the calculation:
 
 | Required work for current generation  | Intended explanation         |
 | ------------------------------------- | ---------------------------- |
@@ -1580,8 +1584,11 @@ that same definition.
 7. Document expected status after manual retry, capacity pause, intentional no-AI,
    unsupported source, restoration and privacy reprocessing.
 
-**Done when:** a reviewer can compute the same item state from a set of jobs.
-The proposed table becomes a tested contract, not an informal UI guess.
+**Done (verified):** a reviewer can compute the same item state from a set of
+current-generation jobs and required attachments using the tested helper.
+The [final closeout](verification/BG-12_FINAL_CLOSEOUT.md) records the exact
+passing merged-main revision. Database reconciliation and live UI state
+consistency remain BG-13 acceptance requirements.
 
 ### Adopted BG-12 aggregate decision contract
 
@@ -1616,6 +1623,15 @@ fixed in production.
 
 See the [BG-12 decision matrix and compatibility handoff](verification/BG-12_AGGREGATE_STATE_CONTRACT.md).
 Revisit these decisions only through a reviewed contract change.
+
+**Verified state:** BG-12's [100/100 checklist](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-12--100-executable-microtasks)
+is complete for the decision scope at
+[merged PR #57](https://github.com/anmolsansi/Recollect-Flow/pull/57) and
+[passing merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37990069598).
+The [final documentation merge](https://github.com/anmolsansi/Recollect-Flow/pull/58)
+also passed [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37990715310).
+These checks do **not** mean the BG-13 transactional writer or production
+release gate is finished.
 
 ### Execution checklist
 
