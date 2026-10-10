@@ -18,11 +18,10 @@ and a keyboard-accessible Web recovery action in real isolated Chrome.
 The [final closeout](verification/BG-11_FINAL_CLOSEOUT.md) documents 99
 completed checklist steps and the explicit BG-12 assignment for `BG-11.028`.
 
-**BG-11 originally unlocked BG-12; BG-12's decision contract is now
-complete and verified.** BG-13 is the next gate for atomic persisted
-`items.processing_status` reconciliation. Production deployment, real
-Instagram capture, and real private content testing remain separate V1
-release gates.
+**BG-11 and BG-12 are verified prerequisites. BG-13's atomic
+persistence integration is now merged and CI verified.** BG-14 is the
+next browser acceptance gate. Production deployment, real Instagram
+capture and real private content testing remain separate V1 release gates.
 
 ## BG-12 aggregate-state contract (merged and CI verified)
 
@@ -33,10 +32,10 @@ optional work, limited coverage, old-generation and attachment failure rules.
 [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37990069598)
 passed. [Final closeout](verification/BG-12_FINAL_CLOSEOUT.md): 100/100 contract tasks, BG-13 unlocked.
 [Detailed contract](verification/BG-12_AGGREGATE_STATE_CONTRACT.md).
-BG-13 must add authoritative transactional generation/write reconciliation
-and keep item detail, list and filter views consistent. Until that work lands,
-the existing stored item state can still disagree with terminal jobs.
-The BG-12 pure helper is not a production status repair or rollout.
+The BG-12 helper alone did not fix persisted runtime status. BG-13 has now
+added current-generation transactional reconciliation and synchronized
+item detail, list and filter projections, with verified merge evidence
+below. Production deployment remains a separate authorization gate.
 
 ## BG-13 atomic persistence (merged and CI verified)
 
