@@ -191,7 +191,7 @@ export class SourceRecoveryService {
       .first<PreviousJob>();
     const jobId = crypto.randomUUID();
     const at = now.toISOString();
-    const result = await this.db
+    const acceptedJob = await this.db
       .prepare(
         `INSERT OR IGNORE INTO processing_jobs(
          id,item_id,job_type,status,attempts,manual_retry_count,available_at,
@@ -211,7 +211,8 @@ export class SourceRecoveryService {
            WHERE j.item_id=i.id AND j.job_type='acquire_url'
              AND j.input_hash=?3 AND j.status IN ('pending','processing'))
          AND COALESCE((SELECT enabled FROM operational_controls
-           WHERE control_key='optional_processing_paused'),0)=0`,
+           WHERE control_key='optional_processing_paused'),0)=0
+       RETURNING id`,
       )
       .bind(
         jobId,
@@ -226,8 +227,8 @@ export class SourceRecoveryService {
         itemId,
         revision,
       )
-      .run();
-    if (result.meta.changes !== 1) {
+      .first<{ id: string }>();
+    if (!acceptedJob) {
       const concurrent = await active();
       if (concurrent)
         return {
