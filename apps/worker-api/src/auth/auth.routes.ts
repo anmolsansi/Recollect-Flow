@@ -37,7 +37,7 @@ export function authRoutes() {
     await setSignedCookie(
       context,
       'admin_session',
-      'authenticated',
+      `authenticated:${expires.getTime()}`,
       context.env.ADMIN_TOKEN,
       {
         path: '/',
