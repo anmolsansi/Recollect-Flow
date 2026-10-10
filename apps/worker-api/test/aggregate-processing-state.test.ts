@@ -254,6 +254,24 @@ describe('BG-12 aggregate status decision', () => {
     ).toMatchObject({ status: null, reason: 'deleted_excluded' });
   });
 
+  it('re-evaluates a restored item without resurrecting prior failures', () => {
+    const jobs = [
+      job('acquire_url', 'failed', {
+        id: 'prior-failure',
+        generation: prior,
+      }),
+      job('acquire_url', 'complete', { id: 'restored-source' }),
+    ];
+    expect(evaluate({ deleted: true, jobs })).toMatchObject({
+      status: null,
+      reason: 'deleted_excluded',
+    });
+    expect(evaluate({ deleted: false, jobs })).toMatchObject({
+      status: 'complete',
+      reason: 'all_required_finished',
+    });
+  });
+
   it('is deterministic for reordered same-generation job and file lists', () => {
     const first = job('acquire_url', 'complete', { id: 'a' });
     const second = job('acquire_url', 'failed', { id: 'z' });

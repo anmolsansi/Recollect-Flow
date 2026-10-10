@@ -18,9 +18,11 @@ and a keyboard-accessible Web recovery action in real isolated Chrome.
 The [final closeout](verification/BG-11_FINAL_CLOSEOUT.md) documents 99
 completed checklist steps and the explicit BG-12 assignment for `BG-11.028`.
 
-**BG-12 is unlocked, not completed.** It owns the approved aggregate
-`items.processing_status` rule. Production deployment, real Instagram capture,
-and real private content testing remain separate V1 release gates.
+**BG-11 originally unlocked BG-12; BG-12's decision contract is now
+complete and verified.** BG-13 is the next gate for atomic persisted
+`items.processing_status` reconciliation. Production deployment, real
+Instagram capture, and real private content testing remain separate V1
+release gates.
 
 ## BG-12 aggregate-state contract (merged and CI verified)
 

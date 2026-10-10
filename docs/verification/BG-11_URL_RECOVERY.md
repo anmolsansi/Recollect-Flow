@@ -1,7 +1,9 @@
 # BG-11 — URL recovery, manual retries, and legacy backfill
 
-Status: **implementation complete, merged and CI-verified on `main`**. BG-12 is
-unlocked for its own work, not implemented by BG-11. The implementation was
+Status at the BG-11 baseline: **implementation complete, merged and
+CI-verified on `main`**. BG-12 was unlocked but not implemented as part of
+BG-11. The successor [BG-12 contract is now complete](BG-12_FINAL_CLOSEOUT.md);
+BG-13 remains responsible for applying the rule to persisted item states. The implementation was
 merged in [PR #54](https://github.com/anmolsansi/Recollect-Flow/pull/54).
 See the [final merged-main closeout](BG-11_FINAL_CLOSEOUT.md). Do not infer
 a production deployment or aggregate-status implementation from these records.

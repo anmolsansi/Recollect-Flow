@@ -178,7 +178,11 @@ Reusable processing jobs provide leases, retry timing, stale recovery, bounded f
 A known consistency defect remains: a terminal processing-job failure can leave
 the item's aggregate `processing_status` as `pending`. BG-10 removes the prior
 bare-URL `NO_CONTENT_TO_ENRICH` path, but it intentionally does not redefine the
-aggregate item-state contract. BG-12/BG-13 still own that repair.
+aggregate item-state contract. BG-12 has since implemented and verified the
+[pure decision rule](verification/BG-12_AGGREGATE_STATE_CONTRACT.md), but
+**BG-13 still owns** the actual database generation binding and atomic
+reconciliation across item statuses and job outcomes. The historical defect
+remains possible in persisted item detail/list data until BG-13 is delivered.
 
 Before Priority 2 can close, define one aggregate item-state rule and ensure terminal job transitions, item detail, filters and retries agree with it.
 

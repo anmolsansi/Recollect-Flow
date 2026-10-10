@@ -20,10 +20,13 @@ See the [final merged-main closeout](verification/BG-11_FINAL_CLOSEOUT.md),
 The separate aggregate-processing-status work is deliberately assigned to
 BG-12/BG-13. This is not a production deployment or V1 release claim.
 
-BG-12 aggregate item-state rules are recorded in the
-[versioned decision contract](verification/BG-12_AGGREGATE_STATE_CONTRACT.md),
-based on [the BG-12 build-guide chapter](RECOLLECTFLOW_BUILD_GUIDE.md#18-bg-12--define-one-aggregate-processing-state-rule).
-This contract does not imply the BG-13 transactional status update is deployed.
+BG-12's aggregate item-state **decision contract is complete and CI-verified**:
+see the [final closeout](verification/BG-12_FINAL_CLOSEOUT.md),
+[decision matrix](verification/BG-12_AGGREGATE_STATE_CONTRACT.md), and
+[build-guide chapter](RECOLLECTFLOW_BUILD_GUIDE.md#18-bg-12--define-one-aggregate-processing-state-rule).
+**BG-13 remains unimplemented:** the production stored-item updates, durable
+processing generation binding, and detail/list/filter consistency are separate
+acceptance requirements, not features implicitly shipped by this contract.
 
 ## Complete document map
 
