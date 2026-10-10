@@ -1895,6 +1895,29 @@ focus on input and recovery instead of embedding authentication workarounds.
 wrong-scope denial, cross-origin browser mutation rejection and session expiry.
 No raw admin token appears in localStorage, query strings or application logs.
 
+### Implementation checkpoint (BG-15 branch)
+
+The browser write authentication boundary is implemented on
+`agent/bg-15-browser-write-auth` and tracked by
+[issue #65](https://github.com/anmolsansi/Recollect-Flow/issues/65)
+and [PR #66](https://github.com/anmolsansi/Recollect-Flow/pull/66).
+The [security and route matrix](verification/BG-15_BROWSER_WRITE_AUTH.md)
+describes the precise signed-cookie, bearer-precedence, Origin and expiry
+behavior and its limitations.
+
+Capture POST and upload init/content/finalize now use a shared
+`requireCaptureWrite` guard. The signed owner session authorizes these writes
+only when `Origin` exactly matches the Worker request origin. Explicit
+capture/admin bearer tokens continue to work for nonbrowser clients without
+an Origin header. An invalid bearer never falls back to a cookie, and cleanup
+remains admin-only. Existing request body and attachment integrity checks
+remain in their original handlers. The Web helper continues to send cookies
+without storing the admin secret.
+
+BG-15 is not considered closed until tests, browser validation, CI,
+the canonical checklist and merged-main evidence agree. BG-16 remains gated.
+No production deployment is part of this checkpoint.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-15](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-15--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
