@@ -237,6 +237,14 @@ checklist is 100/100 on a documentation-only closeout branch created directly fr
 the merged implementation SHA. When this entry is present on `main`, GitHub #41
 and Linear OPE-327 can close and BG-08 is unlocked.
 
+### BG-16 — Web URL/text/note capture
+
+- Implementation [PR #70](https://github.com/anmolsansi/Recollect-Flow/pull/70) merged to `main` at `2c4fbcdcefbbcf30c70c82bb303d870b0e443619` (28 microcommits)
+- [Real browser acceptance and final closeout](BG-16_FINAL_CLOSEOUT.md)
+- Tracking [issue #69](https://github.com/anmolsansi/Recollect-Flow/issues/69), including 50 paired microtasks
+- [Passing implementation PR-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38082248375) includes actual isolated Chrome URL, note and pasted-text saves and Worker/D1 reads
+- BG-17 cross-reload retries, BG-18 file upload, and production deployment are not BG-16 acceptance
+
 ## Evidence rules
 
 - Tie claims to a revision and environment.
