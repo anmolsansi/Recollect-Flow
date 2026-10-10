@@ -78,6 +78,17 @@ and [final closeout](verification/BG-15_FINAL_CLOSEOUT.md) record the
 BG-16 requires the completed merged-main and documentation gate. No
 production deployment is implied.
 
+## BG-16 browser capture form (implementation merged)
+
+[BG-16 implementation PR #70](https://github.com/anmolsansi/Recollect-Flow/pull/70)
+merged to `main` at `2c4fbcdcefbbcf30c70c82bb303d870b0e443619`,
+preserving 28 atomic commits. [Exact PR-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38082248375)
+passed format/lint/typecheck/unit/contracts/Web build, migrations, the new
+isolated Chrome/D1 URL/text/note capture acceptance, and preexisting browser
+regressions. The [BG-16 final record](verification/BG-16_FINAL_CLOSEOUT.md)
+covers file paths, outcome semantics, privacy, error focus and the handoff to
+BG-17. Production deployment and external-provider success are not implied.
+
 ## Product releases
 
 ### V0 — Technical spike
