@@ -479,6 +479,59 @@ describe('OPE-246 durable D1 jobs', () => {
     expect(results.results).toHaveLength(1);
   });
 
+  it('accepts only one duplicate completion of the same owned job', async () => {
+    const itemId = 'double-completion-item';
+    const jobId = 'double-completion-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'double-worker', 5, 1, T0);
+    const result = await Promise.all([
+      jobs.completeProcessingJob(jobId, 'double-worker', T0),
+      jobs.completeProcessingJob(jobId, 'double-worker', T0),
+    ]);
+    expect(result.filter(Boolean)).toHaveLength(1);
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('complete');
+  });
+
+  it('rejects the old owner after an admin requeues a failed generation', async () => {
+    const itemId = 'retry-owner-race-item';
+    const jobId = 'retry-owner-race-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'retry-old-owner', 5, 1, T0);
+    expect(
+      await jobs.failProcessingJob(
+        jobId,
+        'retry-old-owner',
+        'UPSTREAM_TIMEOUT',
+        false,
+        5,
+        T0,
+      ),
+    ).toBe(true);
+    expect(
+      await new JobAdminService(env.DB).manuallyRetryProcessingJob(
+        jobId,
+        'admin:retry',
+        T0,
+      ),
+    ).toBe(true);
+    expect(await jobs.completeProcessingJob(jobId, 'retry-old-owner', T0)).toBe(
+      false,
+    );
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('pending');
+  });
+
   it('accepts exactly one concurrent terminal mutation and projects its outcome', async () => {
     const itemId = 'race-terminal-item';
     const jobId = 'race-terminal-job';
