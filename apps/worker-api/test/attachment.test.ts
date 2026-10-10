@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createApp } from '../src/app';
 import type {
@@ -916,6 +916,60 @@ describe('private attachment lifecycle', () => {
 });
 
 describe('BG-15 browser upload write boundary', () => {
+  it('rejects an expired signed session during byte upload', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+    const initialized = await app.request(
+      '/api/v1/uploads/init',
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://localhost',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename: 'expired.pdf',
+          mime_type: 'application/pdf',
+          size_bytes: 12,
+          source_type: 'file',
+        }),
+      },
+      env,
+    );
+    expect(initialized.status).toBe(201);
+    const json = await initialized.json<{
+      data: { attachment_id: string };
+    }>();
+    const id = json.data.attachment_id;
+    const clock = vi.spyOn(Date, 'now');
+    clock.mockReturnValue(Date.now() + 25 * 60 * 60 * 1000);
+    try {
+      const response = await app.request(
+        `/api/v1/uploads/${id}/content`,
+        {
+          method: 'PUT',
+          headers: {
+            Cookie: cookie,
+            Origin: 'http://localhost',
+            'Content-Type': 'application/pdf',
+            'Content-Length': '12',
+          },
+          body: new TextEncoder().encode('%PDF-1.7 test').buffer,
+        },
+        env,
+      );
+      expect(response.status).toBe(401);
+      expect(repository.attachments.get(id)?.status).toBe('pending');
+      expect(r2.objects.size).toBe(0);
+    } finally {
+      clock.mockRestore();
+    }
+  });
+
   it('accepts the explicitly configured Web origin through a proxy', async () => {
     const repository = new MemoryAttachmentRepository();
     const env = {
