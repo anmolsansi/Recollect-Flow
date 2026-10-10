@@ -2263,14 +2263,14 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-16 / 10 — Verify and close this task
 
-- [ ] `BG-16.091` **Review:** Compare the completed checklist with BG-16's stated outcome; identify uncovered behavior.
-- [ ] `BG-16.092` **Verification:** Run or inspect the focused proof required by BG-16; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-16.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-16.094` **Integrity:** Check that BG-16 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-16.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-16.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-16.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-16.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-16.091` **Review:** Compare the completed checklist with BG-16's stated outcome; identify uncovered behavior.
+- [x] `BG-16.092` **Verification:** Run or inspect the focused proof required by BG-16; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-16.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-16.094` **Integrity:** Check that BG-16 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-16.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-16.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-16.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-16.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [ ] `BG-16.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-16.100` **Gate:** Check the parent completion boundary and record whether BG-17 is unlocked.
 
