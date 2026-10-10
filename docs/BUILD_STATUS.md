@@ -184,3 +184,9 @@ Linear OPE-338. The exact implementation merge commit
 [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37990069598).
 The [BG-12 final closeout](verification/BG-12_FINAL_CLOSEOUT.md) verifies
 100/100 contract-level checklist steps and unlocks BG-13, not production release.
+
+The [2026-10-10 Markdown audit](verification/BG-12_MARKDOWN_AUDIT_2026-10-10.md)
+reviewed all 87 tracked `.md` files and corrected pre-completion wording in
+current-facing contracts, status reports and the BG-11 successor handoff. A
+restored-item regression test was added to cover the exact `BG-12.089` fixture
+requirement; the audit's CI and merge evidence is recorded in its own report.
