@@ -16,11 +16,13 @@ export interface ApiEnvelope<T> {
 export class ApiError extends Error {
   readonly status: number;
   readonly code?: string;
+  readonly details?: Record<string, string>;
 
-  constructor(message: string, status: number, code?: string) {
+  constructor(message: string, status: number, code?: string, details?: Record<string, string>) {
     super(message);
     this.status = status;
     this.code = code;
+    this.details = details;
   }
 }
 
@@ -39,10 +41,10 @@ async function request<T>(
     credentials: 'include',
   });
   const body = (await response.json().catch(() => null)) as
-    ApiEnvelope<T> | { error?: { message?: string; code?: string } } | null;
+    ApiEnvelope<T> | { error?: { message?: string; code?: string; details?: Record<string, string> } } | null;
 
   if (!response.ok) {
-    const errorBody = body as { error?: { message?: string; code?: string } };
+    const errorBody = body as { error?: { message?: string; code?: string; details?: Record<string, string> } };
     if (
       (response.status === 401 || response.status === 403) &&
       typeof globalThis.dispatchEvent === 'function'
@@ -53,6 +55,7 @@ async function request<T>(
       errorBody?.error?.message ?? 'Request failed',
       response.status,
       errorBody?.error?.code,
+      errorBody?.error?.details,
     );
   }
 
