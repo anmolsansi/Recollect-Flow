@@ -74,7 +74,7 @@ capture permission.
 
 [BG-15 verification notes](verification/BG-15_BROWSER_WRITE_AUTH.md)
 and [final closeout](verification/BG-15_FINAL_CLOSEOUT.md) record the
-91 verified checklist items and the deferred Web form and secret URL checks.
+92 verified checklist items and the deferred Web form and secret URL checks.
 BG-16 requires the completed merged-main and documentation gate. No
 production deployment is implied.
 
