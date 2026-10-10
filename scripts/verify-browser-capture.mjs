@@ -27,8 +27,8 @@ async function submit() {
   await evaluate(browser, 'document.querySelector("form.capture-form").requestSubmit()');
 }
 async function itemSaved() {
-  await waitFor(browser, 'Boolean(document.querySelector("a[href^=\"/items/\"]") && document.body.textContent.includes("Processing status:"))', 'saved item link');
-  return evaluate(browser, 'document.querySelector("a[href^=\"/items/\"]').getAttribute("href").split("/").pop()');
+  await waitFor(browser, `Boolean(document.querySelector('a[href^="/items/"]')) && document.body.textContent.includes('Processing status:')`, 'saved item link');
+  return evaluate(browser, `document.querySelector('a[href^="/items/"]').getAttribute('href').split('/').pop()`);
 }
 async function begin() {
   await navigate(browser, runtime.webOrigin + '/capture');
