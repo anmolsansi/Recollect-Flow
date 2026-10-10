@@ -105,6 +105,10 @@ acquisition has three automatic transient attempts, up to three accepted owner
 retries per URL revision, and bounded `Retry-After` handling. Backfill does not
 run from deployments or migrations.
 
-The source outcome is separate from `items.processing_status`. The aggregate
-processing-status contract remains the BG-12 milestone. See
-[BG-11 evidence](verification/BG-11_URL_RECOVERY.md).
+The source outcome is separate from `items.processing_status`. The
+[BG-12 aggregate decision contract](verification/BG-12_AGGREGATE_STATE_CONTRACT.md)
+is complete and CI-verified; its pure decision helper is not yet connected to
+persisted item status writes. **BG-13 owns** transactional reconciliation and
+consistent item detail, list and status filtering. See
+[BG-11 source-recovery evidence](verification/BG-11_URL_RECOVERY.md) and the
+[BG-12 final closeout](verification/BG-12_FINAL_CLOSEOUT.md).
