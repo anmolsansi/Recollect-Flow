@@ -72,7 +72,14 @@ export class EnrichService {
                 data_collection_denied
          FROM processing_jobs
          WHERE id = ?1 AND item_id = ?2 AND status = 'processing'
-           AND lease_owner = ?3`,
+           AND lease_owner = ?3
+           AND EXISTS (
+             SELECT 1 FROM items i
+             WHERE i.id = processing_jobs.item_id
+               AND i.deleted_at IS NULL
+               AND i.processing_generation = processing_jobs.processing_generation
+               AND i.privacy_level = processing_jobs.privacy_level_snapshot
+           )`,
       )
       .bind(job.id, job.itemId, ownerId)
       .first<EnrichmentRoutingRow>();
