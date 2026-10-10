@@ -180,20 +180,24 @@ export function CaptureForm() {
       setQueue((items) => items.filter((item) => item.id !== operation.id));
       if (!fromQueue) {
         setDraft(emptyCaptureDraft());
-        try {
-          await clearCaptureDraft();
-        } catch {
-          setStorageWarning(
-            'Saved, but the old editable draft could not be cleared.',
-          );
+        if (durable) {
+          try {
+            await clearCaptureDraft();
+          } catch {
+            setStorageWarning(
+              'Saved, but the old editable draft could not be cleared.',
+            );
+          }
         }
       }
-      try {
-        await deleteCaptureOperation(operation.id);
-      } catch {
-        setStorageWarning(
-          'Saved, but the old retry record could not be cleared. Discard it locally.',
-        );
+      if (durable) {
+        try {
+          await deleteCaptureOperation(operation.id);
+        } catch {
+          setStorageWarning(
+            'Saved, but the old retry record could not be cleared. Discard it locally.',
+          );
+        }
       }
     } catch (error) {
       if (error instanceof ApiError && error.status === 422 && error.details) {
@@ -201,12 +205,14 @@ export function CaptureForm() {
         if (!fromQueue) setDraft(captureDraftFromPayload(operation.payload));
         setPending(null);
         setQueue((items) => items.filter((item) => item.id !== operation.id));
-        try {
-          await deleteCaptureOperation(operation.id);
-        } catch {
-          setStorageWarning(
-            'The rejected retry could not be deleted from browser storage.',
-          );
+        if (durable) {
+          try {
+            await deleteCaptureOperation(operation.id);
+          } catch {
+            setStorageWarning(
+              'The rejected retry could not be deleted from browser storage.',
+            );
+          }
         }
         const first = Object.keys(error.details)[0];
         window.requestAnimationFrame(() =>
@@ -255,7 +261,7 @@ export function CaptureForm() {
     )
       return;
     try {
-      await deleteCaptureOperation(id);
+      if (durable) await deleteCaptureOperation(id);
       setQueue((items) => items.filter((entry) => entry.id !== id));
       if (pending?.id === id) {
         setPending(null);
