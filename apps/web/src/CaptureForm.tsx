@@ -12,11 +12,14 @@ import {
 } from './capture-model';
 
 import {
-  clearCaptureOperations,
+  clearCaptureDraft,
   deleteCaptureOperation,
+  forgetCaptureRecovery,
+  getCaptureDraft,
   isRecoveryEnabled,
   listCaptureOperations,
   newCaptureOperation,
+  saveCaptureDraft,
   saveCaptureOperation,
   setRecoveryEnabled,
   type CaptureOperation,
@@ -58,9 +61,12 @@ export function CaptureForm() {
         alive = false;
       };
     }
-    void listCaptureOperations()
-      .then((records) => {
-        if (alive) setQueue(records);
+    void Promise.all([listCaptureOperations(), getCaptureDraft()])
+      .then(([records, savedDraft]) => {
+        if (alive) {
+          setQueue(records);
+          if (savedDraft) setDraft(savedDraft);
+        }
       })
       .catch((error: unknown) => {
         if (alive)
@@ -75,6 +81,23 @@ export function CaptureForm() {
       alive = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!loaded || !durable || result || pending) return;
+    if (draft.privacy === 'sensitive') {
+      void clearCaptureDraft().catch(() =>
+        setStorageWarning('Unable to clear previous editable draft from this device.'),
+      );
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      void saveCaptureDraft(draft).catch((error: unknown) =>
+        setStorageWarning('Editable draft not retained: ' +
+          (error instanceof Error ? error.message : 'Browser storage failed.')),
+      );
+    }, 350);
+    return () => window.clearTimeout(timer);
+  }, [draft, durable, loaded, pending, result]);
 
   async function remember(operation: CaptureOperation) {
     if (!durable) return;
@@ -115,8 +138,7 @@ export function CaptureForm() {
       }
     } else {
       try {
-        await clearCaptureOperations();
-        setRecoveryEnabled(false);
+        await forgetCaptureRecovery();
         setDurable(false);
       } catch (error) {
         setStorageWarning(
@@ -150,7 +172,11 @@ export function CaptureForm() {
       setResult(response);
       setPending(null);
       setQueue((items) => items.filter((item) => item.id !== operation.id));
-      if (!fromQueue) setDraft(emptyCaptureDraft());
+      if (!fromQueue) {
+        setDraft(emptyCaptureDraft());
+        try { await clearCaptureDraft(); }
+        catch { setStorageWarning('Saved, but the old editable draft could not be cleared.'); }
+      }
       try {
         await deleteCaptureOperation(operation.id);
       } catch {
