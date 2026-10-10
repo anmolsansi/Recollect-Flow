@@ -13,6 +13,7 @@ import {
   workerLeaseSchema,
 } from './job.schema';
 import { JobService } from './job.service';
+import { ProcessingReconciliationService } from './processing-reconciliation.service';
 
 function validationFields(error: {
   issues: Array<{ path: PropertyKey[]; message: string }>;
@@ -74,6 +75,35 @@ export function jobRoutes() {
         : await service.listProcessingJobs(filter);
     return context.json({
       data: { kind: parsed.data.kind, jobs },
+      meta: { request_id: context.get('requestId') },
+    });
+  });
+
+  router.get('/jobs/processing-reconciliation', requireAdminToken, async (context) => {
+    const limit = Number(context.req.query('limit') ?? '20');
+    const preview = await new ProcessingReconciliationService(
+      context.env.DB,
+    ).preview(limit);
+    return context.json({
+      data: preview,
+      meta: { request_id: context.get('requestId') },
+    });
+  });
+
+  router.post('/jobs/processing-reconciliation', requireAdminToken, async (context) => {
+    const body: unknown = await context.req.json().catch(() => null);
+    if (!body || typeof body !== 'object' || !('item_ids' in body)) {
+      throw new AppError(422, 'VALIDATION_ERROR', 'item_ids is required.');
+    }
+    const ids = (body as { item_ids: unknown }).item_ids;
+    if (!Array.isArray(ids) || ids.some((id) => typeof id !== 'string')) {
+      throw new AppError(422, 'VALIDATION_ERROR', 'item_ids must be strings.');
+    }
+    const result = await new ProcessingReconciliationService(
+      context.env.DB,
+    ).reconcile(ids);
+    return context.json({
+      data: result,
       meta: { request_id: context.get('requestId') },
     });
   });
