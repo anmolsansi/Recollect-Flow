@@ -94,7 +94,8 @@ export function captureDraftFromPayload(payload: CapturePayload): CaptureDraft {
   return {
     mode: payload.source_type,
     url: payload.source_type === 'url' ? (payload.url ?? '') : '',
-    sharedText: payload.source_type === 'url' ? '' : (payload.shared_text ?? ''),
+    sharedText:
+      payload.source_type === 'url' ? '' : (payload.shared_text ?? ''),
     reason: payload.user_reason ?? '',
     category: payload.quick_category ?? '',
     privacy: payload.privacy_level,
