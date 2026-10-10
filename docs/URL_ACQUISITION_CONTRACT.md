@@ -446,8 +446,10 @@ A `policy_blocked`, `login_required`, `metadata_only`, `empty`, or unsupported
 outcome can be a successful terminal acquisition decision even when enrichment is
 not applicable.
 
-BG-12/BG-13 remain responsible for the separate aggregate `items.processing_status`
-repair. BG-10 must not silently redefine that later contract.
+BG-12 has since delivered the deterministic aggregate
+`items.processing_status` **decision contract**. BG-13 remains responsible for
+the separate atomic **persisted status repair**, which BG-10 must not silently
+redefine. See [BG-12 final evidence](verification/BG-12_FINAL_CLOSEOUT.md).
 
 ### Export and restore
 
