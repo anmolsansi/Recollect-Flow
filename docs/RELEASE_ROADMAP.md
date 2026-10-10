@@ -38,18 +38,19 @@ and keep item detail, list and filter views consistent. Until that work lands,
 the existing stored item state can still disagree with terminal jobs.
 The BG-12 pure helper is not a production status repair or rollout.
 
-## BG-13 atomic persistence (in progress, not a release gate pass)
+## BG-13 atomic persistence (merged and CI verified)
 
-[Tracking issue #61](https://github.com/anmolsansi/Recollect-Flow/issues/61)
-and [draft PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62)
-contain additive generation migrations, current-stage materialization,
-guarded worker result writes, and a bounded admin preview/repair path.
-The [verification record](verification/BG-13_ATOMIC_TRANSITIONS.md)
-lists migration, rollback, historical provenance and outstanding acceptance.
-**This is not an accepted or deployed release:** all applicable D1, CI,
-source-reprocessing, lease and attachment tests must pass before BG-13 is
-claimed complete or its successor is unlocked. The BG-12 merged contract
-remains the current verified main-branch milestone.
+[BG-13 issue #61](https://github.com/anmolsansi/Recollect-Flow/issues/61)
+and [merged PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62)
+delivered explicit item processing epochs, same-transaction stored status
+projection, stale-worker and purge protection, source/extraction chaining
+guards, and bounded admin reconciliation.
+[Final closeout](verification/BG-13_FINAL_CLOSEOUT.md) includes the
+exact [PR CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38052047097)
+and [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38052191291),
+both passing. BG-14 is unlocked as the next browser acceptance task.
+No live production D1 migration, historical automatic backfill or deployment
+has been performed, and none is implied by this milestone.
 
 ## Product releases
 
