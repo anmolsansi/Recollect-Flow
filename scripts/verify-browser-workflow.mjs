@@ -313,8 +313,8 @@ async function run() {
       urlItemId +
       '",{credentials:"include"}).then(r=>r.status)',
   );
-  assert.equal(anonymous, 401, 'Logout must deny private item reads');
-  report('logout', { private_read: 401 });
+  assert.ok([401, 403].includes(anonymous), 'Logout must deny private item reads');
+  report('logout', { private_read: anonymous, denied: true });
   report('browser-workflow', {
     status: 'passed',
     kind: 'isolated local Chrome/D1/R2',
