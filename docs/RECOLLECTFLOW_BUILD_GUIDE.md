@@ -1907,7 +1907,8 @@ behavior and its limitations.
 
 Capture POST and upload init/content/finalize now use a shared
 `requireCaptureWrite` guard. The signed owner session authorizes these writes
-only when `Origin` exactly matches the Worker request origin. Explicit
+only when `Origin` matches the Worker request origin or the configured
+`WEB_INBOX_BASE_URL` origin. Explicit
 capture/admin bearer tokens continue to work for nonbrowser clients without
 an Origin header. An invalid bearer never falls back to a cookie, and cleanup
 remains admin-only. Existing request body and attachment integrity checks
