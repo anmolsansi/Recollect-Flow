@@ -287,6 +287,11 @@ try {
     },
     browser.sessionId,
   );
+  await waitFor(
+    browser,
+    '!document.querySelector(".capture-recovery-controls input[type=checkbox]").disabled',
+    'save attempt finished before disabling recovery',
+  );
   await evaluate(
     browser,
     'document.querySelector(".capture-recovery-controls input[type=checkbox]").click()',
