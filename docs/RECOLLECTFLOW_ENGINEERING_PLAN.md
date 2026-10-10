@@ -21,7 +21,12 @@ and [final verification](verification/BG-13_FINAL_CLOSEOUT.md).
 
 The latest scope-specific completion is the implementation and D1/CI
 integration, not a production rollout or automatic legacy backfill.
-BG-14 is unlocked for its separate browser acceptance gate. This update
+BG-14 is in implementation review at [PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64)
+and [issue #63](https://github.com/anmolsansi/Recollect-Flow/issues/63).
+The [browser acceptance record](verification/BG-14_BROWSER_ACCEPTANCE.md)
+distinguishes real Chrome signed-cookie, download, search and state proof
+from the still-unverified deterministic acquired-HTML source fixture.
+BG-15 remains gated until actual browser evidence closes that gap. This update
 does not rewrite the original engineering-ticket publication scope.
 
 ## Deliverables
