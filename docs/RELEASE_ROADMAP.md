@@ -50,9 +50,11 @@ and [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/3
 both passing. BG-14 is now tracked at [issue #63](https://github.com/anmolsansi/Recollect-Flow/issues/63)
 and [PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64).
 Its [acceptance record](verification/BG-14_BROWSER_ACCEPTANCE.md)
-distinguishes the new isolated Chrome journey from unverified positive
-upstream URL acquisition. BG-15 remains locked until the full browser gate
-passes on a clean merged head.
+includes the new isolated Chrome journey and
+[passing positive source-acquisition proof](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38057058035)
+using a test-only upstream fetch mock without bypassing Worker parsing,
+security or D1. BG-15 remains locked until the full browser gate passes on
+a clean merged head.
 No live production D1 migration, historical automatic backfill or deployment
 has been performed, and none is implied by this milestone.
 
