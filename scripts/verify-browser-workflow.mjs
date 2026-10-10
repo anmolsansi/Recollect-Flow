@@ -218,13 +218,21 @@ async function run() {
   const trigger = await fetch(
     runtime.apiOrigin + '/__scheduled?cron=17%20*%20*%20*%20*',
   );
-  assert.equal(trigger.status, 200, 'local acquisition scheduler must accept trigger');
+  assert.equal(
+    trigger.status,
+    200,
+    'local acquisition scheduler must accept trigger',
+  );
   const settled = await waitUntil(
     async () => {
       const latest = await detail(urlItemId);
       return latest.url_acquisition?.status === 'acquired_text' ? latest : null;
     },
-    { timeoutMs: 15000, intervalMs: 250, description: 'retry acquired text persistence' },
+    {
+      timeoutMs: 15000,
+      intervalMs: 250,
+      description: 'retry acquired text persistence',
+    },
   );
   assert.ok(
     settled.processing_jobs.some(
