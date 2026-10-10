@@ -1,7 +1,8 @@
 /* global process, fetch, setTimeout */
 
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, readFile, writeFile, unlink } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -129,11 +130,21 @@ export async function createLocalAcceptanceRuntime({
   adminToken,
   localWorkerToken,
   enableScheduled = false,
+  fixtureWorker = false,
 }) {
   const tempDir = await mkdtemp(join(tmpdir(), 'recollect-bg07-'));
   const persistDir = join(tempDir, 'wrangler-state');
   const apiOrigin = `http://127.0.0.1:${apiPort}`;
   const webOrigin = `http://127.0.0.1:${webPort}`;
+  const fixtureConfigPath = fixtureWorker
+    ? join(rootDir, `.bg14-fixture-${randomUUID()}.toml`)
+    : null;
+  if (fixtureConfigPath) {
+    const original = await readFile(join(rootDir, 'wrangler.toml'), 'utf8');
+    const entry = 'main = "apps/worker-api/src/index.ts"';
+    if (!original.includes(entry)) throw new Error('BG14 fixture could not locate production entrypoint');
+    await writeFile(fixtureConfigPath, original.replace(entry, 'main = "scripts/bg14-fixture-worker.ts"'), { flag: 'wx' });
+  }
 
   await runCommand(
     npxExecutable,
@@ -155,6 +166,7 @@ export async function createLocalAcceptanceRuntime({
     [
       'wrangler',
       'dev',
+      ...(fixtureConfigPath ? ['--config', fixtureConfigPath] : []),
       '--local',
       ...(enableScheduled ? ['--test-scheduled'] : []),
       '--port',
@@ -204,6 +216,7 @@ export async function createLocalAcceptanceRuntime({
     await stopService(web);
     await stopService(worker);
     await rm(tempDir, { recursive: true, force: true });
+    if (fixtureConfigPath) await unlink(fixtureConfigPath).catch(() => undefined);
     const workerLogs = boundedLogs(worker.logs);
     const webLogs = boundedLogs(web.logs);
     throw new Error(
@@ -223,6 +236,7 @@ export async function createLocalAcceptanceRuntime({
       await stopService(web);
       await stopService(worker);
       await rm(tempDir, { recursive: true, force: true });
+      if (fixtureConfigPath) await unlink(fixtureConfigPath).catch(() => undefined);
     },
   };
 }
