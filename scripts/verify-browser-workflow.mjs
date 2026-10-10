@@ -276,6 +276,7 @@ async function run() {
   await clickButton(browser, 'Restore item');
   await assertUiHas('Item restored.', 'restore feedback');
   assert.equal((await detail(urlItemId)).item.deleted_at, null);
+  assert.ok((await inbox('', internalPhrase)).some((x) => x.id === urlItemId), 'Restored item must reappear in search');
   report('lifecycle', { delete: 'filtered', restore: 'visible' });
 
   await browser.client.send(
