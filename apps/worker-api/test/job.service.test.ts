@@ -87,6 +87,16 @@ describe('JobService with Real D1 Mock', () => {
       past,
     );
 
+    const epochBinding = await db
+      .prepare(
+        `SELECT j.processing_generation AS job_epoch,
+                i.processing_generation AS item_epoch
+         FROM processing_jobs j JOIN items i ON i.id = j.item_id
+         WHERE j.id = '11111111-1111-1111-1111-111111111111'`,
+      )
+      .first<{ job_epoch: number | null; item_epoch: number }>();
+    expect(epochBinding).toEqual({ job_epoch: 1, item_epoch: 1 });
+
     const jobs = await service.leaseProcessingJobs('enrich', 'worker-1', 5, 1);
     expect(jobs).toHaveLength(1);
     expect(jobs[0]!.leaseOwner).toBe('worker-1');
