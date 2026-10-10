@@ -770,6 +770,11 @@ describe('OPE-225 FTS5 search integration', () => {
       ).data.map((item) => item.id),
     ).toEqual(['restore-item']);
 
+    // BG-13 status transitions may enqueue an independent Notion sync. This
+    // direct SQL hard-delete FTS fixture must clear its child rows first.
+    await env.DB.prepare(
+      "DELETE FROM sync_attempts WHERE item_id = 'restore-item'",
+    ).run();
     await env.DB.prepare(`DELETE FROM items WHERE id = 'restore-item'`).run();
     const indexed = await env.DB.prepare(
       `SELECT item_id FROM item_search_fts WHERE item_search_fts MATCH 'restoresearchterm'`,

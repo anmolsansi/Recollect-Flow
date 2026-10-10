@@ -93,6 +93,7 @@ export class SourceAcquisitionService {
            AND j.status = 'processing'
            AND j.lease_owner = ?3
            AND j.lease_expires_at > ?4
+           AND j.processing_generation = i.processing_generation
            AND i.deleted_at IS NULL
            AND NOT EXISTS (
              SELECT 1
@@ -218,6 +219,7 @@ export class SourceAcquisitionService {
              AND j.lease_expires_at > ?24
              AND j.input_hash = ?28
              AND j.privacy_level_snapshot = ?29
+             AND j.processing_generation = i.processing_generation
              AND i.deleted_at IS NULL
              AND i.source_url = ?30
              AND i.source_revision = ?31
@@ -288,6 +290,7 @@ export class SourceAcquisitionService {
              AND i.deleted_at IS NULL
              AND i.source_revision = ?7
              AND i.privacy_level = ?8
+             AND source.processing_generation = i.processing_generation
              AND source.provider_eligibility <> 'none'
              AND EXISTS (
                SELECT 1 FROM url_acquisitions ua
@@ -379,8 +382,15 @@ export class SourceAcquisitionService {
              AND lease_owner = ?7
              AND lease_expires_at > ?3
              AND EXISTS (
+               SELECT 1 FROM items i WHERE i.id = processing_jobs.item_id
+                 AND i.deleted_at IS NULL
+                 AND i.processing_generation = processing_jobs.processing_generation
+                 AND i.privacy_level = processing_jobs.privacy_level_snapshot
+             )
+             AND EXISTS (
                SELECT 1 FROM url_acquisitions WHERE job_id = ?5
-             )`,
+             )
+           RETURNING id`,
         )
         .bind(
           terminalJobStatus,
@@ -394,7 +404,7 @@ export class SourceAcquisitionService {
     ];
 
     const results = await this.db.batch(statements);
-    return (results[3]?.meta.changes ?? 0) === 1;
+    return (results[3]?.results?.length ?? 0) === 1;
   }
 
   async process(job: JobRecord, ownerId: string): Promise<boolean> {

@@ -53,6 +53,8 @@ interface RetryProcessingRow {
   hosted_processing_consent: number;
   deleted_at: string | null;
   privacy_level: string;
+  processing_generation: number | null;
+  current_processing_generation: number;
   optional_processing_paused: number;
 }
 
@@ -174,6 +176,7 @@ export class JobAdminService {
     const job = await this.db
       .prepare(
         `SELECT j.*, i.deleted_at, i.privacy_level,
+                i.processing_generation AS current_processing_generation,
                 COALESCE(c.enabled, 0) AS optional_processing_paused
          FROM processing_jobs j
          JOIN items i ON i.id = j.item_id
@@ -184,6 +187,13 @@ export class JobAdminService {
       .bind(jobId)
       .first<RetryProcessingRow>();
     if (!job || job.status !== 'failed') return false;
+    if (job.processing_generation !== job.current_processing_generation) {
+      throw new AppError(
+        409,
+        'JOB_NOT_LEASABLE',
+        'The job belongs to a superseded processing generation.',
+      );
+    }
     if (job.deleted_at) {
       throw new AppError(
         409,
@@ -413,6 +423,16 @@ export class JobAdminService {
     now: Date,
   ): Promise<boolean> {
     const nowIso = now.toISOString();
+    const currentGuard =
+      table === 'processing_jobs'
+        ? ` AND EXISTS (
+          SELECT 1 FROM items i
+          WHERE i.id = processing_jobs.item_id
+            AND i.deleted_at IS NULL
+            AND i.processing_generation = processing_jobs.processing_generation
+            AND i.privacy_level = processing_jobs.privacy_level_snapshot
+        )`
+        : '';
     const result = await this.db.batch([
       this.db
         .prepare(
@@ -421,7 +441,8 @@ export class JobAdminService {
                lease_expires_at = NULL, last_error_code = NULL,
                manual_retry_count = manual_retry_count + 1, updated_at = ?1
            WHERE id = ?2 AND status = 'failed'
-             AND manual_retry_count = ?3`,
+             AND manual_retry_count = ?3${currentGuard}
+           RETURNING id`,
         )
         .bind(nowIso, jobId, manualRetryCount),
       this.db
@@ -450,6 +471,6 @@ export class JobAdminService {
           manualRetryCount + 1,
         ),
     ]);
-    return result[0]?.meta.changes === 1;
+    return result[0]?.results?.length === 1;
   }
 }

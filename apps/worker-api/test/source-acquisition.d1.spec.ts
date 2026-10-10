@@ -233,7 +233,7 @@ describe('BG-10 durable URL acquisition chain', () => {
     ).first<Record<string, unknown>>();
     expect(storedJob).toMatchObject({
       status: 'failed',
-      last_error_code: 'SOURCE_POLICY_STALE',
+      last_error_code: 'PROCESSING_SUPERSEDED',
     });
   });
 
@@ -280,7 +280,7 @@ describe('BG-10 durable URL acquisition chain', () => {
     ).first<Record<string, unknown>>();
     expect(storedJob).toMatchObject({
       status: 'failed',
-      last_error_code: 'SOURCE_REVISION_STALE',
+      last_error_code: 'PROCESSING_SUPERSEDED',
     });
   });
 

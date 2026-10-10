@@ -55,6 +55,18 @@ describe('OPE-222 acceptance evidence', () => {
       ).data.map((result) => result.id),
     ).toContain(itemId);
 
+    // The URL acquisition is already finished when the downstream enrichment
+    // worker begins. A URL without this required stage must remain pending.
+    await env.DB.prepare(
+      `INSERT INTO processing_jobs (
+         id, item_id, job_type, status, privacy_level_snapshot,
+         provider_eligibility, attempts, available_at, created_at, updated_at
+       ) VALUES (?1, ?2, 'acquire_url', 'complete', 'public',
+                 'cloudflare', 1, ?3, ?3, ?3)`,
+    )
+      .bind('ope222-e2e-acquired', itemId, now)
+      .run();
+
     await env.DB.prepare(
       `INSERT INTO processing_jobs (
          id, item_id, job_type, status, privacy_level_snapshot,

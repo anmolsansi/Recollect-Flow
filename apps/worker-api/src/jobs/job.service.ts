@@ -166,6 +166,21 @@ function auditDetails(details: Record<string, unknown>): string {
   return JSON.stringify(details);
 }
 
+// Referenced only by SQL statements against the processing_jobs table.
+// The item epoch and privacy snapshot are authoritative at commit time.
+const currentJobGuard = `EXISTS (
+  SELECT 1 FROM items i
+  WHERE i.id = processing_jobs.item_id
+    AND i.deleted_at IS NULL
+    AND i.processing_generation = processing_jobs.processing_generation
+    AND (processing_jobs.privacy_level_snapshot IS NULL
+         OR i.privacy_level = processing_jobs.privacy_level_snapshot)
+    AND NOT EXISTS (
+      SELECT 1 FROM purge_workflows p
+      WHERE p.item_id = i.id AND p.state IN ('queued', 'processing', 'partial')
+    )
+)`;
+
 export class JobService {
   constructor(private readonly db: D1Database) {}
 
@@ -180,18 +195,25 @@ export class JobService {
     const normalizedInputHash = requireNonEmpty(inputHash, 'inputHash');
     const nowIso = now.toISOString();
     const jobId = crypto.randomUUID();
-    const result = await this.db
+    const inserted = await this.db
       .prepare(
         `INSERT INTO processing_jobs (
            id, item_id, job_type, status, attempts, available_at, created_at,
-           updated_at, input_hash
+           updated_at, input_hash, privacy_level_snapshot
          )
-         SELECT ?1, ?2, ?3, 'pending', 0, ?4, ?4, ?4, ?5
-         WHERE NOT EXISTS (
-           SELECT 1 FROM processing_jobs
-           WHERE item_id = ?2 AND job_type = ?3
-             AND status IN ('pending', 'processing')
-         )`,
+         SELECT ?1, i.id, ?3, 'pending', 0, ?4, ?4, ?4, ?5, i.privacy_level
+         FROM items i
+         WHERE i.id = ?2 AND i.deleted_at IS NULL
+           AND NOT EXISTS (
+             SELECT 1 FROM purge_workflows p
+             WHERE p.item_id = i.id AND p.state IN ('queued', 'processing', 'partial')
+           )
+           AND NOT EXISTS (
+             SELECT 1 FROM processing_jobs j
+             WHERE j.item_id = i.id AND j.job_type = ?3
+               AND j.status IN ('pending', 'processing')
+           )
+         RETURNING id`,
       )
       .bind(
         jobId,
@@ -200,8 +222,8 @@ export class JobService {
         nowIso,
         normalizedInputHash,
       )
-      .run();
-    if (result.meta.changes > 0) {
+      .first<{ id: string }>();
+    if (inserted !== null) {
       await this.writeAudit(
         normalizedItemId,
         'job_enqueued',
@@ -214,7 +236,7 @@ export class JobService {
         nowIso,
       );
     }
-    return result.meta.changes > 0;
+    return inserted !== null;
   }
 
   async leaseProcessingJobs(
@@ -254,6 +276,19 @@ export class JobService {
                OR
                (status = 'processing' AND lease_expires_at IS NOT NULL
                  AND lease_expires_at <= ?3)
+             )
+             AND EXISTS (
+               SELECT 1 FROM items i
+               WHERE i.id = processing_jobs.item_id
+                 AND i.deleted_at IS NULL
+                 AND i.processing_generation = processing_jobs.processing_generation
+                 AND (processing_jobs.privacy_level_snapshot IS NULL
+                      OR i.privacy_level = processing_jobs.privacy_level_snapshot)
+                 AND NOT EXISTS (
+                   SELECT 1 FROM purge_workflows purge
+                   WHERE purge.item_id = i.id
+                     AND purge.state IN ('queued', 'processing', 'partial')
+                 )
              )
            ORDER BY priority DESC, available_at ASC, created_at ASC
            LIMIT ?5
@@ -308,7 +343,7 @@ export class JobService {
         `UPDATE processing_jobs
          SET lease_expires_at = ?1, heartbeat_at = ?2, updated_at = ?2
          WHERE id = ?3 AND lease_owner = ?4 AND status = 'processing'
-           AND lease_expires_at > ?2`,
+           AND lease_expires_at > ?2 AND ${currentJobGuard}`,
       )
       .bind(expiresAt, now.toISOString(), jobId, ownerId)
       .run();
@@ -329,7 +364,7 @@ export class JobService {
          SET status = 'complete', lease_owner = NULL, lease_expires_at = NULL,
              completed_at = ?1, last_error_code = NULL, updated_at = ?1
          WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
-           AND lease_expires_at > ?1`,
+           AND lease_expires_at > ?1 AND ${currentJobGuard}`,
       )
       .bind(nowIso, jobId, ownerId)
       .run();
@@ -375,7 +410,27 @@ export class JobService {
         existing.input_hash === input.inputHash &&
         existing.result_version === input.resultVersion &&
         existing.result_json === resultJson;
-      return { accepted: replayed, replayed };
+      const current = await this.db
+        .prepare(
+          `SELECT j.id FROM processing_jobs j
+           JOIN items i ON i.id = j.item_id
+           WHERE j.id = ?1 AND j.status = 'complete'
+             AND i.deleted_at IS NULL
+             AND i.processing_generation = j.processing_generation
+             AND (j.privacy_level_snapshot IS NULL
+                  OR j.privacy_level_snapshot = i.privacy_level)
+             AND NOT EXISTS (
+               SELECT 1 FROM purge_workflows p
+               WHERE p.item_id = i.id
+                 AND p.state IN ('queued', 'processing', 'partial')
+             )`,
+        )
+        .bind(jobId)
+        .first();
+      return {
+        accepted: replayed && Boolean(current),
+        replayed: replayed && Boolean(current),
+      };
     }
 
     const nowIso = now.toISOString();
@@ -384,7 +439,8 @@ export class JobService {
         `SELECT item_id FROM processing_jobs
          WHERE id = ?1 AND lease_owner = ?2 AND status = 'processing'
            AND lease_expires_at > ?3
-           AND (input_hash IS NULL OR input_hash = ?4)`,
+           AND (input_hash IS NULL OR input_hash = ?4)
+           AND ${currentJobGuard}`,
       )
       .bind(jobId, ownerId, nowIso, input.inputHash)
       .first<{ item_id: string }>();
@@ -402,7 +458,9 @@ export class JobService {
              FROM processing_jobs
              WHERE id = ?1 AND lease_owner = ?7 AND status = 'processing'
                AND lease_expires_at > ?6
-               AND (input_hash IS NULL OR input_hash = ?3)`,
+               AND (input_hash IS NULL OR input_hash = ?3)
+               AND ${currentJobGuard}
+             RETURNING job_id`,
           )
           .bind(
             jobId,
@@ -419,7 +477,8 @@ export class JobService {
              SET status = 'complete', result_version = ?1, completed_at = ?2,
                  lease_owner = NULL, lease_expires_at = NULL, updated_at = ?2
              WHERE id = ?3 AND lease_owner = ?4 AND status = 'processing'
-               AND lease_expires_at > ?2`,
+               AND lease_expires_at > ?2 AND ${currentJobGuard}
+             RETURNING id`,
           )
           .bind(input.resultVersion, nowIso, jobId, ownerId),
         this.db
@@ -467,7 +526,8 @@ export class JobService {
       throw error;
     }
     return {
-      accepted: batch[0]?.meta.changes === 1 && batch[1]?.meta.changes === 1,
+      accepted:
+        batch[0]?.results?.length === 1 && batch[1]?.results?.length === 1,
       replayed: false,
     };
   }
@@ -505,11 +565,13 @@ export class JobService {
            FROM processing_jobs
            WHERE id = ?16 AND item_id = ?2 AND lease_owner = ?17
              AND status = 'processing' AND lease_expires_at > ?15
+             AND ${currentJobGuard}
              AND EXISTS (
                SELECT 1 FROM attachments
                WHERE id = ?3 AND item_id = ?2 AND status = 'linked'
              )
            ON CONFLICT (attachment_id) DO UPDATE SET
+             processing_generation = (SELECT processing_generation FROM items WHERE id = excluded.item_id),
              extractor_name = excluded.extractor_name,
              extractor_version = excluded.extractor_version,
              extracted_text = excluded.extracted_text,
@@ -521,7 +583,8 @@ export class JobService {
              provider_name = excluded.provider_name,
              model_name = excluded.model_name,
              error_code = excluded.error_code,
-             updated_at = excluded.updated_at`,
+             updated_at = excluded.updated_at
+           RETURNING id`,
           )
           .bind(
             crypto.randomUUID(),
@@ -566,6 +629,13 @@ export class JobService {
             WHERE source.id = ?3 AND source.item_id = ?4
               AND source.lease_owner = ?5 AND source.status = 'processing'
               AND source.lease_expires_at > ?2
+              AND EXISTS (
+                SELECT 1 FROM items i
+                WHERE i.id = source.item_id AND i.deleted_at IS NULL
+                  AND i.processing_generation = source.processing_generation
+                  AND (source.privacy_level_snapshot IS NULL
+                       OR i.privacy_level = source.privacy_level_snapshot)
+              )
               AND source.provider_eligibility <> 'none'
               AND NOT EXISTS (
                 SELECT 1 FROM processing_jobs
@@ -589,7 +659,9 @@ export class JobService {
          SET status = 'complete', lease_owner = NULL, lease_expires_at = NULL,
              completed_at = ?1, last_error_code = NULL, updated_at = ?1
          WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
-           AND lease_expires_at > ?1 AND item_id = ?4`,
+           AND lease_expires_at > ?1 AND item_id = ?4
+           AND ${currentJobGuard}
+         RETURNING id`,
         )
         .bind(nowIso, jobId, ownerId, itemId),
     );
@@ -597,8 +669,8 @@ export class JobService {
     const batch = await this.db.batch(stmts);
     const extractionWritesAccepted = batch
       .slice(0, results.length)
-      .every((result) => result.meta.changes === 1);
-    const completionAccepted = batch[batch.length - 1]?.meta.changes === 1;
+      .every((result) => result.results?.length === 1);
+    const completionAccepted = batch[batch.length - 1]?.results?.length === 1;
     return extractionWritesAccepted && completionAccepted;
   }
 
@@ -857,6 +929,8 @@ export class JobService {
           : 'sync_terminally_failed';
     const retryColumn =
       table === 'sync_attempts' ? ', retry_after_at = ?8' : '';
+    const currentGuard =
+      table === 'processing_jobs' ? ` AND ${currentJobGuard}` : '';
     const bindings: unknown[] = [
       shouldRetry ? 'pending' : 'failed',
       attempts,
@@ -874,7 +948,8 @@ export class JobService {
          SET status = ?1, attempts = ?2, available_at = ?3,
              last_error_code = ?4, lease_owner = NULL,
              lease_expires_at = NULL, updated_at = ?5${retryColumn}
-         WHERE id = ?6 AND lease_owner = ?7 AND status = 'processing'`,
+         WHERE id = ?6 AND lease_owner = ?7 AND status = 'processing'
+           AND lease_expires_at > ?5${currentGuard}`,
       )
       .bind(...bindings)
       .run();
@@ -903,13 +978,15 @@ export class JobService {
     now: Date,
   ): Promise<boolean> {
     const nowIso = now.toISOString();
+    const currentGuard =
+      table === 'processing_jobs' ? ` AND ${currentJobGuard}` : '';
     const result = await this.db
       .prepare(
         `UPDATE ${table}
          SET status = 'pending', available_at = ?1, lease_owner = NULL,
              lease_expires_at = NULL, updated_at = ?1
          WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
-           AND lease_expires_at > ?1`,
+           AND lease_expires_at > ?1${currentGuard}`,
       )
       .bind(nowIso, jobId, ownerId)
       .run();

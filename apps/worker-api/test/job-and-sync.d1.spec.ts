@@ -4,6 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../src/app';
 import { JobAdminService } from '../src/jobs/job.admin.service';
 import { JobService } from '../src/jobs/job.service';
+import { ProcessingReconciliationService } from '../src/jobs/processing-reconciliation.service';
 import { processNotionSyncJobs } from '../src/sync/sync.worker';
 
 const T0 = new Date('2026-07-30T00:00:00.000Z');
@@ -17,6 +18,7 @@ function jsonResponse(body: unknown, status = 200, headers?: HeadersInit) {
 
 async function resetDatabase() {
   await env.DB.batch([
+    env.DB.prepare('DELETE FROM purge_workflows'),
     env.DB.prepare('DELETE FROM processing_job_results'),
     env.DB.prepare('DELETE FROM sync_attempts'),
     env.DB.prepare('DELETE FROM processing_jobs'),
@@ -239,6 +241,271 @@ describe('OPE-246 durable D1 jobs', () => {
     ).toBe(true);
   });
 
+  it('previews and repairs only explicitly reviewed current-generation mismatches', async () => {
+    const itemId = 'reconcile-item';
+    const legacyId = 'legacy-item';
+    await insertItem(itemId);
+    await insertItem(legacyId);
+    await insertProcessingJob('reconcile-job', itemId);
+    await insertProcessingJob('legacy-job', legacyId);
+    await env.DB.prepare(
+      "UPDATE processing_jobs SET processing_generation = NULL WHERE id = 'legacy-job'",
+    ).run();
+    await env.DB.prepare(
+      "UPDATE items SET processing_status = 'complete' WHERE id IN (?1, ?2)",
+    )
+      .bind(itemId, legacyId)
+      .run();
+    const service = new ProcessingReconciliationService(env.DB);
+    const preview = await service.preview();
+    expect(preview.candidates.map((entry) => entry.itemId)).toEqual([itemId]);
+    expect(preview.candidates[0]?.derivedStatus).toBe('pending');
+    expect(await service.reconcile([itemId, legacyId])).toEqual({
+      updated: 1,
+      skipped: 1,
+    });
+    expect(await service.preview()).toMatchObject({
+      count: 0,
+      candidates: [],
+    });
+  });
+
+  it('completes a current save-only generation when AI is deliberately omitted', async () => {
+    const itemId = 'save-only-item';
+    await insertItem(itemId);
+    await env.DB.prepare(
+      "UPDATE items SET source_type = 'note', source_url = NULL, processing_status = 'pending' WHERE id = ?1",
+    )
+      .bind(itemId)
+      .run();
+    await insertProcessingJob('save-only-optional-job', itemId, {
+      provider: 'none',
+      status: 'failed',
+    });
+    expect(
+      await env.DB.prepare(
+        'SELECT derived_status FROM bg13_processing_snapshot WHERE item_id = ?1',
+      )
+        .bind(itemId)
+        .first('derived_status'),
+    ).toBe('complete');
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('complete');
+  });
+
+  it('cannot mark a URL item complete when acquisition was never enqueued', async () => {
+    const itemId = 'missing-acquire-item';
+    await insertItem(itemId);
+    await insertProcessingJob('optional-enrich-only', itemId, {
+      status: 'complete',
+    });
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('pending');
+  });
+
+  it('stays pending between source completion and its required AI chain', async () => {
+    const itemId = 'missing-downstream-item';
+    await insertItem(itemId);
+    await insertProcessingJob('missing-downstream-source', itemId, {
+      status: 'complete',
+    });
+    await env.DB.prepare(
+      "UPDATE processing_jobs SET job_type = 'acquire_url' WHERE id = ?1",
+    )
+      .bind('missing-downstream-source')
+      .run();
+    expect(
+      await env.DB.prepare(
+        'SELECT derived_status FROM bg13_processing_snapshot WHERE item_id = ?1',
+      )
+        .bind(itemId)
+        .first('derived_status'),
+    ).toBe('pending');
+    await insertProcessingJob('missing-downstream-ai', itemId, {
+      status: 'complete',
+    });
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('complete');
+  });
+
+  it('keeps item, list status, and terminal job failure consistent', async () => {
+    const itemId = 'atomic-terminal-item';
+    const jobId = 'atomic-terminal-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('pending');
+    await jobs.leaseProcessingJobs('enrich', 'atomic-worker', 5, 1, T0);
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('processing');
+    expect(
+      await jobs.failProcessingJob(
+        jobId,
+        'atomic-worker',
+        'PROVIDER_UNAVAILABLE',
+        false,
+        5,
+        T0,
+      ),
+    ).toBe(true);
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('failed');
+    expect(
+      await env.DB.prepare(
+        'SELECT derived_status FROM bg13_processing_snapshot WHERE item_id = ?1',
+      )
+        .bind(itemId)
+        .first('derived_status'),
+    ).toBe('failed');
+  });
+
+  it('returns the same terminal status in detail, list, and status-filter results', async () => {
+    const itemId = 'cross-view-failed-item';
+    const jobId = 'cross-view-failed-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'cross-view-worker', 5, 1, T0);
+    expect(
+      await jobs.failProcessingJob(
+        jobId,
+        'cross-view-worker',
+        'MODEL_FAILED',
+        false,
+        5,
+        T0,
+      ),
+    ).toBe(true);
+    const app = createApp();
+    const options = { headers: { Authorization: 'Bearer test-admin-token' } };
+    const [detail, list, failed, pending] = await Promise.all([
+      app.request(`/api/v1/items/${itemId}`, options, env),
+      app.request('/api/v1/items?limit=20', options, env),
+      app.request(
+        '/api/v1/items?processing_status=failed&limit=20',
+        options,
+        env,
+      ),
+      app.request(
+        '/api/v1/items?processing_status=pending&limit=20',
+        options,
+        env,
+      ),
+    ]);
+    expect([detail.status, list.status, failed.status, pending.status]).toEqual(
+      [200, 200, 200, 200],
+    );
+    const detailBody = (await detail.json()) as {
+      data: { item: { processing_status: string } };
+    };
+    const listBody = (await list.json()) as {
+      data: Array<{ id: string; processing_status: string }>;
+    };
+    const failedBody = (await failed.json()) as {
+      data: Array<{ id: string; processing_status: string }>;
+    };
+    const pendingBody = (await pending.json()) as {
+      data: Array<{ id: string; processing_status: string }>;
+    };
+    expect(detailBody.data.item.processing_status).toBe('failed');
+    expect(
+      listBody.data.find((item) => item.id === itemId)?.processing_status,
+    ).toBe('failed');
+    expect(
+      failedBody.data.find((item) => item.id === itemId)?.processing_status,
+    ).toBe('failed');
+    expect(pendingBody.data.some((item) => item.id === itemId)).toBe(false);
+  });
+
+  it('retires old work and refuses stale completion after privacy epoch change', async () => {
+    const itemId = 'atomic-privacy-item';
+    const jobId = 'atomic-privacy-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'privacy-worker', 5, 1, T0);
+    await env.DB.prepare(
+      "UPDATE items SET privacy_level = 'personal' WHERE id = ?1",
+    )
+      .bind(itemId)
+      .run();
+    expect(
+      await env.DB.prepare(
+        'SELECT processing_generation FROM items WHERE id = ?1',
+      )
+        .bind(itemId)
+        .first('processing_generation'),
+    ).toBe(2);
+    expect(await jobs.completeProcessingJob(jobId, 'privacy-worker', T0)).toBe(
+      false,
+    );
+    expect(
+      await env.DB.prepare(
+        'SELECT last_error_code FROM processing_jobs WHERE id = ?1',
+      )
+        .bind(jobId)
+        .first('last_error_code'),
+    ).toBe('PROCESSING_SUPERSEDED');
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('pending');
+  });
+
+  it('rejects expired-owner terminal failures without mutating job or audit', async () => {
+    const itemId = 'expired-lease-item';
+    const jobId = 'expired-lease-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const service = new JobService(env.DB);
+    await service.leaseProcessingJobs('enrich', 'late-worker', 1, 1, T0);
+    const expiredAt = new Date(T0.getTime() + 61_000);
+    expect(
+      await service.failProcessingJob(
+        jobId,
+        'late-worker',
+        'UPSTREAM_ERROR',
+        false,
+        5,
+        expiredAt,
+      ),
+    ).toBe(false);
+    expect(
+      await env.DB.prepare('SELECT status FROM processing_jobs WHERE id = ?1')
+        .bind(jobId)
+        .first('status'),
+    ).toBe('processing');
+    expect(
+      (
+        await env.DB.prepare(
+          "SELECT COUNT(*) AS n FROM audit_events WHERE item_id = ?1 AND event_type = 'job_terminally_failed'",
+        )
+          .bind(itemId)
+          .first<{ n: number }>()
+      )?.n,
+    ).toBe(0);
+  });
+
   it('heartbeats, releases, derives retry_wait, and honors exact retry timing', async () => {
     await insertItem('00000000-0000-0000-0000-000000000001');
     await insertProcessingJob(
@@ -336,6 +603,200 @@ describe('OPE-246 durable D1 jobs', () => {
       `SELECT * FROM processing_job_results WHERE job_id = '11111111-1111-1111-1111-111111111111'`,
     ).all();
     expect(results.results).toHaveLength(1);
+  });
+
+  it('accepts only one duplicate completion of the same owned job', async () => {
+    const itemId = 'double-completion-item';
+    const jobId = 'double-completion-job';
+    await insertItem(itemId);
+    // This case exercises enrichment only. A URL capture would also require acquisition.
+    await env.DB.prepare(
+      "UPDATE items SET source_type = 'note', source_url = NULL WHERE id = ?1",
+    )
+      .bind(itemId)
+      .run();
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'double-worker', 5, 1, T0);
+    const result = await Promise.all([
+      jobs.completeProcessingJob(jobId, 'double-worker', T0),
+      jobs.completeProcessingJob(jobId, 'double-worker', T0),
+    ]);
+    expect(result.filter(Boolean)).toHaveLength(1);
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('complete');
+  });
+
+  it('rejects the old owner after an admin requeues a failed generation', async () => {
+    const itemId = 'retry-owner-race-item';
+    const jobId = 'retry-owner-race-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'retry-old-owner', 5, 1, T0);
+    expect(
+      await jobs.failProcessingJob(
+        jobId,
+        'retry-old-owner',
+        'UPSTREAM_TIMEOUT',
+        false,
+        5,
+        T0,
+      ),
+    ).toBe(true);
+    expect(
+      await new JobAdminService(env.DB).manuallyRetryProcessingJob(
+        jobId,
+        'admin:retry',
+        T0,
+      ),
+    ).toBe(true);
+    expect(await jobs.completeProcessingJob(jobId, 'retry-old-owner', T0)).toBe(
+      false,
+    );
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('pending');
+  });
+
+  it('accepts exactly one concurrent terminal mutation and projects its outcome', async () => {
+    const itemId = 'race-terminal-item';
+    const jobId = 'race-terminal-job';
+    await insertItem(itemId);
+    // This case exercises enrichment only. A URL capture would also require acquisition.
+    await env.DB.prepare(
+      "UPDATE items SET source_type = 'note', source_url = NULL WHERE id = ?1",
+    )
+      .bind(itemId)
+      .run();
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'race-worker', 5, 1, T0);
+    const results = await Promise.all([
+      jobs.completeProcessingJob(jobId, 'race-worker', T0),
+      jobs.failProcessingJob(
+        jobId,
+        'race-worker',
+        'MODEL_FAILED',
+        false,
+        5,
+        T0,
+      ),
+    ]);
+    expect(results.filter(Boolean)).toHaveLength(1);
+    const status = await env.DB.prepare(
+      'SELECT status FROM processing_jobs WHERE id = ?1',
+    )
+      .bind(jobId)
+      .first<string>('status');
+    expect(status).toMatch(/^(complete|failed)$/);
+    const derived = await env.DB.prepare(
+      'SELECT processing_status FROM items WHERE id = ?1',
+    )
+      .bind(itemId)
+      .first<string>('processing_status');
+    expect(derived).toBe(status);
+  });
+
+  it('rejects an in-flight result after a purge begins, without evidence or audit', async () => {
+    const itemId = 'purge-freeze-item';
+    const jobId = 'purge-freeze-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'purge-worker', 5, 1, T0);
+    await env.DB.prepare(
+      `INSERT INTO purge_workflows (
+         id, item_id, state, confirmation_digest, confirmation_expires_at,
+         requested_edit_version, created_at, updated_at
+       ) VALUES (?1, ?2, 'queued', 'test-digest', ?3, 1, ?3, ?3)`,
+    )
+      .bind('purge-freeze-request', itemId, T0.toISOString())
+      .run();
+    const result = await jobs.submitProcessingResult(
+      jobId,
+      'purge-worker',
+      {
+        submissionId: 'purge-result-submission',
+        inputHash: 'input-hash',
+        resultVersion: '1',
+        result: { title: 'never committed' },
+      },
+      T0,
+    );
+    expect(result).toEqual({ accepted: false, replayed: false });
+    expect(
+      await env.DB.prepare(
+        'SELECT COUNT(*) AS n FROM processing_job_results WHERE job_id = ?1',
+      )
+        .bind(jobId)
+        .first('n'),
+    ).toBe(0);
+    expect(
+      await env.DB.prepare(
+        "SELECT COUNT(*) AS n FROM audit_events WHERE item_id = ?1 AND event_type = 'job_result_accepted'",
+      )
+        .bind(itemId)
+        .first('n'),
+    ).toBe(0);
+  });
+
+  it('rejects a deleted item while an old worker still has a lease', async () => {
+    const itemId = 'race-deleted-item';
+    const jobId = 'race-deleted-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'deleted-worker', 5, 1, T0);
+    await env.DB.prepare('UPDATE items SET deleted_at = ?1 WHERE id = ?2')
+      .bind(T0.toISOString(), itemId)
+      .run();
+    expect(await jobs.completeProcessingJob(jobId, 'deleted-worker', T0)).toBe(
+      false,
+    );
+    expect(
+      await env.DB.prepare(
+        'SELECT last_error_code FROM processing_jobs WHERE id = ?1',
+      )
+        .bind(jobId)
+        .first('last_error_code'),
+    ).toBe('PROCESSING_SUPERSEDED');
+  });
+
+  it('rejects a byte-identical replay after the item epoch changes', async () => {
+    const itemId = 'result-replay-epoch-item';
+    const jobId = 'result-replay-epoch-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'result-owner', 5, 1, T0);
+    const input = {
+      submissionId: 'result-replay-epoch-submission',
+      inputHash: 'input-hash',
+      resultVersion: 'summary-v1',
+      result: { summary: 'old result' },
+    };
+    expect(
+      await jobs.submitProcessingResult(jobId, 'result-owner', input, T0),
+    ).toEqual({ accepted: true, replayed: false });
+    await env.DB.prepare(
+      "UPDATE items SET privacy_level = 'personal' WHERE id = ?1",
+    )
+      .bind(itemId)
+      .run();
+    expect(
+      await jobs.submitProcessingResult(jobId, 'result-owner', input, T0),
+    ).toEqual({ accepted: false, replayed: false });
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId)
+        .first('processing_status'),
+    ).toBe('pending');
   });
 
   it('keeps terminal failures bounded and policy-gates manual retries', async () => {

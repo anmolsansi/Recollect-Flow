@@ -37,8 +37,8 @@ describe('JobService with Real D1 Mock', () => {
     await db
       .prepare(
         `
-      INSERT INTO processing_jobs (id, item_id, job_type, status, attempts, available_at, created_at, updated_at)
-      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6, ?6)
+      INSERT INTO processing_jobs (id, item_id, job_type, status, attempts, available_at, created_at, updated_at, privacy_level_snapshot)
+      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6, ?6, 'public')
     `,
       )
       .bind(id, itemId, type, status, attempts, availableAt)
@@ -86,6 +86,16 @@ describe('JobService with Real D1 Mock', () => {
       0,
       past,
     );
+
+    const epochBinding = await db
+      .prepare(
+        `SELECT j.processing_generation AS job_epoch,
+                i.processing_generation AS item_epoch
+         FROM processing_jobs j JOIN items i ON i.id = j.item_id
+         WHERE j.id = '11111111-1111-1111-1111-111111111111'`,
+      )
+      .first<{ job_epoch: number | null; item_epoch: number }>();
+    expect(epochBinding).toEqual({ job_epoch: 1, item_epoch: 1 });
 
     const jobs = await service.leaseProcessingJobs('enrich', 'worker-1', 5, 1);
     expect(jobs).toHaveLength(1);

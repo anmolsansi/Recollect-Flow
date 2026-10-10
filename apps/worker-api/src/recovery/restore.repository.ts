@@ -167,10 +167,41 @@ export class RestoreRepository {
         'processing_jobs',
         resetProcessingLease(job, nowIso),
       );
+      // Restore must not manufacture current provenance for pre-BG-13
+      // backup records. The normal INSERT trigger stamps new jobs.
+      if (job.processing_generation == null) {
+        await this.db
+          .prepare(
+            'UPDATE processing_jobs SET processing_generation = NULL WHERE id = ?1',
+          )
+          .bind(job.id)
+          .run();
+      }
     }
     for (const result of item.processingJobResults) {
       await this.insertRecord('processing_job_results', result);
     }
+    // Restore extraction evidence before archived sync attempts. Extraction
+    // materialization may also enqueue a provisional Notion projection.
+    for (const extraction of item.extractions) {
+      await this.insertRecord('extraction_records', extraction);
+      if (extraction.processing_generation == null) {
+        await this.db
+          .prepare(
+            'UPDATE extraction_records SET processing_generation = NULL WHERE id = ?1',
+          )
+          .bind(extraction.id)
+          .run();
+      }
+    }
+    // Restored processing jobs materialize an item status that can trigger a
+    // provisional Notion attempt. The portable archive is authoritative here:
+    // remove those derived attempts before restoring archived sync history.
+    // Restore runs against an empty database, and no other item's rows match.
+    await this.db
+      .prepare('DELETE FROM sync_attempts WHERE item_id = ?1')
+      .bind(item.item.id)
+      .run();
     for (const sync of item.syncAttempts) {
       await this.insertRecord('sync_attempts', resetSyncLease(sync, nowIso));
     }
@@ -185,9 +216,6 @@ export class RestoreRepository {
     }
     for (const audit of item.auditEvents) {
       await this.insertRecord('audit_events', audit);
-    }
-    for (const extraction of item.extractions) {
-      await this.insertRecord('extraction_records', extraction);
     }
   }
 
