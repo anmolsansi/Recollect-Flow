@@ -2,10 +2,7 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { waitUntil } from './browser-cdp.mjs';
-import {
-  createLocalAcceptanceRuntime,
-  runCommand,
-} from './browser-acceptance-runtime.mjs';
+import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
 import {
   captureFixture,
   apiRequest,
@@ -19,9 +16,9 @@ import {
 } from './bg14-browser-utils.mjs';
 import { recordBrowserFailure } from './bg14-browser-failure.mjs';
 
-// Pinned to the commit which introduced this public, deliberately non-secret fixture.
+// A reserved public-looking URL is intercepted only by the test-only Worker.
 const fixtureUrl =
-  'https://raw.githubusercontent.com/anmolsansi/Recollect-Flow/5d210b4c28d9eeb85fa05c82dde1361d423175e9/scripts/fixtures/bg14-public-source.html';
+  'https://example.com/bg14-fixture-' + randomUUID().replaceAll('-', '');
 const phrase = 'birch lantern quartz meadow';
 const captureToken = 'bg14-positive-capture-' + randomUUID();
 const adminToken = 'bg14-positive-admin-' + randomUUID();
@@ -34,6 +31,7 @@ async function exercise() {
     adminToken,
     localWorkerToken,
     enableScheduled: true,
+    fixtureWorker: true,
   });
   const itemId = await captureFixture(runtime.apiOrigin, captureToken, {
     source_type: 'url',
@@ -43,22 +41,8 @@ async function exercise() {
   });
   capturedItemId = itemId;
   assert.match(itemId, /^[0-9a-f-]{36}$/i);
-  // The acceptance scheduler runs all normal background functions, including
-  // Notion sync. Explicitly retire only this disposable item's sync job to
-  // prevent even a dummy-credential outbound delivery attempt.
-  await runCommand(process.platform === 'win32' ? 'npx.cmd' : 'npx', [
-    'wrangler',
-    'd1',
-    'execute',
-    'recollect-flow-prod',
-    '--local',
-    '--persist-to',
-    runtime.persistDir,
-    '--command',
-    "UPDATE sync_attempts SET status='failed' WHERE item_id='" +
-      itemId +
-      "' AND status='pending'",
-  ]);
+  // The fixture entrypoint invokes only the real acquisition service and
+  // a bounded upstream fetch mock; no delivery or external network occurs.
   const scheduledRoutes = [
     '/__scheduled?cron=17%20*%20*%20*%20*',
     '/cdn-cgi/local/scheduled?cron=17%20*%20*%20*%20*',
@@ -83,7 +67,7 @@ async function exercise() {
       return value.url_acquisition ? value : false;
     },
     {
-      timeoutMs: 65000,
+      timeoutMs: 15000,
       intervalMs: 350,
       description: 'public fixture source acquisition',
     },
@@ -104,7 +88,7 @@ async function exercise() {
   );
   report('real-url-acquisition', {
     status: result.url_acquisition.status,
-    source: 'pinned public repo fixture',
+    source: 'test-only Worker upstream response, real parser and D1',
   });
 
   browser = await openBrowser(runtime);
