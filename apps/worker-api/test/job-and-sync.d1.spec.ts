@@ -310,6 +310,56 @@ describe('OPE-246 durable D1 jobs', () => {
     ).toBe('failed');
   });
 
+  it('returns the same terminal status in detail, list, and status-filter results', async () => {
+    const itemId = 'cross-view-failed-item';
+    const jobId = 'cross-view-failed-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'cross-view-worker', 5, 1, T0);
+    expect(
+      await jobs.failProcessingJob(
+        jobId,
+        'cross-view-worker',
+        'MODEL_FAILED',
+        false,
+        5,
+        T0,
+      ),
+    ).toBe(true);
+    const app = createApp();
+    const options = { headers: { Authorization: 'Bearer test-admin-token' } };
+    const [detail, list, failed, pending] = await Promise.all([
+      app.request(`/api/v1/items/${itemId}`, options, env),
+      app.request('/api/v1/items?limit=20', options, env),
+      app.request('/api/v1/items?processing_status=failed&limit=20', options, env),
+      app.request('/api/v1/items?processing_status=pending&limit=20', options, env),
+    ]);
+    expect([detail.status, list.status, failed.status, pending.status]).toEqual([
+      200, 200, 200, 200,
+    ]);
+    const detailBody = (await detail.json()) as {
+      data: { item: { processing_status: string } };
+    };
+    const listBody = (await list.json()) as {
+      data: Array<{ id: string; processing_status: string }>;
+    };
+    const failedBody = (await failed.json()) as {
+      data: Array<{ id: string; processing_status: string }>;
+    };
+    const pendingBody = (await pending.json()) as {
+      data: Array<{ id: string; processing_status: string }>;
+    };
+    expect(detailBody.data.item.processing_status).toBe('failed');
+    expect(
+      listBody.data.find((item) => item.id === itemId)?.processing_status,
+    ).toBe('failed');
+    expect(
+      failedBody.data.find((item) => item.id === itemId)?.processing_status,
+    ).toBe('failed');
+    expect(pendingBody.data.some((item) => item.id === itemId)).toBe(false);
+  });
+
   it('retires old work and refuses stale completion after privacy epoch change', async () => {
     const itemId = 'atomic-privacy-item';
     const jobId = 'atomic-privacy-job';
