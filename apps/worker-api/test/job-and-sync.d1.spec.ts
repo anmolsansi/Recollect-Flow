@@ -272,7 +272,9 @@ describe('OPE-246 durable D1 jobs', () => {
         .first('processing_status'),
     ).toBe('failed');
     expect(
-      await env.DB.prepare('SELECT derived_status FROM bg13_processing_snapshot WHERE item_id = ?1')
+      await env.DB.prepare(
+        'SELECT derived_status FROM bg13_processing_snapshot WHERE item_id = ?1',
+      )
         .bind(itemId)
         .first('derived_status'),
     ).toBe('failed');
@@ -287,17 +289,23 @@ describe('OPE-246 durable D1 jobs', () => {
     await jobs.leaseProcessingJobs('enrich', 'privacy-worker', 5, 1, T0);
     await env.DB.prepare(
       "UPDATE items SET privacy_level = 'personal' WHERE id = ?1",
-    ).bind(itemId).run();
+    )
+      .bind(itemId)
+      .run();
     expect(
-      await env.DB.prepare('SELECT processing_generation FROM items WHERE id = ?1')
+      await env.DB.prepare(
+        'SELECT processing_generation FROM items WHERE id = ?1',
+      )
         .bind(itemId)
         .first('processing_generation'),
     ).toBe(2);
+    expect(await jobs.completeProcessingJob(jobId, 'privacy-worker', T0)).toBe(
+      false,
+    );
     expect(
-      await jobs.completeProcessingJob(jobId, 'privacy-worker', T0),
-    ).toBe(false);
-    expect(
-      await env.DB.prepare('SELECT last_error_code FROM processing_jobs WHERE id = ?1')
+      await env.DB.prepare(
+        'SELECT last_error_code FROM processing_jobs WHERE id = ?1',
+      )
         .bind(jobId)
         .first('last_error_code'),
     ).toBe('PROCESSING_SUPERSEDED');
