@@ -820,7 +820,7 @@ describe('private attachment lifecycle', () => {
       },
       env,
     );
-    expect(cookieDelete.status).toBe(401);
+    expect(cookieDelete.status).toBe(403);
 
     const adminDelete = await app.request(
       `/api/v1/attachments/${id}`,
@@ -915,7 +915,6 @@ describe('private attachment lifecycle', () => {
   });
 });
 
-
 describe('BG-15 browser upload write boundary', () => {
   const initBody = {
     filename: 'browser.pdf',
@@ -929,11 +928,20 @@ describe('BG-15 browser upload write boundary', () => {
     const env = testEnv(memoryBucket().bucket);
     const app = createApp(unusedCaptureRepository, () => repository);
     const cookie = await createAdminSessionCookie(app, env);
-    const request = (origin: string) => app.request('/api/v1/uploads/init', {
-      method: 'POST',
-      headers: { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' },
-      body: JSON.stringify(initBody),
-    }, env);
+    const request = (origin: string) =>
+      app.request(
+        '/api/v1/uploads/init',
+        {
+          method: 'POST',
+          headers: {
+            Cookie: cookie,
+            Origin: origin,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(initBody),
+        },
+        env,
+      );
     expect((await request('https://outside.example')).status).toBe(403);
     expect(repository.attachments.size).toBe(0);
     expect((await request('http://localhost')).status).toBe(201);
@@ -945,17 +953,30 @@ describe('BG-15 browser upload write boundary', () => {
     const env = testEnv(memoryBucket().bucket);
     const app = createApp(unusedCaptureRepository, () => repository);
     const cookie = await createAdminSessionCookie(app, env);
-    const response = await app.request('/api/v1/uploads/init', {
-      method: 'POST',
-      headers: { Cookie: cookie, 'Content-Type': 'application/json' },
-      body: JSON.stringify(initBody),
-    }, env);
+    const response = await app.request(
+      '/api/v1/uploads/init',
+      {
+        method: 'POST',
+        headers: { Cookie: cookie, 'Content-Type': 'application/json' },
+        body: JSON.stringify(initBody),
+      },
+      env,
+    );
     expect(response.status).toBe(403);
-    const mixed = await app.request('/api/v1/uploads/init', {
-      method: 'POST',
-      headers: { Cookie: cookie, Origin: 'http://localhost', Authorization: 'Bearer local-worker-secret', 'Content-Type': 'application/json' },
-      body: JSON.stringify(initBody),
-    }, env);
+    const mixed = await app.request(
+      '/api/v1/uploads/init',
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://localhost',
+          Authorization: 'Bearer local-worker-secret',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(initBody),
+      },
+      env,
+    );
     expect(mixed.status).toBe(401);
     expect(repository.attachments.size).toBe(0);
   });
