@@ -190,6 +190,7 @@ async function run() {
     'BG14_SYNTHETIC_SOURCE_UNAVAILABLE',
     'safe error code visible',
   );
+  await assertUiHas('Page fetch failed without saving page evidence.', 'safe failure-recovery guidance');
   report('atomic-failure', {
     job: 'failed',
     item: 'failed',
