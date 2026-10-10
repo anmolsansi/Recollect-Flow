@@ -6,7 +6,8 @@ This directory contains task-scoped verification evidence that is safe to keep i
 
 Status at the **BG-11 completion baseline**: BG-11 complete, BG-12 unlocked.
 **Current successor status:** [BG-12 contract complete](BG-12_FINAL_CLOSEOUT.md),
-[BG-13 persistence complete](BG-13_FINAL_CLOSEOUT.md), BG-14 unlocked.
+[BG-13 persistence complete](BG-13_FINAL_CLOSEOUT.md),
+[BG-14 browser acceptance complete](BG-14_FINAL_CLOSEOUT.md), BG-15 unlocked.
 
 - Authoritative closeout: [BG-11 FINAL CLOSEOUT](BG-11_FINAL_CLOSEOUT.md)
 - Detailed behavior and verification: [BG-11 URL Recovery](BG-11_URL_RECOVERY.md)
@@ -63,7 +64,11 @@ Status: **complete on main; BG-15 unlocked**.
   Only the upstream HTTP response is a deterministic test fixture; source
   parsing, D1 evidence, FTS and authenticated browser interactions are real.
   Arbitrary external sites and production connectivity are not claimed.
-- Full PR-head/merged-main CI is still needed for the completion gate.
+- [BG-14 final merged-main closeout](BG-14_FINAL_CLOSEOUT.md): 100/100.
+- [Passing exact-head PR CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061589399).
+- [Passing merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061802146).
+- BG-15 is unlocked; production deployment and external source reachability
+  remain separate operational acceptance gates.
 
 ## Priority 1 — verification foundation
 
