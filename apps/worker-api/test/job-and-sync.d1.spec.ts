@@ -269,6 +269,39 @@ describe('OPE-246 durable D1 jobs', () => {
     });
   });
 
+  it('completes a current save-only generation when AI is deliberately omitted', async () => {
+    const itemId = 'save-only-item';
+    await insertItem(itemId);
+    await env.DB.prepare(
+      "UPDATE items SET source_type = 'note', source_url = NULL, processing_status = 'pending' WHERE id = ?1",
+    ).bind(itemId).run();
+    await insertProcessingJob('save-only-optional-job', itemId, {
+      provider: 'none',
+      status: 'failed',
+    });
+    expect(
+      await env.DB.prepare(
+        'SELECT derived_status FROM bg13_processing_snapshot WHERE item_id = ?1',
+      ).bind(itemId).first('derived_status'),
+    ).toBe('complete');
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId).first('processing_status'),
+    ).toBe('complete');
+  });
+
+  it('cannot mark a URL item complete when acquisition was never enqueued', async () => {
+    const itemId = 'missing-acquire-item';
+    await insertItem(itemId);
+    await insertProcessingJob('optional-enrich-only', itemId, {
+      status: 'complete',
+    });
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId).first('processing_status'),
+    ).toBe('pending');
+  });
+
   it('keeps item, list status, and terminal job failure consistent', async () => {
     const itemId = 'atomic-terminal-item';
     const jobId = 'atomic-terminal-job';
