@@ -1851,7 +1851,7 @@ Implementation choices were resolved and reviewed against the merged implementat
 
 **Merged implementation:** [PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64) at `03d81805326cb6c6a3492eae323a3270a5b2baa1`.
 **Acceptance:** [passing PR-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061589399) and [BG-14 browser evidence](verification/BG-14_BROWSER_ACCEPTANCE.md).
-**Closure:** 99/100 checked; BG-14.100 waits for successful merged-main CI and the final closeout record. No production rollout is implied.
+**Closure:** 100/100 verified. [Merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061802146) passed at `03d81805326cb6c6a3492eae323a3270a5b2baa1`; the [final closeout](verification/BG-14_FINAL_CLOSEOUT.md) records BG-15 unlocked. No production rollout is implied.
 
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#20-bg-14--prove-the-repaired-workflow-in-a-browser).
@@ -1988,7 +1988,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-14.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-14.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-14.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-14.100` **Gate:** Check the parent completion boundary and record whether BG-15 is unlocked.
+- [x] `BG-14.100` **Gate:** Check the parent completion boundary and record whether BG-15 is unlocked.
 
 ## BG-15 — 100 executable microtasks
 
