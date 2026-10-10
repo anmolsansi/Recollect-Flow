@@ -7,10 +7,14 @@ and [PR #74](https://github.com/anmolsansi/Recollect-Flow/pull/74). It starts
 from BG-16's verified merged-main checkpoint
 `a1db965523103ae026c58cf599231393ca71c202`.
 
-**Status:** Implementation review and exact CI acceptance are in progress.
-The browser recovery module and UI are committed, but the feature is not
-declared complete until both PR-head and merged-main checks pass. No remote
-deployment or live personal capture was performed.
+**Status:** The scoped URL/text/note browser recovery implementation has
+passed [exact PR-head CI #38088786838](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38088786838)
+on commit `b739e5aafd94bb24db060c1ec7e72417a0a5373d`. Formatting, lint,
+typecheck, unit tests, Web build, D1 migrations, Chrome recovery acceptance
+and existing browser regressions all passed. This does **not** close parent
+BG-17: file upload/reselection and explicit expired-session acceptance
+remain unchecked. The final merged-main gate has not yet been established.
+No remote deployment or live personal capture was performed.
 
 ## Owner behavior
 
@@ -62,9 +66,11 @@ automated Chrome test must prove opt-in default off, editable draft reload,
 commit-response-loss replay to the **same capture ID**, clearing a confirmed
 operation, offline-before-send recovery and clearing when retention is off.
 
-The final issue/checklist reconciliation must cite exact successful PR-head
-and merged-main workflow runs. Earlier failed runs are diagnostic, not passing
-evidence.
+[Exact scoped PR-head CI #38088786838](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38088786838)
+passed all checks, including the recovery browser test. The final parent
+issue/checklist reconciliation still requires merged-main evidence and
+resolution of the explicitly open BG-17 substeps. Earlier failed runs are
+diagnostic, not passing evidence.
 
 ## Exclusions and follow-up
 
