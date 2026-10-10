@@ -1804,6 +1804,21 @@ the real fix; a suite that only checks headings does not establish the workflow.
 **Done when:** the original broken journeys have repeatable regression coverage and
 Priority 2 no longer relies on a manual assurance that the screen “looks right.”
 
+### Browser acceptance implementation note (BG-14)
+
+The task-scoped [BG-14 real-browser acceptance record](verification/BG-14_BROWSER_ACCEPTANCE.md)
+tracks the existing BG-07 PDF/PNG hash-download test, BG-11 keyboard recovery
+and the new isolated Chrome workflow (`npm run browser:workflow:test`).
+The new journey checks signed-cookie login, Inbox search, stale-version
+conflicts, atomic failed job/item status, owner-controlled retry,
+owner-source-text preservation, delete/restore and logged-out private reads.
+No external website is fetched by the synthetic failure/retry story.
+The positive acquired-HTML acceptance now uses the test-only Worker upstream
+fetch fixture and passed [focused Chrome proof](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38057058035).
+Real browser/API requests and source parsing are not mocked. Full PR-head
+and merged-main CI must still pass before BG-15 unlocks. No live third-party
+website reliability or production deployment is claimed.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-14](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-14--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.

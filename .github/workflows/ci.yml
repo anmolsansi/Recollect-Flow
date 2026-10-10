@@ -20,3 +20,14 @@ jobs:
       - run: google-chrome --version
       - run: npm run browser:download:test
       - run: npm run browser:source-recovery:test
+      - run: npm run browser:workflow:test
+      - run: npm run browser:acquisition:test
+      - run: npm run browser:workflow:test
+      - run: npm run browser:acquisition:test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: bg14-browser-failure
+          path: artifacts/bg14/
+          if-no-files-found: ignore
+          retention-days: 3

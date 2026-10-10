@@ -794,7 +794,14 @@ function ItemDetail() {
         {draft.source_type === 'url' && (
           <div style={{ display: 'grid', gap: 12, marginTop: 16 }}>
             <p role="status">
-              {sourceStatusMessage(detail.url_acquisition?.status ?? null)}
+              {detail.url_acquisition == null &&
+              detail.processing_jobs.some(
+                (job) =>
+                  job.jobType === 'acquire_url' &&
+                  job.visibleStatus === 'failed',
+              )
+                ? 'Page fetch failed without saving page evidence. Retry the fetch or supply text; the bookmark is safe.'
+                : sourceStatusMessage(detail.url_acquisition?.status ?? null)}
             </p>
             {detail.processing_jobs
               .filter(
