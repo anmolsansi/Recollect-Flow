@@ -332,12 +332,20 @@ describe('OPE-246 durable D1 jobs', () => {
     const [detail, list, failed, pending] = await Promise.all([
       app.request(`/api/v1/items/${itemId}`, options, env),
       app.request('/api/v1/items?limit=20', options, env),
-      app.request('/api/v1/items?processing_status=failed&limit=20', options, env),
-      app.request('/api/v1/items?processing_status=pending&limit=20', options, env),
+      app.request(
+        '/api/v1/items?processing_status=failed&limit=20',
+        options,
+        env,
+      ),
+      app.request(
+        '/api/v1/items?processing_status=pending&limit=20',
+        options,
+        env,
+      ),
     ]);
-    expect([detail.status, list.status, failed.status, pending.status]).toEqual([
-      200, 200, 200, 200,
-    ]);
+    expect([detail.status, list.status, failed.status, pending.status]).toEqual(
+      [200, 200, 200, 200],
+    );
     const detailBody = (await detail.json()) as {
       data: { item: { processing_status: string } };
     };
