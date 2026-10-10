@@ -39,7 +39,7 @@ async function show(itemId) {
   await navigate(browser, runtime.webOrigin + '/items/' + itemId);
   await waitFor(
     browser,
-    'Boolean(document.querySelector("h2")?.textContent==="Review")',
+    '[...document.querySelectorAll("h2")].some(h=>h.textContent?.trim()==="Review")',
     'real item detail',
   );
 }
