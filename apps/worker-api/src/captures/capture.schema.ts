@@ -1,15 +1,5 @@
 import { z } from 'zod';
-
-const categorySchema = z.enum([
-  'learn',
-  'build',
-  'try',
-  'buy',
-  'visit',
-  'share_later',
-  'project_idea',
-  'reference',
-]);
+import { captureCategorySchema } from '@recollect/contracts';
 
 export const captureSchema = z
   .object({
@@ -20,7 +10,7 @@ export const captureSchema = z
     shared_text: z.string().max(100_000).optional(),
     attachment_id: z.string().uuid().optional(),
     user_reason: z.string().max(2_000).optional(),
-    quick_category: categorySchema.optional(),
+    quick_category: captureCategorySchema.optional(),
     privacy_level: z
       .enum(['unknown', 'public', 'personal', 'sensitive'])
       .default('unknown'),
