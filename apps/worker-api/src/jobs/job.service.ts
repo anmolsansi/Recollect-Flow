@@ -896,7 +896,8 @@ export class JobService {
           : 'sync_terminally_failed';
     const retryColumn =
       table === 'sync_attempts' ? ', retry_after_at = ?8' : '';
-    const currentGuard = table === 'processing_jobs' ? ` AND ${currentJobGuard}` : '';
+    const currentGuard =
+      table === 'processing_jobs' ? ` AND ${currentJobGuard}` : '';
     const bindings: unknown[] = [
       shouldRetry ? 'pending' : 'failed',
       attempts,
@@ -944,7 +945,8 @@ export class JobService {
     now: Date,
   ): Promise<boolean> {
     const nowIso = now.toISOString();
-    const currentGuard = table === 'processing_jobs' ? ` AND ${currentJobGuard}` : '';
+    const currentGuard =
+      table === 'processing_jobs' ? ` AND ${currentJobGuard}` : '';
     const result = await this.db
       .prepare(
         `UPDATE ${table}
