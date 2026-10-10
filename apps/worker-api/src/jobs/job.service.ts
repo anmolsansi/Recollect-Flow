@@ -552,7 +552,8 @@ export class JobService {
              provider_name = excluded.provider_name,
              model_name = excluded.model_name,
              error_code = excluded.error_code,
-             updated_at = excluded.updated_at`,
+             updated_at = excluded.updated_at
+           RETURNING id`,
           )
           .bind(
             crypto.randomUUID(),
@@ -628,7 +629,8 @@ export class JobService {
              completed_at = ?1, last_error_code = NULL, updated_at = ?1
          WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
            AND lease_expires_at > ?1 AND item_id = ?4
-           AND ${currentJobGuard}`,
+           AND ${currentJobGuard}
+         RETURNING id`,
         )
         .bind(nowIso, jobId, ownerId, itemId),
     );
@@ -636,8 +638,8 @@ export class JobService {
     const batch = await this.db.batch(stmts);
     const extractionWritesAccepted = batch
       .slice(0, results.length)
-      .every((result) => result.meta.changes === 1);
-    const completionAccepted = batch[batch.length - 1]?.meta.changes === 1;
+      .every((result) => result.results?.length === 1);
+    const completionAccepted = batch[batch.length - 1]?.results?.length === 1;
     return extractionWritesAccepted && completionAccepted;
   }
 
