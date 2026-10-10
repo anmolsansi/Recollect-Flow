@@ -5,7 +5,6 @@ import type { AppContext, Env } from '../env';
 import {
   requireAdminToken,
   requireAttachmentContentRead,
-  requireCaptureToken,
   requireCaptureWrite,
 } from '../shared/auth';
 import { AppError } from '../shared/errors';
@@ -267,7 +266,7 @@ export function attachmentRoutes(
 
   router.delete(
     '/attachments/:id',
-    requireCaptureToken,
+    requireCaptureWrite,
     requireAdminToken,
     async (context) => {
       const repository = repositoryFactory(context.env);
