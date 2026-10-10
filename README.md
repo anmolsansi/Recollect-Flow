@@ -10,7 +10,8 @@ is complete and verified on merged `main`. The
 covers required failures, retries, job leases, limited URL coverage,
 processing generations and attachment outcomes. BG-13 has now connected the contract to atomic persisted item/job state and
 consistent list/detail/filter projections. **This is not a production rollout.**
-BG-14's browser acceptance implementation has merged; see the
+BG-14's browser acceptance is 100/100 complete on `main`, unlocking
+BG-15. See the
 [BG-14 acceptance record](docs/verification/BG-14_BROWSER_ACCEPTANCE.md)
 and [final closeout](docs/verification/BG-14_FINAL_CLOSEOUT.md).
 See [current build status](docs/BUILD_STATUS.md).
