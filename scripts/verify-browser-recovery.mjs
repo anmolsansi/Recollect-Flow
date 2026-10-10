@@ -111,6 +111,11 @@ try {
   await enterText(unsentDraft);
   await evaluate(browser, 'new Promise(resolve => setTimeout(resolve, 750))');
   await begin();
+  await waitFor(
+    browser,
+    `document.querySelector('[name=shared_text]').value === ${JSON.stringify(unsentDraft)}`,
+    'editable draft restored after reload',
+  );
   assert.equal(
     await evaluate(
       browser,
