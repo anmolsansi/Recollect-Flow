@@ -357,7 +357,7 @@ export class JobService {
          SET status = 'complete', lease_owner = NULL, lease_expires_at = NULL,
              completed_at = ?1, last_error_code = NULL, updated_at = ?1
          WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
-           AND lease_expires_at > ?1`,
+           AND lease_expires_at > ?1 AND ${currentJobGuard}`,
       )
       .bind(nowIso, jobId, ownerId)
       .run();
