@@ -1,5 +1,6 @@
 /* global process, console, URL, URLSearchParams */
 import assert from 'node:assert/strict';
+import { recordBrowserFailure } from './bg14-browser-failure.mjs';
 import { randomUUID } from 'node:crypto';
 import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
 import {
