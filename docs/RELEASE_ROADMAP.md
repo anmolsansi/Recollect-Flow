@@ -89,6 +89,17 @@ regressions. The [BG-16 final record](verification/BG-16_FINAL_CLOSEOUT.md)
 covers file paths, outcome semantics, privacy, error focus and the handoff to
 BG-17. [Implementation merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38082460334) and [documentation merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38086474190) both passed. [Documentation PR #71](https://github.com/anmolsansi/Recollect-Flow/pull/71) is merged. With the BG-16 final checklist gate merged, BG-17 is unlocked. Production deployment and external-provider success are not implied.
 
+## BG-17 stable browser retry implementation (PR #74)
+
+[PR #74](https://github.com/anmolsansi/Recollect-Flow/pull/74)
+implements opted-in browser recovery of URL, note and pasted-text captures
+while preserving the immutable logical operation on retries. Unfinished
+editable drafts are stored separately from submitted requests. Expiry,
+quota and logout clearing are explicit. [Issue #73](https://github.com/anmolsansi/Recollect-Flow/issues/73)
+tracks the 100 checklist steps; CI and merge evidence are required before
+declaring this milestone fully complete. This does not implement BG-18
+file uploads or authorize production deployment.
+
 ## Product releases
 
 ### V0 — Technical spike
