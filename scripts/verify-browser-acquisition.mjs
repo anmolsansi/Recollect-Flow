@@ -111,16 +111,29 @@ async function exercise() {
 
   const unavailable = await waitUntil(
     async () => {
-      const value = await apiRequest(runtime.apiOrigin, adminToken, 'GET', '/items/' + unavailableId);
+      const value = await apiRequest(
+        runtime.apiOrigin,
+        adminToken,
+        'GET',
+        '/items/' + unavailableId,
+      );
       return value.url_acquisition ? value : false;
     },
-    { timeoutMs: 15000, intervalMs: 350, description: 'unavailable URL evidence' },
+    {
+      timeoutMs: 15000,
+      intervalMs: 350,
+      description: 'unavailable URL evidence',
+    },
   );
   assert.equal(unavailable.url_acquisition.status, 'unavailable');
   assert.equal(unavailable.url_acquisition.coverage, 'url_only');
   assert.equal(unavailable.item.source_url, unavailableUrl);
   assert.equal(unavailable.url_acquisition.acquired_text, null);
-  report('unavailable-source', {status:'unavailable',coverage:'url_only',original_url:'preserved'});
+  report('unavailable-source', {
+    status: 'unavailable',
+    coverage: 'url_only',
+    original_url: 'preserved',
+  });
 
   browser = await openBrowser(runtime);
   await login(browser, runtime.webOrigin, adminToken);
@@ -148,7 +161,7 @@ async function exercise() {
     'document.body.innerText.includes("url_only")',
     'limited source coverage is visible',
   );
-  report('unavailable-browser', {fallback:'visible',source:'preserved'});
+  report('unavailable-browser', { fallback: 'visible', source: 'preserved' });
   await navigate(browser, runtime.webOrigin + '/');
   await waitFor(
     browser,
