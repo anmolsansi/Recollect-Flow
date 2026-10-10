@@ -874,7 +874,8 @@ export class JobService {
          SET status = ?1, attempts = ?2, available_at = ?3,
              last_error_code = ?4, lease_owner = NULL,
              lease_expires_at = NULL, updated_at = ?5${retryColumn}
-         WHERE id = ?6 AND lease_owner = ?7 AND status = 'processing'`,
+         WHERE id = ?6 AND lease_owner = ?7 AND status = 'processing'
+           AND lease_expires_at > ?5`,
       )
       .bind(...bindings)
       .run();
