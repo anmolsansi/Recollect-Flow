@@ -1849,6 +1849,11 @@ Implementation choices were resolved and reviewed against the merged implementat
 
 ## BG-14 — 100 executable microtasks
 
+**Merged implementation:** [PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64) at `03d81805326cb6c6a3492eae323a3270a5b2baa1`.
+**Acceptance:** [passing PR-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061589399) and [BG-14 browser evidence](verification/BG-14_BROWSER_ACCEPTANCE.md).
+**Closure:** 99/100 checked; BG-14.100 waits for successful merged-main CI and the final closeout record. No production rollout is implied.
+
+
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#20-bg-14--prove-the-repaired-workflow-in-a-browser).
 
 These unchecked steps inherit this task's **what, why, when, where and proof** above.
@@ -1857,132 +1862,132 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-14 / 01 — Establish task context
 
-- [ ] `BG-14.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-14.002` **Dependency:** Verify BG-13's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-14.003` **Baseline:** Record the actual checkout or release candidate used for BG-14.
-- [ ] `BG-14.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-14.005` **Evidence:** Check whether existing evidence already satisfies any BG-14 step; reference it instead of manufacturing work.
-- [ ] `BG-14.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-14.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-14.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-14.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-14.010` **Tracking:** Open a BG-14 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-14.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-14.002` **Dependency:** Verify BG-13's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-14.003` **Baseline:** Record the actual checkout or release candidate used for BG-14.
+- [x] `BG-14.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-14.005` **Evidence:** Check whether existing evidence already satisfies any BG-14 step; reference it instead of manufacturing work.
+- [x] `BG-14.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-14.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-14.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-14.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-14.010` **Tracking:** Open a BG-14 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-14 / 02 — Harness setup
 
-- [ ] `BG-14.011` Locate existing browser harness.
-- [ ] `BG-14.012` Choose isolated local state.
-- [ ] `BG-14.013` Choose dummy auth configuration.
-- [ ] `BG-14.014` Choose mock upstream responses.
-- [ ] `BG-14.015` Start Worker on assigned port.
-- [ ] `BG-14.016` Start Web with matching proxy.
-- [ ] `BG-14.017` Record owned process identifiers.
-- [ ] `BG-14.018` Verify readiness before browser launch.
-- [ ] `BG-14.019` Create isolated browser profile.
-- [ ] `BG-14.020` Ensure no production credential inheritance.
+- [x] `BG-14.011` Locate existing browser harness.
+- [x] `BG-14.012` Choose isolated local state.
+- [x] `BG-14.013` Choose dummy auth configuration.
+- [x] `BG-14.014` Choose mock upstream responses.
+- [x] `BG-14.015` Start Worker on assigned port.
+- [x] `BG-14.016` Start Web with matching proxy.
+- [x] `BG-14.017` Record owned process identifiers.
+- [x] `BG-14.018` Verify readiness before browser launch.
+- [x] `BG-14.019` Create isolated browser profile.
+- [x] `BG-14.020` Ensure no production credential inheritance.
 
 #### BG-14 / 03 — Fixture preparation
 
-- [ ] `BG-14.021` Create text fixture.
-- [ ] `BG-14.022` Create parseable PDF fixture.
-- [ ] `BG-14.023` Create screenshot fixture.
-- [ ] `BG-14.024` Create controlled URL fixture.
-- [ ] `BG-14.025` Include internal searchable phrase.
-- [ ] `BG-14.026` Include owner override fixture.
-- [ ] `BG-14.027` Include failed processing fixture.
-- [ ] `BG-14.028` Include canonical duplicate fixture.
-- [ ] `BG-14.029` Record fixture IDs safely.
-- [ ] `BG-14.030` Record original file hashes.
+- [x] `BG-14.021` Create text fixture.
+- [x] `BG-14.022` Create parseable PDF fixture.
+- [x] `BG-14.023` Create screenshot fixture.
+- [x] `BG-14.024` Create controlled URL fixture.
+- [x] `BG-14.025` Include internal searchable phrase.
+- [x] `BG-14.026` Include owner override fixture.
+- [x] `BG-14.027` Include failed processing fixture.
+- [x] `BG-14.028` Include canonical duplicate fixture.
+- [x] `BG-14.029` Record fixture IDs safely.
+- [x] `BG-14.030` Record original file hashes.
 
 #### BG-14 / 04 — Real authentication
 
-- [ ] `BG-14.031` Open actual login form.
-- [ ] `BG-14.032` Enter dummy admin token.
-- [ ] `BG-14.033` Submit through UI.
-- [ ] `BG-14.034` Wait for authenticated Inbox.
-- [ ] `BG-14.035` Verify session cookie behavior.
-- [ ] `BG-14.036` Avoid mocked login response.
-- [ ] `BG-14.037` Reload authenticated page.
-- [ ] `BG-14.038` Check no token in URL.
-- [ ] `BG-14.039` Check no token in storage.
-- [ ] `BG-14.040` Verify unauthorized session handling.
+- [x] `BG-14.031` Open actual login form.
+- [x] `BG-14.032` Enter dummy admin token.
+- [x] `BG-14.033` Submit through UI.
+- [x] `BG-14.034` Wait for authenticated Inbox.
+- [x] `BG-14.035` Verify session cookie behavior.
+- [x] `BG-14.036` Avoid mocked login response.
+- [x] `BG-14.037` Reload authenticated page.
+- [x] `BG-14.038` Check no token in URL.
+- [x] `BG-14.039` Check no token in storage.
+- [x] `BG-14.040` Verify unauthorized session handling.
 
 #### BG-14 / 05 — Attachment story
 
-- [ ] `BG-14.041` Open file item detail.
-- [ ] `BG-14.042` Locate original Download control.
-- [ ] `BG-14.043` Download original PDF.
-- [ ] `BG-14.044` Compare PDF hash.
-- [ ] `BG-14.045` Open image detail.
-- [ ] `BG-14.046` Download original image.
-- [ ] `BG-14.047` Compare image hash.
-- [ ] `BG-14.048` Repeat after page reload.
-- [ ] `BG-14.049` Check missing attachment error.
-- [ ] `BG-14.050` Verify anonymous original denial.
+- [x] `BG-14.041` Open file item detail.
+- [x] `BG-14.042` Locate original Download control.
+- [x] `BG-14.043` Download original PDF.
+- [x] `BG-14.044` Compare PDF hash.
+- [x] `BG-14.045` Open image detail.
+- [x] `BG-14.046` Download original image.
+- [x] `BG-14.047` Compare image hash.
+- [x] `BG-14.048` Repeat after page reload.
+- [x] `BG-14.049` Check missing attachment error.
+- [x] `BG-14.050` Verify anonymous original denial.
 
 #### BG-14 / 06 — URL and search
 
-- [ ] `BG-14.051` Save controlled public URL.
-- [ ] `BG-14.052` Trigger tracked acquisition work.
-- [ ] `BG-14.053` Wait for accepted evidence.
-- [ ] `BG-14.054` Search internal phrase.
-- [ ] `BG-14.055` Confirm exact expected item.
-- [ ] `BG-14.056` Inspect source coverage.
-- [ ] `BG-14.057` Inspect acquired text.
-- [ ] `BG-14.058` Test unavailable page fixture.
-- [ ] `BG-14.059` Confirm limited coverage message.
-- [ ] `BG-14.060` Confirm original URL preserved.
+- [x] `BG-14.051` Save controlled public URL.
+- [x] `BG-14.052` Trigger tracked acquisition work.
+- [x] `BG-14.053` Wait for accepted evidence.
+- [x] `BG-14.054` Search internal phrase.
+- [x] `BG-14.055` Confirm exact expected item.
+- [x] `BG-14.056` Inspect source coverage.
+- [x] `BG-14.057` Inspect acquired text.
+- [x] `BG-14.058` Test unavailable page fixture.
+- [x] `BG-14.059` Confirm limited coverage message.
+- [x] `BG-14.060` Confirm original URL preserved.
 
 #### BG-14 / 07 — Failure and edits
 
-- [ ] `BG-14.061` Trigger controlled processing failure.
-- [ ] `BG-14.062` Inspect failed job state.
-- [ ] `BG-14.063` Inspect aggregate item state.
-- [ ] `BG-14.064` Verify valid next action.
-- [ ] `BG-14.065` Retry recoverable condition.
-- [ ] `BG-14.066` Wait for convergence.
-- [ ] `BG-14.067` Edit derived title.
-- [ ] `BG-14.068` Reprocess eligible item.
-- [ ] `BG-14.069` Verify owner title survives.
-- [ ] `BG-14.070` Verify raw evidence unchanged.
+- [x] `BG-14.061` Trigger controlled processing failure.
+- [x] `BG-14.062` Inspect failed job state.
+- [x] `BG-14.063` Inspect aggregate item state.
+- [x] `BG-14.064` Verify valid next action.
+- [x] `BG-14.065` Retry recoverable condition.
+- [x] `BG-14.066` Wait for convergence.
+- [x] `BG-14.067` Edit derived title.
+- [x] `BG-14.068` Reprocess eligible item.
+- [x] `BG-14.069` Verify owner title survives.
+- [x] `BG-14.070` Verify raw evidence unchanged.
 
 #### BG-14 / 08 — Lifecycle and access
 
-- [ ] `BG-14.071` Soft-delete synthetic item.
-- [ ] `BG-14.072` Verify normal search exclusion.
-- [ ] `BG-14.073` Verify Deleted filter membership.
-- [ ] `BG-14.074` Restore current item version.
-- [ ] `BG-14.075` Verify search reappearance.
-- [ ] `BG-14.076` Log out through UI.
-- [ ] `BG-14.077` Request private content again.
-- [ ] `BG-14.078` Confirm authenticated data denied.
-- [ ] `BG-14.079` Check keyboard focus behavior.
-- [ ] `BG-14.080` Check narrow-screen overflow.
+- [x] `BG-14.071` Soft-delete synthetic item.
+- [x] `BG-14.072` Verify normal search exclusion.
+- [x] `BG-14.073` Verify Deleted filter membership.
+- [x] `BG-14.074` Restore current item version.
+- [x] `BG-14.075` Verify search reappearance.
+- [x] `BG-14.076` Log out through UI.
+- [x] `BG-14.077` Request private content again.
+- [x] `BG-14.078` Confirm authenticated data denied.
+- [x] `BG-14.079` Check keyboard focus behavior.
+- [x] `BG-14.080` Check narrow-screen overflow.
 
 #### BG-14 / 09 — Repeatability
 
-- [ ] `BG-14.081` Capture failing assertion context.
-- [ ] `BG-14.082` Save safe browser error log.
-- [ ] `BG-14.083` Save relevant response outcomes.
-- [ ] `BG-14.084` Save only useful screenshots.
-- [ ] `BG-14.085` Clear only owned fixtures.
-- [ ] `BG-14.086` Stop owned server processes.
-- [ ] `BG-14.087` Close isolated browser profile.
-- [ ] `BG-14.088` Run harness again cleanly.
-- [ ] `BG-14.089` Confirm repeat-run independence.
-- [ ] `BG-14.090` Index browser acceptance evidence.
+- [x] `BG-14.081` Capture failing assertion context.
+- [x] `BG-14.082` Save safe browser error log.
+- [x] `BG-14.083` Save relevant response outcomes.
+- [x] `BG-14.084` Save only useful screenshots.
+- [x] `BG-14.085` Clear only owned fixtures.
+- [x] `BG-14.086` Stop owned server processes.
+- [x] `BG-14.087` Close isolated browser profile.
+- [x] `BG-14.088` Run harness again cleanly.
+- [x] `BG-14.089` Confirm repeat-run independence.
+- [x] `BG-14.090` Index browser acceptance evidence.
 
 #### BG-14 / 10 — Verify and close this task
 
-- [ ] `BG-14.091` **Review:** Compare the completed checklist with BG-14's stated outcome; identify uncovered behavior.
-- [ ] `BG-14.092` **Verification:** Run or inspect the focused proof required by BG-14; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-14.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-14.094` **Integrity:** Check that BG-14 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-14.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-14.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-14.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-14.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-14.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-14.091` **Review:** Compare the completed checklist with BG-14's stated outcome; identify uncovered behavior.
+- [x] `BG-14.092` **Verification:** Run or inspect the focused proof required by BG-14; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-14.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-14.094` **Integrity:** Check that BG-14 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-14.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-14.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-14.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-14.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-14.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-14.100` **Gate:** Check the parent completion boundary and record whether BG-15 is unlocked.
 
 ## BG-15 — 100 executable microtasks
