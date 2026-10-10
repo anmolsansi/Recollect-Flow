@@ -65,6 +65,17 @@ documents the Web form contract, evidence and residual scope.
 BG-17 owns draft lifetime and safe retry across reloads; BG-18 owns
 attachments. No production deployment was authorized or performed.
 
+## BG-17 stable browser retry checkpoint
+
+[Issue #73](https://github.com/anmolsansi/Recollect-Flow/issues/73)
+and [PR #74](https://github.com/anmolsansi/Recollect-Flow/pull/74)
+implement owner opt-in IndexedDB recovery for submitted operations and
+editable drafts after BG-16. Save identity stays stable, replay uses the same
+payload, and local retention expires after seven days with privacy,
+count and size bounds. Browser Chrome/D1 testing and exact CI remain the
+acceptance gates. File upload and hash reselection belong to BG-18, not
+this browser text-capture implementation. No production deployment.
+
 ## Deliverables
 
 Create:
