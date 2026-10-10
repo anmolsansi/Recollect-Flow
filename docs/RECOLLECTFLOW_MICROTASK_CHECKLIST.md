@@ -1993,11 +1993,11 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 ### BG-15 evidence reconciliation (October 10, 2026)
 
-- **91/100 verified or resolved.** Do not interpret this as 100 browser form actions delivered.
+- **92/100 verified or resolved.** Do not interpret this as 100 browser form actions delivered.
 - [Implementation PR #66](https://github.com/anmolsansi/Recollect-Flow/pull/66) merged at `389d5f7f899ce07b878cb475bf25f2e84fa1cf07` after [passing exact-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38063926575).
 - BG-15.073–.079 remain unchecked because no browser capture/upload form exists yet. BG-16, BG-17, and BG-18 own in-flight draft recovery, attachment identity, reauthentication and safe retry UI. This is an explicit boundary, not evidence that UI behavior was tested.
 - BG-15.089 remains unchecked pending a dedicated browser URL/query-string secret scan; BG-14's existing browser storage scan establishes BG-15.088.
-- BG-15.100 remains unchecked until exact merged-main CI and the final documentation reconciliation are verified.
+- BG-15.100 is reconciled using [passing merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38064153798) on implementation merge `389d5f7f899ce07b878cb475bf25f2e84fa1cf07`. Final docs PR CI and merged-main verification are tracked separately.
 - [Auth matrix and evidence](verification/BG-15_BROWSER_WRITE_AUTH.md) records signed-cookie write behavior and the strict Worker/configured-Web Origin allowlist. This authorization milestone does not deploy V1 or authorize production data changes.
 
 
@@ -2135,7 +2135,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-15.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-15.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-15.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-15.100` **Gate:** Check the parent completion boundary and record whether BG-16 is unlocked.
+- [x] `BG-15.100` **Gate:** Check the parent completion boundary and record whether BG-16 is unlocked.
 
 ## BG-16 — 100 executable microtasks
 
