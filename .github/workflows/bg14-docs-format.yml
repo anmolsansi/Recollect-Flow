@@ -1,0 +1,47 @@
+name: BG-14 documentation formatter (temporary)
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bg14-docs-format-final
+  cancel-in-progress: true
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: |
+          npx prettier --write README.md \
+            docs/RECOLLECTFLOW_BUILD_GUIDE.md \
+            docs/RECOLLECTFLOW_ENGINEERING_PLAN.md \
+            docs/RECOLLECTFLOW_MICROTASK_CHECKLIST.md \
+            docs/RELEASE_ROADMAP.md \
+            docs/verification/BG-14_BROWSER_ACCEPTANCE.md \
+            docs/verification/BG-14_FINAL_CLOSEOUT.md \
+            docs/verification/README.md
+      - name: Commit Markdown formatting
+        run: |
+          if git diff --quiet; then
+            echo 'Documents already formatted'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add README.md docs/RECOLLECTFLOW_BUILD_GUIDE.md docs/RECOLLECTFLOW_ENGINEERING_PLAN.md docs/RECOLLECTFLOW_MICROTASK_CHECKLIST.md docs/RELEASE_ROADMAP.md docs/verification/BG-14_BROWSER_ACCEPTANCE.md docs/verification/BG-14_FINAL_CLOSEOUT.md docs/verification/README.md
+          git commit -m 'style(bg-14): normalize final acceptance closeout Markdown (#63)'
+          git push origin HEAD:main
