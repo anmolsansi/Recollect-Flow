@@ -81,6 +81,13 @@ async function run() {
   await login(browser, runtime.webOrigin, adminToken);
   assert.equal(await visible('location.href.includes("token=")'), false);
   report('real-login', { cookie: 'httpOnly/strict', storage: 'no token' });
+  const missingAttachment = await visible(
+    'fetch("/api/v1/attachments/' +
+      randomUUID() +
+      '/content",{credentials:"include"}).then(r=>r.status)',
+  );
+  assert.equal(missingAttachment, 404, 'Authenticated missing original must return 404');
+  report('missing-original', {status:404,corrupt_bytes_exposed:false});
 
   await show(textItemId);
   await waitFor(
