@@ -77,6 +77,25 @@ may store one synthetic-data-only screenshot and sanitized JSON under
 All fixture/process/profile cleanup is owned by the harness and invoked in
 `finally`.
 
+## Pinned-source probe and network constraint
+
+A separate opt-in command, `npm run browser:acquisition:test`, uses a static
+HTML fixture pinned to commit `5d210b4c28d9eeb85fa05c82dde1361d423175e9`.
+It starts the **actual scheduled Worker** on disposable local state, retires
+only the disposable fixture's Notion sync attempt to prevent outbound delivery,
+and requires source acquisition, browser detail text and Inbox search.
+
+The focused proof executed in GitHub Actions
+[run 38056407620](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38056407620),
+but **failed**: the URL job returned pending with
+`SOURCE_NETWORK_ERROR`; no `url_acquisitions` row was committed. This
+is an explicitly **unpassed** URL-acquisition acceptance check, not a silent
+skip or proof that the Web UI is correct under successful acquisition.
+A non-network fixture or known-safe upstream mock at the worker boundary is
+still needed to validate the positive flow repeatably. The temporary focused
+workflow was removed from the PR after capturing this evidence; the opt-in
+script remains available for an environment with permitted outbound access.
+
 ## Important limit: upstream source acquisition
 
 BG-14's positive acquired-HTML and internal-page search story must be
