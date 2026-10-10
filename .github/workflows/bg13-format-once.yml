@@ -1,0 +1,38 @@
+name: BG-13 format once
+
+on:
+  push:
+    branches:
+      - agent/bg-13-atomic-transitions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bg13-format-once
+  cancel-in-progress: true
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/bg-13-atomic-transitions
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write apps/worker-api/test/job-and-sync.d1.spec.ts apps/worker-api/src/jobs/job.service.ts apps/worker-api/src/jobs/job.admin.service.ts apps/worker-api/test/job.service.test.ts apps/worker-api/src/jobs/enrich.service.ts apps/worker-api/src/jobs/capacity-job.service.ts apps/worker-api/src/jobs/extraction/source-acquisition.service.ts
+      - name: Commit format normalization
+        run: |
+          if git diff --quiet; then
+            echo 'No formatting changes.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/worker-api
+          git commit -m 'style(bg13): normalize touched TS files (#61)'
+          git push origin HEAD:agent/bg-13-atomic-transitions
