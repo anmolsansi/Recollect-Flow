@@ -52,6 +52,19 @@ The implementation passed exact PR-head CI. The final closeout reconciles
 recovery and URL credential inspection. BG-16 is unlocked only after the
 merged-main and documentation CI gates pass.
 
+## BG-16 Web browser capture implementation
+
+The URL, pasted-text and note Web form has merged through
+[PR #70](https://github.com/anmolsansi/Recollect-Flow/pull/70),
+with [PR-head CI #38082248375](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38082248375)
+passing the new isolated-Chrome/D1 capture test and full repository checks.
+[Issue #69](https://github.com/anmolsansi/Recollect-Flow/issues/69) tracks
+the 100 authoritative microtasks in 50 pairs.
+[BG-16 acceptance and closeout](verification/BG-16_FINAL_CLOSEOUT.md)
+documents the Web form contract, evidence and residual scope.
+BG-17 owns draft lifetime and safe retry across reloads; BG-18 owns
+attachments. No production deployment was authorized or performed.
+
 ## Deliverables
 
 Create:
