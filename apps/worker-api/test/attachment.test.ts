@@ -916,6 +916,35 @@ describe('private attachment lifecycle', () => {
 });
 
 describe('BG-15 browser upload write boundary', () => {
+  it('accepts the explicitly configured Web origin through a proxy', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const env = {
+      ...testEnv(memoryBucket().bucket),
+      WEB_INBOX_BASE_URL: 'http://127.0.0.1:5173',
+    };
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+    const response = await app.request(
+      '/api/v1/uploads/init',
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://127.0.0.1:5173',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename: 'proxy.pdf',
+          mime_type: 'application/pdf',
+          size_bytes: 12,
+          source_type: 'file',
+        }),
+      },
+      env,
+    );
+    expect(response.status).toBe(201);
+  });
+
   it('accepts owner-cookie raw bytes and finalize with exact Origin', async () => {
     const repository = new MemoryAttachmentRepository();
     const r2 = memoryBucket();
