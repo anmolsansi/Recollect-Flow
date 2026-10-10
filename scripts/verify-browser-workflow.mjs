@@ -1,4 +1,4 @@
-/* global process, console, URL, URLSearchParams */
+/* global process, console, URLSearchParams */
 import assert from 'node:assert/strict';
 import { recordBrowserFailure } from './bg14-browser-failure.mjs';
 import { randomUUID } from 'node:crypto';
@@ -323,13 +323,9 @@ async function run() {
 try {
   await run();
 } catch (error) {
-  console.error(
-    'BG14_BROWSER_FAILURE ' +
-      JSON.stringify({
-        reason: error instanceof Error ? error.message : String(error),
-        requests: safeDiagnostics(browser),
-      }),
-  );
+  const reason = error instanceof Error ? error.message : String(error);
+  await recordBrowserFailure(browser, reason).catch(() => undefined);
+  console.error('BG14_BROWSER_FAILURE ' + JSON.stringify({reason, requests: safeDiagnostics(browser)}));
   process.exitCode = 1;
 } finally {
   await browser?.close();
