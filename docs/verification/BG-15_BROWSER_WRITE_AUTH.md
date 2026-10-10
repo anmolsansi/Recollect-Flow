@@ -28,15 +28,13 @@ The existing `POST /api/v1/admin/session` requires the admin secret to sign in. 
 
 ## Authentication matrix
 
-| Caller | Capture/upload | Admin write |
-| --- | --- | --- |
-| Valid capture bearer, absent Origin | Allowed | Denied |
-| Valid admin bearer, absent Origin | Allowed | Allowed |
-| Valid owner signed cookie, exact Origin | Allowed | Allowed |
-| Signed cookie, absent/null/foreign Origin | Denied 403 | Denied 403 |
-| Invalid explicit bearer alongside valid cookie | Denied | Denied |
-| Worker bearer | Denied | Denied |
-| Anonymous or expired/tampered cookie | Denied 401 | Denied 403 |
+- A valid capture bearer without Origin may capture and upload but cannot perform admin writes.
+- A valid admin bearer without Origin may capture, upload, and perform admin writes.
+- A valid signed owner cookie with an exact matching Origin may perform both.
+- Signed cookies with missing, null, or foreign Origin receive 403 on writes.
+- An invalid explicit bearer cannot fall back to a valid cookie.
+- Local-worker bearer tokens cannot capture or upload.
+- Anonymous, expired, or tampered cookies cannot capture or upload.
 
 ## Verification and remaining gate
 
