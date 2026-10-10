@@ -1,4 +1,4 @@
-/* global process, console, URL, HTMLTextAreaElement */
+/* global process, console, URL, URLSearchParams */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
@@ -53,7 +53,7 @@ async function run() {
   report('real-login',{cookie:'httpOnly/strict',storage:'no token'});
 
   await show(textItemId);
-  await assertUiHas('RecollectFlow','note item visible in detail');
+  await waitFor(browser,'Boolean(document.querySelector("textarea[readonly]")?.value.includes("RecollectFlow"))','note raw evidence visible in detail');
   // Concurrency: the server changes while a stale browser draft is still open.
   const before=await detail(textItemId);
   const externalTitle='Concurrent owner title ' + marker;
@@ -135,7 +135,7 @@ async function run() {
   await clickButton(browser,'Soft delete');
   await assertUiHas('Item moved to Deleted.','soft delete feedback');
   assert.equal((await detail(urlItemId)).item.lifecycle_status,'Deleted');
-  assert.equal((await inbox('',internalPhrase)).data?.some(x=>x.id===urlItemId) ?? false,false);
+  assert.equal((await inbox('',internalPhrase)).some(x=>x.id===urlItemId),false);
   // Search envelope is an array for /items; apiRequest returns data array.
   const deleted=await inbox('Deleted');
   assert.ok(Array.isArray(deleted) && deleted.some(x=>x.id===urlItemId),'Deleted filter did not include fixture');
