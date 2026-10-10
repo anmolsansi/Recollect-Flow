@@ -2,6 +2,17 @@
 
 RecollectFlow is a private, zero-cost-first capture and recall system. The current release slice provides a Cloudflare Worker API, a Vite web app, D1 persistence, attachment storage, policy controls, search, recovery/export tooling, and the verification paths documented under `docs/`.
 
+## Current engineering milestone
+
+[BG-12's aggregate processing-state decision contract](docs/verification/BG-12_FINAL_CLOSEOUT.md)
+is complete and verified on merged `main`. The
+[full decision table](docs/verification/BG-12_AGGREGATE_STATE_CONTRACT.md)
+covers required failures, retries, job leases, limited URL coverage,
+processing generations and attachment outcomes. BG-13 must still connect
+this rule to atomic persisted item/job state and consistent list/detail/filter
+results. **Do not treat this as a production deployment or runtime status fix.**
+See [current build status](docs/BUILD_STATUS.md).
+
 ## Local development
 
 Use Node.js 22 or newer and run commands from the repository root.
