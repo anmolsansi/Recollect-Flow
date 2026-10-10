@@ -1,4 +1,4 @@
-/* global process, console, Buffer */
+/* global process, console */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
