@@ -412,7 +412,8 @@ export class JobService {
         `SELECT item_id FROM processing_jobs
          WHERE id = ?1 AND lease_owner = ?2 AND status = 'processing'
            AND lease_expires_at > ?3
-           AND (input_hash IS NULL OR input_hash = ?4)`,
+           AND (input_hash IS NULL OR input_hash = ?4)
+           AND ${currentJobGuard}`,
       )
       .bind(jobId, ownerId, nowIso, input.inputHash)
       .first<{ item_id: string }>();
@@ -430,7 +431,8 @@ export class JobService {
              FROM processing_jobs
              WHERE id = ?1 AND lease_owner = ?7 AND status = 'processing'
                AND lease_expires_at > ?6
-               AND (input_hash IS NULL OR input_hash = ?3)`,
+               AND (input_hash IS NULL OR input_hash = ?3)
+               AND ${currentJobGuard}`,
           )
           .bind(
             jobId,
@@ -447,7 +449,7 @@ export class JobService {
              SET status = 'complete', result_version = ?1, completed_at = ?2,
                  lease_owner = NULL, lease_expires_at = NULL, updated_at = ?2
              WHERE id = ?3 AND lease_owner = ?4 AND status = 'processing'
-               AND lease_expires_at > ?2`,
+               AND lease_expires_at > ?2 AND ${currentJobGuard}`,
           )
           .bind(input.resultVersion, nowIso, jobId, ownerId),
         this.db
