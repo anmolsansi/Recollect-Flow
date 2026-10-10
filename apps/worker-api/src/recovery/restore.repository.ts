@@ -181,6 +181,19 @@ export class RestoreRepository {
     for (const result of item.processingJobResults) {
       await this.insertRecord('processing_job_results', result);
     }
+    // Restore extraction evidence before archived sync attempts. Extraction
+    // materialization may also enqueue a provisional Notion projection.
+    for (const extraction of item.extractions) {
+      await this.insertRecord('extraction_records', extraction);
+      if (extraction.processing_generation == null) {
+        await this.db
+          .prepare(
+            'UPDATE extraction_records SET processing_generation = NULL WHERE id = ?1',
+          )
+          .bind(extraction.id)
+          .run();
+      }
+    }
     // Restored processing jobs materialize an item status that can trigger a
     // provisional Notion attempt. The portable archive is authoritative here:
     // remove those derived attempts before restoring archived sync history.
@@ -203,9 +216,6 @@ export class RestoreRepository {
     }
     for (const audit of item.auditEvents) {
       await this.insertRecord('audit_events', audit);
-    }
-    for (const extraction of item.extractions) {
-      await this.insertRecord('extraction_records', extraction);
     }
   }
 
