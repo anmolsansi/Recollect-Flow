@@ -1715,32 +1715,35 @@ Expected: A is rejected; B's evidence/state remain authoritative
 **Proof:** the audit's bare URL no longer has failed job/pending item disagreement;
 parallel completion, stale result, retry, no-AI and deletion tests all agree.
 
-### BG-13 implementation review (2026-10-10)
+### BG-13 verified implementation (2026-10-10)
 
-This is an **unmerged draft**, not an approved BG-13 completion or production
-migration. Work is tracked in [GitHub #61](https://github.com/anmolsansi/Recollect-Flow/issues/61)
-and [draft PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62).
-See [BG-13 verification notes](verification/BG-13_ATOMIC_TRANSITIONS.md)
-for the exact SQL/app paths, operator-only repair endpoints, and outstanding
-race/CI checks.
+BG-13's approved atomic persistence scope is **complete on main**.
+[Issue #61](https://github.com/anmolsansi/Recollect-Flow/issues/61) and
+[merged PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62)
+record the microcommits. The [verification notes](verification/BG-13_ATOMIC_TRANSITIONS.md)
+and [final closeout](verification/BG-13_FINAL_CLOSEOUT.md) record the
+transaction boundaries, generation policy, rollback and accepted tests.
 
-The additive D1 migrations record an explicit integer processing epoch on
-each item and a nullable epoch on jobs/extraction. A newly inserted job is
-stamped against its current item inside SQLite, while historical jobs with
-unknown generation remain unbound. Item policy, source, raw-text and lifecycle
-changes invalidate outstanding older jobs. Processing job transitions update
-the item's stored aggregate status within the same SQL statement through the
-current-epoch projection. The stored vocabulary stays unchanged. Service
-writers must use a returned-row proof instead of assuming that a trigger-aware
-affected-row count of one means success.
+The additive D1 migrations bind new jobs and attachment extraction evidence
+to an explicit item processing epoch. Unknown pre-migration job epochs stay
+untrusted. Policy, source, raw-text and lifecycle changes invalidate older
+in-flight work. Database triggers commit the item aggregate in the same
+transaction as the job/evidence transition, without expanding the four-value
+stored enum. Lease owner, expiry, generation, deletion and purge conditions
+are rechecked before evidence or derived writes are accepted.
 
-An admin can preview current-epoch discrepancies with
-`GET /api/v1/jobs/processing-reconciliation?limit=20` and submit an explicit
-reviewed-ID repair with `POST /api/v1/jobs/processing-reconciliation` and
-`{ "item_ids": ["item-id"] }`. Both are admin-token protected. There is no
-automatic historical backfill or production deployment. The implementation
-is **not ready for merge** until the full D1/CI suite, canonical checklist,
-source/policy races and documentation gates pass.
+The admin-only reconciliation preview is
+`GET /api/v1/jobs/processing-reconciliation?limit=20`. An explicitly
+reviewed repair uses `POST /api/v1/jobs/processing-reconciliation` with
+`{ "item_ids": ["item-id"] }`. Only current-generation candidates can be
+repaired, in batches of up to 20. There is no automatic historical repair
+and no production data migration or deployment in this verification.
+
+[PR-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38052047097)
+passed on `28c6e83a`. The implementation merged at `3d1af004`; its
+[merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38052191291)
+also passed. The BG-13 gate unlocks BG-14's separate browser validation,
+not a production rollout.
 
 ### Execution checklist
 
