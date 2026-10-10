@@ -1,6 +1,11 @@
 # BG-11 — Final merged-main closeout
 
-**Status: COMPLETE for the approved BG-11 URL-recovery scope. BG-12 is unlocked, not completed.**
+**Status at the BG-11 closeout: COMPLETE for approved URL recovery; BG-12 was unlocked but not yet completed at that revision.**
+
+**Subsequent milestone:** BG-12's pure aggregate decision contract is now
+[complete and CI-verified](BG-12_FINAL_CLOSEOUT.md). The delegated
+`BG-11.028` persisted-status application is still outstanding in BG-13;
+this historical BG-11 record does not claim the runtime fix.
 
 - GitHub tracking: [#53](https://github.com/anmolsansi/Recollect-Flow/issues/53) (closed).
 - Linear tracking: [OPE-337](https://linear.app/openclaw-neutron/issue/OPE-337/bg-11-handle-unavailable-urls-retries-and-old-captures).
