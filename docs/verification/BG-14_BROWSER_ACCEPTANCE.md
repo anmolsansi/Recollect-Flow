@@ -1,6 +1,6 @@
 # BG-14 — Real-browser workflow acceptance
 
-Status: **implementation under verification**. This is a task-scoped record for
+Status: **complete on main; BG-15 unlocked**. This is a task-scoped record for
 [BG-14](../RECOLLECTFLOW_BUILD_GUIDE.md#20-bg-14--prove-the-repaired-workflow-in-a-browser),
 [tracking issue #63](https://github.com/anmolsansi/Recollect-Flow/issues/63) and
 [PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64).
