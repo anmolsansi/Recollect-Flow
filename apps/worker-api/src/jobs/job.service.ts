@@ -933,6 +933,7 @@ export class JobService {
     now: Date,
   ): Promise<boolean> {
     const nowIso = now.toISOString();
+    const currentGuard = table === 'processing_jobs' ? ` AND ${currentJobGuard}` : '';
     const result = await this.db
       .prepare(
         `UPDATE ${table}
