@@ -79,34 +79,46 @@ export function jobRoutes() {
     });
   });
 
-  router.get('/jobs/processing-reconciliation', requireAdminToken, async (context) => {
-    const limit = Number(context.req.query('limit') ?? '20');
-    const preview = await new ProcessingReconciliationService(
-      context.env.DB,
-    ).preview(limit);
-    return context.json({
-      data: preview,
-      meta: { request_id: context.get('requestId') },
-    });
-  });
+  router.get(
+    '/jobs/processing-reconciliation',
+    requireAdminToken,
+    async (context) => {
+      const limit = Number(context.req.query('limit') ?? '20');
+      const preview = await new ProcessingReconciliationService(
+        context.env.DB,
+      ).preview(limit);
+      return context.json({
+        data: preview,
+        meta: { request_id: context.get('requestId') },
+      });
+    },
+  );
 
-  router.post('/jobs/processing-reconciliation', requireAdminToken, async (context) => {
-    const body: unknown = await context.req.json().catch(() => null);
-    if (!body || typeof body !== 'object' || !('item_ids' in body)) {
-      throw new AppError(422, 'VALIDATION_ERROR', 'item_ids is required.');
-    }
-    const ids = (body as { item_ids: unknown }).item_ids;
-    if (!Array.isArray(ids) || ids.some((id) => typeof id !== 'string')) {
-      throw new AppError(422, 'VALIDATION_ERROR', 'item_ids must be strings.');
-    }
-    const result = await new ProcessingReconciliationService(
-      context.env.DB,
-    ).reconcile(ids);
-    return context.json({
-      data: result,
-      meta: { request_id: context.get('requestId') },
-    });
-  });
+  router.post(
+    '/jobs/processing-reconciliation',
+    requireAdminToken,
+    async (context) => {
+      const body: unknown = await context.req.json().catch(() => null);
+      if (!body || typeof body !== 'object' || !('item_ids' in body)) {
+        throw new AppError(422, 'VALIDATION_ERROR', 'item_ids is required.');
+      }
+      const ids = (body as { item_ids: unknown }).item_ids;
+      if (!Array.isArray(ids) || ids.some((id) => typeof id !== 'string')) {
+        throw new AppError(
+          422,
+          'VALIDATION_ERROR',
+          'item_ids must be strings.',
+        );
+      }
+      const result = await new ProcessingReconciliationService(
+        context.env.DB,
+      ).reconcile(ids);
+      return context.json({
+        data: result,
+        meta: { request_id: context.get('requestId') },
+      });
+    },
+  );
 
   router.post('/jobs/:id/retry', requireAdminToken, async (context) => {
     const kind = context.req.query('kind') ?? 'processing';

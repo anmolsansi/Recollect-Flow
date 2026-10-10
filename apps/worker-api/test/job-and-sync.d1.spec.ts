@@ -252,7 +252,9 @@ describe('OPE-246 durable D1 jobs', () => {
     ).run();
     await env.DB.prepare(
       "UPDATE items SET processing_status = 'complete' WHERE id IN (?1, ?2)",
-    ).bind(itemId, legacyId).run();
+    )
+      .bind(itemId, legacyId)
+      .run();
     const service = new ProcessingReconciliationService(env.DB);
     const preview = await service.preview();
     expect(preview.candidates.map((entry) => entry.itemId)).toEqual([itemId]);

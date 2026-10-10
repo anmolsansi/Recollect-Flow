@@ -499,7 +499,8 @@ export class JobService {
       throw error;
     }
     return {
-      accepted: batch[0]?.results?.length === 1 && batch[1]?.results?.length === 1,
+      accepted:
+        batch[0]?.results?.length === 1 && batch[1]?.results?.length === 1,
       replayed: false,
     };
   }
