@@ -88,6 +88,7 @@ export function CaptureForm() {
       });
       setResult(response);
       setPending(null);
+      setDraft(emptyCaptureDraft());
     } catch (error) {
       if (error instanceof ApiError && error.status === 422 && error.details) {
         const fields = error.details;
