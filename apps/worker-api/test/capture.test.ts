@@ -398,22 +398,21 @@ describe('BG-15 browser capture write boundary', () => {
     const repository = new MemoryCaptureRepository();
     const app = createApp(() => repository);
     const cookie = await ownerCookie(app);
-    expect((await browserPost(app, null, 'http://localhost')).status).toBe(
-      401,
+    const anonymous = await browserPost(app, null, 'http://localhost');
+    const tampered = await browserPost(
+      app,
+      cookie + 'tampered',
+      'http://localhost',
     );
-    expect(
-      (await browserPost(app, cookie + 'tampered', 'http://localhost')).status,
-    ).toBe(401);
-    expect(
-      (
-        await browserPost(
-          app,
-          cookie,
-          'http://localhost',
-          'Bearer local-worker-secret',
-        )
-      ).status,
-    ).toBe(401);
+    const worker = await browserPost(
+      app,
+      cookie,
+      'http://localhost',
+      'Bearer local-worker-secret',
+    );
+    expect(anonymous.status).toBe(401);
+    expect(tampered.status).toBe(401);
+    expect(worker.status).toBe(401);
     expect(repository.items.size).toBe(0);
   });
 
