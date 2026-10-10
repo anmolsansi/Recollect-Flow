@@ -775,7 +775,7 @@ describe('private attachment lifecycle', () => {
     expect(await validBearerWithTamperedCookie.arrayBuffer()).toEqual(bytes);
   });
 
-  it('does not broaden admin-cookie access to attachment writes or deletion', async () => {
+  it('rejects owner-cookie writes without same-origin and preserves admin-only deletion', async () => {
     const repository = new MemoryAttachmentRepository();
     const r2 = memoryBucket();
     const env = testEnv(r2.bucket);
@@ -800,7 +800,7 @@ describe('private attachment lifecycle', () => {
       },
       env,
     );
-    expect(cookieUploadInit.status).toBe(401);
+    expect(cookieUploadInit.status).toBe(403);
 
     const captureDelete = await app.request(
       `/api/v1/attachments/${id}`,
