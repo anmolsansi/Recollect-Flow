@@ -1818,8 +1818,9 @@ fetch fixture and passed [focused Chrome proof](https://github.com/anmolsansi/Re
 Real browser/API requests and source parsing are not mocked. The implementation
 merged through [PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64),
 with [passing exact-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061589399).
-The final [BG-14 closeout](verification/BG-14_FINAL_CLOSEOUT.md) records the
-merged-main CI gate and BG-15 handoff. No production deployment or general
+The [BG-14 closeout](verification/BG-14_FINAL_CLOSEOUT.md) confirms the
+[passing merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061802146),
+100/100 canonical checks and the BG-15 unlock. No production deployment or general
 third-party website reliability is claimed.
 
 ### Execution checklist
