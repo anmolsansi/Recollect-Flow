@@ -4,6 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../src/app';
 import { JobAdminService } from '../src/jobs/job.admin.service';
 import { JobService } from '../src/jobs/job.service';
+import { ProcessingReconciliationService } from '../src/jobs/processing-reconciliation.service';
 import { processNotionSyncJobs } from '../src/sync/sync.worker';
 
 const T0 = new Date('2026-07-30T00:00:00.000Z');
@@ -237,6 +238,33 @@ describe('OPE-246 durable D1 jobs', () => {
     expect(
       await jobs.completeProcessingJob(staleId, 'recovery-worker', T0),
     ).toBe(true);
+  });
+
+  it('previews and repairs only explicitly reviewed current-generation mismatches', async () => {
+    const itemId = 'reconcile-item';
+    const legacyId = 'legacy-item';
+    await insertItem(itemId);
+    await insertItem(legacyId);
+    await insertProcessingJob('reconcile-job', itemId);
+    await insertProcessingJob('legacy-job', legacyId);
+    await env.DB.prepare(
+      "UPDATE processing_jobs SET processing_generation = NULL WHERE id = 'legacy-job'",
+    ).run();
+    await env.DB.prepare(
+      "UPDATE items SET processing_status = 'complete' WHERE id IN (?1, ?2)",
+    ).bind(itemId, legacyId).run();
+    const service = new ProcessingReconciliationService(env.DB);
+    const preview = await service.preview();
+    expect(preview.candidates.map((entry) => entry.itemId)).toEqual([itemId]);
+    expect(preview.candidates[0]?.derivedStatus).toBe('pending');
+    expect(await service.reconcile([itemId, legacyId])).toEqual({
+      updated: 1,
+      skipped: 1,
+    });
+    expect(await service.preview()).toMatchObject({
+      count: 0,
+      candidates: [],
+    });
   });
 
   it('keeps item, list status, and terminal job failure consistent', async () => {
