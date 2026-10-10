@@ -26,7 +26,7 @@ const phrase = 'birch lantern quartz meadow';
 const captureToken = 'bg14-positive-capture-' + randomUUID();
 const adminToken = 'bg14-positive-admin-' + randomUUID();
 const localWorkerToken = 'bg14-positive-worker-' + randomUUID();
-let runtime, browser;
+let runtime, browser, capturedItemId;
 
 async function exercise() {
   runtime = await createLocalAcceptanceRuntime({
@@ -41,6 +41,7 @@ async function exercise() {
     privacy_level: 'public',
     user_reason: 'BG14 isolated positive acquisition proof',
   });
+  capturedItemId = itemId;
   assert.match(itemId, /^[0-9a-f-]{36}$/i);
   // The acceptance scheduler runs all normal background functions, including
   // Notion sync. Explicitly retire only this disposable item's sync job to
@@ -157,6 +158,17 @@ try {
     'BG14_URL_ACQUISITION_ERROR ' +
       JSON.stringify({ reason, requests: safeDiagnostics(browser) }),
   );
+  const jobs = runtime
+    ? await apiRequest(runtime.apiOrigin, adminToken, 'GET', '/jobs?kind=processing&type=acquire_url').catch(() => null)
+    : null;
+  const item = capturedItemId && runtime
+    ? await apiRequest(runtime.apiOrigin, adminToken, 'GET', '/items/' + capturedItemId).catch(() => null)
+    : null;
+  console.error('BG14_SOURCE_DIAGNOSTICS ' + JSON.stringify({
+    jobs: jobs?.jobs?.map(j => ({status:j.status,job_type:j.jobType,last_error_code:j.lastErrorCode})),
+    acquisition_status:item?.url_acquisition?.status ?? null,
+    worker_events:(runtime?.worker?.logs ?? []).filter(v=>/url_acquisition|scheduled_cron|SOURCE_|Error|error|Warning/.test(v)).slice(-16),
+  }));
   process.exitCode = 1;
 } finally {
   await browser?.close();
