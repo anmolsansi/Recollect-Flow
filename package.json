@@ -24,6 +24,7 @@
     "check": "npm run format && npm run lint && npm run typecheck && npm test && npm run contracts:check && npm run web:lint && npm run web:test && npm run web:build",
     "db:migrate:local": "wrangler d1 migrations apply recollect-flow-prod --local",
     "db:migrate:remote": "wrangler d1 migrations apply recollect-flow-prod --remote",
+    "browser:capture:test": "node scripts/verify-browser-capture.mjs",
     "browser:download:test": "node scripts/verify-browser-download.mjs",
     "browser:source-recovery:test": "node scripts/verify-browser-source-recovery.mjs",
     "browser:workflow:test": "node scripts/verify-browser-workflow.mjs",
