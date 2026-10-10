@@ -389,7 +389,8 @@ export class SourceAcquisitionService {
              )
              AND EXISTS (
                SELECT 1 FROM url_acquisitions WHERE job_id = ?5
-             )`,
+             )
+           RETURNING id`,
         )
         .bind(
           terminalJobStatus,
@@ -403,7 +404,7 @@ export class SourceAcquisitionService {
     ];
 
     const results = await this.db.batch(statements);
-    return (results[3]?.meta.changes ?? 0) === 1;
+    return (results[3]?.results?.length ?? 0) === 1;
   }
 
   async process(job: JobRecord, ownerId: string): Promise<boolean> {
