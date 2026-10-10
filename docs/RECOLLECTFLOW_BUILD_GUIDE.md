@@ -2111,6 +2111,40 @@ only on local draft persistence.
 **Done when:** retry behavior is deterministic and the stated retention promise
 matches actual browser behavior. Physical-iPhone queue acceptance is separate.
 
+### BG-17 implementation checkpoint (PR #74)
+
+The browser's URL, pasted-text and note capture client now keeps a logical
+submission separate from editable form input. Each immutable submission has
+the same idempotency key, original capture time, payload and privacy choice
+through uncertain transport failures, session expiration and user-requested
+Retry. A second intentional save receives a fresh key. Successful server
+acknowledgment clears the corresponding retry record without deleting other
+unfinished saves. Discard removes browser data only. The server's D1
+capture-event fingerprint and replay behavior remain authoritative.
+
+`apps/web/src/capture-recovery.ts` implements versioned IndexedDB records.
+Cross-reload retention is **explicit opt-in** and limited to seven days, three
+pending operations and 256 KB of serialized retry content. Editable, unsubmitted
+drafts live in a separate browser store and are saved on a 350 ms debounce
+when enabled. Sensitive material and original file bytes are excluded.
+Browser storage is unencrypted; shared-device users should leave retention
+off. Turning it off or explicitly logging out clears both stores. Errors,
+quota denials and uncertain outcomes are visible. No background job silently
+retries an uncertain save, and local storage never means the server has saved.
+
+The actual file upload lifecycle, file reselection and hashing are not
+implemented by this chapter. These belong to BG-18. Likewise production
+hosting, real devices and offline iOS acceptance remain separate tasks.
+
+Tests: `apps/web/src/capture-recovery.test.ts` checks shape, privacy,
+retention, strict identity and quota rules. The isolated Worker/D1/Chrome
+command `npm run browser:recovery:test` exercises opt-in, simulated dropped
+response after server commit, replay and browser reload, offline interruption
+and nondurable clearing. **Do not mark the completion gate passed until exact
+PR-head and merged-main CI runs verify it.** Tracking:
+[GitHub #73](https://github.com/anmolsansi/Recollect-Flow/issues/73) and
+[PR #74](https://github.com/anmolsansi/Recollect-Flow/pull/74).
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-17](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-17--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
