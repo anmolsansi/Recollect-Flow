@@ -195,18 +195,25 @@ export class JobService {
     const normalizedInputHash = requireNonEmpty(inputHash, 'inputHash');
     const nowIso = now.toISOString();
     const jobId = crypto.randomUUID();
-    const result = await this.db
+    const inserted = await this.db
       .prepare(
         `INSERT INTO processing_jobs (
            id, item_id, job_type, status, attempts, available_at, created_at,
-           updated_at, input_hash
+           updated_at, input_hash, privacy_level_snapshot
          )
-         SELECT ?1, ?2, ?3, 'pending', 0, ?4, ?4, ?4, ?5
-         WHERE NOT EXISTS (
-           SELECT 1 FROM processing_jobs
-           WHERE item_id = ?2 AND job_type = ?3
-             AND status IN ('pending', 'processing')
-         )`,
+         SELECT ?1, i.id, ?3, 'pending', 0, ?4, ?4, ?4, ?5, i.privacy_level
+         FROM items i
+         WHERE i.id = ?2 AND i.deleted_at IS NULL
+           AND NOT EXISTS (
+             SELECT 1 FROM purge_workflows p
+             WHERE p.item_id = i.id AND p.state IN ('queued', 'processing', 'partial')
+           )
+           AND NOT EXISTS (
+             SELECT 1 FROM processing_jobs j
+             WHERE j.item_id = i.id AND j.job_type = ?3
+               AND j.status IN ('pending', 'processing')
+           )
+         RETURNING id`,
       )
       .bind(
         jobId,
@@ -215,8 +222,8 @@ export class JobService {
         nowIso,
         normalizedInputHash,
       )
-      .run();
-    if (result.meta.changes > 0) {
+      .first<{ id: string }>();
+    if (inserted !== null) {
       await this.writeAudit(
         normalizedItemId,
         'job_enqueued',
@@ -229,7 +236,7 @@ export class JobService {
         nowIso,
       );
     }
-    return result.meta.changes > 0;
+    return inserted !== null;
   }
 
   async leaseProcessingJobs(
