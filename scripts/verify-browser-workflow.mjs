@@ -1,8 +1,9 @@
-/* global process, console, URLSearchParams */
+/* global process, console, URLSearchParams, fetch */
 import assert from 'node:assert/strict';
 import { recordBrowserFailure } from './bg14-browser-failure.mjs';
 import { randomUUID } from 'node:crypto';
 import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
+import { waitUntil } from './browser-cdp.mjs';
 import {
   apiRequest,
   captureFixture,
@@ -23,7 +24,7 @@ const localWorkerToken = 'bg14-worker-' + randomUUID();
 const marker = randomUUID().replaceAll('-', '');
 const internalPhrase = 'bgfourteen' + marker;
 const ownerTitle = 'Owner preserved title ' + marker;
-const originalUrl = 'https://example.com/bg14-controlled-' + marker;
+const originalUrl = 'https://example.com/bg14-fixture-' + marker;
 let runtime, browser;
 
 async function detail(itemId) {
@@ -58,6 +59,8 @@ async function run() {
     captureToken,
     adminToken,
     localWorkerToken,
+    enableScheduled: true,
+    fixtureWorker: true,
   });
   // Unique local synthetic capture; never a live third-party fetch.
   const textItemId = await captureFixture(runtime.apiOrigin, captureToken, {
@@ -210,8 +213,29 @@ async function run() {
     ),
     'Retry must leave an observable pending acquisition job',
   );
+  // Execute the authorized retry with the same guarded acquisition path used by
+  // the real background worker. Only the external site response is stubbed.
+  const trigger = await fetch(
+    runtime.apiOrigin + '/__scheduled?cron=17%20*%20*%20*%20*',
+  );
+  assert.equal(trigger.status, 200, 'local acquisition scheduler must accept trigger');
+  const settled = await waitUntil(
+    async () => {
+      const latest = await detail(urlItemId);
+      return latest.url_acquisition?.status === 'acquired_text' ? latest : null;
+    },
+    { timeoutMs: 15000, intervalMs: 250, description: 'retry acquired text persistence' },
+  );
+  assert.ok(
+    settled.processing_jobs.some(
+      (j) => j.jobType === 'acquire_url' && j.status === 'complete',
+    ),
+    'retry must converge to completed current-generation job',
+  );
+  assert.equal(settled.item.source_url, originalUrl);
   report('retry-action', {
-    status: 'queued; external fetch deliberately not executed',
+    status: 'completed',
+    source: 'bounded mocked upstream; actual guarded worker, parser and D1',
   });
 
   // Preserve a user-entered title across generation-changing owner-source recovery.
