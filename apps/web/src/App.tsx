@@ -191,7 +191,9 @@ function Inbox() {
             try {
               await forgetCaptureRecovery();
             } catch {
-              window.alert('Could not clear local drafts. Clear site data before using a shared device.');
+              window.alert(
+                'Could not clear local drafts. Clear site data before using a shared device.',
+              );
               return;
             }
             await logoutAdmin();
