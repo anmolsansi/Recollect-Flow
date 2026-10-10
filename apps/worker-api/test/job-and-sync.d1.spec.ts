@@ -302,6 +302,29 @@ describe('OPE-246 durable D1 jobs', () => {
     ).toBe('pending');
   });
 
+  it('stays pending between source completion and its required AI chain', async () => {
+    const itemId = 'missing-downstream-item';
+    await insertItem(itemId);
+    await insertProcessingJob('missing-downstream-source', itemId, {
+      status: 'complete',
+    });
+    await env.DB.prepare(
+      "UPDATE processing_jobs SET job_type = 'acquire_url' WHERE id = ?1",
+    ).bind('missing-downstream-source').run();
+    expect(
+      await env.DB.prepare(
+        'SELECT derived_status FROM bg13_processing_snapshot WHERE item_id = ?1',
+      ).bind(itemId).first('derived_status'),
+    ).toBe('pending');
+    await insertProcessingJob('missing-downstream-ai', itemId, {
+      status: 'complete',
+    });
+    expect(
+      await env.DB.prepare('SELECT processing_status FROM items WHERE id = ?1')
+        .bind(itemId).first('processing_status'),
+    ).toBe('complete');
+  });
+
   it('keeps item, list status, and terminal job failure consistent', async () => {
     const itemId = 'atomic-terminal-item';
     const jobId = 'atomic-terminal-job';
