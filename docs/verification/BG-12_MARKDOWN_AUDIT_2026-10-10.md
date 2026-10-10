@@ -1,5 +1,8 @@
 # BG-12 — Repository-wide Markdown and completion audit (2026-10-10)
 
+**Status:** Verified and merged on `main` at `65d646b4581a8add27bc0de6f8580f609b2a5b77`;
+[merged-main CI 38045040286](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38045040286) passed.
+
 **Scope:** All 87 tracked `.md` files on `main` as of
 `68e730136be7c297443ab72ca850150d01646ba1`, including the repository
 and Web READMEs, client guides, documentation, ticket manuals, and verification
@@ -47,8 +50,12 @@ assertion but lacked an explicit restored-item assertion despite the canonical
 evaluates the same evidence first while deleted (status excluded), then after
 restoration (new current-generation result wins, old failed evidence ignored).
 This does not claim restore workflows or database write-time epoch changes are
-implemented. Final validation must run on the change PR, followed by merged-main
-CI before claiming this audit closeout complete.
+implemented. [Audit PR #59](https://github.com/anmolsansi/Recollect-Flow/pull/59)
+passed [exact-head CI 38044908495](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38044908495)
+and merged at `65d646b4581a8add27bc0de6f8580f609b2a5b77`.
+The [exact merged-main CI 38045040286](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38045040286)
+**passed**. These runs include repository checks, local D1 migrations, and
+browser download and source-recovery acceptance.
 
 ## Preserved scope
 
