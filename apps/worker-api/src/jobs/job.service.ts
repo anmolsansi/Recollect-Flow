@@ -432,7 +432,8 @@ export class JobService {
              WHERE id = ?1 AND lease_owner = ?7 AND status = 'processing'
                AND lease_expires_at > ?6
                AND (input_hash IS NULL OR input_hash = ?3)
-               AND ${currentJobGuard}`,
+               AND ${currentJobGuard}
+             RETURNING job_id`,
           )
           .bind(
             jobId,
@@ -449,7 +450,8 @@ export class JobService {
              SET status = 'complete', result_version = ?1, completed_at = ?2,
                  lease_owner = NULL, lease_expires_at = NULL, updated_at = ?2
              WHERE id = ?3 AND lease_owner = ?4 AND status = 'processing'
-               AND lease_expires_at > ?2 AND ${currentJobGuard}`,
+               AND lease_expires_at > ?2 AND ${currentJobGuard}
+             RETURNING id`,
           )
           .bind(input.resultVersion, nowIso, jobId, ownerId),
         this.db
@@ -497,7 +499,7 @@ export class JobService {
       throw error;
     }
     return {
-      accepted: batch[0]?.meta.changes === 1 && batch[1]?.meta.changes === 1,
+      accepted: batch[0]?.results?.length === 1 && batch[1]?.results?.length === 1,
       replayed: false,
     };
   }
