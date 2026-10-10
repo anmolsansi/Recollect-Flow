@@ -190,7 +190,10 @@ async function run() {
     'BG14_SYNTHETIC_SOURCE_UNAVAILABLE',
     'safe error code visible',
   );
-  await assertUiHas('Page fetch failed without saving page evidence.', 'safe failure-recovery guidance');
+  await assertUiHas(
+    'Page fetch failed without saving page evidence.',
+    'safe failure-recovery guidance',
+  );
   report('atomic-failure', {
     job: 'failed',
     item: 'failed',
@@ -276,7 +279,10 @@ async function run() {
   await clickButton(browser, 'Restore item');
   await assertUiHas('Item restored.', 'restore feedback');
   assert.equal((await detail(urlItemId)).item.deleted_at, null);
-  assert.ok((await inbox('', internalPhrase)).some((x) => x.id === urlItemId), 'Restored item must reappear in search');
+  assert.ok(
+    (await inbox('', internalPhrase)).some((x) => x.id === urlItemId),
+    'Restored item must reappear in search',
+  );
   report('lifecycle', { delete: 'filtered', restore: 'visible' });
 
   await browser.client.send(

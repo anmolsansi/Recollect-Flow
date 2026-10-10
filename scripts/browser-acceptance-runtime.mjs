@@ -142,8 +142,13 @@ export async function createLocalAcceptanceRuntime({
   if (fixtureConfigPath) {
     const original = await readFile(join(rootDir, 'wrangler.toml'), 'utf8');
     const entry = 'main = "apps/worker-api/src/index.ts"';
-    if (!original.includes(entry)) throw new Error('BG14 fixture could not locate production entrypoint');
-    await writeFile(fixtureConfigPath, original.replace(entry, 'main = "scripts/bg14-fixture-worker.ts"'), { flag: 'wx' });
+    if (!original.includes(entry))
+      throw new Error('BG14 fixture could not locate production entrypoint');
+    await writeFile(
+      fixtureConfigPath,
+      original.replace(entry, 'main = "scripts/bg14-fixture-worker.ts"'),
+      { flag: 'wx' },
+    );
   }
 
   await runCommand(
@@ -216,7 +221,8 @@ export async function createLocalAcceptanceRuntime({
     await stopService(web);
     await stopService(worker);
     await rm(tempDir, { recursive: true, force: true });
-    if (fixtureConfigPath) await unlink(fixtureConfigPath).catch(() => undefined);
+    if (fixtureConfigPath)
+      await unlink(fixtureConfigPath).catch(() => undefined);
     const workerLogs = boundedLogs(worker.logs);
     const webLogs = boundedLogs(web.logs);
     throw new Error(
@@ -236,7 +242,8 @@ export async function createLocalAcceptanceRuntime({
       await stopService(web);
       await stopService(worker);
       await rm(tempDir, { recursive: true, force: true });
-      if (fixtureConfigPath) await unlink(fixtureConfigPath).catch(() => undefined);
+      if (fixtureConfigPath)
+        await unlink(fixtureConfigPath).catch(() => undefined);
     },
   };
 }
