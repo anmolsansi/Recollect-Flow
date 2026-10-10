@@ -59,8 +59,11 @@ Status: **in verification; BG-15 not yet unlocked**.
 - [100 BG-14 canonical steps](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-14--100-executable-microtasks)
 - Reuses [BG-07 browser download](BG-07_FINAL_CLOSEOUT.md),
   BG-11 keyboard source recovery and new state/lifecycle browser journey.
-- Positive public URL acquisition must be verified separately; no simulated
-  fetched HTML or live third-party request is represented as completed.
+- [Positive acquired HTML and browser search passed in isolated Worker](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38057058035).
+  Only the upstream HTTP response is a deterministic test fixture; source
+  parsing, D1 evidence, FTS and authenticated browser interactions are real.
+  Arbitrary external sites and production connectivity are not claimed.
+- Full PR-head/merged-main CI is still needed for the completion gate.
 
 ## Priority 1 — verification foundation
 
