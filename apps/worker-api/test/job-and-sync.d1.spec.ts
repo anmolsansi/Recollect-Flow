@@ -239,6 +239,28 @@ describe('OPE-246 durable D1 jobs', () => {
     ).toBe(true);
   });
 
+  it('rejects expired-owner terminal failures without mutating job or audit', async () => {
+    const itemId = 'expired-lease-item';
+    const jobId = 'expired-lease-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const service = new JobService(env.DB);
+    await service.leaseProcessingJobs('enrich', 'late-worker', 1, 1, T0);
+    const expiredAt = new Date(T0.getTime() + 61_000);
+    expect(
+      await service.failProcessingJob(jobId, 'late-worker', 'UPSTREAM_ERROR', false, 5, expiredAt),
+    ).toBe(false);
+    expect(
+      await env.DB.prepare('SELECT status FROM processing_jobs WHERE id = ?1')
+        .bind(jobId).first('status'),
+    ).toBe('processing');
+    expect(
+      (await env.DB.prepare(
+        "SELECT COUNT(*) AS n FROM audit_events WHERE item_id = ?1 AND event_type = 'job_terminally_failed'",
+      ).bind(itemId).first<{ n: number }>())?.n,
+    ).toBe(0);
+  });
+
   it('heartbeats, releases, derives retry_wait, and honors exact retry timing', async () => {
     await insertItem('00000000-0000-0000-0000-000000000001');
     await insertProcessingJob(
