@@ -115,12 +115,12 @@ describe('BG-17 recovery record contract', () => {
   it('allows three independent pending operations and rejects a fourth', () => {
     const entries = ['a', 'b', 'c'].map((x) => createOperation(x.repeat(36)));
     expect(() =>
-      ensureRecoveryBudget(entries.slice(0, 2), entries[2]),
+      ensureRecoveryBudget(entries.slice(0, 2), entries[2]!),
     ).not.toThrow();
     expect(() =>
       ensureRecoveryBudget(entries, createOperation('d'.repeat(36))),
     ).toThrow('three');
-    expect(() => ensureRecoveryBudget(entries, entries[0])).not.toThrow();
+    expect(() => ensureRecoveryBudget(entries, entries[0]!)).not.toThrow();
   });
 
   it('rejects browser content beyond the total byte budget', () => {
