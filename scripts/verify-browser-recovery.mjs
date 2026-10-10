@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
+import { waitUntil } from './browser-cdp.mjs';
 import {
   openBrowser,
   login,
@@ -193,6 +194,10 @@ try {
     'Boolean(document.querySelector(".capture-queued-entry"))',
     'uncertain retry visible',
   );
+  await waitUntil(() => committed, {
+    timeoutMs: 15000,
+    description: 'durable server commit before dropped browser response',
+  });
   assert.ok(committed, 'Worker committed original request');
   assert.equal(await countEntries(), 1);
   await browser.client.send('Fetch.disable', {}, browser.sessionId);
