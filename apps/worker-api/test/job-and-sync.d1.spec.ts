@@ -500,11 +500,15 @@ describe('OPE-246 durable D1 jobs', () => {
     expect(results.filter(Boolean)).toHaveLength(1);
     const status = await env.DB.prepare(
       'SELECT status FROM processing_jobs WHERE id = ?1',
-    ).bind(jobId).first<string>('status');
+    )
+      .bind(jobId)
+      .first<string>('status');
     expect(status).toMatch(/^(complete|failed)$/);
     const derived = await env.DB.prepare(
       'SELECT processing_status FROM items WHERE id = ?1',
-    ).bind(itemId).first<string>('processing_status');
+    )
+      .bind(itemId)
+      .first<string>('processing_status');
     expect(derived).toBe(status);
   });
 
@@ -522,7 +526,9 @@ describe('OPE-246 durable D1 jobs', () => {
       false,
     );
     expect(
-      await env.DB.prepare('SELECT last_error_code FROM processing_jobs WHERE id = ?1')
+      await env.DB.prepare(
+        'SELECT last_error_code FROM processing_jobs WHERE id = ?1',
+      )
         .bind(jobId)
         .first('last_error_code'),
     ).toBe('PROCESSING_SUPERSEDED');
@@ -546,7 +552,9 @@ describe('OPE-246 durable D1 jobs', () => {
     ).toEqual({ accepted: true, replayed: false });
     await env.DB.prepare(
       "UPDATE items SET privacy_level = 'personal' WHERE id = ?1",
-    ).bind(itemId).run();
+    )
+      .bind(itemId)
+      .run();
     expect(
       await jobs.submitProcessingResult(jobId, 'result-owner', input, T0),
     ).toEqual({ accepted: false, replayed: false });
