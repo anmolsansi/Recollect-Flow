@@ -1702,6 +1702,14 @@ Follow the numbered order; the group headings organize related work.
 
 ## BG-13 — 100 executable microtasks
 
+> **Execution status (2026-10-10): In progress, not accepted.**
+> Tracked in [issue #61](https://github.com/anmolsansi/Recollect-Flow/issues/61)
+> and [draft PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62).
+> The implementation and outstanding validation are documented in
+> [BG-13 atomic transitions](verification/BG-13_ATOMIC_TRANSITIONS.md).
+> Do not treat pushed changes or preliminary CI as proof of any unverified
+> step. Keep acceptance tests and release gates unchecked until validated.
+
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#19-bg-13--update-transitions-atomically-and-reject-stale-workers).
 
 These unchecked steps inherit this task's **what, why, when, where and proof** above.
