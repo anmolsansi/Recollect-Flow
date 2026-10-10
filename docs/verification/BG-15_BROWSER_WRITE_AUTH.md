@@ -10,11 +10,11 @@
 
 Reuse the canonical capture and attachment routes. Do not create a second browser persistence pipeline.
 
-The signed HttpOnly owner cookie now contains a server-validated absolute expiry, so a stale cookie remains invalid even if manually replayed. For writes authorized by this cookie, require `Origin` to match the request URL origin exactly. Reject absent and `null` origins, alternate same-site subdomains, and unrelated sites. Do not rely on SameSite alone.
+The signed HttpOnly owner cookie now contains a server-validated absolute expiry, so a stale cookie remains invalid even if manually replayed. For writes authorized by this cookie, require `Origin` to match the request URL origin or the explicitly configured `WEB_INBOX_BASE_URL` origin. Reject absent and `null` origins, alternate same-site subdomains, and unrelated sites. Do not rely on SameSite alone.
 
 An explicit bearer credential takes precedence. Valid capture/admin bearer credentials retain existing capture/upload permissions without requiring Origin, including nonbrowser Shortcut requests. An invalid bearer or a local-worker bearer cannot borrow an accompanying owner cookie. Admin mutations preserve admin scope and reject capture bearers.
 
-The request URL is the expected origin. Any future reverse-proxy setup must preserve a correct externally visible request origin. Do not trust unvalidated `X-Forwarded-Host` values, arbitrary Origin reflection or a client-supplied "Shortcut" header.
+The request origin and the configured Web Inbox origin form a strict allowlist. Local Vite development uses `WEB_INBOX_BASE_URL` because the Web dev server proxies to a different Worker port. Production requires a trusted HTTPS Web Inbox origin. Do not trust unvalidated `X-Forwarded-Host` values, arbitrary Origin reflection or a client-supplied "Shortcut" header.
 
 ## Code map and behavior
 
@@ -30,7 +30,7 @@ The existing `POST /api/v1/admin/session` requires the admin secret to sign in. 
 
 - A valid capture bearer without Origin may capture and upload but cannot perform admin writes.
 - A valid admin bearer without Origin may capture, upload, and perform admin writes.
-- A valid signed owner cookie with an exact matching Origin may perform both.
+- A valid signed owner cookie with an Origin matching the Worker or configured Web Inbox may perform both.
 - Signed cookies with missing, null, or foreign Origin receive 403 on writes.
 - An invalid explicit bearer cannot fall back to a valid cookie.
 - Local-worker bearer tokens cannot capture or upload.
