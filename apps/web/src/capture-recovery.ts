@@ -1,4 +1,4 @@
-import type { CapturePayload } from './capture-model';
+import { CAPTURE_CATEGORIES, type CaptureDraft, type CapturePayload } from './capture-model';
 
 // Only an explicit owner choice enables persistent content. No tokens or cookies are stored.
 export const RECOVERY_PREFERENCE = 'recollect:capture-recovery-enabled-v1';
@@ -8,7 +8,8 @@ export const RECOVERY_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 const DB_NAME = 'recollect-capture-recovery';
 const STORE = 'operations';
-const DB_VERSION = 1;
+const DRAFT_STORE = 'drafts';
+const DB_VERSION = 2;
 const RECORD_VERSION = 1;
 
 export type CaptureStage = 'prepared' | 'uncertain' | 'auth_required';
@@ -191,6 +192,8 @@ function openDatabase(): Promise<IDBDatabase> {
       const db = request.result;
       if (!db.objectStoreNames.contains(STORE))
         db.createObjectStore(STORE, { keyPath: 'id' });
+      if (!db.objectStoreNames.contains(DRAFT_STORE))
+        db.createObjectStore(DRAFT_STORE, { keyPath: 'id' });
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () =>
@@ -207,12 +210,13 @@ async function runTransaction<T>(
     done: (result: T) => void,
     fail: (error: Error) => void,
   ) => void,
+  storeName = STORE,
 ): Promise<T> {
   const db = await openDatabase();
   return new Promise<T>((resolve, reject) => {
     let value: T;
     let failed: Error | null = null;
-    const tx = db.transaction(STORE, mode);
+    const tx = db.transaction(storeName, mode);
     const fail = (error: Error) => {
       failed = error;
       tx.abort();
@@ -233,7 +237,7 @@ async function runTransaction<T>(
     };
     try {
       action(
-        tx.objectStore(STORE),
+        tx.objectStore(storeName),
         (result) => {
           value = result;
         },
@@ -313,7 +317,56 @@ export async function clearCaptureOperations(): Promise<void> {
   });
 }
 
+/** Editable, unsubmitted fields are independent of immutable submitted operations. */
+export function parseSavedCaptureDraft(value: unknown, now = Date.now()): CaptureDraft | null {
+  if (!isObject(value) || value.version !== 1 || value.id !== 'capture-form' ||
+      !Number.isFinite(Date.parse(String(value.updatedAt))) ||
+      now - Date.parse(String(value.updatedAt)) >= RECOVERY_TTL_MS ||
+      Date.parse(String(value.updatedAt)) > now + 60_000 ||
+      !isObject(value.draft)) return null;
+  const draft = value.draft;
+  if (!['url', 'text', 'note'].includes(String(draft.mode)) ||
+      !['unknown', 'public', 'personal'].includes(String(draft.privacy)) ||
+      typeof draft.url !== 'string' || draft.url.length > 2048 ||
+      typeof draft.sharedText !== 'string' || draft.sharedText.length > 100000 ||
+      typeof draft.reason !== 'string' || draft.reason.length > 2000 ||
+      typeof draft.category !== 'string' ||
+      (draft.category !== '' && !CAPTURE_CATEGORIES.includes(draft.category as CaptureDraft['category'] & typeof CAPTURE_CATEGORIES[number])))
+    return null;
+  return { mode: draft.mode as CaptureDraft['mode'], url: draft.url,
+    sharedText: draft.sharedText, reason: draft.reason,
+    category: draft.category as CaptureDraft['category'], privacy: draft.privacy as CaptureDraft['privacy'] };
+}
+
+export async function saveCaptureDraft(draft: CaptureDraft): Promise<void> {
+  if (draft.privacy === 'sensitive') {
+    throw new Error('Sensitive draft content cannot be stored on this device.');
+  }
+  const record = { version: 1, id: 'capture-form', updatedAt: new Date().toISOString(),
+    draft: { mode: draft.mode, url: draft.url, sharedText: draft.sharedText, reason: draft.reason,
+      category: draft.category, privacy: draft.privacy } };
+  if (!parseSavedCaptureDraft(record) ||
+      new TextEncoder().encode(JSON.stringify(record)).byteLength > RECOVERY_MAX_BYTES)
+    throw new Error('Editable draft exceeds local recovery limits.');
+  await runTransaction<void>('readwrite', (store) => { store.put(record); }, DRAFT_STORE);
+}
+
+export async function getCaptureDraft(now = Date.now()): Promise<CaptureDraft | null> {
+  const raw = await runTransaction<unknown>('readonly', (store, done) => {
+    const req = store.get('capture-form');
+    req.onsuccess = () => done(req.result);
+  }, DRAFT_STORE);
+  const draft = parseSavedCaptureDraft(raw, now);
+  if (raw !== undefined && !draft) await clearCaptureDraft();
+  return draft;
+}
+
+export async function clearCaptureDraft(): Promise<void> {
+  await runTransaction<void>('readwrite', (store) => { store.delete('capture-form'); }, DRAFT_STORE);
+}
+
 export async function forgetCaptureRecovery(): Promise<void> {
-  setRecoveryEnabled(false);
   await clearCaptureOperations();
+  await clearCaptureDraft();
+  setRecoveryEnabled(false);
 }
