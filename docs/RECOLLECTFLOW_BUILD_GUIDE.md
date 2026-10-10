@@ -1715,6 +1715,33 @@ Expected: A is rejected; B's evidence/state remain authoritative
 **Proof:** the audit's bare URL no longer has failed job/pending item disagreement;
 parallel completion, stale result, retry, no-AI and deletion tests all agree.
 
+### BG-13 implementation review (2026-10-10)
+
+This is an **unmerged draft**, not an approved BG-13 completion or production
+migration. Work is tracked in [GitHub #61](https://github.com/anmolsansi/Recollect-Flow/issues/61)
+and [draft PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62).
+See [BG-13 verification notes](verification/BG-13_ATOMIC_TRANSITIONS.md)
+for the exact SQL/app paths, operator-only repair endpoints, and outstanding
+race/CI checks.
+
+The additive D1 migrations record an explicit integer processing epoch on
+each item and a nullable epoch on jobs/extraction. A newly inserted job is
+stamped against its current item inside SQLite, while historical jobs with
+unknown generation remain unbound. Item policy, source, raw-text and lifecycle
+changes invalidate outstanding older jobs. Processing job transitions update
+the item's stored aggregate status within the same SQL statement through the
+current-epoch projection. The stored vocabulary stays unchanged. Service
+writers must use a returned-row proof instead of assuming that a trigger-aware
+affected-row count of one means success.
+
+An admin can preview current-epoch discrepancies with
+`GET /api/v1/jobs/processing-reconciliation?limit=20` and submit an explicit
+reviewed-ID repair with `POST /api/v1/jobs/processing-reconciliation` and
+`{ "item_ids": ["item-id"] }`. Both are admin-token protected. There is no
+automatic historical backfill or production deployment. The implementation
+is **not ready for merge** until the full D1/CI suite, canonical checklist,
+source/policy races and documentation gates pass.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-13](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-13--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
