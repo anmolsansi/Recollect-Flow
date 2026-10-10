@@ -66,6 +66,11 @@ merged-main CI**. `BG-12.100` unlocks BG-13 specifically because the
 deterministic rule and safe migration handoff are proved, not because BG-13's
 transactional state repair is already implemented.
 
+A [subsequent 2026-10-10 Markdown and test audit](BG-12_MARKDOWN_AUDIT_2026-10-10.md)
+explicitly verified the deleted/restored fixture and corrected stale
+successor-status wording without extending BG-12 into BG-13 runtime code.
+Historical PR/CI evidence above remains tied to the original closeout.
+
 The target read model and potential migration/rollback are reviewed in
 [the engineering build guide](../RECOLLECTFLOW_BUILD_GUIDE.md#18-bg-12--define-one-aggregate-processing-state-rule)
 and the [BG-12 contract](BG-12_AGGREGATE_STATE_CONTRACT.md).
