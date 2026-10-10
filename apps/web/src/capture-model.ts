@@ -86,3 +86,17 @@ export function buildCapturePayload(
     privacy_level: draft.privacy,
   };
 }
+
+/** Restore rejected or locally queued fields for a deliberate new edit.
+ * A submitted operation's wire payload must never be mutated in place.
+ */
+export function captureDraftFromPayload(payload: CapturePayload): CaptureDraft {
+  return {
+    mode: payload.source_type,
+    url: payload.source_type === 'url' ? (payload.url ?? '') : '',
+    sharedText: payload.source_type === 'url' ? '' : (payload.shared_text ?? ''),
+    reason: payload.user_reason ?? '',
+    category: payload.quick_category ?? '',
+    privacy: payload.privacy_level,
+  };
+}
