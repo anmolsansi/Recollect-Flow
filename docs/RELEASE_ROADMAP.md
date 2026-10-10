@@ -18,9 +18,10 @@ and a keyboard-accessible Web recovery action in real isolated Chrome.
 The [final closeout](verification/BG-11_FINAL_CLOSEOUT.md) documents 99
 completed checklist steps and the explicit BG-12 assignment for `BG-11.028`.
 
-**BG-11 and BG-12 are verified prerequisites. BG-13's atomic
-persistence integration is now merged and CI verified.** BG-14 is the
-next browser acceptance gate. Production deployment, real Instagram
+**BG-11, BG-12 and BG-13 are verified prerequisites.** BG-14's
+real-browser acceptance implementation has merged via PR #64 and passed
+its exact PR-head CI. The [BG-14 final closeout](verification/BG-14_FINAL_CLOSEOUT.md)
+records its merged-main gate and BG-15 handoff. Production deployment, real Instagram
 capture and real private content testing remain separate V1 release gates.
 
 ## BG-12 aggregate-state contract (merged and CI verified)
