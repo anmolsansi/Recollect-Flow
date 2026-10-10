@@ -115,6 +115,31 @@ upstream substitute, **not evidence that arbitrary production websites are
 reachable**. This is the intentionally mocked upstream boundary BG-14 calls
 for, not an HTTP response stub at the browser or application API boundary.
 
+## Additional acceptance cases and verification
+
+- **Canonical capture reuse:** the isolated acquisition story submits two distinct
+  capture events for the same normalized fixture URL and checks that the
+  canonical item ID is reused rather than scheduling duplicate processing.
+- **Unavailable website:** a separately allowlisted `bg14-unavailable-<32-hex>`
+  fixture returns an upstream HTTP 404 from the same `SourceFetcher` seam.
+  The real acquisition service commits `unavailable`, `url_only` coverage and
+  no fabricated `acquired_text`; Chrome renders the limited-coverage explanation
+  while preserving the saved URL.
+- **Recovery convergence:** the negative workflow first guards a real leased
+  processing job failure, then activates the real `Retry page fetch` UI. A
+  fixture-only scheduled event invokes actual current-generation acquisition
+  processing and the test waits until the job reaches `complete` and the
+  acquisition record reaches `acquired_text` before testing owner overrides.
+  No live URL is contacted and no production policy bypass is introduced.
+- **Missing original:** an authenticated browser request for a nonexistent
+  attachment ID must fail with 404 rather than returning arbitrary bytes.
+
+[Focused CI #38061274571](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061274571)
+passed the canonical-duplicate, acquired-HTML/FTS, unavailable/limited
+coverage and browser guidance cases, with clean isolated state. The longer
+workflow including retry convergence and missing-original assertions requires
+a fresh full CI success on its exact implementation head.
+
 ## Repetition and remaining release boundary
 
 GitHub CI runs the BG-07 PDF/PNG original-byte acceptance, BG-11 keyboard
