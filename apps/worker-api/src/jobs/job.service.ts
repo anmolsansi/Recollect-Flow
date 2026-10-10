@@ -255,6 +255,19 @@ export class JobService {
                (status = 'processing' AND lease_expires_at IS NOT NULL
                  AND lease_expires_at <= ?3)
              )
+             AND EXISTS (
+               SELECT 1 FROM items i
+               WHERE i.id = processing_jobs.item_id
+                 AND i.deleted_at IS NULL
+                 AND i.processing_generation = processing_jobs.processing_generation
+                 AND (processing_jobs.privacy_level_snapshot IS NULL
+                      OR i.privacy_level = processing_jobs.privacy_level_snapshot)
+                 AND NOT EXISTS (
+                   SELECT 1 FROM purge_workflows purge
+                   WHERE purge.item_id = i.id
+                     AND purge.state IN ('queued', 'processing', 'partial')
+                 )
+             )
            ORDER BY priority DESC, available_at ASC, created_at ASC
            LIMIT ?5
          )
