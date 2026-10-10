@@ -48,7 +48,7 @@ sessions to a server-validated expiry. The
 records tests and operational constraints.
 
 The implementation passed exact PR-head CI. The final closeout reconciles
-92 verified checklist items and explicitly carries forward browser form
+93 verified checklist items and explicitly carries forward browser form
 recovery and URL credential inspection. BG-16 is unlocked only after the
 merged-main and documentation CI gates pass.
 
