@@ -96,7 +96,10 @@ candidate IDs/count. `POST /admin/source-reprocess/run` requires an explicit
 array of 1 to 20 `{item_id,source_revision}` objects and returns per-item
 outcomes. Neither migrations nor deployments automatically trigger backfill.
 The machine-readable acquisition result and owner-visible limitation are
-separate from aggregate processing status, which remains a BG-12 contract.
+separate from aggregate processing status. BG-12's pure four-state decision
+contract is [merged and verified](verification/BG-12_FINAL_CLOSEOUT.md), but
+BG-13 still owns atomic persisted-state reconciliation and list/detail/filter
+agreement; this API does not yet guarantee the computed aggregate outcome.
 
 See [BG-11 verification](verification/BG-11_URL_RECOVERY.md).
 
