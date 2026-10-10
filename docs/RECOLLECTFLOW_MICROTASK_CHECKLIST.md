@@ -1416,19 +1416,20 @@ BG-11 is unlocked.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#17-bg-11--handle-unavailable-urls-retries-and-old-captures).
 
-The steps below are reconciled to merged PR #54 and its successful exact-revision merged-main CI. Exactly one deliberately unchecked item is delegated to BG-12, not claimed as BG-11 implementation.
+The steps below record BG-11 as merged in PR #54 and CI-verified at
+its original baseline. The single unchecked `BG-11.028` was an explicit
+successor dependency, not missing BG-11 recovery work.
 Follow the numbered order; the group headings organize related work.
-Implementation choices remain proposals until resolved in the relevant step.
 
-**BG-11 final checkpoint:** **Complete within approved BG-11 scope, BG-12 unlocked.**
-99/100 boxes are checked with evidence. `BG-11.028` stays unchecked because
-application of the aggregate `items.processing_status` contract belongs to
-BG-12/BG-13 under the approved URL acquisition contract. The 99 checked items
-include the post-merge BG-11.100 completion gate. See
-[BG-11 final closeout](verification/BG-11_FINAL_CLOSEOUT.md),
-[detailed URL recovery evidence](verification/BG-11_URL_RECOVERY.md),
-and [passing merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37981181748).
-The unchecked BG-11.028 is delegated, not silently counted as implemented.
+**Historical BG-11 checkpoint:** complete within approved BG-11 scope, with
+99/100 boxes checked. **Current downstream status:** BG-12's aggregate
+[decision contract is now complete](verification/BG-12_FINAL_CLOSEOUT.md),
+but applying that contract to durable `items.processing_status` job writes
+still belongs to **BG-13**. Consequently, `BG-11.028` remains unchecked;
+do not claim it was automatically implemented by completing BG-12.
+`BG-11.100` proves only that BG-12 was unlocked by the BG-11 merge. See
+[BG-11 closeout](verification/BG-11_FINAL_CLOSEOUT.md) and
+[BG-11 merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/37981181748).
 
 #### BG-11 / 01 — Establish task context
 
