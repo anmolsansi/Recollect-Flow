@@ -127,7 +127,7 @@ export class EnrichService {
         `SELECT extracted_text, image_description
          FROM extraction_records
          WHERE item_id = ?1 AND completeness IN ('complete', 'partial')
-           AND processing_generation = (SELECT processing_generation FROM items WHERE id = ?1)`, 
+           AND processing_generation = (SELECT processing_generation FROM items WHERE id = ?1)`,
       )
       .bind(job.itemId)
       .all<{
@@ -224,7 +224,7 @@ export class EnrichService {
              input_units, output_units, status, created_at
            ) SELECT ?1, ?2, ?3, ?4, 'enrich', ?5, ?6, ?7, 'success', ?8
              FROM items WHERE id = ?9 AND deleted_at IS NULL AND privacy_level = ?10
-             AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?11 AND lease_owner = ?12 AND status = 'processing' AND lease_expires_at > ?8 AND processing_generation = items.processing_generation) AND NOT EXISTS (SELECT 1 FROM purge_workflows p WHERE p.item_id = items.id AND p.state IN ('queued', 'processing', 'partial'))`, 
+             AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?11 AND lease_owner = ?12 AND status = 'processing' AND lease_expires_at > ?8 AND processing_generation = items.processing_generation) AND NOT EXISTS (SELECT 1 FROM purge_workflows p WHERE p.item_id = items.id AND p.state IN ('queued', 'processing', 'partial'))`,
           )
           .bind(
             crypto.randomUUID(),
@@ -246,7 +246,7 @@ export class EnrichService {
              id, item_id, event_type, actor_type, details_json, created_at
            ) SELECT ?1, ?2, 'enrichment_completed', 'system', ?3, ?4
              FROM items WHERE id = ?5 AND deleted_at IS NULL AND privacy_level = ?6
-             AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?7 AND lease_owner = ?8 AND status = 'processing' AND lease_expires_at > ?4 AND processing_generation = items.processing_generation) AND NOT EXISTS (SELECT 1 FROM purge_workflows p WHERE p.item_id = items.id AND p.state IN ('queued', 'processing', 'partial'))`, 
+             AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?7 AND lease_owner = ?8 AND status = 'processing' AND lease_expires_at > ?4 AND processing_generation = items.processing_generation) AND NOT EXISTS (SELECT 1 FROM purge_workflows p WHERE p.item_id = items.id AND p.state IN ('queued', 'processing', 'partial'))`,
           )
           .bind(
             crypto.randomUUID(),
@@ -270,7 +270,7 @@ export class EnrichService {
            WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
            AND lease_expires_at > ?1
            AND EXISTS (SELECT 1 FROM items WHERE id = ?4 AND deleted_at IS NULL AND privacy_level = ?5 AND processing_generation = processing_jobs.processing_generation AND NOT EXISTS (SELECT 1 FROM purge_workflows p WHERE p.item_id = items.id AND p.state IN ('queued', 'processing', 'partial')))
-           RETURNING id`, 
+           RETURNING id`,
           )
           .bind(now, job.id, ownerId, job.itemId, itemRow.privacy_level),
       ];

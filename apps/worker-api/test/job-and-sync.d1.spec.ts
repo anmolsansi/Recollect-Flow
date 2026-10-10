@@ -611,7 +611,9 @@ describe('OPE-246 durable D1 jobs', () => {
     // This case exercises enrichment only. A URL capture would also require acquisition.
     await env.DB.prepare(
       "UPDATE items SET source_type = 'note', source_url = NULL WHERE id = ?1",
-    ).bind(itemId).run();
+    )
+      .bind(itemId)
+      .run();
     await insertProcessingJob(jobId, itemId);
     const jobs = new JobService(env.DB);
     await jobs.leaseProcessingJobs('enrich', 'double-worker', 5, 1, T0);
@@ -668,7 +670,9 @@ describe('OPE-246 durable D1 jobs', () => {
     // This case exercises enrichment only. A URL capture would also require acquisition.
     await env.DB.prepare(
       "UPDATE items SET source_type = 'note', source_url = NULL WHERE id = ?1",
-    ).bind(itemId).run();
+    )
+      .bind(itemId)
+      .run();
     await insertProcessingJob(jobId, itemId);
     const jobs = new JobService(env.DB);
     await jobs.leaseProcessingJobs('enrich', 'race-worker', 5, 1, T0);
