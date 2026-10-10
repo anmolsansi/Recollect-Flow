@@ -16,7 +16,6 @@ URL secret scan. These are not claimed as performed. Earlier BG-06 entries
 below describe their historical state before BG-15 and no longer describe
 the current capture/upload cookie write permission.
 
-
 This directory contains task-scoped verification evidence that is safe to keep in the repository. It records sanitized results and links to immutable CI/audit sources rather than committing secrets, private capture content or large raw logs.
 
 ## BG-11 — unavailable URL recovery and old-item reprocessing
