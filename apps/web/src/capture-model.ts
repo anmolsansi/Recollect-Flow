@@ -1,5 +1,12 @@
 export const CAPTURE_CATEGORIES = [
-  'learn', 'build', 'try', 'buy', 'visit', 'share_later', 'project_idea', 'reference',
+  'learn',
+  'build',
+  'try',
+  'buy',
+  'visit',
+  'share_later',
+  'project_idea',
+  'reference',
 ] as const;
 export type CaptureCategory = (typeof CAPTURE_CATEGORIES)[number];
 export type CaptureMode = 'url' | 'text' | 'note';
@@ -28,43 +35,59 @@ export interface CapturePayload {
 }
 
 export const emptyCaptureDraft = (): CaptureDraft => ({
-  mode: 'url', url: '', sharedText: '', reason: '', category: '', privacy: 'unknown',
+  mode: 'url',
+  url: '',
+  sharedText: '',
+  reason: '',
+  category: '',
+  privacy: 'unknown',
 });
 
 export function validateCapture(draft: CaptureDraft): Record<string, string> {
   const errors: Record<string, string> = {};
   if (draft.mode === 'url') {
     if (!draft.url.trim()) errors.url = 'Enter a URL.';
-    else if (draft.url.length > 2048) errors.url = 'URLs can be at most 2,048 characters.';
+    else if (draft.url.length > 2048)
+      errors.url = 'URLs can be at most 2,048 characters.';
     else {
       try {
         const url = new URL(draft.url.trim());
-        if (!['https:', 'http:'].includes(url.protocol)) errors.url = 'Use an HTTP or HTTPS URL.';
+        if (!['https:', 'http:'].includes(url.protocol))
+          errors.url = 'Use an HTTP or HTTPS URL.';
       } catch {
         errors.url = 'Enter a valid HTTP or HTTPS URL.';
       }
     }
-  } else if (!draft.sharedText.trim()) errors.shared_text = 'Enter some text to save.';
+  } else if (!draft.sharedText.trim())
+    errors.shared_text = 'Enter some text to save.';
   if (draft.mode !== 'url' && draft.sharedText.length > 100000)
     errors.shared_text = 'Text can be at most 100,000 characters.';
-  if (draft.reason.length > 2000) errors.user_reason = 'Reason can be at most 2,000 characters.';
+  if (draft.reason.length > 2000)
+    errors.user_reason = 'Reason can be at most 2,000 characters.';
   if (draft.category && !CAPTURE_CATEGORIES.includes(draft.category))
     errors.quick_category = 'Select a valid category.';
   return errors;
 }
 
 export function buildCapturePayload(
-  draft: CaptureDraft, key: string, capturedAt: string, version: string,
+  draft: CaptureDraft,
+  key: string,
+  capturedAt: string,
+  version: string,
 ): CapturePayload {
-  if (Object.keys(validateCapture(draft)).length) throw new Error('Invalid capture draft');
-  if (key.length < 12 || key.length > 200) throw new Error('Invalid capture operation key');
+  if (Object.keys(validateCapture(draft)).length)
+    throw new Error('Invalid capture draft');
+  if (key.length < 12 || key.length > 200)
+    throw new Error('Invalid capture operation key');
   return {
     idempotency_key: key,
     source_type: draft.mode,
     source_app: 'recollect-web',
     captured_at: capturedAt,
     client: { name: 'recollect-web', version },
-    ...(draft.mode === 'url' ? { url: draft.url.trim() } : { shared_text: draft.sharedText }),
+    ...(draft.mode === 'url'
+      ? { url: draft.url.trim() }
+      : { shared_text: draft.sharedText }),
     ...(draft.reason ? { user_reason: draft.reason } : {}),
     ...(draft.category ? { quick_category: draft.category } : {}),
     privacy_level: draft.privacy,

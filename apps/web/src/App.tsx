@@ -178,7 +178,12 @@ function Inbox() {
       <div
         style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}
       >
-        <div className="capture-heading-actions"><h1>Inbox</h1><Link className="btn btn-primary" to="/capture">Save something</Link></div>
+        <div className="capture-heading-actions">
+          <h1>Inbox</h1>
+          <Link className="btn btn-primary" to="/capture">
+            Save something
+          </Link>
+        </div>
         <button
           className="btn"
           onClick={() => logoutAdmin().then(() => window.location.reload())}

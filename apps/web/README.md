@@ -35,7 +35,7 @@ See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rule
 
 After signing in with the owner session, choose **Save something** from Inbox
 (or visit `/capture`). Choose Web link, Pasted text, or Note, then enter the
-appropriate source. The separate optional reason describes *why* the owner
+appropriate source. The separate optional reason describes _why_ the owner
 saved it and is never combined with source text. Category is optional.
 
 Privacy defaults to **Unknown**, which does not authorize hosted AI processing.
@@ -49,7 +49,7 @@ to the canonical item, shows replay/duplicate reuse accurately, and displays
 processing as an independent state.
 
 If the network or server fails without a conclusive result, the form retains
-the *exact submitted payload and idempotency key* for Retry. To modify that
+the _exact submitted payload and idempotency key_ for Retry. To modify that
 submission, choose **Start new operation**, recognizing that the first may
 already have saved. This is **in-memory only**. Persistent draft recovery and
 resolving uncertain operations across reloads belong to BG-17. Browser file
