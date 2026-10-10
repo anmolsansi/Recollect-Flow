@@ -96,7 +96,7 @@ async function exercise() {
   await navigate(browser, runtime.webOrigin + '/items/' + itemId);
   await waitFor(
     browser,
-    'Boolean(document.querySelector("textarea[readonly]")?.value.includes(' +
+    '[...document.querySelectorAll("textarea[readonly]")].some(t=>t.value.includes(' +
       JSON.stringify(phrase) +
       '))',
     'acquired phrase in read-only source detail',
