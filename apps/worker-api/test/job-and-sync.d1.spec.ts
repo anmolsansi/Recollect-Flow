@@ -608,6 +608,10 @@ describe('OPE-246 durable D1 jobs', () => {
     const itemId = 'double-completion-item';
     const jobId = 'double-completion-job';
     await insertItem(itemId);
+    // This case exercises enrichment only. A URL capture would also require acquisition.
+    await env.DB.prepare(
+      "UPDATE items SET source_type = 'note', source_url = NULL WHERE id = ?1",
+    ).bind(itemId).run();
     await insertProcessingJob(jobId, itemId);
     const jobs = new JobService(env.DB);
     await jobs.leaseProcessingJobs('enrich', 'double-worker', 5, 1, T0);
@@ -661,6 +665,10 @@ describe('OPE-246 durable D1 jobs', () => {
     const itemId = 'race-terminal-item';
     const jobId = 'race-terminal-job';
     await insertItem(itemId);
+    // This case exercises enrichment only. A URL capture would also require acquisition.
+    await env.DB.prepare(
+      "UPDATE items SET source_type = 'note', source_url = NULL WHERE id = ?1",
+    ).bind(itemId).run();
     await insertProcessingJob(jobId, itemId);
     const jobs = new JobService(env.DB);
     await jobs.leaseProcessingJobs('enrich', 'race-worker', 5, 1, T0);
