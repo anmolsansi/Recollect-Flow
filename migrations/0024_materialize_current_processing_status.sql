@@ -69,6 +69,33 @@ SELECT i.id AS item_id,
       SELECT 1 FROM bg13_current_processing_stages j
       WHERE j.item_id = i.id AND j.job_type = 'extract'
     ) THEN 'pending'
+    -- Downstream enrichment is required only where the current routing
+    -- policy allows AI and source/attachment evidence is usable. The chained
+    -- writer must create this job before completing its upstream stage.
+    WHEN NOT EXISTS (
+      SELECT 1 FROM bg13_current_processing_stages j
+      WHERE j.item_id = i.id AND j.job_type = 'enrich'
+    ) AND (
+      EXISTS (
+        SELECT 1 FROM bg13_current_processing_stages j
+        WHERE j.item_id = i.id AND j.job_type = 'acquire_url'
+          AND j.status = 'complete'
+          AND j.provider_eligibility <> 'none'
+          AND TRIM(COALESCE(i.raw_text, '')) <> ''
+      )
+      OR EXISTS (
+        SELECT 1 FROM bg13_current_processing_stages j
+        JOIN extraction_records er
+          ON er.item_id = i.id
+          AND er.processing_generation = i.processing_generation
+          AND er.completeness IN ('complete', 'partial')
+          AND (TRIM(COALESCE(er.extracted_text, '')) <> ''
+               OR TRIM(COALESCE(er.image_description, '')) <> '')
+        WHERE j.item_id = i.id AND j.job_type = 'extract'
+          AND j.status = 'complete'
+          AND j.provider_eligibility <> 'none'
+      )
+    ) THEN 'pending'
     WHEN EXISTS (
       SELECT 1 FROM bg13_current_processing_stages j WHERE j.item_id = i.id
     ) THEN 'complete'
