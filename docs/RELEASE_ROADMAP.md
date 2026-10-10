@@ -54,8 +54,9 @@ Its [acceptance record](verification/BG-14_BROWSER_ACCEPTANCE.md)
 includes the new isolated Chrome journey and
 [passing positive source-acquisition proof](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38057058035)
 using a test-only upstream fetch mock without bypassing Worker parsing,
-security or D1. BG-15 remains locked until the full browser gate passes on
-a clean merged head.
+security or D1. BG-14 passed full CI on its PR head and merged-main commit,
+with [100/100 acceptance](verification/BG-14_FINAL_CLOSEOUT.md).
+BG-15 is now unlocked as the browser write-authentication task.
 No live production D1 migration, historical automatic backfill or deployment
 has been performed, and none is implied by this milestone.
 
