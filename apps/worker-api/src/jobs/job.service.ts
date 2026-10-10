@@ -940,7 +940,7 @@ export class JobService {
          SET status = 'pending', available_at = ?1, lease_owner = NULL,
              lease_expires_at = NULL, updated_at = ?1
          WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
-           AND lease_expires_at > ?1`,
+           AND lease_expires_at > ?1${currentGuard}`,
       )
       .bind(nowIso, jobId, ownerId)
       .run();
