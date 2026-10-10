@@ -410,7 +410,24 @@ export class JobService {
         existing.input_hash === input.inputHash &&
         existing.result_version === input.resultVersion &&
         existing.result_json === resultJson;
-      return { accepted: replayed, replayed };
+      const current = await this.db
+        .prepare(
+          `SELECT j.id FROM processing_jobs j
+           JOIN items i ON i.id = j.item_id
+           WHERE j.id = ?1 AND j.status = 'complete'
+             AND i.deleted_at IS NULL
+             AND i.processing_generation = j.processing_generation
+             AND (j.privacy_level_snapshot IS NULL
+                  OR j.privacy_level_snapshot = i.privacy_level)
+             AND NOT EXISTS (
+               SELECT 1 FROM purge_workflows p
+               WHERE p.item_id = i.id
+                 AND p.state IN ('queued', 'processing', 'partial')
+             )`,
+        )
+        .bind(jobId)
+        .first();
+      return { accepted: replayed && current !== null, replayed: replayed && current !== null };
     }
 
     const nowIso = now.toISOString();
