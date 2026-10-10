@@ -334,35 +334,51 @@ describe('POST /api/v1/captures', () => {
   });
 });
 
-
 describe('BG-15 browser capture write boundary', () => {
   async function ownerCookie(app: ReturnType<typeof createApp>) {
-    const login = await app.request('/api/v1/admin/session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: 'admin-secret' }),
-    }, env);
+    const login = await app.request(
+      '/api/v1/admin/session',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: 'admin-secret' }),
+      },
+      env,
+    );
     expect(login.status).toBe(200);
     return login.headers.get('Set-Cookie')!.split(';')[0]!;
   }
 
-  function browserPost(app: ReturnType<typeof createApp>, cookie: string | null, origin?: string, authorization?: string) {
-    return app.request('/api/v1/captures', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(cookie ? { Cookie: cookie } : {}),
-        ...(origin ? { Origin: origin } : {}),
-        ...(authorization ? { Authorization: authorization } : {}),
+  function browserPost(
+    app: ReturnType<typeof createApp>,
+    cookie: string | null,
+    origin?: string,
+    authorization?: string,
+  ) {
+    return app.request(
+      '/api/v1/captures',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(cookie ? { Cookie: cookie } : {}),
+          ...(origin ? { Origin: origin } : {}),
+          ...(authorization ? { Authorization: authorization } : {}),
+        },
+        body: JSON.stringify(validCapture),
       },
-      body: JSON.stringify(validCapture),
-    }, env);
+      env,
+    );
   }
 
   it('accepts same-origin signed cookie, with no token in request body', async () => {
     const repository = new MemoryCaptureRepository();
     const app = createApp(() => repository);
-    const response = await browserPost(app, await ownerCookie(app), 'http://localhost');
+    const response = await browserPost(
+      app,
+      await ownerCookie(app),
+      'http://localhost',
+    );
     expect(response.status).toBe(201);
     expect(repository.items.size).toBe(1);
   });
@@ -382,16 +398,34 @@ describe('BG-15 browser capture write boundary', () => {
     const repository = new MemoryCaptureRepository();
     const app = createApp(() => repository);
     const cookie = await ownerCookie(app);
-    expect((await browserPost(app, null, 'http://localhost')).status).toBe(401);
-    expect((await browserPost(app, cookie + 'tampered', 'http://localhost')).status).toBe(401);
-    expect((await browserPost(app, cookie, 'http://localhost', 'Bearer local-worker-secret')).status).toBe(401);
+    expect((await browserPost(app, null, 'http://localhost')).status).toBe(
+      401,
+    );
+    expect(
+      (await browserPost(app, cookie + 'tampered', 'http://localhost')).status,
+    ).toBe(401);
+    expect(
+      (
+        await browserPost(
+          app,
+          cookie,
+          'http://localhost',
+          'Bearer local-worker-secret',
+        )
+      ).status,
+    ).toBe(401);
     expect(repository.items.size).toBe(0);
   });
 
   it('preserves valid no-Origin capture bearer compatibility', async () => {
     const repository = new MemoryCaptureRepository();
     const app = createApp(() => repository);
-    const response = await browserPost(app, null, undefined, 'Bearer capture-secret');
+    const response = await browserPost(
+      app,
+      null,
+      undefined,
+      'Bearer capture-secret',
+    );
     expect(response.status).toBe(201);
     expect(repository.items.size).toBe(1);
   });
