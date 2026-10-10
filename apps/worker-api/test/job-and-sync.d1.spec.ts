@@ -479,6 +479,55 @@ describe('OPE-246 durable D1 jobs', () => {
     expect(results.results).toHaveLength(1);
   });
 
+  it('accepts exactly one concurrent terminal mutation and projects its outcome', async () => {
+    const itemId = 'race-terminal-item';
+    const jobId = 'race-terminal-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'race-worker', 5, 1, T0);
+    const results = await Promise.all([
+      jobs.completeProcessingJob(jobId, 'race-worker', T0),
+      jobs.failProcessingJob(
+        jobId,
+        'race-worker',
+        'MODEL_FAILED',
+        false,
+        5,
+        T0,
+      ),
+    ]);
+    expect(results.filter(Boolean)).toHaveLength(1);
+    const status = await env.DB.prepare(
+      'SELECT status FROM processing_jobs WHERE id = ?1',
+    ).bind(jobId).first<string>('status');
+    expect(status).toMatch(/^(complete|failed)$/);
+    const derived = await env.DB.prepare(
+      'SELECT processing_status FROM items WHERE id = ?1',
+    ).bind(itemId).first<string>('processing_status');
+    expect(derived).toBe(status);
+  });
+
+  it('rejects a deleted item while an old worker still has a lease', async () => {
+    const itemId = 'race-deleted-item';
+    const jobId = 'race-deleted-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'deleted-worker', 5, 1, T0);
+    await env.DB.prepare('UPDATE items SET deleted_at = ?1 WHERE id = ?2')
+      .bind(T0.toISOString(), itemId)
+      .run();
+    expect(await jobs.completeProcessingJob(jobId, 'deleted-worker', T0)).toBe(
+      false,
+    );
+    expect(
+      await env.DB.prepare('SELECT last_error_code FROM processing_jobs WHERE id = ?1')
+        .bind(jobId)
+        .first('last_error_code'),
+    ).toBe('PROCESSING_SUPERSEDED');
+  });
+
   it('rejects a byte-identical replay after the item epoch changes', async () => {
     const itemId = 'result-replay-epoch-item';
     const jobId = 'result-replay-epoch-job';
