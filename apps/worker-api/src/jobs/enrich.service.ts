@@ -208,7 +208,7 @@ export class EnrichService {
       addField('suggested_action', extracted.suggestedAction ?? null);
       updateFields.push(`processing_status = 'complete'`);
 
-      const baseWhere = `id = ?${paramIndex++} AND deleted_at IS NULL AND privacy_level = ?${paramIndex++} AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?${paramIndex++} AND lease_owner = ?${paramIndex++} AND status = 'processing')`;
+      const baseWhere = `id = ?${paramIndex++} AND deleted_at IS NULL AND privacy_level = ?${paramIndex++} AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?${paramIndex++} AND lease_owner = ?${paramIndex++} AND status = 'processing' AND lease_expires_at > ?1 AND processing_generation = items.processing_generation)`;
       updateValues.push(job.itemId, itemRow.privacy_level, job.id, ownerId);
 
       const updateItemsQuery = `UPDATE items SET ${updateFields.join(', ')} WHERE ${baseWhere}`;
@@ -222,7 +222,7 @@ export class EnrichService {
              input_units, output_units, status, created_at
            ) SELECT ?1, ?2, ?3, ?4, 'enrich', ?5, ?6, ?7, 'success', ?8
              FROM items WHERE id = ?9 AND deleted_at IS NULL AND privacy_level = ?10
-             AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?11 AND lease_owner = ?12 AND status = 'processing')`,
+             AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?11 AND lease_owner = ?12 AND status = 'processing' AND lease_expires_at > ?8 AND processing_generation = items.processing_generation)`,
           )
           .bind(
             crypto.randomUUID(),
@@ -244,7 +244,7 @@ export class EnrichService {
              id, item_id, event_type, actor_type, details_json, created_at
            ) SELECT ?1, ?2, 'enrichment_completed', 'system', ?3, ?4
              FROM items WHERE id = ?5 AND deleted_at IS NULL AND privacy_level = ?6
-             AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?7 AND lease_owner = ?8 AND status = 'processing')`,
+             AND EXISTS (SELECT 1 FROM processing_jobs WHERE id = ?7 AND lease_owner = ?8 AND status = 'processing' AND lease_expires_at > ?4 AND processing_generation = items.processing_generation)`,
           )
           .bind(
             crypto.randomUUID(),
@@ -266,7 +266,8 @@ export class EnrichService {
            SET status = 'complete', lease_owner = NULL, lease_expires_at = NULL,
                completed_at = ?1, last_error_code = NULL, updated_at = ?1
            WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
-           AND EXISTS (SELECT 1 FROM items WHERE id = ?4 AND deleted_at IS NULL AND privacy_level = ?5)`,
+           AND lease_expires_at > ?1
+           AND EXISTS (SELECT 1 FROM items WHERE id = ?4 AND deleted_at IS NULL AND privacy_level = ?5 AND processing_generation = processing_jobs.processing_generation)`,
           )
           .bind(now, job.id, ownerId, job.itemId, itemRow.privacy_level),
       ];
