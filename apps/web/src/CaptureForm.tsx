@@ -96,7 +96,7 @@ export function CaptureForm() {
     }
   }
 
-  async function retry(operation: CaptureOperation) {
+  async function retry(operation: CaptureOperation, fromQueue = false) {
     if (lock.current) return;
     lock.current = true;
     setBusy(true);
@@ -113,13 +113,13 @@ export function CaptureForm() {
       setResult(response);
       setPending(null);
       setQueue((items) => items.filter((item) => item.id !== operation.id));
-      setDraft(emptyCaptureDraft());
+      if (!fromQueue) setDraft(emptyCaptureDraft());
       try { await deleteCaptureOperation(operation.id); }
       catch { setStorageWarning('Saved, but the old retry record could not be cleared. Discard it locally.'); }
     } catch (error) {
       if (error instanceof ApiError && error.status === 422 && error.details) {
         setErrors(error.details);
-        setDraft(captureDraftFromPayload(operation.payload));
+        if (!fromQueue) setDraft(captureDraftFromPayload(operation.payload));
         setPending(null);
         setQueue((items) => items.filter((item) => item.id !== operation.id));
         try { await deleteCaptureOperation(operation.id); }
@@ -245,7 +245,7 @@ export function CaptureForm() {
               {item.stage === 'auth_required' ? ' · Sign in to retry' : ' · Not confirmed saved'}</p>
             <div className="capture-actions">
               <button type="button" className="btn btn-outline"
-                disabled={busy || !loaded} onClick={() => void retry(item)}>Retry original</button>
+                disabled={busy || !loaded} onClick={() => void retry(item, true)}>Retry original</button>
               <button type="button" className="btn btn-outline"
                 disabled={busy || !loaded} onClick={() => void discard(item.id)}>Discard local retry</button>
             </div>
