@@ -44,7 +44,7 @@ async function save(mode, value, reason) {
   const detail = await apiRequest(runtime.apiOrigin, adminToken, 'GET', '/items/' + id);
   assert.equal(detail.item.source_type, mode);
   if (mode === 'url') assert.equal(detail.item.source_url, value);
-  else assert.equal(detail.item.raw_text, mode === 'text' ? value : null); // Note stores owner note independently.
+  else assert.equal(detail.item.raw_text, value);
   return { id, detail };
 }
 
@@ -64,7 +64,7 @@ try {
 
   const noteText = 'BG16 private note ' + marker;
   const note = await save('note', noteText, 'Owner note purpose ' + marker);
-  assert.equal(note.detail.item.user_note, noteText);
+  assert.equal(note.detail.item.user_note, 'Owner note purpose ' + marker);
   report('note-created', { kind: 'synthetic', durable: true });
 
   const pasted = 'BG16 pasted article ' + marker;
@@ -80,7 +80,7 @@ try {
   assert.equal(duplicate.id, first.id);
   await waitFor(browser, 'document.body.textContent.includes("Already Saved")', 'canonical duplicate reuse');
   const refreshed = await apiRequest(runtime.apiOrigin, adminToken, 'GET', '/items/' + first.id);
-  assert.ok(refreshed.capture_events.some(event => event.user_note === 'New reason for same URL'));
+  assert.ok(refreshed.provenance.capture_events.some(event => event.user_note === 'New reason for same URL'));
   report('canonical-url-duplicate', { reused: true, separate_reason_event: true });
 
   await begin();
