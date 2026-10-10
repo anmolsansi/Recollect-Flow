@@ -248,6 +248,38 @@ async function main() {
       'ADMIN_TOKEN must not be persisted in browser storage.',
     );
 
+    // BG-15.089: inspect real browser navigation/resource URLs after login.
+    // Check both secret values and token-bearing query parameter names.
+    const credentialUrlAudit = await client.evaluate(
+      sessionId,
+      `(() => {
+        const urls = [
+          location.href,
+          ...[...document.querySelectorAll('a[href]')].map((a) => a.href),
+          ...performance.getEntriesByType('resource').map((entry) => entry.name),
+        ];
+        const queryCredentialNames = /^(?:token|access_token|admin_token|capture_token|authorization|api_key|apikey|secret)$/i;
+        const findings = urls.filter((value) => {
+          if (value.includes(${JSON.stringify(adminToken)}) ||
+              value.includes(${JSON.stringify(captureToken)})) return true;
+          try {
+            return [...new URL(value).searchParams.keys()].some(
+              (name) => queryCredentialNames.test(name),
+            );
+          } catch {
+            return false;
+          }
+        });
+        return { inspected: urls.length, unsafeCount: findings.length };
+      })()`,
+    );
+    assert.ok(credentialUrlAudit.inspected > 0);
+    assert.equal(
+      credentialUrlAudit.unsafeCount,
+      0,
+      'Browser navigation/resource URLs must not expose credentials.',
+    );
+
     const downloadDir = join(runtime.tempDir, 'downloads');
     await mkdir(downloadDir, { recursive: true });
     await client.send('Browser.setDownloadBehavior', {
@@ -402,6 +434,7 @@ async function main() {
         status: 'login-proof-passed',
         fixtures_prepared: fixtures.length,
         downloads,
+        credential_url_audit: credentialUrlAudit,
         reload_download: reloadDownload,
         session_failures: {
           logout_status: logoutStatus,

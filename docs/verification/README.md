@@ -10,9 +10,9 @@ and [implementation merged-main CI](https://github.com/anmolsansi/Recollect-Flow
 both passed. See [BG-15 auth matrix](BG-15_BROWSER_WRITE_AUTH.md)
 and [BG-15 closeout](BG-15_FINAL_CLOSEOUT.md).
 
-The BG-15 checklist reconciles 92/100 steps. BG-15.073–.079 are delegated
-to the BG-16–BG-18 form/draft/upload UI tasks and BG-15.089 is a follow-up
-URL secret scan. These are not claimed as performed. Earlier BG-06 entries
+The BG-15 checklist reconciles 93/100 steps. BG-15.073–.079 are delegated
+to the BG-16–BG-18 form/draft/upload UI tasks and remain unchecked.
+BG-15.089 is verified in the [browser URL leak scan PR #68](https://github.com/anmolsansi/Recollect-Flow/pull/68). Earlier BG-06 entries
 below describe their historical state before BG-15 and no longer describe
 the current capture/upload cookie write permission.
 
