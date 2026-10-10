@@ -8,9 +8,10 @@ RecollectFlow is a private, zero-cost-first capture and recall system. The curre
 is complete and verified on merged `main`. The
 [full decision table](docs/verification/BG-12_AGGREGATE_STATE_CONTRACT.md)
 covers required failures, retries, job leases, limited URL coverage,
-processing generations and attachment outcomes. BG-13 must still connect
-this rule to atomic persisted item/job state and consistent list/detail/filter
-results. **Do not treat this as a production deployment or runtime status fix.**
+processing generations and attachment outcomes. BG-13 has now connected the contract to atomic persisted item/job state and
+consistent list/detail/filter projections. **This is not a production rollout.**
+BG-14 is adding the browser workflow acceptance suite; see
+[BG-14 acceptance status](docs/verification/BG-14_BROWSER_ACCEPTANCE.md).
 See [current build status](docs/BUILD_STATUS.md).
 
 ## Local development
