@@ -1,4 +1,5 @@
 /* global process */
+import { Buffer } from 'node:buffer';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 
