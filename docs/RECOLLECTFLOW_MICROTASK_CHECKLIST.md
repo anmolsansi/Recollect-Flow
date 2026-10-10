@@ -2000,7 +2000,6 @@ Implementation choices remain proposals until resolved in the relevant step.
 - BG-15.100 is reconciled using [passing merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38064153798) on implementation merge `389d5f7f899ce07b878cb475bf25f2e84fa1cf07`. Final docs PR CI and merged-main verification are tracked separately.
 - [Auth matrix and evidence](verification/BG-15_BROWSER_WRITE_AUTH.md) records signed-cookie write behavior and the strict Worker/configured-Web Origin allowlist. This authorization milestone does not deploy V1 or authorize production data changes.
 
-
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#21-bg-15--define-browser-write-authentication).
 
 These unchecked steps inherit this task's **what, why, when, where and proof** above.
