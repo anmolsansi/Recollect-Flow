@@ -44,7 +44,11 @@ export async function matchesAdminSession(
     context.env.ADMIN_TOKEN,
     'admin_session',
   );
-  return cookieMatch === 'authenticated';
+  if (typeof cookieMatch !== 'string') return false;
+  const match = /^authenticated:(\\d{13})$/.exec(cookieMatch);
+  if (!match) return false;
+  const expiry = Number(match[1]);
+  return Number.isSafeInteger(expiry) && expiry > Date.now() && expiry <= Date.now() + 24 * 60 * 60 * 1000;
 }
 
 /**
