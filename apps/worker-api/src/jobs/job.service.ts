@@ -427,7 +427,7 @@ export class JobService {
         )
         .bind(jobId)
         .first();
-      return { accepted: replayed && current !== null, replayed: replayed && current !== null };
+      return { accepted: replayed && Boolean(current), replayed: replayed && Boolean(current) };
     }
 
     const nowIso = now.toISOString();
