@@ -87,7 +87,7 @@ passed format/lint/typecheck/unit/contracts/Web build, migrations, the new
 isolated Chrome/D1 URL/text/note capture acceptance, and preexisting browser
 regressions. The [BG-16 final record](verification/BG-16_FINAL_CLOSEOUT.md)
 covers file paths, outcome semantics, privacy, error focus and the handoff to
-BG-17. Production deployment and external-provider success are not implied.
+BG-17. [Implementation merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38082460334) and [documentation merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38086474190) both passed. [Documentation PR #71](https://github.com/anmolsansi/Recollect-Flow/pull/71) is merged. With the BG-16 final checklist gate merged, BG-17 is unlocked. Production deployment and external-provider success are not implied.
 
 ## Product releases
 
