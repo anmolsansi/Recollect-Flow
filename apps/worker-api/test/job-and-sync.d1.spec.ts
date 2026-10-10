@@ -18,6 +18,7 @@ function jsonResponse(body: unknown, status = 200, headers?: HeadersInit) {
 
 async function resetDatabase() {
   await env.DB.batch([
+    env.DB.prepare('DELETE FROM purge_workflows'),
     env.DB.prepare('DELETE FROM processing_job_results'),
     env.DB.prepare('DELETE FROM sync_attempts'),
     env.DB.prepare('DELETE FROM processing_jobs'),
@@ -700,6 +701,42 @@ describe('OPE-246 durable D1 jobs', () => {
       .bind(itemId)
       .first<string>('processing_status');
     expect(derived).toBe(status);
+  });
+
+  it('rejects an in-flight result after a purge begins, without evidence or audit', async () => {
+    const itemId = 'purge-freeze-item';
+    const jobId = 'purge-freeze-job';
+    await insertItem(itemId);
+    await insertProcessingJob(jobId, itemId);
+    const jobs = new JobService(env.DB);
+    await jobs.leaseProcessingJobs('enrich', 'purge-worker', 5, 1, T0);
+    await env.DB.prepare(
+      `INSERT INTO purge_workflows (
+         id, item_id, state, confirmation_digest, confirmation_expires_at,
+         requested_edit_version, created_at, updated_at
+       ) VALUES (?1, ?2, 'queued', 'test-digest', ?3, 1, ?3, ?3)`,
+    ).bind('purge-freeze-request', itemId, T0.toISOString()).run();
+    const result = await jobs.submitProcessingResult(
+      jobId,
+      'purge-worker',
+      {
+        submissionId: 'purge-result-submission',
+        inputHash: 'input-hash',
+        resultVersion: '1',
+        result: { title: 'never committed' },
+      },
+      T0,
+    );
+    expect(result).toEqual({ accepted: false, replayed: false });
+    expect(
+      await env.DB.prepare('SELECT COUNT(*) AS n FROM processing_job_results WHERE job_id = ?1')
+        .bind(jobId).first('n'),
+    ).toBe(0);
+    expect(
+      await env.DB.prepare(
+        "SELECT COUNT(*) AS n FROM audit_events WHERE item_id = ?1 AND event_type = 'job_result_accepted'",
+      ).bind(itemId).first('n'),
+    ).toBe(0);
   });
 
   it('rejects a deleted item while an old worker still has a lease', async () => {
