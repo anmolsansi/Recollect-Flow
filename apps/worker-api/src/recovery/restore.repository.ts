@@ -171,6 +171,14 @@ export class RestoreRepository {
     for (const result of item.processingJobResults) {
       await this.insertRecord('processing_job_results', result);
     }
+    // Restored processing jobs materialize an item status that can trigger a
+    // provisional Notion attempt. The portable archive is authoritative here:
+    // remove those derived attempts before restoring archived sync history.
+    // Restore runs against an empty database, and no other item's rows match.
+    await this.db
+      .prepare('DELETE FROM sync_attempts WHERE item_id = ?1')
+      .bind(item.item.id)
+      .run();
     for (const sync of item.syncAttempts) {
       await this.insertRecord('sync_attempts', resetSyncLease(sync, nowIso));
     }
