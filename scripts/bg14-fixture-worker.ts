@@ -27,10 +27,13 @@ const fetcher = new SourceFetcher({
     if (
       target.protocol !== 'https:' ||
       target.hostname !== 'example.com' ||
-      !/^\/bg14-fixture-[0-9a-f]{32}$/.test(target.pathname) ||
+      !/^\/bg14-(fixture|unavailable)-[0-9a-f]{32}$/.test(target.pathname) ||
       target.search !== ''
     ) {
       throw new Error('BG14 fixture refused an unapproved upstream request');
+    }
+    if (target.pathname.startsWith('/bg14-unavailable-')) {
+      return new Response('Synthetic unavailable page', {status:404, headers:{'content-type':'text/plain'}});
     }
     return new Response(fixtureBody, {
       status: 200,
