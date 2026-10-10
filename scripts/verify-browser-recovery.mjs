@@ -111,8 +111,14 @@ try {
   await enterText(unsentDraft);
   await evaluate(browser, 'new Promise(resolve => setTimeout(resolve, 750))');
   await begin();
-  assert.equal(await evaluate(browser, 'document.querySelector("[name=shared_text]").value'),
-    unsentDraft, 'editable unsent text should survive the opted-in reload');
+  assert.equal(
+    await evaluate(
+      browser,
+      'document.querySelector("[name=shared_text]").value',
+    ),
+    unsentDraft,
+    'editable unsent text should survive the opted-in reload',
+  );
   report('editable-draft-restored');
 
   // Simulate a server-side durable commit, then drop the browser request so no
