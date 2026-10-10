@@ -24,8 +24,10 @@ integration, not a production rollout or automatic legacy backfill.
 BG-14 is in implementation review at [PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64)
 and [issue #63](https://github.com/anmolsansi/Recollect-Flow/issues/63).
 The [browser acceptance record](verification/BG-14_BROWSER_ACCEPTANCE.md)
-distinguishes real Chrome signed-cookie, download, search and state proof
-from the still-unverified deterministic acquired-HTML source fixture.
+records real Chrome signed-cookie, downloads, search and state proof,
+plus [passing upstream-mocked acquisition](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38057058035)
+through the same Worker parser, D1 and browser. Final PR and merged-main CI
+remain required before BG-14/BG-15 can be marked complete.
 BG-15 remains gated until actual browser evidence closes that gap. This update
 does not rewrite the original engineering-ticket publication scope.
 
