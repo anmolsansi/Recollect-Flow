@@ -535,6 +535,7 @@ export class JobService {
            FROM processing_jobs
            WHERE id = ?16 AND item_id = ?2 AND lease_owner = ?17
              AND status = 'processing' AND lease_expires_at > ?15
+             AND ${currentJobGuard}
              AND EXISTS (
                SELECT 1 FROM attachments
                WHERE id = ?3 AND item_id = ?2 AND status = 'linked'
@@ -596,6 +597,13 @@ export class JobService {
             WHERE source.id = ?3 AND source.item_id = ?4
               AND source.lease_owner = ?5 AND source.status = 'processing'
               AND source.lease_expires_at > ?2
+              AND EXISTS (
+                SELECT 1 FROM items i
+                WHERE i.id = source.item_id AND i.deleted_at IS NULL
+                  AND i.processing_generation = source.processing_generation
+                  AND (source.privacy_level_snapshot IS NULL
+                       OR i.privacy_level = source.privacy_level_snapshot)
+              )
               AND source.provider_eligibility <> 'none'
               AND NOT EXISTS (
                 SELECT 1 FROM processing_jobs
@@ -619,7 +627,8 @@ export class JobService {
          SET status = 'complete', lease_owner = NULL, lease_expires_at = NULL,
              completed_at = ?1, last_error_code = NULL, updated_at = ?1
          WHERE id = ?2 AND lease_owner = ?3 AND status = 'processing'
-           AND lease_expires_at > ?1 AND item_id = ?4`,
+           AND lease_expires_at > ?1 AND item_id = ?4
+           AND ${currentJobGuard}`,
         )
         .bind(nowIso, jobId, ownerId, itemId),
     );
