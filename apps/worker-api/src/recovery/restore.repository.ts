@@ -167,6 +167,16 @@ export class RestoreRepository {
         'processing_jobs',
         resetProcessingLease(job, nowIso),
       );
+      // Restore must not manufacture current provenance for pre-BG-13
+      // backup records. The normal INSERT trigger stamps new jobs.
+      if (job.processing_generation == null) {
+        await this.db
+          .prepare(
+            'UPDATE processing_jobs SET processing_generation = NULL WHERE id = ?1',
+          )
+          .bind(job.id)
+          .run();
+      }
     }
     for (const result of item.processingJobResults) {
       await this.insertRecord('processing_job_results', result);
