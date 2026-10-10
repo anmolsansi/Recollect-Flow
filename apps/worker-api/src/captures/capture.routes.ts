@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 
 import type { AppContext, Env } from '../env';
-import { requireCaptureToken } from '../shared/auth';
+import { requireCaptureWrite } from '../shared/auth';
 import { AppError } from '../shared/errors';
 import type { CaptureRepository } from './capture.repository';
 import { captureSchema } from './capture.schema';
@@ -12,7 +12,7 @@ export function captureRoutes(
 ) {
   const router = new Hono<AppContext>();
 
-  router.post('/', requireCaptureToken, async (context) => {
+  router.post('/', requireCaptureWrite, async (context) => {
     let body: unknown;
     try {
       body = await context.req.json();

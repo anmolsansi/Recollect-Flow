@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createApp } from '../src/app';
 import type {
@@ -775,7 +775,7 @@ describe('private attachment lifecycle', () => {
     expect(await validBearerWithTamperedCookie.arrayBuffer()).toEqual(bytes);
   });
 
-  it('does not broaden admin-cookie access to attachment writes or deletion', async () => {
+  it('rejects owner-cookie writes without same-origin and preserves admin-only deletion', async () => {
     const repository = new MemoryAttachmentRepository();
     const r2 = memoryBucket();
     const env = testEnv(r2.bucket);
@@ -800,7 +800,7 @@ describe('private attachment lifecycle', () => {
       },
       env,
     );
-    expect(cookieUploadInit.status).toBe(401);
+    expect(cookieUploadInit.status).toBe(403);
 
     const captureDelete = await app.request(
       `/api/v1/attachments/${id}`,
@@ -820,7 +820,7 @@ describe('private attachment lifecycle', () => {
       },
       env,
     );
-    expect(cookieDelete.status).toBe(401);
+    expect(cookieDelete.status).toBe(403);
 
     const adminDelete = await app.request(
       `/api/v1/attachments/${id}`,
@@ -912,5 +912,215 @@ describe('private attachment lifecycle', () => {
     expect(await response.json()).toMatchObject({
       error: { code: 'NOT_FOUND' },
     });
+  });
+});
+
+describe('BG-15 browser upload write boundary', () => {
+  it('rejects an expired signed session during byte upload', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+    const initialized = await app.request(
+      '/api/v1/uploads/init',
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://localhost',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename: 'expired.pdf',
+          mime_type: 'application/pdf',
+          size_bytes: 12,
+          source_type: 'file',
+        }),
+      },
+      env,
+    );
+    expect(initialized.status).toBe(201);
+    const json = await initialized.json<{
+      data: { attachment_id: string };
+    }>();
+    const id = json.data.attachment_id;
+    const clock = vi.spyOn(Date, 'now');
+    clock.mockReturnValue(Date.now() + 25 * 60 * 60 * 1000);
+    try {
+      const response = await app.request(
+        `/api/v1/uploads/${id}/content`,
+        {
+          method: 'PUT',
+          headers: {
+            Cookie: cookie,
+            Origin: 'http://localhost',
+            'Content-Type': 'application/pdf',
+            'Content-Length': '12',
+          },
+          body: new TextEncoder().encode('%PDF-1.7 test').buffer,
+        },
+        env,
+      );
+      expect(response.status).toBe(401);
+      expect(repository.attachments.get(id)?.status).toBe('pending');
+      expect(r2.objects.size).toBe(0);
+    } finally {
+      clock.mockRestore();
+    }
+  });
+
+  it('accepts the explicitly configured Web origin through a proxy', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const env = {
+      ...testEnv(memoryBucket().bucket),
+      WEB_INBOX_BASE_URL: 'http://127.0.0.1:5173',
+    };
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+    const response = await app.request(
+      '/api/v1/uploads/init',
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://127.0.0.1:5173',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename: 'proxy.pdf',
+          mime_type: 'application/pdf',
+          size_bytes: 12,
+          source_type: 'file',
+        }),
+      },
+      env,
+    );
+    expect(response.status).toBe(201);
+  });
+
+  it('accepts owner-cookie raw bytes and finalize with exact Origin', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+    const bytes = new TextEncoder().encode('%PDF-1.7\\ntest').buffer;
+    const init = await app.request(
+      '/api/v1/uploads/init',
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://localhost',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename: 'owner.pdf',
+          mime_type: 'application/pdf',
+          size_bytes: bytes.byteLength,
+          source_type: 'file',
+        }),
+      },
+      env,
+    );
+    expect(init.status).toBe(201);
+    const result = await init.json<{ data: { attachment_id: string } }>();
+    const id = result.data.attachment_id;
+    const upload = await app.request(
+      `/api/v1/uploads/${id}/content`,
+      {
+        method: 'PUT',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://localhost',
+          'Content-Type': 'application/pdf',
+          'Content-Length': String(bytes.byteLength),
+        },
+        body: bytes,
+      },
+      env,
+    );
+    expect(upload.status).toBe(200);
+    const finalize = await app.request(
+      `/api/v1/uploads/${id}/finalize`,
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://localhost',
+          'Content-Type': 'application/json',
+        },
+        body: '{}',
+      },
+      env,
+    );
+    expect(finalize.status).toBe(200);
+    expect(repository.attachments.get(id)?.status).toBe('finalized');
+  });
+
+  const initBody = {
+    filename: 'browser.pdf',
+    mime_type: 'application/pdf',
+    size_bytes: 12,
+    source_type: 'file',
+  };
+
+  it('permits a signed-in owner to initialize an upload, but not a foreign origin', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const env = testEnv(memoryBucket().bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+    const request = (origin: string) =>
+      app.request(
+        '/api/v1/uploads/init',
+        {
+          method: 'POST',
+          headers: {
+            Cookie: cookie,
+            Origin: origin,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(initBody),
+        },
+        env,
+      );
+    expect((await request('https://outside.example')).status).toBe(403);
+    expect(repository.attachments.size).toBe(0);
+    expect((await request('http://localhost')).status).toBe(201);
+    expect(repository.attachments.size).toBe(1);
+  });
+
+  it('rejects a missing Origin and invalid explicit bearer even with a good cookie', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const env = testEnv(memoryBucket().bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const cookie = await createAdminSessionCookie(app, env);
+    const response = await app.request(
+      '/api/v1/uploads/init',
+      {
+        method: 'POST',
+        headers: { Cookie: cookie, 'Content-Type': 'application/json' },
+        body: JSON.stringify(initBody),
+      },
+      env,
+    );
+    expect(response.status).toBe(403);
+    const mixed = await app.request(
+      '/api/v1/uploads/init',
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://localhost',
+          Authorization: 'Bearer local-worker-secret',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(initBody),
+      },
+      env,
+    );
+    expect(mixed.status).toBe(401);
+    expect(repository.attachments.size).toBe(0);
   });
 });

@@ -60,6 +60,22 @@ BG-15 is now unlocked as the browser write-authentication task.
 No live production D1 migration, historical automatic backfill or deployment
 has been performed, and none is implied by this milestone.
 
+## BG-15 browser write-authentication checkpoint
+
+BG-15 implementation is proposed in
+[PR #66](https://github.com/anmolsansi/Recollect-Flow/pull/66).
+This work gives signed owner sessions permission to write through existing
+capture and upload routes when the browser's Origin matches the Worker origin.
+Capture and admin bearer clients retain the established no-Origin path.
+The updated session cookie has a server-enforced expiry. A forged Origin,
+invalid bearer, expired session or worker-scoped credential does not gain
+capture permission.
+
+[BG-15 verification notes](verification/BG-15_BROWSER_WRITE_AUTH.md)
+record the authorization matrix and remaining proof. The BG-16 creation-form
+task remains blocked until BG-15 tests, checklist reconciliation and
+merged-main CI pass. No production deployment is implied.
+
 ## Product releases
 
 ### V0 — Technical spike

@@ -5,7 +5,7 @@ import type { AppContext, Env } from '../env';
 import {
   requireAdminToken,
   requireAttachmentContentRead,
-  requireCaptureToken,
+  requireCaptureWrite,
 } from '../shared/auth';
 import { AppError } from '../shared/errors';
 import { D1AttachmentRepository } from './attachment.repository';
@@ -31,7 +31,7 @@ export function attachmentRoutes(
 ) {
   const router = new Hono<AppContext>();
 
-  router.use('/uploads/*', requireCaptureToken);
+  router.use('/uploads/*', requireCaptureWrite);
 
   router.post('/uploads/init', async (context) => {
     const body = await context.req.json().catch(() => {
@@ -266,7 +266,7 @@ export function attachmentRoutes(
 
   router.delete(
     '/attachments/:id',
-    requireCaptureToken,
+    requireCaptureWrite,
     requireAdminToken,
     async (context) => {
       const repository = repositoryFactory(context.env);

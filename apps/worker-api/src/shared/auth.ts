@@ -44,8 +44,79 @@ export async function matchesAdminSession(
     context.env.ADMIN_TOKEN,
     'admin_session',
   );
-  return cookieMatch === 'authenticated';
+  if (typeof cookieMatch !== 'string') return false;
+  const match = /^authenticated:(\d{13})$/.exec(cookieMatch);
+  if (!match) return false;
+  const expiry = Number(match[1]);
+  return (
+    Number.isSafeInteger(expiry) &&
+    expiry > Date.now() &&
+    expiry <= Date.now() + 24 * 60 * 60 * 1000
+  );
 }
+
+/**
+ * Signed session cookies authorize writes only from this Worker's exact origin.
+ * A missing/null Origin is rejected for cookie-backed mutations, including
+ * requests from a different subdomain on the same site.
+ * Bearer clients retain their non-browser no-Origin capability.
+ */
+function requireSessionWriteOrigin(context: Context<AppContext>): void {
+  if (['GET', 'HEAD', 'OPTIONS'].includes(context.req.method)) return;
+  const origin = context.req.header('Origin');
+  const workerOrigin = new URL(context.req.url).origin;
+  const configuredWeb = context.env.WEB_INBOX_BASE_URL;
+  let webOrigin: string | null = null;
+  if (configuredWeb) {
+    try {
+      const url = new URL(configuredWeb);
+      if (
+        url.protocol === 'https:' ||
+        url.hostname === 'localhost' ||
+        url.hostname === '127.0.0.1'
+      ) {
+        webOrigin = url.origin;
+      }
+    } catch {
+      // Invalid configuration does not grant additional origins.
+    }
+  }
+  if (
+    !origin ||
+    origin === 'null' ||
+    (origin !== workerOrigin && origin !== webOrigin)
+  ) {
+    throw new AppError(
+      403,
+      'ORIGIN_FORBIDDEN',
+      'This browser write origin is not allowed.',
+    );
+  }
+}
+
+/**
+ * Capture/admin bearer identity takes precedence over ambient browser cookies.
+ * An invalid explicit Authorization header must never silently fall back to a
+ * valid cookie, as that hides credential errors and can confuse permission scope.
+ */
+export const requireCaptureWrite: MiddlewareHandler<AppContext> = async (
+  context,
+  next,
+) => {
+  if (context.req.header('Authorization') !== undefined) {
+    await requireCaptureToken(context, next);
+    return;
+  }
+  if (!(await matchesAdminSession(context))) {
+    throw new AppError(
+      401,
+      'UNAUTHENTICATED',
+      'A valid capture token or owner session is required.',
+    );
+  }
+  requireSessionWriteOrigin(context);
+  await next();
+};
 
 export const requireCaptureToken: MiddlewareHandler<AppContext> = async (
   context,
@@ -111,7 +182,12 @@ export const requireAdminToken: MiddlewareHandler<AppContext> = async (
     return;
   }
 
-  if (await matchesAdminSession(context)) {
+  // Explicit bearer failures cannot borrow the browser's ambient identity.
+  if (
+    context.req.header('Authorization') === undefined &&
+    (await matchesAdminSession(context))
+  ) {
+    requireSessionWriteOrigin(context);
     await next();
     return;
   }

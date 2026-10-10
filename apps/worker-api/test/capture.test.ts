@@ -333,3 +333,54 @@ describe('POST /api/v1/captures', () => {
     expect(repository.events).toHaveLength(1);
   });
 });
+
+describe('BG-15 browser capture authorization', () => {
+  it('accepts a signed owner cookie from its own origin', async () => {
+    const repository = new MemoryCaptureRepository();
+    const app = createApp(() => repository);
+    const login = await app.request(
+      '/api/v1/admin/session',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: 'admin-secret' }),
+      },
+      env,
+    );
+    const cookie = login.headers.get('Set-Cookie')!.split(';')[0]!;
+    const response = await app.request(
+      '/api/v1/captures',
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookie,
+          Origin: 'http://localhost',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(validCapture),
+      },
+      env,
+    );
+    expect(response.status).toBe(201);
+    expect(repository.items.size).toBe(1);
+  });
+
+  it('rejects an anonymous browser write', async () => {
+    const repository = new MemoryCaptureRepository();
+    const app = createApp(() => repository);
+    const response = await app.request(
+      '/api/v1/captures',
+      {
+        method: 'POST',
+        headers: {
+          Origin: 'http://localhost',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(validCapture),
+      },
+      env,
+    );
+    expect(response.status).toBe(401);
+    expect(repository.items.size).toBe(0);
+  });
+});
