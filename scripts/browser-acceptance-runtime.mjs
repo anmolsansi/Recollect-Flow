@@ -128,6 +128,7 @@ export async function createLocalAcceptanceRuntime({
   captureToken,
   adminToken,
   localWorkerToken,
+  enableScheduled = false,
 }) {
   const tempDir = await mkdtemp(join(tmpdir(), 'recollect-bg07-'));
   const persistDir = join(tempDir, 'wrangler-state');
@@ -155,6 +156,7 @@ export async function createLocalAcceptanceRuntime({
       'wrangler',
       'dev',
       '--local',
+      ...(enableScheduled ? ['--test-scheduled'] : []),
       '--port',
       String(apiPort),
       '--persist-to',
