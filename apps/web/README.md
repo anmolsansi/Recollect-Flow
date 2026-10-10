@@ -56,6 +56,10 @@ retry** clears only browser state, not a server item that might have saved.
 
 ## Browser capture recovery (BG-17)
 
+An unfinished editable form is also retained when recovery is enabled and
+restored after reload. It uses its own IndexedDB draft record, independent of
+immutable submitted retry operations. Draft changes save after a short debounce.
+
 Cross-reload recovery is **off by default**. The owner can opt into **Keep
 unfinished captures on this device for up to seven days** on the capture screen.
 Opted-in drafts are written to versioned IndexedDB before each request. The
