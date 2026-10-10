@@ -16,7 +16,9 @@ Tests are located in `apps/worker-api/test/capture.test.ts` and `apps/worker-api
 
 ## Canonical checklist
 
-The authoritative `docs/RECOLLECTFLOW_MICROTASK_CHECKLIST.md` has **92 of 100** BG-15 steps checked against available evidence. Steps `BG-15.073` through `BG-15.079` remain unchecked because the capture form, persistent draft, pending upload identity, and reauthentication UI belong to BG-16 through BG-18. Step `BG-15.089` remains unchecked pending a dedicated browser URL/query-string secret scan. These are not claimed as completed. The BG-15 backend authorization gate is complete, with BG-16 awaiting the final documentation merge.
+The authoritative `docs/RECOLLECTFLOW_MICROTASK_CHECKLIST.md` has **93 of 100** BG-15 steps checked against available evidence. Steps `BG-15.073` through `BG-15.079` remain unchecked because the capture form, persistent draft, pending upload identity, and reauthentication UI belong to BG-16 through BG-18. Step `BG-15.089` is checked against the isolated Chrome
+navigation, anchor and resource URL scan in
+[PR #68](https://github.com/anmolsansi/Recollect-Flow/pull/68). The remaining seven browser-form steps are not claimed as completed. The BG-15 backend authorization gate is complete, with BG-16 awaiting the final documentation merge.
 
 The [authorization matrix](BG-15_BROWSER_WRITE_AUTH.md) contains the exact API boundary and deployment assumptions. Tracking remains in [issue #65](https://github.com/anmolsansi/Recollect-Flow/issues/65).
 
