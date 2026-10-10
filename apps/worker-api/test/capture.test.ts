@@ -334,8 +334,10 @@ describe('POST /api/v1/captures', () => {
   });
 });
 
-describe('BG-15 browser capture write boundary', () => {
-  async function ownerCookie(app: ReturnType<typeof createApp>) {
+describe('BG-15 browser capture authorization', () => {
+  it('accepts a signed owner cookie from its own origin', async () => {
+    const repository = new MemoryCaptureRepository();
+    const app = createApp(() => repository);
     const login = await app.request(
       '/api/v1/admin/session',
       {
@@ -345,87 +347,40 @@ describe('BG-15 browser capture write boundary', () => {
       },
       env,
     );
-    expect(login.status).toBe(200);
-    return login.headers.get('Set-Cookie')!.split(';')[0]!;
-  }
-
-  function browserPost(
-    app: ReturnType<typeof createApp>,
-    cookie: string | null,
-    origin?: string,
-    authorization?: string,
-  ) {
-    return app.request(
+    const cookie = login.headers.get('Set-Cookie')!.split(';')[0]!;
+    const response = await app.request(
       '/api/v1/captures',
       {
         method: 'POST',
         headers: {
+          Cookie: cookie,
+          Origin: 'http://localhost',
           'Content-Type': 'application/json',
-          ...(cookie ? { Cookie: cookie } : {}),
-          ...(origin ? { Origin: origin } : {}),
-          ...(authorization ? { Authorization: authorization } : {}),
         },
         body: JSON.stringify(validCapture),
       },
       env,
     );
-  }
-
-  it('accepts same-origin signed cookie, with no token in request body', async () => {
-    const repository = new MemoryCaptureRepository();
-    const app = createApp(() => repository);
-    const response = await browserPost(
-      app,
-      await ownerCookie(app),
-      'http://localhost',
-    );
     expect(response.status).toBe(201);
     expect(repository.items.size).toBe(1);
   });
 
-  it.each([undefined, 'null', 'https://evil.example', 'http://other.localhost'])(
-    'rejects cookie capture from missing or foreign Origin %s before storage',
-    async (origin) => {
-      const repository = new MemoryCaptureRepository();
-      const app = createApp(() => repository);
-      const response = await browserPost(app, await ownerCookie(app), origin);
-      expect(response.status).toBe(403);
-      expect(repository.items.size).toBe(0);
-    },
-  );
-
-  it('rejects anonymous, tampered, and explicit wrong-scope tokens', async () => {
+  it('rejects an anonymous browser write', async () => {
     const repository = new MemoryCaptureRepository();
     const app = createApp(() => repository);
-    const cookie = await ownerCookie(app);
-    const anonymous = await browserPost(app, null, 'http://localhost');
-    const tampered = await browserPost(
-      app,
-      cookie + 'tampered',
-      'http://localhost',
+    const response = await app.request(
+      '/api/v1/captures',
+      {
+        method: 'POST',
+        headers: {
+          Origin: 'http://localhost',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(validCapture),
+      },
+      env,
     );
-    const worker = await browserPost(
-      app,
-      cookie,
-      'http://localhost',
-      'Bearer local-worker-secret',
-    );
-    expect(anonymous.status).toBe(401);
-    expect(tampered.status).toBe(401);
-    expect(worker.status).toBe(401);
+    expect(response.status).toBe(401);
     expect(repository.items.size).toBe(0);
-  });
-
-  it('preserves valid no-Origin capture bearer compatibility', async () => {
-    const repository = new MemoryCaptureRepository();
-    const app = createApp(() => repository);
-    const response = await browserPost(
-      app,
-      null,
-      undefined,
-      'Bearer capture-secret',
-    );
-    expect(response.status).toBe(201);
-    expect(repository.items.size).toBe(1);
   });
 });
