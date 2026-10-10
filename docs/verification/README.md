@@ -49,6 +49,19 @@ Status: **complete on main; BG-14 unlocked**.
 - No production deployment, live URL probing or automatic historical backfill
   is claimed by this engineering gate.
 
+## BG-14 — real browser workflow acceptance
+
+Status: **in verification; BG-15 not yet unlocked**.
+
+- [BG-14 detailed acceptance, commands and limitations](BG-14_BROWSER_ACCEPTANCE.md)
+- [Issue #63](https://github.com/anmolsansi/Recollect-Flow/issues/63)
+- [Implementation PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64)
+- [100 BG-14 canonical steps](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-14--100-executable-microtasks)
+- Reuses [BG-07 browser download](BG-07_FINAL_CLOSEOUT.md),
+  BG-11 keyboard source recovery and new state/lifecycle browser journey.
+- Positive public URL acquisition must be verified separately; no simulated
+  fetched HTML or live third-party request is represented as completed.
+
 ## Priority 1 — verification foundation
 
 ### BG-01 — reproducible baseline
