@@ -1895,12 +1895,12 @@ focus on input and recovery instead of embedding authentication workarounds.
 wrong-scope denial, cross-origin browser mutation rejection and session expiry.
 No raw admin token appears in localStorage, query strings or application logs.
 
-### Implementation checkpoint (BG-15 branch)
+### BG-15 merged implementation and authentication boundary
 
-The browser write authentication boundary is implemented on
-`agent/bg-15-browser-write-auth` and tracked by
+The browser write authentication boundary was merged to `main` in
+[PR #66](https://github.com/anmolsansi/Recollect-Flow/pull/66), tracked by
 [issue #65](https://github.com/anmolsansi/Recollect-Flow/issues/65)
-and [PR #66](https://github.com/anmolsansi/Recollect-Flow/pull/66).
+and [the final closeout](verification/BG-15_FINAL_CLOSEOUT.md).
 The [security and route matrix](verification/BG-15_BROWSER_WRITE_AUTH.md)
 describes the precise signed-cookie, bearer-precedence, Origin and expiry
 behavior and its limitations.
@@ -1915,9 +1915,11 @@ remains admin-only. Existing request body and attachment integrity checks
 remain in their original handlers. The Web helper continues to send cookies
 without storing the admin secret.
 
-BG-15 is not considered closed until tests, browser validation, CI,
-the canonical checklist and merged-main evidence agree. BG-16 remains gated.
-No production deployment is part of this checkpoint.
+BG-15's backend authentication boundary passed its exact PR-head CI.
+The [final closeout](verification/BG-15_FINAL_CLOSEOUT.md) distinguishes
+its verified scope from browser-form behaviors delegated to BG-16–BG-18.
+BG-16 unlock depends on the verified merged-main and documentation gate.
+No production deployment is part of this milestone.
 
 ### Execution checklist
 
