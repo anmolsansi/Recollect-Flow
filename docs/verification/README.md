@@ -51,7 +51,7 @@ Status: **complete on main; BG-14 unlocked**.
 
 ## BG-14 — real browser workflow acceptance
 
-Status: **in verification; BG-15 not yet unlocked**.
+Status: **implementation merged; final gate documented in closeout**.
 
 - [BG-14 detailed acceptance, commands and limitations](BG-14_BROWSER_ACCEPTANCE.md)
 - [Issue #63](https://github.com/anmolsansi/Recollect-Flow/issues/63)
