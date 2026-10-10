@@ -62,7 +62,8 @@ export function parseCaptureOperation(value: unknown, now = Date.now()): Capture
       typeof payload.client.version !== 'string' || payload.client.version.length > 40 ||
       !['unknown', 'public', 'personal', 'sensitive'].includes(String(payload.privacy_level)) ||
       (payload.source_type === 'url' &&
-        (typeof payload.url !== 'string' || payload.url.length > 2048 || !/^https?:\\/\\//i.test(payload.url))) ||
+        (typeof payload.url !== 'string' || payload.url.length > 2048 || !(payload.url.toLowerCase().startsWith('http://') ||
+          payload.url.toLowerCase().startsWith('https://')))) ||
       (payload.source_type !== 'url' &&
         (typeof payload.shared_text !== 'string' || !payload.shared_text.trim() || payload.shared_text.length > 100000)) ||
       (payload.user_reason !== undefined &&
@@ -164,6 +165,9 @@ export async function listCaptureOperations(now = Date.now()): Promise<CaptureOp
 }
 
 export async function saveCaptureOperation(operation: CaptureOperation): Promise<void> {
+  if (operation.payload.privacy_level === 'sensitive') {
+    throw new Error('Sensitive captures cannot be stored in browser recovery.');
+  }
   if (!parseCaptureOperation(operation)) throw new Error('Capture recovery record is invalid or expired.');
   await runTransaction<void>('readwrite', (store, _done, fail) => {
     const request = store.getAll();
