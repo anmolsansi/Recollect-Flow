@@ -1,0 +1,31 @@
+name: BG-14 isolated acquisition acceptance
+on:
+  push:
+    branches: [agent/bg-14-browser-workflow]
+permissions:
+  contents: write
+concurrency:
+  group: bg14-acquisition-final
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/bg-14-browser-workflow
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write .
+      - name: Commit normalized acceptance files
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.gITHUB.com'
+          git add -A
+          git commit -m 'style(bg-14): normalize isolated worker acceptance [24/50] (#63)'
+          git push origin HEAD:agent/bg-14-browser-workflow
+      - run: npm run browser:acquisition:test
