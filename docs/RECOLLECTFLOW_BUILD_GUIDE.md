@@ -1815,9 +1815,12 @@ owner-source-text preservation, delete/restore and logged-out private reads.
 No external website is fetched by the synthetic failure/retry story.
 The positive acquired-HTML acceptance now uses the test-only Worker upstream
 fetch fixture and passed [focused Chrome proof](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38057058035).
-Real browser/API requests and source parsing are not mocked. Full PR-head
-and merged-main CI must still pass before BG-15 unlocks. No live third-party
-website reliability or production deployment is claimed.
+Real browser/API requests and source parsing are not mocked. The implementation
+merged through [PR #64](https://github.com/anmolsansi/Recollect-Flow/pull/64),
+with [passing exact-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38061589399).
+The final [BG-14 closeout](verification/BG-14_FINAL_CLOSEOUT.md) records the
+merged-main CI gate and BG-15 handoff. No production deployment or general
+third-party website reliability is claimed.
 
 ### Execution checklist
 
