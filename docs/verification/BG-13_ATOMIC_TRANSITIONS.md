@@ -1,6 +1,13 @@
 # BG-13 Atomic Transitions: Implementation and Review Evidence
 
-Status: **in implementation, not release-ready**. Main task [#61](https://github.com/anmolsansi/Recollect-Flow/issues/61), draft [PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62), branch `agent/bg-13-atomic-transitions`, starting main `8a8b2a53494f908b153c10492d12e7958f93b86d`.
+Status: **complete and CI verified on main for the approved BG-13
+engineering scope**. [Issue #61](https://github.com/anmolsansi/Recollect-Flow/issues/61)
+tracks the work, [PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62)
+merged at `3d1af004bc0ebfaa95645a39880b38f623d3c447`.
+See the [final closeout](BG-13_FINAL_CLOSEOUT.md) for immutable
+[PR-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38052047097)
+and [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38052191291)
+evidence. Baseline: `8a8b2a53494f908b153c10492d12e7958f93b86d`.
 
 ## Why this work exists
 
@@ -31,15 +38,23 @@ The alternative was service-owned D1 batches across every writer. That would req
 
 `GET /api/v1/jobs/processing-reconciliation?limit=20` returns the count and up to 20 current-generation mismatches. `POST /api/v1/jobs/processing-reconciliation` takes `{ "item_ids": ["reviewed-item-id"] }` and returns `updated` and `skipped`. Both require the normal admin token. Preview before submitting IDs. Repeated submissions should become no-ops. The API must never infer epochs from historical timestamps.
 
-## Verification and outstanding acceptance
+## Verification and accepted limits
 
-The implementation adds workerd D1 regressions for terminal failure, privacy supersession, expired-lease failure rejection and explicit-ID reconciliation. Existing tests cover source acquisition and other job transitions. Run `npm run check` and `npm run db:migrate:local` in CI. Do not report success or mark BG-13 complete until **exact-head CI passes**, migration/query review is complete, source and capacity writers are regression-clean, all canonical BG-13 steps are reconciled, and merged-main CI is verified.
+The PR and merged-main CI gates passed, including Workerd D1 migrations,
+transactional state tests, stale-worker and policy rejection, source
+acquisition, extraction upserts, enrichment, restore, reconciliation,
+list/detail/filter agreement and Chrome-based source-recovery acceptance.
+Detailed test and immutable SHA evidence is in
+[BG-13 final closeout](BG-13_FINAL_CLOSEOUT.md).
 
-No production migration, remote D1 backfill, live URL fetch, external source calls, or deployment was performed in this implementation session. The changed SQL/views and read model are not production-approved until CI and review gates pass.
+Production migration, remote historical backfill, live URL fetch, external
+message sends and deployment were not performed. Historical NULL-generation
+work requires explicitly reviewed handling; no timestamp-based inference
+is authorized. BG-14 owns additional real browser workflow validation.
 
 ## Known decision boundaries
 
 - Historical NULL-generation work is intentionally not backfilled by timestamp. Operator review is required for an ambiguous item.
 - A lease can expire without a new mutation. A clock-driven reconciliation/claim pass is required before calling an apparently active lease permanently authoritative.
-- Current-stage SQL projection must match BG-12's no-AI, missing-required-stage and multi-attachment fixtures before completion is claimed.
+- Current-generation save-only, missing required stage, and multi-attachment contracts are covered by the verified D1 suite; BG-14 must still test live browser behavior.
 - Rollback is forward-fix for additive D1 columns/triggers, not destructive down migration. Take a verified backup before any future production migration; disable new writers/reconciliation on a failed gate.
