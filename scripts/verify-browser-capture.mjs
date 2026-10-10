@@ -102,9 +102,10 @@ try {
     'Boolean(document.getElementById("shared-text-error"))',
     'empty note validation',
   );
-  assert.equal(
-    await evaluate(browser, 'document.activeElement?.name'),
-    'shared_text',
+  await waitFor(
+    browser,
+    'document.activeElement?.name === "shared_text"',
+    'validation focus',
   );
   report('empty-note-validation');
 
