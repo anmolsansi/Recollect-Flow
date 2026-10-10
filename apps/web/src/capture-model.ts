@@ -1,13 +1,6 @@
-export const CAPTURE_CATEGORIES = [
-  'learn',
-  'build',
-  'try',
-  'buy',
-  'visit',
-  'share_later',
-  'project_idea',
-  'reference',
-] as const;
+import { captureCategorySchema } from '@recollect/contracts';
+
+export const CAPTURE_CATEGORIES = captureCategorySchema.options;
 export type CaptureCategory = (typeof CAPTURE_CATEGORIES)[number];
 export type CaptureMode = 'url' | 'text' | 'note';
 export type CapturePrivacy = 'unknown' | 'public' | 'personal' | 'sensitive';
