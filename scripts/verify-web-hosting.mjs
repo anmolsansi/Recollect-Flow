@@ -70,7 +70,7 @@ try {
     assert.equal((await api.json()).error.code, 'NOT_FOUND');
   }
   const anonymous = await inspect('/api/v1/items/' + marker);
-  assert.equal(anonymous.status, 401);
+  assert.equal(anonymous.status, 403);
   assert.equal(anonymous.headers.get('cache-control'), 'private, no-store');
   report('BG21-static-and-api-route-matrix');
 
@@ -110,14 +110,14 @@ try {
   );
   await waitFor(
     browser,
-    'document.body.textContent.includes("BG21 bundled app fixture")',
+    'Boolean([...document.querySelectorAll("textarea[readonly]")].some(t => t.value.includes("BG21 bundled app fixture")))',
     'authenticated item detail from direct link',
   );
   assert.equal(await evaluate(browser, 'location.pathname'), directLink);
   await navigate(browser, runtime.webOrigin + directLink);
   await waitFor(
     browser,
-    'document.body.textContent.includes("BG21 bundled app fixture")',
+    'Boolean([...document.querySelectorAll("textarea[readonly]")].some(t => t.value.includes("BG21 bundled app fixture")))',
     'deep link hard reload with signed session',
   );
   const cookies = await browser.client.send(
