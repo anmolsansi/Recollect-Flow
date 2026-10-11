@@ -53,8 +53,8 @@ async function saveText(
   await navigate(browser, runtime.webOrigin + '/capture');
   await waitFor(
     browser,
-    'Boolean(document.querySelector("form.capture-form"))',
-    'capture form',
+    'Boolean(document.querySelector("form.capture-form button[type=submit]:not([disabled])"))',
+    'interactive capture form',
   );
   await evaluate(
     browser,
