@@ -31,7 +31,7 @@ export function parseLocalReviewAt(local: string): string | null {
     throw new Error('Enter a valid review year.');
   }
   const selected = new Date(year, month - 1, day, hour, minute, 0, 0);
-  if (formatLocalReviewAt(selected.toISOString()) !== local) {
+  if (!Number.isFinite(selected.getTime()) || formatLocalReviewAt(selected.toISOString()) !== local) {
     throw new Error('This local time does not exist. Choose another time.');
   }
   // A repeated wall-clock hour maps to two UTC instants. Look up to 3 hours
