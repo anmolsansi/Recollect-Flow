@@ -104,6 +104,26 @@ export function attachmentRoutes(
     );
   });
 
+  // Reconcile unknown PUT/finalize outcomes without repeating irreversible stages.
+  // This is private owner/capture-token metadata, never the R2 object key.
+  router.get('/uploads/:id/status', async (context) => {
+    const attachment = await repositoryFactory(context.env).findById(
+      context.req.param('id'),
+    );
+    if (!attachment) throw new AppError(404, 'NOT_FOUND', 'Attachment not found.');
+    return context.json({
+      data: {
+        attachment_id: attachment.id,
+        status: attachment.status,
+        expires_at: attachment.expiresAt,
+        checksum: attachment.contentHash,
+        size_bytes: attachment.sizeBytes,
+        mime_type: attachment.declaredContentType,
+      },
+      meta: { request_id: context.get('requestId') },
+    });
+  });
+
   router.put('/uploads/:id/content', async (context) => {
     const repository = repositoryFactory(context.env);
     const attachment = await repository.findById(context.req.param('id'));
