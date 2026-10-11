@@ -307,7 +307,12 @@ async function run() {
   const file = await saveOriginal(pdf);
 
   await navigate(browser, runtime.webOrigin + '/items/' + noteId);
+  const reviewLocal = new Date(Date.now() + 7 * 86_400_000)
+    .toISOString()
+    .slice(0, 16);
   await fillLabel(browser, 'Title', 'BG22 owner title ' + runId);
+  await fillLabel(browser, 'Project', 'BG22 Project ' + runId);
+  await fillLabel(browser, 'Review date', reviewLocal);
   await clickButton(browser, 'Save changes');
   await waitFor(
     browser,
@@ -326,7 +331,18 @@ async function run() {
   );
   const noteDetail = await itemDetails(noteId);
   assert.equal(noteDetail.item.title, 'BG22 owner title ' + runId);
-  report('BG22-title-persists-after-reload', { capture_id: noteId });
+  assert.equal(noteDetail.item.project, 'BG22 Project ' + runId);
+  assert.ok(noteDetail.item.review_at, 'Review date must persist');
+  assert.equal(noteDetail.item.raw_text, 'BG22 private note ' + runId);
+  const reviewShown = await evaluate(
+    browser,
+    'document.querySelector("input[type=datetime-local]")?.value',
+  );
+  assert.equal(reviewShown, reviewLocal);
+  report('BG22-owner-metadata-persists-after-reload', {
+    capture_id: noteId,
+    source_unchanged: true,
+  });
 
   const repeated = await saveText('url', url, 'bg22second' + runId, 'public', {
     expectDuplicate: true,
