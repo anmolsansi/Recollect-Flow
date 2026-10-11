@@ -192,8 +192,8 @@ export function parseCaptureOperation(
     ...(value.followUp
       ? {
           followUp: {
-            project: (value.followUp as unknown as FollowUpDraft).project,
-            reviewLocal: (value.followUp as unknown as FollowUpDraft).reviewLocal,
+            project: String(value.followUp.project),
+            reviewLocal: String(value.followUp.reviewLocal),
           },
         }
       : {}),
