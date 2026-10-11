@@ -15,10 +15,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: BG-20 formatting diagnostic (temporary)
-        run: |
-          npx prettier docs/verification/BG-20_WEB_ORIGIN_DESIGN.md > /tmp/bg20-prettier.md
-          diff -u docs/verification/BG-20_WEB_ORIGIN_DESIGN.md /tmp/bg20-prettier.md || true
       - run: npm run check
       - run: npm run db:migrate:local
       - run: google-chrome --version
