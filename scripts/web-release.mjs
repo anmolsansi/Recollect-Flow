@@ -21,7 +21,8 @@ function sha256(bytes) {
 }
 
 function collectFiles(directory, base = directory) {
-  if (!existsSync(directory)) throw new Error('Missing Web build: ' + directory);
+  if (!existsSync(directory))
+    throw new Error('Missing Web build: ' + directory);
   return readdirSync(directory, { withFileTypes: true })
     .flatMap((entry) => {
       const full = join(directory, entry.name);
@@ -38,23 +39,36 @@ function collectFiles(directory, base = directory) {
 /** Verify build output references before Wrangler can deploy it. */
 export function inspectWebOutput(directory) {
   const index = join(directory, 'index.html');
-  if (!existsSync(index)) throw new Error('Missing Web index.html, run the Web build first');
+  if (!existsSync(index))
+    throw new Error('Missing Web index.html, run the Web build first');
   const html = readFileSync(index, 'utf8');
-  if (!html.includes('id="root"')) throw new Error('Invalid Web entry: root element absent');
-  const references = [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map((m) => m[1]);
+  if (!html.includes('id="root"'))
+    throw new Error('Invalid Web entry: root element absent');
+  const references = [
+    ...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g),
+  ].map((m) => m[1]);
   if (!references.some((name) => name.endsWith('.js'))) {
     throw new Error('Web entry has no referenced hashed JavaScript bundle');
   }
   const files = collectFiles(directory);
   for (const file of files) {
-    if (/(^|\/)(?:\.env(?:\..*)?|\.dev\.vars|.*\.map|.*\.pem|.*\.key)$/i.test(file)) {
+    if (
+      /(^|\/)(?:\.env(?:\..*)?|\.dev\.vars|.*\.map|.*\.pem|.*\.key)$/i.test(
+        file,
+      )
+    ) {
       throw new Error('Forbidden file in public Web assets: ' + file);
     }
   }
   for (const reference of references) {
     const normalized = reference.slice(1);
-    if (!/^assets\/[A-Za-z0-9._/-]+$/.test(normalized) || !files.includes(normalized)) {
-      throw new Error('Web entry references missing or unsafe asset: ' + reference);
+    if (
+      !/^assets\/[A-Za-z0-9._/-]+$/.test(normalized) ||
+      !files.includes(normalized)
+    ) {
+      throw new Error(
+        'Web entry references missing or unsafe asset: ' + reference,
+      );
     }
     if (!/[-][A-Za-z0-9_-]{8,}\.(?:js|css)$/.test(normalized)) {
       throw new Error('Entry references unversioned JS/CSS: ' + reference);
@@ -63,7 +77,11 @@ export function inspectWebOutput(directory) {
   return files;
 }
 
-export function manifestFor(directory, repositoryRoot = root, sourceRevision = 'unknown') {
+export function manifestFor(
+  directory,
+  repositoryRoot = root,
+  sourceRevision = 'unknown',
+) {
   const files = inspectWebOutput(directory);
   const lockfile = join(repositoryRoot, 'package-lock.json');
   const config = join(repositoryRoot, 'wrangler.toml');
@@ -87,17 +105,24 @@ export function finalizeWebRelease(directory = defaultDist) {
   let revision = 'unknown';
   try {
     revision = execFileSync('git', ['rev-parse', 'HEAD'], {
-      cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'],
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
     }).trim();
   } catch {
     // Explicitly unknown in a source export without a Git checkout.
   }
   const manifest = manifestFor(directory, root, revision);
-  writeFileSync(join(directory, 'release-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+  writeFileSync(
+    join(directory, 'release-manifest.json'),
+    JSON.stringify(manifest, null, 2) + '\n',
+  );
   return manifest;
 }
 
-const main = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+const main =
+  process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (main) {
   const command = process.argv[2];
   if (command === 'clean') {

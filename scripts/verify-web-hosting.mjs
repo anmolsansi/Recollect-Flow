@@ -3,7 +3,13 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { createBg21Preview } from './bg21-preview-runtime.mjs';
 import {
-  openBrowser, navigate, waitFor, evaluate, apiRequest, report, safeDiagnostics,
+  openBrowser,
+  navigate,
+  waitFor,
+  evaluate,
+  apiRequest,
+  report,
+  safeDiagnostics,
 } from './bg14-browser-utils.mjs';
 
 let runtime;
@@ -26,7 +32,10 @@ try {
   const script = await inspect(js);
   assert.equal(script.status, 200);
   assert.match(script.headers.get('content-type') ?? '', /javascript/);
-  assert.equal(script.headers.get('cache-control'), 'public, max-age=31536000, immutable');
+  assert.equal(
+    script.headers.get('cache-control'),
+    'public, max-age=31536000, immutable',
+  );
   assert.equal((await script.text()).includes(runtime.adminToken), false);
 
   for (const route of ['/capture', '/capture/file', '/items/' + marker]) {
@@ -36,10 +45,22 @@ try {
   }
   const postToShell = await inspect('/capture', 'POST');
   assert.equal(postToShell.status, 405);
-  for (const route of ['/unknown', '/items/a/b', '/capture/unknown', '/assets/missing-HaSh1234.js']) {
+  for (const route of [
+    '/unknown',
+    '/items/a/b',
+    '/capture/unknown',
+    '/assets/missing-HaSh1234.js',
+  ]) {
     const response = await inspect(route);
-    assert.equal(response.status, 404, 'Unknown UI/asset must not serve HTML: ' + route);
-    assert.doesNotMatch(response.headers.get('content-type') ?? '', /text\/html/);
+    assert.equal(
+      response.status,
+      404,
+      'Unknown UI/asset must not serve HTML: ' + route,
+    );
+    assert.doesNotMatch(
+      response.headers.get('content-type') ?? '',
+      /text\/html/,
+    );
   }
   for (const method of ['GET', 'POST']) {
     const api = await inspect('/api/v1/not-a-route', method);
@@ -53,55 +74,101 @@ try {
   assert.equal(anonymous.headers.get('cache-control'), 'private, no-store');
   report('BG21-static-and-api-route-matrix');
 
-  const saved = await apiRequest(runtime.apiOrigin, runtime.captureToken, 'POST', '/captures', {
-    idempotency_key: 'bg21-' + marker,
-    source_type: 'note',
-    source_app: 'bg21-local-preview',
-    shared_text: 'BG21 bundled app fixture ' + marker,
-    captured_at: new Date().toISOString(),
-    client: { name: 'bg21-preview', version: '1.0' },
-  }, 201);
+  const saved = await apiRequest(
+    runtime.apiOrigin,
+    runtime.captureToken,
+    'POST',
+    '/captures',
+    {
+      idempotency_key: 'bg21-' + marker,
+      source_type: 'note',
+      source_app: 'bg21-local-preview',
+      shared_text: 'BG21 bundled app fixture ' + marker,
+      captured_at: new Date().toISOString(),
+      client: { name: 'bg21-preview', version: '1.0' },
+    },
+    201,
+  );
   const directLink = '/items/' + saved.capture_id;
   browser = await openBrowser(runtime);
   await navigate(browser, runtime.webOrigin + directLink);
-  await waitFor(browser, 'Boolean(document.querySelector(\'input[type="password"]\'))',
-    'deep link prompts for authentication');
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'input[type="password"]\'))',
+    'deep link prompts for authentication',
+  );
   assert.equal(await evaluate(browser, 'location.pathname'), directLink);
-  await evaluate(browser, '(() => { const input = document.querySelector(\'input[type="password"]\'); ' +
-    'const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; ' +
-    'setter.call(input, ' + JSON.stringify(runtime.adminToken) + '); ' +
-    'input.dispatchEvent(new Event("input", { bubbles: true })); ' +
-    'input.closest("form").requestSubmit(); return true; })()');
-  await waitFor(browser, 'document.body.textContent.includes("BG21 bundled app fixture")',
-    'authenticated item detail from direct link');
+  await evaluate(
+    browser,
+    '(() => { const input = document.querySelector(\'input[type="password"]\'); ' +
+      'const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; ' +
+      'setter.call(input, ' +
+      JSON.stringify(runtime.adminToken) +
+      '); ' +
+      'input.dispatchEvent(new Event("input", { bubbles: true })); ' +
+      'input.closest("form").requestSubmit(); return true; })()',
+  );
+  await waitFor(
+    browser,
+    'document.body.textContent.includes("BG21 bundled app fixture")',
+    'authenticated item detail from direct link',
+  );
   assert.equal(await evaluate(browser, 'location.pathname'), directLink);
   await navigate(browser, runtime.webOrigin + directLink);
-  await waitFor(browser, 'document.body.textContent.includes("BG21 bundled app fixture")',
-    'deep link hard reload with signed session');
-  const cookies = await browser.client.send('Network.getCookies',
-    { urls: [runtime.webOrigin] }, browser.sessionId);
-  const session = cookies.cookies.find((cookie) => cookie.name === 'admin_session');
+  await waitFor(
+    browser,
+    'document.body.textContent.includes("BG21 bundled app fixture")',
+    'deep link hard reload with signed session',
+  );
+  const cookies = await browser.client.send(
+    'Network.getCookies',
+    { urls: [runtime.webOrigin] },
+    browser.sessionId,
+  );
+  const session = cookies.cookies.find(
+    (cookie) => cookie.name === 'admin_session',
+  );
   assert.ok(session);
   assert.equal(session.httpOnly, true);
   assert.equal(session.sameSite, 'Strict');
-  report('BG21-bundled-Chrome-login-and-reload', { cookie_secure: 'not tested on local HTTP' });
+  report('BG21-bundled-Chrome-login-and-reload', {
+    cookie_secure: 'not tested on local HTTP',
+  });
 
   await navigate(browser, runtime.webOrigin + '/');
-  await waitFor(browser, '[...document.querySelectorAll("button")].some(b => b.textContent?.trim() === "Logout")',
-    'logout button');
-  await evaluate(browser, '[...document.querySelectorAll("button")].find(b => b.textContent?.trim() === "Logout").click()');
-  await waitFor(browser, 'Boolean(document.querySelector(\'input[type="password"]\'))',
-    'logout requires reauthentication');
+  await waitFor(
+    browser,
+    '[...document.querySelectorAll("button")].some(b => b.textContent?.trim() === "Logout")',
+    'logout button',
+  );
+  await evaluate(
+    browser,
+    '[...document.querySelectorAll("button")].find(b => b.textContent?.trim() === "Logout").click()',
+  );
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'input[type="password"]\'))',
+    'logout requires reauthentication',
+  );
   await navigate(browser, runtime.webOrigin + directLink);
-  await waitFor(browser, 'Boolean(document.querySelector(\'input[type="password"]\'))',
-    'logout persists on deep link');
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'input[type="password"]\'))',
+    'logout persists on deep link',
+  );
   report('BG21-logout-private-item-protected');
-  report('BG21-local-bundled-acceptance', { status: 'passed', preview: runtime.webOrigin });
+  report('BG21-local-bundled-acceptance', {
+    status: 'passed',
+    preview: runtime.webOrigin,
+  });
 } catch (error) {
-  console.error('BG21_HOSTING_FAILURE ' + JSON.stringify({
-    reason: error instanceof Error ? error.message : String(error),
-    recent_api: safeDiagnostics(browser),
-  }));
+  console.error(
+    'BG21_HOSTING_FAILURE ' +
+      JSON.stringify({
+        reason: error instanceof Error ? error.message : String(error),
+        recent_api: safeDiagnostics(browser),
+      }),
+  );
   process.exitCode = 1;
 } finally {
   await browser?.close();

@@ -223,7 +223,6 @@ Cloudflare account verification, remote preview isolation and actual Web
 asset/browser-hosting acceptance remain separate gates requiring appropriate
 authorization. The final documentation closeout commit must also pass main CI.
 
-
 ## BG-21 Web/Worker hosting release (implementation in review)
 
 The BG-20 single-origin design has been implemented on branch
