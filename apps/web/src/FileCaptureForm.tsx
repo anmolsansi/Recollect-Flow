@@ -1,19 +1,33 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ApiError } from './api';
-import { CAPTURE_CATEGORIES, type CaptureCategory, type CapturePrivacy } from './capture-model';
 import {
-  canRetryCapture, deleteCaptureOperation, isRecoveryEnabled, listCaptureOperations,
-  saveCaptureOperation, type CaptureOperation,
+  CAPTURE_CATEGORIES,
+  type CaptureCategory,
+  type CapturePrivacy,
+} from './capture-model';
+import {
+  canRetryCapture,
+  deleteCaptureOperation,
+  isRecoveryEnabled,
+  listCaptureOperations,
+  saveCaptureOperation,
+  type CaptureOperation,
 } from './capture-recovery';
 import {
-  hashOriginalFile, loadUploadPolicy, prepareFileOperation, restartExpiredUpload,
-  runFileCapture, validateBrowserFile,
-  type FileCaptureResult, type UploadPolicy,
+  hashOriginalFile,
+  loadUploadPolicy,
+  prepareFileOperation,
+  restartExpiredUpload,
+  runFileCapture,
+  validateBrowserFile,
+  type FileCaptureResult,
+  type UploadPolicy,
 } from './file-upload';
 
 const isFile = (operation: CaptureOperation) =>
-  operation.payload.source_type === 'image' || operation.payload.source_type === 'file';
+  operation.payload.source_type === 'image' ||
+  operation.payload.source_type === 'file';
 
 export function FileCaptureForm() {
   const [policy, setPolicy] = useState<UploadPolicy | null>(null);
@@ -39,27 +53,43 @@ export function FileCaptureForm() {
     void Promise.all([
       loadUploadPolicy(),
       durable ? listCaptureOperations() : Promise.resolve([]),
-    ]).then(([config, entries]) => {
-      if (!active) return;
-      setPolicy(config);
-      setQueue(entries.filter(isFile));
-    }).catch((cause: unknown) => {
-      if (active) setError(cause instanceof Error ? cause.message : 'Unable to read upload settings.');
-    }).finally(() => { if (active) setLoaded(true); });
-    return () => { active = false; };
+    ])
+      .then(([config, entries]) => {
+        if (!active) return;
+        setPolicy(config);
+        setQueue(entries.filter(isFile));
+      })
+      .catch((cause: unknown) => {
+        if (active)
+          setError(
+            cause instanceof Error
+              ? cause.message
+              : 'Unable to read upload settings.',
+          );
+      })
+      .finally(() => {
+        if (active) setLoaded(true);
+      });
+    return () => {
+      active = false;
+    };
   }, [durable]);
 
   async function retain(next: CaptureOperation) {
     setOperation(next);
-    setQueue((entries) => entries.some((entry) => entry.id === next.id)
-      ? entries.map((entry) => entry.id === next.id ? next : entry)
-      : [...entries, next]);
+    setQueue((entries) =>
+      entries.some((entry) => entry.id === next.id)
+        ? entries.map((entry) => (entry.id === next.id ? next : entry))
+        : [...entries, next],
+    );
     if (!durable || next.payload.privacy_level === 'sensitive') return;
     try {
       await saveCaptureOperation(next);
     } catch (cause) {
-      setWarning('Local recovery was not saved. Keep this tab open: ' +
-        (cause instanceof Error ? cause.message : 'Browser storage failure.'));
+      setWarning(
+        'Local recovery was not saved. Keep this tab open: ' +
+          (cause instanceof Error ? cause.message : 'Browser storage failure.'),
+      );
     }
   }
 
@@ -67,7 +97,9 @@ export function FileCaptureForm() {
     if (lock.current) return;
     const time = Date.now();
     if (!canRetryCapture(lastAttempts.current.get(initial.id), time)) {
-      setError('Retry is briefly paused to avoid repeated requests. Try again shortly.');
+      setError(
+        'Retry is briefly paused to avoid repeated requests. Try again shortly.',
+      );
       return;
     }
     lastAttempts.current.set(initial.id, time);
@@ -80,11 +112,16 @@ export function FileCaptureForm() {
     controller.current = abort;
     try {
       await retain(initial);
-      const saved = await runFileCapture(initial, selected, async (next, description) => {
-        latest = next;
-        setStage(description);
-        await retain(next);
-      }, abort.signal);
+      const saved = await runFileCapture(
+        initial,
+        selected,
+        async (next, description) => {
+          latest = next;
+          setStage(description);
+          await retain(next);
+        },
+        abort.signal,
+      );
       setResult(saved);
       setStage('');
       setOperation(null);
@@ -92,18 +129,32 @@ export function FileCaptureForm() {
       setQueue((entries) => entries.filter((entry) => entry.id !== latest.id));
       lastAttempts.current.delete(initial.id);
       if (durable) {
-        try { await deleteCaptureOperation(latest.id); }
-        catch { setWarning('Saved, but local retry cleanup failed. Clear it before retrying.'); }
+        try {
+          await deleteCaptureOperation(latest.id);
+        } catch {
+          setWarning(
+            'Saved, but local retry cleanup failed. Clear it before retrying.',
+          );
+        }
       }
     } catch (cause) {
       const next = {
         ...latest,
-        stage: cause instanceof ApiError && [401, 403].includes(cause.status)
-          ? 'auth_required' as const : 'uncertain' as const,
-        lastError: cause instanceof Error ? cause.message.slice(0, 300) : 'Unknown outcome',
+        stage:
+          cause instanceof ApiError && [401, 403].includes(cause.status)
+            ? ('auth_required' as const)
+            : ('uncertain' as const),
+        lastError:
+          cause instanceof Error
+            ? cause.message.slice(0, 300)
+            : 'Unknown outcome',
       };
       await retain(next);
-      setError(cause instanceof Error ? cause.message : 'Upload outcome unknown. Retry after checking the original.');
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : 'Upload outcome unknown. Retry after checking the original.',
+      );
       setStage('Retry needed');
     } finally {
       lock.current = false;
@@ -119,34 +170,62 @@ export function FileCaptureForm() {
       await execute(operation, file);
       return;
     }
-    if (!file) { setError('Choose one file first.'); return; }
+    if (!file) {
+      setError('Choose one file first.');
+      return;
+    }
     const admission = validateBrowserFile(file, policy);
-    if (admission) { setError(admission); return; }
-    if (reason.length > 2000) { setError('Reason can be at most 2,000 characters.'); return; }
+    if (admission) {
+      setError(admission);
+      return;
+    }
+    if (reason.length > 2000) {
+      setError('Reason can be at most 2,000 characters.');
+      return;
+    }
     setBusy(true);
     setStage('Preparing checksum');
     lock.current = true;
     try {
       const checksum = await hashOriginalFile(file);
-      const prepared = prepareFileOperation(file, checksum, reason, privacy, category);
+      const prepared = prepareFileOperation(
+        file,
+        checksum,
+        reason,
+        privacy,
+        category,
+      );
       await retain(prepared);
       lock.current = false;
       setBusy(false);
       await execute(prepared, file);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Unable to read file. Reselect it.');
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : 'Unable to read file. Reselect it.',
+      );
       lock.current = false;
       setBusy(false);
     }
   }
 
   async function discard() {
-    if (busy || !operation || !window.confirm(
-      'Discard this local retry? It may already be saved on the server. This does not delete any server attachment or item.',
-    )) return;
+    if (
+      busy ||
+      !operation ||
+      !window.confirm(
+        'Discard this local retry? It may already be saved on the server. This does not delete any server attachment or item.',
+      )
+    )
+      return;
     if (durable) {
-      try { await deleteCaptureOperation(operation.id); }
-      catch { setWarning('Unable to delete local retry.'); return; }
+      try {
+        await deleteCaptureOperation(operation.id);
+      } catch {
+        setWarning('Unable to delete local retry.');
+        return;
+      }
     }
     setQueue((entries) => entries.filter((entry) => entry.id !== operation.id));
     setOperation(null);
@@ -156,12 +235,19 @@ export function FileCaptureForm() {
   }
 
   async function restartExpired() {
-    if (!operation || !operation.attachment || !window.confirm(
-      'Create a replacement upload reservation? The expired object is left for safe server cleanup.',
-    )) return;
+    if (
+      !operation ||
+      !operation.attachment ||
+      !window.confirm(
+        'Create a replacement upload reservation? The expired object is left for safe server cleanup.',
+      )
+    )
+      return;
     const next = restartExpiredUpload(operation);
     await retain(next);
-    setError('The old reservation was replaced locally. Reselect the original file and choose Retry.');
+    setError(
+      'The old reservation was replaced locally. Reselect the original file and choose Retry.',
+    );
   }
 
   return (
@@ -170,99 +256,239 @@ export function FileCaptureForm() {
         <div>
           <Link to="/capture">← Back to text and link capture</Link>
           <h1>Upload one file</h1>
-          <p className="capture-muted">The file is only Saved when its original bytes are finalized and linked to an item.</p>
+          <p className="capture-muted">
+            The file is only Saved when its original bytes are finalized and
+            linked to an item.
+          </p>
         </div>
-        <Link to="/" className="btn btn-outline">Cancel</Link>
+        <Link to="/" className="btn btn-outline">
+          Cancel
+        </Link>
       </div>
       <section className="card capture-form">
         <p className="capture-muted">
           {durable
             ? 'Browser recovery is enabled. File name, size, hash, stage and retry key may be retained for up to seven days. Original bytes are never stored here.'
-            : 'Browser recovery is off. Keep this tab open until Saved. You can enable it from the text capture page.'}
-          {' '}Sensitive uploads never store a recovery record.
+            : 'Browser recovery is off. Keep this tab open until Saved. You can enable it from the text capture page.'}{' '}
+          Sensitive uploads never store a recovery record.
         </p>
         {!loaded && <p role="status">Checking server upload limits…</p>}
-        {policy && <p className="capture-muted">Server limit: {policy.max_size_bytes.toLocaleString()} bytes. Browser file recovery supports up to 25,000,000 bytes (25 MB). Accepted types: {policy.allowed_mime_types.join(', ')}.</p>}
-        {queue.length > 0 && <div className="capture-queued">
-          <h2>Unfinished file saves</h2>
-          {queue.map((entry) => (
-            <div key={entry.id} className="capture-queued-entry">
-              <p>{entry.attachment?.name} · {entry.attachment?.stage} · Not confirmed Saved</p>
-              <button type="button" className="btn btn-outline" disabled={busy}
-                onClick={() => {
-                  setResult(null); setOperation(entry); setFile(null); setError('');
-                  setReason(entry.payload.user_reason ?? '');
-                  setPrivacy(entry.payload.privacy_level);
-                  setCategory(entry.payload.quick_category ?? '');
-                }}>Resume this save</button>
-            </div>
-          ))}
-        </div>}
-        {result ? <section role="status" aria-live="polite">
-          <h2>{result.replayed || result.duplicate_of ? 'Already Saved' : 'Saved'}</h2>
-          <p>Original bytes finalized and capture confirmed. Processing may continue separately.</p>
-          <Link className="btn btn-primary" to={'/items/' + result.capture_id}>Open saved item</Link>
-          <button type="button" className="btn btn-outline" onClick={() => {
-            setResult(null); setOperation(null); setFile(null); setReason('');
-            setPrivacy('unknown'); setCategory(''); setError('');
-          }}>Upload another</button>
-        </section> : <form onSubmit={(event) => void submit(event)} noValidate>
-          <div className="capture-field">
-            <label htmlFor="capture-file">Choose one original file</label>
-            <input className="input" id="capture-file" type="file" name="file"
-              disabled={busy || !loaded || !policy || (!!operation && !!file)}
-              accept={policy?.allowed_mime_types.join(',')}
-              onChange={(event) => {
-                const selected = event.currentTarget.files?.[0] ?? null;
-                setFile(selected); setError('');
-              }} />
-            {file && <small className="capture-muted">Selected: {file.name}, {file.size.toLocaleString()} bytes</small>}
-            {operation && <small className="capture-muted">Original pending: {operation.attachment?.name}. Reselect the identical original if bytes are needed. Saving always reuses the same capture key and timestamp.</small>}
+        {policy && (
+          <p className="capture-muted">
+            Server limit: {policy.max_size_bytes.toLocaleString()} bytes.
+            Browser file recovery supports up to 25,000,000 bytes (25 MB).
+            Accepted types: {policy.allowed_mime_types.join(', ')}.
+          </p>
+        )}
+        {queue.length > 0 && (
+          <div className="capture-queued">
+            <h2>Unfinished file saves</h2>
+            {queue.map((entry) => (
+              <div key={entry.id} className="capture-queued-entry">
+                <p>
+                  {entry.attachment?.name} · {entry.attachment?.stage} · Not
+                  confirmed Saved
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  disabled={busy}
+                  onClick={() => {
+                    setResult(null);
+                    setOperation(entry);
+                    setFile(null);
+                    setError('');
+                    setReason(entry.payload.user_reason ?? '');
+                    setPrivacy(entry.payload.privacy_level);
+                    setCategory(entry.payload.quick_category ?? '');
+                  }}
+                >
+                  Resume this save
+                </button>
+              </div>
+            ))}
           </div>
-          <div className="capture-field">
-            <label htmlFor="file-reason">Why are you saving this? (optional)</label>
-            <textarea className="input" id="file-reason" maxLength={2000} rows={3}
-              value={reason} disabled={busy || !!operation}
-              onChange={(event) => setReason(event.target.value)} />
-          </div>
-          <div className="capture-options">
+        )}
+        {result ? (
+          <section role="status" aria-live="polite">
+            <h2>
+              {result.replayed || result.duplicate_of
+                ? 'Already Saved'
+                : 'Saved'}
+            </h2>
+            <p>
+              Original bytes finalized and capture confirmed. Processing may
+              continue separately.
+            </p>
+            <Link
+              className="btn btn-primary"
+              to={'/items/' + result.capture_id}
+            >
+              Open saved item
+            </Link>
+            <button
+              type="button"
+              className="btn btn-outline"
+              onClick={() => {
+                setResult(null);
+                setOperation(null);
+                setFile(null);
+                setReason('');
+                setPrivacy('unknown');
+                setCategory('');
+                setError('');
+              }}
+            >
+              Upload another
+            </button>
+          </section>
+        ) : (
+          <form onSubmit={(event) => void submit(event)} noValidate>
             <div className="capture-field">
-              <label htmlFor="file-category">Quick category</label>
-              <select id="file-category" className="input" value={category}
-                disabled={busy || !!operation}
-                onChange={(event) => setCategory(event.target.value as '' | CaptureCategory)}>
-                <option value="">No category</option>
-                {CAPTURE_CATEGORIES.map((value) => <option key={value} value={value}>{value.replaceAll('_', ' ')}</option>)}
-              </select>
+              <label htmlFor="capture-file">Choose one original file</label>
+              <input
+                className="input"
+                id="capture-file"
+                type="file"
+                name="file"
+                disabled={busy || !loaded || !policy || (!!operation && !!file)}
+                accept={policy?.allowed_mime_types.join(',')}
+                onChange={(event) => {
+                  const selected = event.currentTarget.files?.[0] ?? null;
+                  setFile(selected);
+                  setError('');
+                }}
+              />
+              {file && (
+                <small className="capture-muted">
+                  Selected: {file.name}, {file.size.toLocaleString()} bytes
+                </small>
+              )}
+              {operation && (
+                <small className="capture-muted">
+                  Original pending: {operation.attachment?.name}. Reselect the
+                  identical original if bytes are needed. Saving always reuses
+                  the same capture key and timestamp.
+                </small>
+              )}
             </div>
             <div className="capture-field">
-              <label htmlFor="file-privacy">Privacy</label>
-              <select id="file-privacy" className="input" value={privacy}
+              <label htmlFor="file-reason">
+                Why are you saving this? (optional)
+              </label>
+              <textarea
+                className="input"
+                id="file-reason"
+                maxLength={2000}
+                rows={3}
+                value={reason}
                 disabled={busy || !!operation}
-                onChange={(event) => setPrivacy(event.target.value as CapturePrivacy)}>
-                <option value="unknown">Unknown (default)</option>
-                <option value="public">Public</option>
-                <option value="personal">Personal</option>
-                <option value="sensitive">Sensitive</option>
-              </select>
+                onChange={(event) => setReason(event.target.value)}
+              />
             </div>
-          </div>
-          {warning && <p role="alert" className="capture-error">{warning}</p>}
-          {error && <p role="alert" className="capture-error">{error}</p>}
-          {busy && <p role="status" aria-live="polite">{stage || 'Working…'} (progress unavailable)</p>}
-          {!busy && operation && <p role="status">Retry needed. The server may already have accepted one stage. We will check its status before proceeding.</p>}
-          <div className="capture-actions">
-            <button type="submit" className="btn btn-primary"
-              disabled={busy || !loaded || !policy}>{busy ? stage || 'Working…' : operation ? 'Retry original save' : 'Upload and save'}</button>
-            {busy && <button className="btn btn-outline" type="button"
-              onClick={() => controller.current?.abort()}>Stop request</button>}
-            {operation && !busy && <>
-              <button className="btn btn-outline" type="button" onClick={() => void discard()}>Discard local retry</button>
-              {error.includes('UPLOAD_EXPIRED') && <button className="btn btn-outline" type="button"
-                onClick={() => void restartExpired()}>Restart expired upload</button>}
-            </>}
-          </div>
-        </form>}
+            <div className="capture-options">
+              <div className="capture-field">
+                <label htmlFor="file-category">Quick category</label>
+                <select
+                  id="file-category"
+                  className="input"
+                  value={category}
+                  disabled={busy || !!operation}
+                  onChange={(event) =>
+                    setCategory(event.target.value as '' | CaptureCategory)
+                  }
+                >
+                  <option value="">No category</option>
+                  {CAPTURE_CATEGORIES.map((value) => (
+                    <option key={value} value={value}>
+                      {value.replaceAll('_', ' ')}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="capture-field">
+                <label htmlFor="file-privacy">Privacy</label>
+                <select
+                  id="file-privacy"
+                  className="input"
+                  value={privacy}
+                  disabled={busy || !!operation}
+                  onChange={(event) =>
+                    setPrivacy(event.target.value as CapturePrivacy)
+                  }
+                >
+                  <option value="unknown">Unknown (default)</option>
+                  <option value="public">Public</option>
+                  <option value="personal">Personal</option>
+                  <option value="sensitive">Sensitive</option>
+                </select>
+              </div>
+            </div>
+            {warning && (
+              <p role="alert" className="capture-error">
+                {warning}
+              </p>
+            )}
+            {error && (
+              <p role="alert" className="capture-error">
+                {error}
+              </p>
+            )}
+            {busy && (
+              <p role="status" aria-live="polite">
+                {stage || 'Working…'} (progress unavailable)
+              </p>
+            )}
+            {!busy && operation && (
+              <p role="status">
+                Retry needed. The server may already have accepted one stage. We
+                will check its status before proceeding.
+              </p>
+            )}
+            <div className="capture-actions">
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={busy || !loaded || !policy}
+              >
+                {busy
+                  ? stage || 'Working…'
+                  : operation
+                    ? 'Retry original save'
+                    : 'Upload and save'}
+              </button>
+              {busy && (
+                <button
+                  className="btn btn-outline"
+                  type="button"
+                  onClick={() => controller.current?.abort()}
+                >
+                  Stop request
+                </button>
+              )}
+              {operation && !busy && (
+                <>
+                  <button
+                    className="btn btn-outline"
+                    type="button"
+                    onClick={() => void discard()}
+                  >
+                    Discard local retry
+                  </button>
+                  {error.includes('UPLOAD_EXPIRED') && (
+                    <button
+                      className="btn btn-outline"
+                      type="button"
+                      onClick={() => void restartExpired()}
+                    >
+                      Restart expired upload
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+          </form>
+        )}
       </section>
     </main>
   );
