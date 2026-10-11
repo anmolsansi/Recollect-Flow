@@ -195,7 +195,7 @@ export async function runFileCapture(
 ): Promise<FileCaptureResult> {
   if (!original.attachment) throw new Error('Missing original file metadata.');
   let operation = original;
-  let reference = operation.attachment;
+  let reference: FileRecoveryReference = original.attachment;
   const advance = async (
     next: FileRecoveryReference,
     stage: SaveStage,
