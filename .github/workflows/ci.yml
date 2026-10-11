@@ -15,6 +15,22 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Temporary BG22_FORMAT5 diagnostic
+        run: |
+          npx prettier --write scripts/verify-browser-creation.mjs scripts/verify-browser-optional-outage.mjs scripts/verify-browser-upload-reauth.mjs
+          echo 'BG22_FORMAT5_0_BEGIN'
+          base64 -w0 scripts/verify-browser-creation.mjs
+          echo
+          echo 'BG22_FORMAT5_0_END'
+          echo 'BG22_FORMAT5_1_BEGIN'
+          base64 -w0 scripts/verify-browser-optional-outage.mjs
+          echo
+          echo 'BG22_FORMAT5_1_END'
+          echo 'BG22_FORMAT5_2_BEGIN'
+          base64 -w0 scripts/verify-browser-upload-reauth.mjs
+          echo
+          echo 'BG22_FORMAT5_2_END'
+          exit 1
       - run: npm run check
       - run: npm run release:package:test
       - run: npm run release:package
