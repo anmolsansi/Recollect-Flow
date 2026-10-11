@@ -32,19 +32,19 @@ The local test creates its own disposable Worker/D1/R2 profile and synthetic med
 
 ## Scenario evidence matrix
 
-| Required boundary | Existing source/automation | BG-22 live result |
-| --- | --- | --- |
-| Fresh browser login, bundled health/assets, build identity | `verify-web-hosting.mjs`, new combined script | Pending exact-head run; hosted HTTPS blocked by BG-21 |
-| URL, text, note created in real browser with reason/privacy and canonical IDs | `verify-browser-capture.mjs`, new combined script | Pending exact-head run |
-| PNG/PDF from picker through finalize/link and matching original SHA-256 | `verify-browser-file-upload.mjs --bundled`, new combined script | Pending exact-head run |
-| Search supplied phrase and open exact detail after reload | `verify-browser-workflow.mjs`, new combined script | Pending exact-head run; internal extracted PNG/PDF phrases require actual acquisition evidence |
-| Owner title, project and reminder survive reload; raw source unchanged | `verify-browser-follow-up.mjs`, new combined script (title) | Pending exact-head run; full combined metadata matrix incomplete |
-| Uncertain capture response, stable idempotency key and canonical duplicate event | `verify-browser-recovery.mjs`, `verify-browser-capture.mjs`, new combined script (duplicate) | Combined uncertain response still pending |
-| Follow-up PATCH failure after save retries only metadata | `verify-browser-follow-up.mjs` | Pending bundled release and hosted proof |
-| AI/Notion unavailable but raw saved/searchable, deferred processing truthful | Existing job/status suites | BG-22 outage/recovery scenario not yet run |
-| Expired session during pending upload, reauthenticate and resume once | BG-18 recovery code/suite | BG-22 combined expired-session case not yet run |
-| Logged-out API read/write/download rejected, direct item link requires login | `verify-web-hosting.mjs`, new combined script | Pending exact-head run; hosted HTTPS blocked by BG-21 |
-| Full quality, migrations, release hash, browser version, clean preview, full artifact record | GitHub `ci.yml`, `web-release.mjs` | Pending exact-head CI and remotely hosted candidate |
+| Required boundary                                                                            | Existing source/automation                                                                   | BG-22 live result                                                                              |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Fresh browser login, bundled health/assets, build identity                                   | `verify-web-hosting.mjs`, new combined script                                                | Pending exact-head run; hosted HTTPS blocked by BG-21                                          |
+| URL, text, note created in real browser with reason/privacy and canonical IDs                | `verify-browser-capture.mjs`, new combined script                                            | Pending exact-head run                                                                         |
+| PNG/PDF from picker through finalize/link and matching original SHA-256                      | `verify-browser-file-upload.mjs --bundled`, new combined script                              | Pending exact-head run                                                                         |
+| Search supplied phrase and open exact detail after reload                                    | `verify-browser-workflow.mjs`, new combined script                                           | Pending exact-head run; internal extracted PNG/PDF phrases require actual acquisition evidence |
+| Owner title, project and reminder survive reload; raw source unchanged                       | `verify-browser-follow-up.mjs`, new combined script (title)                                  | Pending exact-head run; full combined metadata matrix incomplete                               |
+| Uncertain capture response, stable idempotency key and canonical duplicate event             | `verify-browser-recovery.mjs`, `verify-browser-capture.mjs`, new combined script (duplicate) | Combined uncertain response still pending                                                      |
+| Follow-up PATCH failure after save retries only metadata                                     | `verify-browser-follow-up.mjs`                                                               | Pending bundled release and hosted proof                                                       |
+| AI/Notion unavailable but raw saved/searchable, deferred processing truthful                 | Existing job/status suites                                                                   | BG-22 outage/recovery scenario not yet run                                                     |
+| Expired session during pending upload, reauthenticate and resume once                        | BG-18 recovery code/suite                                                                    | BG-22 combined expired-session case not yet run                                                |
+| Logged-out API read/write/download rejected, direct item link requires login                 | `verify-web-hosting.mjs`, new combined script                                                | Pending exact-head run; hosted HTTPS blocked by BG-21                                          |
+| Full quality, migrations, release hash, browser version, clean preview, full artifact record | GitHub `ci.yml`, `web-release.mjs`                                                           | Pending exact-head CI and remotely hosted candidate                                            |
 
 For evidence of browser search on PDF/screenshot **internal text**, do not treat the filename or reason as the extracted phrase. Require extraction completion or record the truthful pending/unavailable state. A successful raw upload may precede text extraction.
 
