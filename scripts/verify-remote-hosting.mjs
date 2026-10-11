@@ -2,7 +2,13 @@
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { openBrowser, login, navigate, waitFor, evaluate } from './bg14-browser-utils.mjs';
+import {
+  openBrowser,
+  login,
+  navigate,
+  waitFor,
+  evaluate,
+} from './bg14-browser-utils.mjs';
 
 /**
  * Read-only HTTPS acceptance for a separately authorized and isolated preview.
@@ -12,10 +18,16 @@ async function main() {
   const rawOrigin = process.env.BG21_PREVIEW_ORIGIN;
   const token = process.env.BG21_PREVIEW_ADMIN_TOKEN;
   if (!rawOrigin || !token) {
-    throw new Error('Provide BG21_PREVIEW_ORIGIN and BG21_PREVIEW_ADMIN_TOKEN for an isolated preview.');
+    throw new Error(
+      'Provide BG21_PREVIEW_ORIGIN and BG21_PREVIEW_ADMIN_TOKEN for an isolated preview.',
+    );
   }
   const parsed = new URL(rawOrigin);
-  assert.equal(parsed.protocol, 'https:', 'Hosted preview must use actual HTTPS');
+  assert.equal(
+    parsed.protocol,
+    'https:',
+    'Hosted preview must use actual HTTPS',
+  );
   assert.equal(parsed.username, '');
   assert.equal(parsed.password, '');
   assert.equal(parsed.pathname, '/');
@@ -49,9 +61,17 @@ async function main() {
   );
   const html = await htmlResponse.text();
   const bundlePath = html.match(/src="(\/assets\/[^"]+\.js)"/)?.[1];
-  assert.ok(bundlePath, 'Hosted HTML must reference a versioned JavaScript bundle');
-  const expected = manifest.web_files.find((entry) => '/' + entry.path === bundlePath);
-  assert.ok(expected, 'Hosted HTML references an asset outside this release manifest');
+  assert.ok(
+    bundlePath,
+    'Hosted HTML must reference a versioned JavaScript bundle',
+  );
+  const expected = manifest.web_files.find(
+    (entry) => '/' + entry.path === bundlePath,
+  );
+  assert.ok(
+    expected,
+    'Hosted HTML references an asset outside this release manifest',
+  );
   const bundleResponse = await fetch(origin + bundlePath);
   assert.equal(bundleResponse.status, 200);
   assert.equal(
@@ -60,8 +80,16 @@ async function main() {
   );
   const bytes = Buffer.from(await bundleResponse.arrayBuffer());
   const observedHash = createHash('sha256').update(bytes).digest('hex');
-  assert.equal(observedHash, expected.sha256, 'Remote JS does not match the checked release');
-  assert.equal(bytes.includes(Buffer.from(token)), false, 'Admin token exposed in public bundle');
+  assert.equal(
+    observedHash,
+    expected.sha256,
+    'Remote JS does not match the checked release',
+  );
+  assert.equal(
+    bytes.includes(Buffer.from(token)),
+    false,
+    'Admin token exposed in public bundle',
+  );
 
   for (const route of ['/capture', '/capture/file', '/items/' + randomUUID()]) {
     const page = await fetch(origin + route);
@@ -74,7 +102,10 @@ async function main() {
   assert.equal(unknown.headers.get('cache-control'), 'private, no-store');
   const missingAsset = await fetch(origin + '/assets/bg21-missing-aBcD1234.js');
   assert.equal(missingAsset.status, 404);
-  assert.doesNotMatch(missingAsset.headers.get('content-type') ?? '', /text\/html/);
+  assert.doesNotMatch(
+    missingAsset.headers.get('content-type') ?? '',
+    /text\/html/,
+  );
 
   const runtime = { webOrigin: origin };
   const browser = await openBrowser(runtime);
@@ -91,7 +122,9 @@ async function main() {
       { urls: [origin] },
       browser.sessionId,
     );
-    const session = cookies.cookies.find((cookie) => cookie.name === 'admin_session');
+    const session = cookies.cookies.find(
+      (cookie) => cookie.name === 'admin_session',
+    );
     assert.ok(session, 'Missing signed session cookie');
     assert.equal(session.secure, true, 'Hosted HTTPS session must be Secure');
     assert.equal(session.httpOnly, true);
@@ -114,10 +147,14 @@ async function main() {
     );
     const denied = await evaluate(
       browser,
-      'fetch("/api/v1/items/' + randomUUID() +
+      'fetch("/api/v1/items/' +
+        randomUUID() +
         '", {credentials: "include"}).then(response => response.status)',
     );
-    assert.ok([401, 403].includes(denied), 'Signed-out private API must deny access');
+    assert.ok(
+      [401, 403].includes(denied),
+      'Signed-out private API must deny access',
+    );
   } finally {
     await browser.close();
   }
@@ -129,7 +166,8 @@ async function main() {
       release_id: manifest.release_id,
       source_revision: manifest.source_revision,
       bundle_sha256: observedHash,
-      qualification: 'Preview resource isolation and old/new rollback require independent operator evidence.',
+      qualification:
+        'Preview resource isolation and old/new rollback require independent operator evidence.',
     }),
   );
 }
