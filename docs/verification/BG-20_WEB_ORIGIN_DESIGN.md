@@ -61,3 +61,36 @@ A read-only fetch attempt against the documented Worker root and `/api/v1/health
 
 **Operator-required fact:** Dashboard-confirm `recollect-flow.recollectflow.workers.dev` remains owned/routed to the intended Worker and is the desired personal production origin. If this fails, hold BG-21 production release, record `Needs Architect Decision: canonical host differs from documented Worker origin`, and choose the verified replacement without changing origin silently.
 
+## 4. Request routing and precedence (BG-20.051–.060)
+
+### Proposed BG-21 routing configuration, not deployed in BG-20
+
+From repository root, Vite's existing `apps/web/package.json` build writes `apps/web/dist`. The recommended **proposed**, not current, `wrangler.toml` block is:
+
+```toml
+[assets]
+directory = "./apps/web/dist"
+binding = "ASSETS"
+not_found_handling = "none"
+run_worker_first = ["/api", "/api/*", "/", "/capture", "/capture/*", "/items/*"]
+```
+
+Cloudflare's `ASSETS` binding is then used by the Worker entry on exact known browser routes to retrieve `/index.html` without rewriting the browser's requested URL. Dynamic `/items/:id` must match exactly one nonempty encoded path segment. If the route is unexpected, reject it rather than returning an index document. Keep `/api` and `/api/*` Worker-first **before any shell/asset fallback**. No `single-page-application` fallback is enabled because it can mask bad `/api` and asset URLs.
+
+| Path/method | Decision | Response expected |
+| --- | --- | --- |
+| `GET /` | Worker-first known UI route → `ASSETS.fetch('/index.html')` | HTML 200, with browser AuthGuard before private queries |
+| `GET /capture`, `GET /capture/file` | Same shell allowlist | HTML 200, AuthGuard handles session |
+| `GET /items/<id>` | Shell allowlist for single ID segment | HTML 200, item data fetched only by authorized API |
+| `GET /api/v1/health` | Hono Worker | Existing JSON health envelope |
+| `POST /api/v1/admin/session` | Hono Worker | Signed host-only session cookie on HTTPS |
+| `GET /api/v1/items/<id>` | Hono Worker | Authorized JSON item or authenticated API error |
+| `GET /api/v1/attachments/<id>/content` and export routes | Hono Worker | Guarded bytes/export, never public static file |
+| `GET /api/v1/not-a-route`, `GET /api` | Hono Worker | JSON 404 with `error.code=NOT_FOUND`, never HTML 200 |
+| `GET /assets/<hashed>.js`, `GET /assets/<hashed>.css`, favicon | Static asset service directly | File with correct MIME/ETag |
+| Missing `/assets/<name>.js`, image, favicon | Static asset service, no SPA fallback | HTTP 404, not index.html |
+| `GET /unknown`, `GET /items/a/b`, `GET /capture/unlisted` | No matching valid UI route | HTTP 404, not private data |
+| Unsafe methods on UI shell path | Worker dispatch rejects (e.g. 405); never fall back to asset HTML | Failure status, no state mutation |
+
+**Implementation nuance:** Wrangler's `run_worker_first` routes describe which requests reach Worker code; Worker code must preserve Hono's JSON API 404 behavior and fetch only trusted shell files for client routes. For a missing static resource, `not_found_handling="none"` leaves normal asset 404 behavior. Validate response types and status codes with real Cloudflare preview/Chrome, including `Sec-Fetch-Mode: navigate`, `fetch` and direct reload. If Cloudflare's routing semantics differ for a specific version, update this ADR and tests rather than silently weakening unknown-path behavior.
+
