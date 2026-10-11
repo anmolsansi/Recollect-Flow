@@ -179,7 +179,7 @@ try {
     );
     await waitFor(
       browser,
-      'Boolean(document.querySelector(\\'input[type="password"]\\'))',
+      `Boolean(document.querySelector('input[type="password"]'))`,
       'bundled logout requires login',
     );
     const denied = await evaluate(
