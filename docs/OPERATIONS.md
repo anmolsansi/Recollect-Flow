@@ -160,3 +160,22 @@ For a recovery incident, use this order:
 - **Operations/rollback:** Operator verifies Cloudflare hostname/TLS, secret owner, deployed Worker version, D1/R2 bindings and approval. Preserve previous working Worker+Web release. Roll back by restoring that exact pair under the same canonical origin; do not redirect digests to preview or alter canonical data. BG-20 authorizes no remote deployment, DNS mutation, migration or messages.
 
 BG-20 completion is **design signoff**, not a production-hosting acceptance. BG-21 and BG-22 own the implementation and end-to-end release proof.
+
+
+## BG-21: build and verify the single-origin Web release
+
+The Worker now has a Vite static-assets binding and explicit API-first routing. A release must include assets built from the same source revision as Worker code. Read the [BG-21 hosting record](verification/BG-21_WEB_HOSTING.md) before preparing a preview or rollback.
+
+Use Node 22 and the committed lockfile from the repository root:
+
+```bash
+npm ci
+npm run release:package:test
+npm run release:package
+npx wrangler deploy --dry-run --outdir /tmp/bg21-worker
+npm run browser:hosting:test
+```
+
+`npm run release:package` removes stale `apps/web/dist`, rebuilds the Web app and writes a non-secret release manifest containing the Git revision, lockfile/config hashes and hashes of published Web files. `npm run deploy` invokes packaging before Wrangler. Do **not** execute the production deploy command without explicit operator authorization.
+
+The local BG-21 browser test uses the compiled asset path on an isolated `wrangler dev --local` instance with disposable D1/R2 and synthetic tokens. It does not establish HTTPS `Secure` cookie, account ownership, Cloudflare remote preview binding isolation or production readiness. For release approval, check the actual host, secret ownership, isolated preview resources, deep-link reloads, private downloads, cache controls and rollback from a matching prior release. Do not relax authentication or fall back to index HTML on failed API/JS routes.
