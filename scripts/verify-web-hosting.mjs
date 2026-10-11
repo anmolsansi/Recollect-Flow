@@ -179,10 +179,7 @@ try {
 
   // Prove real React Router Link navigation plus History API back/forward,
   // not only direct CDP navigation and a hard refresh.
-  await evaluate(
-    browser,
-    'document.querySelector(\'a[href="/"]\').click()',
-  );
+  await evaluate(browser, 'document.querySelector(\'a[href="/"]\').click()');
   await waitFor(
     browser,
     'location.pathname === "/" && Boolean(document.querySelector(\'a[href="/capture"]\'))',
