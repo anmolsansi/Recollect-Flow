@@ -40,7 +40,7 @@ failures and lost recoverability are shown.
 metadata: name, MIME, SHA-256, byte count, upload stage, original server
 attachment ID and expiry. The original File/Blob/bytes are never retained.
 If bytes are missing, the policy requires owner reselection and a SHA-256
-comparison. Same-name, same-size *changed content* is rejected. A finalized
+comparison. Same-name, same-size _changed content_ is rejected. A finalized
 server-issued ID can be carried forward unchanged to the capture stage.
 An expired reservation is reported and never silently replaced. A merely
 selected file with no server reservation must be initialized deliberately,
