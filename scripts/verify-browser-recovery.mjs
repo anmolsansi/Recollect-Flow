@@ -259,9 +259,54 @@ try {
     ),
     false,
   );
+  // Expire the HttpOnly owner cookie without invoking explicit Logout (which
+  // intentionally purges local drafts). Reauthentication must not change the
+  // queued request or send it automatically.
+  const keyBeforeAuth = await evaluate(browser, `(async () => {
+    const db = await new Promise((resolve, reject) => {
+      const request = indexedDB.open('recollect-capture-recovery', 2);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const entries = await new Promise((resolve, reject) => {
+      const request = db.transaction('operations', 'readonly')
+        .objectStore('operations').getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    db.close();
+    return entries.map(entry => entry.id);
+  })()`);
+  assert.equal(keyBeforeAuth.length, 1);
+  await browser.client.send('Network.deleteCookies',
+    { name: 'admin_session', url: runtime.webOrigin }, browser.sessionId);
+  await navigate(browser, runtime.webOrigin + '/capture');
+  await waitFor(browser, 'Boolean(document.querySelector(\'input[type="password"]\'))',
+    'owner session expired, sign-in required');
+  assert.equal(await evaluate(browser,
+    'Boolean(document.querySelector("form.capture-form"))'), false,
+    'unauthorized session must not display protected capture form');
+  await login(browser, runtime.webOrigin, adminToken);
+  await begin();
+  await waitFor(browser, 'document.querySelectorAll(".capture-queued-entry").length === 1',
+    'queued retry survives session expiry and reauthentication');
+  const keyAfterAuth = await evaluate(browser, `(async () => {
+    const db = await new Promise((resolve) => {
+      const request = indexedDB.open('recollect-capture-recovery', 2);
+      request.onsuccess = () => resolve(request.result);
+    });
+    const entries = await new Promise((resolve) => {
+      const request = db.transaction('operations', 'readonly')
+        .objectStore('operations').getAll();
+      request.onsuccess = () => resolve(request.result);
+    });
+    db.close();
+    return entries.map(entry => entry.id);
+  })()`);
+  assert.deepEqual(keyAfterAuth, keyBeforeAuth, 'expired session must keep operation identity');
   await clickButton(browser, 'Retry original');
   assert.ok(await savedId());
-  report('offline-before-send-restored');
+  report('offline-before-send-and-session-expiry-recovered');
 
   // Disable persistence, verify explicitly stored operations are cleared.
   await begin();
