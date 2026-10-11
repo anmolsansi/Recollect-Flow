@@ -32,6 +32,7 @@ import {
 import { sourceStatusMessage, visibleSourceCoverage } from './source-recovery';
 import { CaptureForm } from './CaptureForm';
 import { FileCaptureForm } from './FileCaptureForm';
+import { formatLocalReviewAt, parseLocalReviewAt } from './follow-up-date';
 import { forgetCaptureRecovery } from './capture-recovery';
 import './index.css';
 
@@ -657,15 +658,16 @@ function ItemDetail() {
             <input
               className="input"
               type="datetime-local"
-              value={draft.review_at?.slice(0, 16) ?? ''}
-              onChange={(event) =>
-                setDraft({
-                  ...draft,
-                  review_at: event.target.value
-                    ? new Date(event.target.value).toISOString()
-                    : null,
-                })
-              }
+              value={formatLocalReviewAt(draft.review_at)}
+              onChange={(event) => {
+                try {
+                  const reviewAt = parseLocalReviewAt(event.target.value);
+                  setDraft({ ...draft, review_at: reviewAt });
+                  setError('');
+                } catch (cause) {
+                  setError(cause instanceof Error ? cause.message : 'Invalid review date.');
+                }
+              }}
             />
           </Field>
           <Field label="Lifecycle">
