@@ -22,6 +22,7 @@ jobs:
       - run: npm run db:migrate:local
       - run: google-chrome --version
       - run: npm run browser:hosting:test
+      - run: node scripts/verify-browser-file-upload.mjs --bundled
       - run: npm run browser:capture:test
       - run: npm run browser:follow-up:test
       - run: npm run browser:file-upload:test
