@@ -1,7 +1,7 @@
 # BG-18 — Browser file upload verification
 
 **Task:** BG-18, [issue #77](https://github.com/anmolsansi/Recollect-Flow/issues/77).
-**Code review:** [draft PR #78](https://github.com/anmolsansi/Recollect-Flow/pull/78).
+**Code review:** [PR #78, merged](https://github.com/anmolsansi/Recollect-Flow/pull/78).
 **Base:** main (BG-17 accepted). **Work branch:**
 `feat/bg-18-browser-file-upload`.
 
@@ -66,9 +66,14 @@
       signature/size while not claiming Saved.
 - [x] Browser and unit tests prove uncertain PUT, finalize, lost capture
       response, repeated same-key retry, expired upload and authorization.
-- [ ] Reconcile canonical 100-step checklist and all 50 pairs in issue #77
+- [x] Reconcile canonical 100-step checklist and all 50 pairs in issue #77
       with exact evidence, recording any unsupported cases honestly.
-- [ ] Merge only with passing required CI, no bypass; verify merged-main CI
+- [x] Merge only with passing required CI, no bypass; verify merged-main CI
       and check final BG-18.100 only after that proof.
 
-**Current verdict:** Exact source `5c1ab391` passed CI in an isolated test environment. Checklist reconciliation and merged-main CI remain required. No production or physical-device acceptance has occurred.
+**Final verdict:** BG-18 is completed and merged to main in commit
+`3a1024609310c8b0b6169b6b886159801300e8df`. The exact-head
+[PR CI run 38123657728](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38123657728)
+and [merged-main CI run 38123825547](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38123825547)
+passed. All 100 canonical BG-18 microtasks and 50 issue pairs were reconciled;
+BG-19 is unlocked. No production or physical-device acceptance has occurred.
