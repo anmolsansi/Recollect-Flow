@@ -43,7 +43,7 @@ async function changeField(selector, value) {
 async function itemDetails(id) {
   return apiRequest(runtime.apiOrigin, adminToken, 'GET', '/items/' + id);
 }
-async function saveText(mode, value, reason, privacy) {
+async function saveText(mode, value, reason, privacy, { expectDuplicate = false } = {}) {
   await navigate(browser, runtime.webOrigin + '/capture');
   await waitFor(browser, 'Boolean(document.querySelector("form.capture-form"))', 'capture form');
   await evaluate(
@@ -68,7 +68,7 @@ async function saveText(mode, value, reason, privacy) {
   const details = await itemDetails(id);
   assert.equal(details.item.source_type, mode);
   assert.equal(details.item.privacy_level, privacy);
-  assert.equal(details.item.user_note, reason);
+  if (!expectDuplicate) assert.equal(details.item.user_note, reason);
   if (mode === 'url') assert.equal(details.item.source_url, value);
   else assert.equal(details.item.raw_text, value);
   report('BG22-create-' + mode, { capture_id: id, privacy });
@@ -237,7 +237,7 @@ async function run() {
   assert.equal(noteDetail.item.title, 'BG22 owner title ' + runId);
   report('BG22-title-persists-after-reload', { capture_id: noteId });
 
-  const repeated = await saveText('url', url, 'bg22second' + runId, 'public');
+  const repeated = await saveText('url', url, 'bg22second' + runId, 'public', { expectDuplicate: true });
   assert.equal(repeated, urlId, 'Canonical duplicate must reuse original capture');
   const duplicateDetail = await itemDetails(urlId);
   assert.ok(duplicateDetail.provenance.capture_events.length >= 2, 'Duplicate reason event missing');
