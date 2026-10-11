@@ -1,4 +1,4 @@
-/* global process, fetch */
+/* global process */
 import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { mkdtemp, rm } from 'node:fs/promises';
@@ -81,6 +81,7 @@ export async function createBg21Preview({
         (error instanceof Error ? error.message : String(error)) +
         '\n' +
         (worker?.logs ?? []).slice(-50).join('\n'),
+      { cause: error },
     );
   }
   return {
