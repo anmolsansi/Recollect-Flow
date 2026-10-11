@@ -29,13 +29,13 @@ defaults.
 
 Staging requires individually created resources:
 
-| Resource | Separate staging target |
-| --- | --- |
-| Worker | `recollect-flow-bg21-bg22-staging`, a distinct `*.workers.dev` host |
-| D1 | `recollect-flow-bg21-bg22-staging`, with its new, separate UUID |
-| R2 | `recollect-flow-attachments-bg21-bg22-staging`, private by default |
-| Worker secrets | New synthetic CAPTURE/ADMIN/LOCAL_WORKER tokens; placeholder nonfunctional Notion/Telegram tokens; `WEB_INBOX_BASE_URL` set to the staging **HTTPS** origin |
-| Optional integrations | No real AI providers, no actual Notion database, disabled digest AI, no scheduled cron triggers, no live notifications |
+| Resource              | Separate staging target                                                                                                                                     |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Worker                | `recollect-flow-bg21-bg22-staging`, a distinct `*.workers.dev` host                                                                                         |
+| D1                    | `recollect-flow-bg21-bg22-staging`, with its new, separate UUID                                                                                             |
+| R2                    | `recollect-flow-attachments-bg21-bg22-staging`, private by default                                                                                          |
+| Worker secrets        | New synthetic CAPTURE/ADMIN/LOCAL_WORKER tokens; placeholder nonfunctional Notion/Telegram tokens; `WEB_INBOX_BASE_URL` set to the staging **HTTPS** origin |
+| Optional integrations | No real AI providers, no actual Notion database, disabled digest AI, no scheduled cron triggers, no live notifications                                      |
 
 Do not attach a production D1/R2 resource, real Notion/Telegram credential,
 custom domain, route, DNS zone, account billing setting or production Worker
@@ -147,7 +147,7 @@ approved releases and preserved historical asset testing.
 
 **BG-22**: acquire/index/search actual URL page text (`.031`), screenshot
 OCR text (`.034`), PDF extracted content (`.035`), confirm a disabled
-Notion test path (`.062`) and retry the *same* deferred enrichment job after
+Notion test path (`.062`) and retry the _same_ deferred enrichment job after
 its eligible backoff (`.068`). Hosted five-source browser acceptance does
 not substitute for these separate scenarios.
 
