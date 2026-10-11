@@ -1,4 +1,4 @@
-/* global console, process, fetch */
+/* global console, process, fetch, URL */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
