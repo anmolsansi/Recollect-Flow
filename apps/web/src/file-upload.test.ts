@@ -255,47 +255,65 @@ describe('BG-18 failure-boundary recovery', () => {
     const expired: CaptureOperation = {
       ...original,
       attachment: {
-        ...original.attachment!, stage: 'initialized', attachmentId: id,
+        ...original.attachment!,
+        stage: 'initialized',
+        attachmentId: id,
         expiresAt: '2020-01-01T00:00:00.000Z',
       },
     };
     const restarted = restartExpiredUpload(expired);
     const fresh = restarted.attachment!.reservationKey!;
     const requests: Record<string, unknown>[] = [];
-    vi.stubGlobal('fetch', vi.fn(async (path: string, options?: RequestInit) => {
-      if (path.endsWith('/uploads/init')) {
-        const submitted = JSON.parse(options?.body as string) as Record<string, unknown>;
-        requests.push(submitted);
-        return wrapped({
-          attachment_id: fresh,
-          upload_url: '/api/v1/uploads/' + fresh + '/content',
-          expires_at: beforeExpiry,
-        }, 201);
-      }
-      if (path.endsWith('/content')) return wrapped({ status: 'uploaded' });
-      if (path.endsWith('/finalize')) return wrapped({
-        attachment_id: fresh, status: 'finalized', checksum: original.attachment?.sha256,
-      });
-      if (path.endsWith('/captures')) {
-        requests.push(JSON.parse(options?.body as string));
-        return wrapped({
-          capture_id: 'restarted', replayed: false, duplicate_of: null,
-          processing_status: 'pending',
-        });
-      }
-      throw new Error('Unexpected request ' + path);
-    }));
-    expect((await runFileCapture(restarted, pdf(), async () => {})).capture_id)
-      .toBe('restarted');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (path: string, options?: RequestInit) => {
+        if (path.endsWith('/uploads/init')) {
+          const submitted = JSON.parse(options?.body as string) as Record<
+            string,
+            unknown
+          >;
+          requests.push(submitted);
+          return wrapped(
+            {
+              attachment_id: fresh,
+              upload_url: '/api/v1/uploads/' + fresh + '/content',
+              expires_at: beforeExpiry,
+            },
+            201,
+          );
+        }
+        if (path.endsWith('/content')) return wrapped({ status: 'uploaded' });
+        if (path.endsWith('/finalize'))
+          return wrapped({
+            attachment_id: fresh,
+            status: 'finalized',
+            checksum: original.attachment?.sha256,
+          });
+        if (path.endsWith('/captures')) {
+          requests.push(JSON.parse(options?.body as string));
+          return wrapped({
+            capture_id: 'restarted',
+            replayed: false,
+            duplicate_of: null,
+            processing_status: 'pending',
+          });
+        }
+        throw new Error('Unexpected request ' + path);
+      }),
+    );
+    expect(
+      (await runFileCapture(restarted, pdf(), async () => {})).capture_id,
+    ).toBe('restarted');
     expect(fresh).not.toBe(id);
     expect(requests[0]).toMatchObject({ attachment_id: fresh });
     expect(requests[1]).toMatchObject({
-      attachment_id: fresh, idempotency_key: original.id,
-      captured_at: original.payload.captured_at, user_reason: 'Keep source',
+      attachment_id: fresh,
+      idempotency_key: original.id,
+      captured_at: original.payload.captured_at,
+      user_reason: 'Keep source',
       privacy_level: 'personal',
     });
   });
-
 
   it('recovers an interrupted byte PUT without blindly transferring twice', async () => {
     const original = await make();
