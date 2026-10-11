@@ -24,7 +24,7 @@ async function createNote(text) {
   await navigate(browser, runtime.webOrigin + '/capture');
   await waitFor(
     browser,
-    'Boolean(document.querySelector("form.capture-form"))',
+    'Boolean(document.querySelector("form.capture-form button[type=submit]:not([disabled])"))',
     'capture form',
   );
   await evaluate(
