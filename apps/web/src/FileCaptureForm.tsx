@@ -186,28 +186,34 @@ export function FileCaptureForm() {
     setBusy(true);
     setStage('Preparing checksum');
     lock.current = true;
+    const preparing = new AbortController();
+    controller.current = preparing;
+    let prepared: CaptureOperation | null = null;
     try {
       const checksum = await hashOriginalFile(file);
-      const prepared = prepareFileOperation(
-        file,
-        checksum,
-        reason,
-        privacy,
-        category,
-      );
+      if (preparing.signal.aborted) {
+        setError('File preparation canceled. Nothing was uploaded.');
+        return;
+      }
+      prepared = prepareFileOperation(file, checksum, reason, privacy, category);
       await retain(prepared);
-      lock.current = false;
-      setBusy(false);
-      await execute(prepared, file);
+      if (preparing.signal.aborted) {
+        setError('File preparation canceled. Nothing was uploaded.');
+        return;
+      }
     } catch (cause) {
       setError(
         cause instanceof Error
           ? cause.message
           : 'Unable to read file. Reselect it.',
       );
+    } finally {
+      controller.current = null;
       lock.current = false;
       setBusy(false);
+      setStage('');
     }
+    if (prepared && !preparing.signal.aborted) await execute(prepared, file);
   }
 
   async function discard() {
