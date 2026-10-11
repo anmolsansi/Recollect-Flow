@@ -57,7 +57,11 @@ export function validateStagingResources(values, productionToml) {
     [values.BG_STAGING_R2_BUCKET, prod.r2, 'R2 bucket'],
   ];
   for (const [staging, production, label] of bindings) {
-    assert.notEqual(staging.toLowerCase(), production.toLowerCase(), label + ' must not be production');
+    assert.notEqual(
+      staging.toLowerCase(),
+      production.toLowerCase(),
+      label + ' must not be production',
+    );
   }
   assert.notEqual(
     values.BG_STAGING_D1_NAME,
@@ -144,7 +148,10 @@ function main() {
   const validated = validateStagingResources(process.env, prod);
   if (process.argv[2] === 'prepare') {
     const output = resolve(cwd, OUTPUT);
-    writeFileSync(output, renderStagingConfig(validated), { flag: 'w', mode: 0o600 });
+    writeFileSync(output, renderStagingConfig(validated), {
+      flag: 'w',
+      mode: 0o600,
+    });
     console.log(
       'Prepared ignored staging-only config: ' +
         OUTPUT +
@@ -163,15 +170,24 @@ function main() {
       expected,
       'Generated config does not match verified staging resource identities',
     );
-    console.log('Staging-only binding preflight passed. Remote resources have not been inspected.');
+    console.log(
+      'Staging-only binding preflight passed. Remote resources have not been inspected.',
+    );
   } else if (process.argv[2] === 'origin') {
-    console.log(validateStagingOrigin(process.env.BG_STAGING_ORIGIN, validated.worker));
+    console.log(
+      validateStagingOrigin(process.env.BG_STAGING_ORIGIN, validated.worker),
+    );
   } else {
-    throw new Error('Usage: node scripts/staging-guard.mjs prepare|verify|origin');
+    throw new Error(
+      'Usage: node scripts/staging-guard.mjs prepare|verify|origin',
+    );
   }
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (
+  process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
   try {
     main();
   } catch (error) {
