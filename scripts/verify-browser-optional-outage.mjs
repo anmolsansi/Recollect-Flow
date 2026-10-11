@@ -45,6 +45,12 @@ async function createNote(text) {
   );
   await evaluate(
     browser,
+    '(() => {const selector=document.querySelector(\'[name="privacy_level"]\');' +
+      'Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,"value").set.call(selector,"public");' +
+      'selector.dispatchEvent(new Event("change",{bubbles:true}));return true;})()',
+  );
+  await evaluate(
+    browser,
     'document.querySelector("form.capture-form").requestSubmit()',
   );
   await waitFor(
