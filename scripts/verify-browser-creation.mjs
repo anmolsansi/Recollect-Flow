@@ -43,19 +43,35 @@ async function changeField(selector, value) {
 async function itemDetails(id) {
   return apiRequest(runtime.apiOrigin, adminToken, 'GET', '/items/' + id);
 }
-async function saveText(mode, value, reason, privacy, { expectDuplicate = false } = {}) {
+async function saveText(
+  mode,
+  value,
+  reason,
+  privacy,
+  { expectDuplicate = false } = {},
+) {
   await navigate(browser, runtime.webOrigin + '/capture');
-  await waitFor(browser, 'Boolean(document.querySelector("form.capture-form"))', 'capture form');
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector("form.capture-form"))',
+    'capture form',
+  );
   await evaluate(
     browser,
     'document.querySelector(' +
       JSON.stringify('input[name="mode"][value="' + mode + '"]') +
       ').click()',
   );
-  await changeField(mode === 'url' ? '[name="url"]' : '[name="shared_text"]', value);
+  await changeField(
+    mode === 'url' ? '[name="url"]' : '[name="shared_text"]',
+    value,
+  );
   await changeField('[name="user_reason"]', reason);
   await changeField('[name="privacy_level"]', privacy);
-  await evaluate(browser, 'document.querySelector("form.capture-form").requestSubmit()');
+  await evaluate(
+    browser,
+    'document.querySelector("form.capture-form").requestSubmit()',
+  );
   await waitFor(
     browser,
     'document.body.textContent.includes("Processing status:") && Boolean(document.querySelector(\'a[href^="/items/"]\'))',
@@ -75,7 +91,11 @@ async function saveText(mode, value, reason, privacy, { expectDuplicate = false 
   return id;
 }
 async function chooseFile(path) {
-  const dom = await browser.client.send('DOM.getDocument', { depth: -1 }, browser.sessionId);
+  const dom = await browser.client.send(
+    'DOM.getDocument',
+    { depth: -1 },
+    browser.sessionId,
+  );
   const field = await browser.client.send(
     'DOM.querySelector',
     { nodeId: dom.root.nodeId, selector: 'input[name="file"]' },
@@ -97,9 +117,16 @@ async function saveOriginal(fixture) {
   const path = join(fixtureDir, fixture.filename);
   await writeFile(path, fixture.bytes);
   await navigate(browser, runtime.webOrigin + '/capture/file');
-  await waitFor(browser, 'Boolean(document.querySelector(\'input[name="file"]\'))', 'file form');
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'input[name="file"]\'))',
+    'file form',
+  );
   await chooseFile(path);
-  await changeField('[name="user_reason"]', 'BG22 ' + fixture.kind + ' ' + runId);
+  await changeField(
+    '[name="user_reason"]',
+    'BG22 ' + fixture.kind + ' ' + runId,
+  );
   await evaluate(browser, 'document.querySelector("form").requestSubmit()');
   await waitFor(
     browser,
@@ -119,7 +146,11 @@ async function saveOriginal(fixture) {
   assert.equal(attachment.size_bytes, fixture.sizeBytes);
   assert.equal(attachment.content_hash, fixture.sha256);
   await navigate(browser, runtime.webOrigin + '/items/' + id);
-  await waitFor(browser, 'document.body.textContent.includes("Source and coverage")', 'item detail');
+  await waitFor(
+    browser,
+    'document.body.textContent.includes("Source and coverage")',
+    'item detail',
+  );
   const download = await evaluate(
     browser,
     '(async () => { const response = await fetch(' +
@@ -131,7 +162,11 @@ async function saveOriginal(fixture) {
       '.map(x => x.toString(16).padStart(2, "0")).join("");' +
       ' return { status: response.status, size: bytes.byteLength, hash }; })()',
   );
-  assert.deepEqual(download, { status: 200, size: fixture.sizeBytes, hash: fixture.sha256 });
+  assert.deepEqual(download, {
+    status: 200,
+    size: fixture.sizeBytes,
+    hash: fixture.sha256,
+  });
   report('BG22-original-' + fixture.kind, {
     capture_id: id,
     attachment_id: attachment.id,
@@ -141,21 +176,33 @@ async function saveOriginal(fixture) {
 }
 async function searchByReason(reason, expectedId) {
   await navigate(browser, runtime.webOrigin + '/');
-  await waitFor(browser, 'Boolean(document.querySelector(\'input[aria-label="Search"]\'))', 'Inbox search');
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'input[aria-label="Search"]\'))',
+    'Inbox search',
+  );
   await changeField('input[aria-label="Search"]', reason);
   await waitFor(
     browser,
-    'Boolean(document.querySelector(' + JSON.stringify('a[href="/items/' + expectedId + '"]') + '))',
+    'Boolean(document.querySelector(' +
+      JSON.stringify('a[href="/items/' + expectedId + '"]') +
+      '))',
     'indexed reason ' + reason,
     20000,
   );
   const href = await evaluate(
     browser,
-    'document.querySelector(' + JSON.stringify('a[href="/items/' + expectedId + '"]') + ').getAttribute("href")',
+    'document.querySelector(' +
+      JSON.stringify('a[href="/items/' + expectedId + '"]') +
+      ').getAttribute("href")',
   );
   assert.equal(href, '/items/' + expectedId);
   await navigate(browser, runtime.webOrigin + href);
-  await waitFor(browser, 'document.body.textContent.includes("Source and coverage")', 'searched item detail');
+  await waitFor(
+    browser,
+    'document.body.textContent.includes("Source and coverage")',
+    'searched item detail',
+  );
   assert.equal(await evaluate(browser, 'location.pathname'), href);
   report('BG22-search-and-reopen', { capture_id: expectedId });
 }
@@ -170,17 +217,31 @@ async function ensureLoggedOutProtection(id, attachmentId) {
   const checked = await evaluate(
     browser,
     '(async () => { const requests = await Promise.all([' +
-      'fetch(' + JSON.stringify('/api/v1/items/' + id) + ', { credentials: "include" }),' +
-      'fetch(' + JSON.stringify('/api/v1/attachments/' + attachmentId + '/content') + ', { credentials: "include" }),' +
+      'fetch(' +
+      JSON.stringify('/api/v1/items/' + id) +
+      ', { credentials: "include" }),' +
+      'fetch(' +
+      JSON.stringify('/api/v1/attachments/' + attachmentId + '/content') +
+      ', { credentials: "include" }),' +
       'fetch("/api/v1/captures", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" },' +
-      ' body: JSON.stringify({ idempotency_key: "bg22-unauthorized-' + runId + '", source_type: "note",' +
+      ' body: JSON.stringify({ idempotency_key: "bg22-unauthorized-' +
+      runId +
+      '", source_type: "note",' +
       ' shared_text: "unauthorized", source_app: "bg22", captured_at: new Date().toISOString(),' +
       ' client: { name: "bg22", version: "1.0" } }) })' +
       ']); return requests.map(r => r.status); })()',
   );
-  assert.ok(checked.every((code) => code === 401 || code === 403), 'Logged-out read, download and write must be denied: ' + JSON.stringify(checked));
+  assert.ok(
+    checked.every((code) => code === 401 || code === 403),
+    'Logged-out read, download and write must be denied: ' +
+      JSON.stringify(checked),
+  );
   await navigate(browser, runtime.webOrigin + '/items/' + id);
-  await waitFor(browser, 'Boolean(document.querySelector(\'input[type="password"]\'))', 'deep link demands login');
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'input[type="password"]\'))',
+    'deep link demands login',
+  );
   assert.equal(await evaluate(browser, 'location.pathname'), '/items/' + id);
   report('BG22-logout-denies-read-download-write', { statuses: checked });
 }
@@ -198,7 +259,11 @@ async function run() {
   browser = await openBrowser(runtime);
   const version = await browser.client.send('Browser.getVersion');
   await navigate(browser, runtime.webOrigin + '/');
-  await waitFor(browser, 'Boolean(document.querySelector(\'input[type="password"]\'))', 'fresh unauthenticated profile');
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'input[type="password"]\'))',
+    'fresh unauthenticated profile',
+  );
   report('BG22-isolated-bundled-preview', {
     browser_version: version.product,
     node: process.version,
@@ -212,11 +277,25 @@ async function run() {
   const textReason = 'bg22text' + runId;
   const noteReason = 'bg22note' + runId;
   const urlId = await saveText('url', url, urlReason, 'public');
-  const textId = await saveText('text', 'BG22 searchable text ' + runId, textReason, 'personal');
-  const noteId = await saveText('note', 'BG22 private note ' + runId, noteReason, 'personal');
+  const textId = await saveText(
+    'text',
+    'BG22 searchable text ' + runId,
+    textReason,
+    'personal',
+  );
+  const noteId = await saveText(
+    'note',
+    'BG22 private note ' + runId,
+    noteReason,
+    'personal',
+  );
   assert.equal(new Set([urlId, textId, noteId]).size, 3);
 
-  for (const [reason, id] of [[urlReason, urlId], [textReason, textId], [noteReason, noteId]]) {
+  for (const [reason, id] of [
+    [urlReason, urlId],
+    [textReason, textId],
+    [noteReason, noteId],
+  ]) {
     await searchByReason(reason, id);
   }
 
@@ -230,19 +309,42 @@ async function run() {
   await navigate(browser, runtime.webOrigin + '/items/' + noteId);
   await fillLabel(browser, 'Title', 'BG22 owner title ' + runId);
   await clickButton(browser, 'Save changes');
-  await waitFor(browser, 'document.body.textContent.includes("Changes saved.")', 'owner title persisted');
-  await browser.client.send('Page.reload', { ignoreCache: true }, browser.sessionId);
-  await waitFor(browser, 'document.body.textContent.includes("BG22 owner title")', 'owner edit survives hard reload');
+  await waitFor(
+    browser,
+    'document.body.textContent.includes("Changes saved.")',
+    'owner title persisted',
+  );
+  await browser.client.send(
+    'Page.reload',
+    { ignoreCache: true },
+    browser.sessionId,
+  );
+  await waitFor(
+    browser,
+    'document.body.textContent.includes("BG22 owner title")',
+    'owner edit survives hard reload',
+  );
   const noteDetail = await itemDetails(noteId);
   assert.equal(noteDetail.item.title, 'BG22 owner title ' + runId);
   report('BG22-title-persists-after-reload', { capture_id: noteId });
 
-  const repeated = await saveText('url', url, 'bg22second' + runId, 'public', { expectDuplicate: true });
-  assert.equal(repeated, urlId, 'Canonical duplicate must reuse original capture');
+  const repeated = await saveText('url', url, 'bg22second' + runId, 'public', {
+    expectDuplicate: true,
+  });
+  assert.equal(
+    repeated,
+    urlId,
+    'Canonical duplicate must reuse original capture',
+  );
   const duplicateDetail = await itemDetails(urlId);
-  assert.ok(duplicateDetail.provenance.capture_events.length >= 2, 'Duplicate reason event missing');
   assert.ok(
-    duplicateDetail.provenance.capture_events.some((event) => event.user_note === 'bg22second' + runId),
+    duplicateDetail.provenance.capture_events.length >= 2,
+    'Duplicate reason event missing',
+  );
+  assert.ok(
+    duplicateDetail.provenance.capture_events.some(
+      (event) => event.user_note === 'bg22second' + runId,
+    ),
     'Later duplicate reason must remain separately visible',
   );
   report('BG22-canonical-duplicate-event', { capture_id: urlId });
@@ -252,17 +354,21 @@ async function run() {
     result: 'passed',
     item_count: 5,
     pdf_attachment_id: file.attachmentId,
-    qualification: 'Local bundled Worker test only; BG-21 hosted HTTPS and BG-22 outage/recovery acceptance remain open',
+    qualification:
+      'Local bundled Worker test only; BG-21 hosted HTTPS and BG-22 outage/recovery acceptance remain open',
   });
 }
 try {
   fixtureDir = await mkdtemp(join(tmpdir(), 'recollect-bg22-'));
   await run();
 } catch (error) {
-  console.error('BG22_BROWSER_FAILURE ' + JSON.stringify({
-    reason: error instanceof Error ? error.message : String(error),
-    recent_api: safeDiagnostics(browser),
-  }));
+  console.error(
+    'BG22_BROWSER_FAILURE ' +
+      JSON.stringify({
+        reason: error instanceof Error ? error.message : String(error),
+        recent_api: safeDiagnostics(browser),
+      }),
+  );
   process.exitCode = 1;
 } finally {
   await browser?.close();
