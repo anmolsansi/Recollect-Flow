@@ -100,7 +100,7 @@ tracks the 100 checklist steps; CI and merge evidence are required before
 declaring this milestone fully complete. This does not implement BG-18
 file uploads or authorize production deployment.
 
-## BG-17 final recovery acceptance candidate (PR #75)
+## BG-17 recovery accepted on merged main
 
 [BG-17 completion PR #75](https://github.com/anmolsansi/Recollect-Flow/pull/75)
 adds SHA-256 metadata-only file reselection policy, a manual retry
@@ -108,7 +108,11 @@ rate boundary and browser reauthentication acceptance on top of merged
 PR #74. The supported Web capture actions remain URL, pasted text and note.
 Steps belonging to the future BG-18 file picker and PUT/finalize/link workflow
 are explicitly conditional N/A for BG-17, **not delivered file uploads**.
-The parent gate is closed only with CI and merged-main proof. See
+The parent BG-17 browser retry/lifetime gate passed exact
+[PR-head CI #38119506197](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38119506197)
+and [merged-main CI #38119715846](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38119715846)
+on merged [PR #75](https://github.com/anmolsansi/Recollect-Flow/pull/75).
+This gate does not imply completion of BG-18. See
 [BG-17 final acceptance](verification/BG-17_FINAL_CLOSEOUT.md).
 No production deployment is included.
 
