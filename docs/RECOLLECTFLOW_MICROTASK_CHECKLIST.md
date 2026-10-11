@@ -3031,27 +3031,27 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-22 / 02 — Candidate environment
 
-- [ ] `BG-22.011` Identify production-like preview artifact.
-- [ ] `BG-22.012` Record Worker/Web revision pair.
-- [ ] `BG-22.013` Select isolated bindings.
-- [ ] `BG-22.014` Select synthetic fixture set.
-- [ ] `BG-22.015` Open fresh browser profile.
-- [ ] `BG-22.016` Verify no persisted login.
-- [ ] `BG-22.017` Confirm preview health.
-- [ ] `BG-22.018` Confirm asset routing active.
-- [ ] `BG-22.019` Confirm API is not stubbed.
-- [ ] `BG-22.020` Record browser/runtime versions.
+- [x] `BG-22.011` Identify production-like preview artifact.
+- [x] `BG-22.012` Record Worker/Web revision pair.
+- [x] `BG-22.013` Select isolated bindings.
+- [x] `BG-22.014` Select synthetic fixture set.
+- [x] `BG-22.015` Open fresh browser profile.
+- [x] `BG-22.016` Verify no persisted login.
+- [x] `BG-22.017` Confirm preview health.
+- [x] `BG-22.018` Confirm asset routing active.
+- [x] `BG-22.019` Confirm API is not stubbed.
+- [x] `BG-22.020` Record browser/runtime versions.
 
 #### BG-22 / 03 — Creation matrix
 
-- [ ] `BG-22.021` Save public URL through form.
-- [ ] `BG-22.022` Save pasted text through form.
-- [ ] `BG-22.023` Save private note through form.
-- [ ] `BG-22.024` Save image through upload.
-- [ ] `BG-22.025` Save PDF through upload.
-- [ ] `BG-22.026` Record canonical IDs.
-- [ ] `BG-22.027` Confirm durable success messages.
-- [ ] `BG-22.028` Confirm source types.
+- [x] `BG-22.021` Save public URL through form.
+- [x] `BG-22.022` Save pasted text through form.
+- [x] `BG-22.023` Save private note through form.
+- [x] `BG-22.024` Save image through upload.
+- [x] `BG-22.025` Save PDF through upload.
+- [x] `BG-22.026` Record canonical IDs.
+- [x] `BG-22.027` Confirm durable success messages.
+- [x] `BG-22.028` Confirm source types.
 - [ ] `BG-22.029` Confirm captured reasons.
 - [ ] `BG-22.030` Confirm chosen privacy values.
 
@@ -3062,7 +3062,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [ ] `BG-22.033` Search note phrase.
 - [ ] `BG-22.034` Search screenshot known text.
 - [ ] `BG-22.035` Search PDF internal phrase.
-- [ ] `BG-22.036` Open each exact item.
+- [x] `BG-22.036` Open each exact item.
 - [ ] `BG-22.037` Inspect current coverage.
 - [ ] `BG-22.038` Inspect original source evidence.
 - [ ] `BG-22.039` Inspect per-stage status.
@@ -3070,29 +3070,29 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-22 / 05 — Original and edit
 
-- [ ] `BG-22.041` Download image original.
-- [ ] `BG-22.042` Compare image checksum.
-- [ ] `BG-22.043` Download PDF original.
-- [ ] `BG-22.044` Compare PDF checksum.
-- [ ] `BG-22.045` Edit derived title.
+- [x] `BG-22.041` Download image original.
+- [x] `BG-22.042` Compare image checksum.
+- [x] `BG-22.043` Download PDF original.
+- [x] `BG-22.044` Compare PDF checksum.
+- [x] `BG-22.045` Edit derived title.
 - [ ] `BG-22.046` Edit project metadata.
 - [ ] `BG-22.047` Edit reminder metadata.
-- [ ] `BG-22.048` Refresh item page.
+- [x] `BG-22.048` Refresh item page.
 - [ ] `BG-22.049` Verify persisted values.
 - [ ] `BG-22.050` Verify source evidence unchanged.
 
 #### BG-22 / 06 — Retry and duplicates
 
-- [ ] `BG-22.051` Drop capture response after commit.
-- [ ] `BG-22.052` Retain submitted operation.
-- [ ] `BG-22.053` Retry original key.
-- [ ] `BG-22.054` Confirm canonical ID stability.
-- [ ] `BG-22.055` Share canonical URL again intentionally.
-- [ ] `BG-22.056` Use new reason/key.
-- [ ] `BG-22.057` Inspect both capture events.
-- [ ] `BG-22.058` Confirm metadata not silently overwritten.
+- [x] `BG-22.051` Drop capture response after commit.
+- [x] `BG-22.052` Retain submitted operation.
+- [x] `BG-22.053` Retry original key.
+- [x] `BG-22.054` Confirm canonical ID stability.
+- [x] `BG-22.055` Share canonical URL again intentionally.
+- [x] `BG-22.056` Use new reason/key.
+- [x] `BG-22.057` Inspect both capture events.
+- [x] `BG-22.058` Confirm metadata not silently overwritten.
 - [ ] `BG-22.059` Confirm no duplicate attachment bytes.
-- [ ] `BG-22.060` Record duplicate/retry outcomes.
+- [x] `BG-22.060` Record duplicate/retry outcomes.
 
 #### BG-22 / 07 — Provider outage
 
@@ -3115,7 +3115,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [ ] `BG-22.074` Resume confirmed upload stage.
 - [ ] `BG-22.075` Finish canonical capture.
 - [ ] `BG-22.076` Verify one linked object.
-- [ ] `BG-22.077` Open direct item URL logged out.
+- [x] `BG-22.077` Open direct item URL logged out.
 - [ ] `BG-22.078` Complete login navigation.
 - [ ] `BG-22.079` Open direct link after browser restart.
 - [ ] `BG-22.080` Confirm correct item destination.
@@ -3124,14 +3124,14 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 - [ ] `BG-22.081` Run full repository gate.
 - [ ] `BG-22.082` Check migration compatibility evidence.
-- [ ] `BG-22.083` Check Worker bundle evidence.
-- [ ] `BG-22.084` Check Web build evidence.
+- [x] `BG-22.083` Check Worker bundle evidence.
+- [x] `BG-22.084` Check Web build evidence.
 - [ ] `BG-22.085` Inspect browser console errors.
 - [ ] `BG-22.086` Inspect safe failed network requests.
 - [ ] `BG-22.087` Verify mobile viewport usability.
-- [ ] `BG-22.088` Close owned preview processes.
-- [ ] `BG-22.089` Save scenario result matrix.
-- [ ] `BG-22.090` Record remaining production qualifications.
+- [x] `BG-22.088` Close owned preview processes.
+- [x] `BG-22.089` Save scenario result matrix.
+- [x] `BG-22.090` Record remaining production qualifications.
 
 #### BG-22 / 10 — Verify and close this task
 
