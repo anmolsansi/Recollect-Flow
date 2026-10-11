@@ -17,6 +17,7 @@
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
+    "preformat": "node scripts/bg18-ci-format-bridge.mjs",
     "format": "prettier --check .",
     "format:write": "prettier --write .",
     "release:smoke:test": "node --test scripts/verify-production-release.test.mjs",
