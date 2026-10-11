@@ -223,17 +223,37 @@ Cloudflare account verification, remote preview isolation and actual Web
 asset/browser-hosting acceptance remain separate gates requiring appropriate
 authorization. The final documentation closeout commit must also pass main CI.
 
-## BG-21 Web/Worker hosting release (implementation in review)
+## BG-21 Web/Worker hosting (implementation merged; release gate open)
 
-The BG-20 single-origin design has been implemented on branch
-`feat/bg-21-static-assets-routing` in [PR #84](https://github.com/anmolsansi/Recollect-Flow/pull/84).
-The change packages Vite assets with the same Worker, routes `/api` before any
-Web shell, provides direct `/capture` and `/items/:id` reload handling,
-rejects missing scripts as 404 and writes a deterministic release manifest.
-The scoped [verification record](verification/BG-21_WEB_HOSTING.md) documents
-build commands, tests, rollback and incomplete HTTPS/operator gates.
+[PR #84](https://github.com/anmolsansi/Recollect-Flow/pull/84)
+merged the one-origin Vite/Worker asset release, typed API precedence,
+approved deep links, immutable hashed bundles and deterministic build
+manifest. Exact PR-head and merged-main CI passed.
+[PR #87](https://github.com/anmolsansi/Recollect-Flow/pull/87)
+subsequently merged focused bundled-browser malformed API and History API
+regressions, plus a read-only, operator-driven HTTPS preview verifier.
+The BG-21 source checklist is **93/100**. Seven steps still require a
+documented scope disposition or authorized remote Cloudflare HTTPS
+preview, Secure cookie, release compatibility and deployment proof.
+[Verification details](verification/BG-21_WEB_HOSTING.md).
 
-**Not yet accepted:** full exact-head CI, a correctly isolated remote HTTPS preview,
-production hosting and physical-device tests. Do not infer a successful BG-21
-release or unlock BG-22 from these branch changes. Production changes still
-require separate operator approval.
+**BG-21 is not release-accepted.** Neither local loopback browser results
+nor publishing a CI-tested script demonstrates isolated remote D1/R2
+resources or proves Cloudflare edge session and cache behavior.
+
+## BG-22 browser creation gate (implementation under review)
+
+[Draft PR #86](https://github.com/anmolsansi/Recollect-Flow/pull/86)
+now combines bundled Worker/Web browser acceptance for URL, pasted text,
+private note, PNG and PDF. It verifies original SHA-256, UI search/reopen,
+owner metadata persistence, duplicate events, fresh browser deep link,
+logout denial, lost-response recovery and a separately bundled BG-19
+follow-up recovery suite. [Local CI and proof matrix](verification/BG-22_BROWSER_CREATION_ACCEPTANCE.md)
+tracks the **61/100** independently evidenced source actions.
+
+**BG-22 remains incomplete and BG-23 remains blocked.** Unproven required
+stories include acquired URL phrase, OCR/PDF internal text search, actual
+optional-provider outage and upload-expired-session recovery, hosted
+HTTPS acceptance, rollback/cache invalidation and the BG-21
+prerequisite. This branch and test evidence do not authorize any
+production deployment, remote migration, secret change or message.
