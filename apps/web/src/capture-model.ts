@@ -65,7 +65,10 @@ export function validateCapture(draft: CaptureDraft): Record<string, string> {
     errors.user_reason = 'Reason can be at most 2,000 characters.';
   if (draft.category && !CAPTURE_CATEGORIES.includes(draft.category))
     errors.quick_category = 'Select a valid category.';
-  const followUpErrors = validateFollowUp({ project: draft.project, reviewLocal: draft.reviewLocal });
+  const followUpErrors = validateFollowUp({
+    project: draft.project,
+    reviewLocal: draft.reviewLocal,
+  });
   if (followUpErrors.project) errors.project = followUpErrors.project;
   if (followUpErrors.review_at) errors.review_at = followUpErrors.review_at;
   return errors;
