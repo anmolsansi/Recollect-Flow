@@ -101,6 +101,31 @@ describe('BG-21 public asset routing', () => {
     expect(await response?.text()).not.toContain('html');
   });
 
+  it.each([
+    ['/', 'no-cache, must-revalidate'],
+    ['/assets/index-AbcDef12.js', 'public, max-age=31536000, immutable'],
+  ])('preserves an ETag 304 for %s without rewriting it to a 503', async (path, policy) => {
+    const binding: StaticAssets = {
+      fetch: async (request) => {
+        expect(request.headers.get('If-None-Match')).toBe('"release-a"');
+        return new Response(null, {
+          status: 304,
+          headers: { ETag: '"release-a"' },
+        });
+      },
+    };
+    const response = await servePublicAsset(
+      new Request(origin + path, {
+        headers: { 'If-None-Match': '"release-a"' },
+      }),
+      binding,
+    );
+    expect(response?.status).toBe(304);
+    expect(response?.headers.get('ETag')).toBe('"release-a"');
+    expect(response?.headers.get('Cache-Control')).toBe(policy);
+    expect(await response?.text()).toBe('');
+  });
+
   it('returns 503 rather than fake HTML when the asset binding is absent', async () => {
     const response = await servePublicAsset(
       new Request(origin + '/'),
