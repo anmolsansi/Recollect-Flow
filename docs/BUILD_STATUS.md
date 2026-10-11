@@ -222,3 +222,19 @@ implementation only**. Production deployment, DNS or secret changes,
 Cloudflare account verification, remote preview isolation and actual Web
 asset/browser-hosting acceptance remain separate gates requiring appropriate
 authorization. The final documentation closeout commit must also pass main CI.
+
+
+## BG-21 Web/Worker hosting release (implementation in review)
+
+The BG-20 single-origin design has been implemented on branch
+`feat/bg-21-static-assets-routing` in [PR #84](https://github.com/anmolsansi/Recollect-Flow/pull/84).
+The change packages Vite assets with the same Worker, routes `/api` before any
+Web shell, provides direct `/capture` and `/items/:id` reload handling,
+rejects missing scripts as 404 and writes a deterministic release manifest.
+The scoped [verification record](verification/BG-21_WEB_HOSTING.md) documents
+build commands, tests, rollback and incomplete HTTPS/operator gates.
+
+**Not yet accepted:** full exact-head CI, a correctly isolated remote HTTPS preview,
+production hosting and physical-device tests. Do not infer a successful BG-21
+release or unlock BG-22 from these branch changes. Production changes still
+require separate operator approval.
