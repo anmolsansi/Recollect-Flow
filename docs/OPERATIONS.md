@@ -145,3 +145,18 @@ For a recovery incident, use this order:
 8. retain incident evidence and purge receipts, but never place credentials or raw secret material in recovery notes.
 
 <!-- OPE-228 END -->
+
+## BG-20 — Web Inbox origin decision and BG-21 release handoff
+
+**Design source:** [BG-20 hosting decision](verification/BG-20_WEB_ORIGIN_DESIGN.md). **Design-only:** No current deployed Web asset service or production change is claimed.
+
+- **Canonical production Web origin:** `https://recollect-flow.recollectflow.workers.dev/`, the existing Worker address documented in `docs/BUILD_STATUS.md`. Confirm present control and routing in the Cloudflare account before production release.
+- **Architecture:** A single Cloudflare Worker deploys the Vite Web app assets from `apps/web/dist` and serves private Hono APIs at relative `/api/v1`. Its cookie is signed, HttpOnly, HTTPS Secure, SameSite Strict and host-only. Do not create a cross-origin API base or public asset copies of item content.
+- **Routing:** Worker-first for `/api` and `/api/*`, Hono JSON 404 for unknown API routes. Exact browser routes `/`, `/capture`, `/capture/file`, and `/items/:id` receive `index.html`; unknown browser paths and missing assets return real 404. BG-21 must explicitly implement the route allowlist and asset binding.
+- **Canonical digest links:** `WEB_INBOX_BASE_URL` remains a protected Wrangler secret. The target value for approved rollout is the canonical HTTPS origin above. A digest link uses `/items/<encoded-id>` and never carries a token. Local/preview tests must use isolated test URLs and data.
+- **Preview:** The existing root `wrangler.toml` references production D1/R2 resources. Define separate preview config/bindings and secrets before any remote preview. Local `npm run dev:api` plus `npm run dev:web` continues to use Vite's localhost proxy.
+- **Release artifact:** `npm ci` followed by `npm run check` builds the Web app. BG-21 must arrange a single Worker+Web asset artifact and safe Wrangler deploy path. Do not deploy the API alone while linking a new UI or vice versa.
+- **Acceptance proof:** On isolated preview, verify `/`, direct `/items/:id` reload and login, cookie attributes, Hono /api 404, missing JS 404, download/export authentication, logout, digest URL and response cache headers. Record exact commit SHA/CI and preview hostname before any live release.
+- **Operations/rollback:** Operator verifies Cloudflare hostname/TLS, secret owner, deployed Worker version, D1/R2 bindings and approval. Preserve previous working Worker+Web release. Roll back by restoring that exact pair under the same canonical origin; do not redirect digests to preview or alter canonical data. BG-20 authorizes no remote deployment, DNS mutation, migration or messages.
+
+BG-20 completion is **design signoff**, not a production-hosting acceptance. BG-21 and BG-22 own the implementation and end-to-end release proof.
