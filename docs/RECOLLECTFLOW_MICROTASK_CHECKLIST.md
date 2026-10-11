@@ -2867,8 +2867,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-20.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
 - [x] `BG-20.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-20.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-20.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-20.100` **Gate:** Check the parent completion boundary and record whether BG-21 is unlocked.
+- [x] `BG-20.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-20.100` **Gate:** Check the parent completion boundary and record whether BG-21 is unlocked.
 
 ## BG-21 — 100 executable microtasks
 
