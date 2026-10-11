@@ -124,7 +124,7 @@ async function saveOriginal(fixture) {
   );
   await chooseFile(path);
   await changeField(
-    '[name="user_reason"]',
+    '#file-reason',
     'BG22 ' + fixture.kind + ' ' + runId,
   );
   await evaluate(browser, 'document.querySelector("form").requestSubmit()');
