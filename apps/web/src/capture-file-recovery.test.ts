@@ -34,33 +34,79 @@ describe('BG-17 file recovery policy for the BG-18 file flow', () => {
   it('rehashes actual reselected bytes and rejects changed same-size files', async () => {
     expect(await verifyFileReselection(reference, bytes('abc'))).toBe(true);
     expect(await verifyFileReselection(reference, bytes('abd'))).toBe(false);
-    expect(await verifyFileReselection(reference, { ...bytes('abc'), name: 'different.pdf' })).toBe(false);
-    expect(await verifyFileReselection(reference, { ...bytes('abc'), size: 4 })).toBe(false);
+    expect(
+      await verifyFileReselection(reference, {
+        ...bytes('abc'),
+        name: 'different.pdf',
+      }),
+    ).toBe(false);
+    expect(
+      await verifyFileReselection(reference, { ...bytes('abc'), size: 4 }),
+    ).toBe(false);
     expect(nextFileRecoveryStep(reference, true)).toBe('upload-existing');
   });
 
   it('preserves issued server ID through upload, finalize and capture stages', () => {
-    const base = { ...reference, attachmentId, expiresAt: '2026-11-30T00:00:00Z' };
-    expect(nextFileRecoveryStep({ ...base, stage: 'initialized' }, true, Date.parse('2026-10-11'))).toBe('upload-existing');
-    expect(nextFileRecoveryStep({ ...base, stage: 'uploaded' }, false, Date.parse('2026-10-11'))).toBe('finalize-existing');
-    expect(nextFileRecoveryStep({ ...base, stage: 'finalized' }, false, Date.parse('2026-10-11'))).toBe('capture-with-finalized-id');
-    expect(fileRecoveryNotice({ ...base, stage: 'finalized' }, false)).toContain('original attachment ID');
+    const base = {
+      ...reference,
+      attachmentId,
+      expiresAt: '2026-11-30T00:00:00Z',
+    };
+    expect(
+      nextFileRecoveryStep(
+        { ...base, stage: 'initialized' },
+        true,
+        Date.parse('2026-10-11'),
+      ),
+    ).toBe('upload-existing');
+    expect(
+      nextFileRecoveryStep(
+        { ...base, stage: 'uploaded' },
+        false,
+        Date.parse('2026-10-11'),
+      ),
+    ).toBe('finalize-existing');
+    expect(
+      nextFileRecoveryStep(
+        { ...base, stage: 'finalized' },
+        false,
+        Date.parse('2026-10-11'),
+      ),
+    ).toBe('capture-with-finalized-id');
+    expect(
+      fileRecoveryNotice({ ...base, stage: 'finalized' }, false),
+    ).toContain('original attachment ID');
   });
 
   it('does not automatically initialize another upload after expiry', () => {
     const initialized: FileRecoveryReference = {
-      ...reference, stage: 'initialized', attachmentId, expiresAt: '2026-10-10T00:00:00Z',
+      ...reference,
+      stage: 'initialized',
+      attachmentId,
+      expiresAt: '2026-10-10T00:00:00Z',
     };
-    expect(nextFileRecoveryStep(initialized, true, Date.parse('2026-10-11'))).toBe('expired-reservation');
+    expect(
+      nextFileRecoveryStep(initialized, true, Date.parse('2026-10-11')),
+    ).toBe('expired-reservation');
     expect(fileRecoveryNotice(initialized, true)).toContain('expired');
   });
 
   it('does not trust filename-only, fabricated stages or missing reservation IDs', () => {
     expect(validateFileRecoveryReference({ name: 'owner.pdf' })).toBe(false);
-    expect(validateFileRecoveryReference({ ...reference, stage: 'finalized' })).toBe(false);
-    expect(validateFileRecoveryReference({ ...reference, attachmentId })).toBe(false);
-    expect(validateFileRecoveryReference({ ...reference, byteLength: -1 })).toBe(false);
-    expect(validateFileRecoveryReference({ ...reference, sha256: 'invalid' })).toBe(false);
-    expect(nextFileRecoveryStep({ ...reference, stage: 'finalized' }, true)).toBe('invalid-record');
+    expect(
+      validateFileRecoveryReference({ ...reference, stage: 'finalized' }),
+    ).toBe(false);
+    expect(validateFileRecoveryReference({ ...reference, attachmentId })).toBe(
+      false,
+    );
+    expect(
+      validateFileRecoveryReference({ ...reference, byteLength: -1 }),
+    ).toBe(false);
+    expect(
+      validateFileRecoveryReference({ ...reference, sha256: 'invalid' }),
+    ).toBe(false);
+    expect(
+      nextFileRecoveryStep({ ...reference, stage: 'finalized' }, true),
+    ).toBe('invalid-record');
   });
 });
