@@ -5,12 +5,23 @@ import { parseLocalReviewAt } from './follow-up-date';
 export interface FollowUpDraft {
   project: string;
   reviewLocal: string;
+  reviewInstant?: string;
 }
 
 export const emptyFollowUp = (): FollowUpDraft => ({
   project: '',
   reviewLocal: '',
 });
+
+/** Freeze the owner's local selection at submit time so a later timezone change cannot shift it. */
+export function freezeFollowUp(value: FollowUpDraft): FollowUpDraft {
+  const instant = parseLocalReviewAt(value.reviewLocal);
+  return {
+    project: value.project,
+    reviewLocal: value.reviewLocal,
+    ...(instant ? { reviewInstant: instant } : {}),
+  };
+}
 
 export function validateFollowUp(
   value: FollowUpDraft,
@@ -20,7 +31,16 @@ export function validateFollowUp(
     errors.project = 'Project can be at most 200 characters.';
   }
   try {
-    parseLocalReviewAt(value.reviewLocal);
+    if (value.reviewInstant !== undefined) {
+      if (
+        typeof value.reviewInstant !== 'string' ||
+        !value.reviewLocal ||
+        !Number.isFinite(Date.parse(value.reviewInstant)) ||
+        new Date(value.reviewInstant).toISOString() !== value.reviewInstant
+      ) throw new Error('Invalid stored review instant. Choose the date again.');
+    } else {
+      parseLocalReviewAt(value.reviewLocal);
+    }
   } catch (error) {
     errors.review_at =
       error instanceof Error ? error.message : 'Choose a valid review time.';
@@ -29,7 +49,7 @@ export function validateFollowUp(
 }
 
 export function hasFollowUp(value: FollowUpDraft): boolean {
-  return Boolean(value.project.trim() || value.reviewLocal);
+  return Boolean(value.project.trim() || value.reviewLocal || value.reviewInstant);
 }
 
 export type FollowUpOutcome =
@@ -56,7 +76,7 @@ export async function applyCaptureFollowUp(
   if (duplicateOf || detail.item.duplicate_of) return { status: 'duplicate' };
 
   const requestedProject = value.project.trim() || null;
-  const requestedReview = parseLocalReviewAt(value.reviewLocal);
+  const requestedReview = value.reviewInstant ?? parseLocalReviewAt(value.reviewLocal);
   const currentProject = detail.item.project;
   const currentReview = detail.item.review_at ?? null;
   if (
