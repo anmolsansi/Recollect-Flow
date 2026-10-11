@@ -24,3 +24,25 @@ A read-only fetch attempt against the documented Worker root and `/api/v1/health
 
 **Input and tracking fixture:** A synthetic UUID item ID is enough to verify the route contract without exposing private item data. The BG-20 issue records 50 pairs of 100 canonical tasks. Actual architecture proof is in this document. No database writes, credentials or Web artifacts are introduced during BG-20.
 
+## 2. Alternatives and architecture decision (BG-20.021–.040)
+
+### ADR BG-20-001: one Worker serving both assets and API
+
+**Selected:** Keep the existing `recollect-flow` Cloudflare Worker, extend its future deployment artifact with the Vite output, and expose one browser origin. The initial canonical Web Inbox URL is **`https://recollect-flow.recollectflow.workers.dev`**, the existing documented Worker address. A later custom hostname requires an explicit migration decision and synchronized link/preview rollout.
+
+**Why:** The Web client already fetches relative `/api/v1` requests, the browser session cookie is host-only, signed, HttpOnly, `SameSite=Strict` and `Path=/`, and protected mutations check request `Origin`. A shared host preserves these tested contracts without CORS, third-party cookies, proxy trust or additional DNS/certificate operations. Wrangler supports deploying code and static assets as one unit. At personal V1 scale, it minimizes operational cost and deployment drift.
+
+**Rejected alternative:** An independent Pages/static site host with a direct API at `*.workers.dev`. It adds cross-origin cookies/credentials, CORS preflight and cross-origin downloads while signed-cookie writes require an allowed exact `Origin`. A reverse proxy under one public origin could work, but it needs trusted forwarding and explicit ownership/configuration. No current repository evidence demonstrates an externally required host split. **Do not** solve the split by merely changing `API_BASE`, enabling `Access-Control-Allow-Origin: *` with credentials, setting `SameSite=None`, adding a shared cookie Domain, sending tokens in URL fragments, or relaxing `requireSessionWriteOrigin`.
+
+### Official Cloudflare capability evidence
+
+- [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/): Worker script and assets deploy as one unit.
+- [Static asset bindings](https://developers.cloudflare.com/workers/static-assets/binding/): `assets.directory`, optional `assets.binding` and `run_worker_first` route patterns.
+- [SPA routing](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/): built-in SPA fallback can serve HTML for navigation requests, including API navigations under some configurations.
+- [Static asset headers](https://developers.cloudflare.com/workers/static-assets/headers/): defaults, `_headers` overrides and cache policy.
+- [Wrangler configuration](https://developers.cloudflare.com/workers/wrangler/configuration/): static asset config field definitions.
+
+**Security/correctness second-guess:** A broad automatic SPA fallback can return HTML 200 for a missing API route or even a missing script on a navigation request. Instead select **explicit Worker-first routes and an allowlist for app-shell URLs**, with asset not-found handling left at `none`. This is slightly more Worker routing code than built-in SPA fallback, but predictable 404 behavior is critical for client correctness and private endpoint isolation. A separate static host stays a fallback only if deployment-account constraints force it, requiring a separate ADR and auth review.
+
+**No new dependency** is needed for this design. The implementation remains BG-21.
+
