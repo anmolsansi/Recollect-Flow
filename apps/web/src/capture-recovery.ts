@@ -2,7 +2,11 @@ import {
   validateFileRecoveryReference,
   type FileRecoveryReference,
 } from './capture-file-recovery';
-import { validateFollowUp, type FollowUpDraft } from './capture-follow-up';
+import {
+  freezeFollowUp,
+  validateFollowUp,
+  type FollowUpDraft,
+} from './capture-follow-up';
 import { clearPendingFollowUps } from './follow-up-recovery';
 import {
   CAPTURE_CATEGORIES,
@@ -45,7 +49,7 @@ export function newCaptureOperation(
     payload: structuredClone(payload),
     createdAt: new Date().toISOString(),
     stage: 'prepared',
-    ...(followUp ? { followUp: structuredClone(followUp) } : {}),
+    ...(followUp ? { followUp: freezeFollowUp(followUp) } : {}),
   };
 }
 
@@ -194,6 +198,9 @@ export function parseCaptureOperation(
           followUp: {
             project: String(value.followUp.project),
             reviewLocal: String(value.followUp.reviewLocal),
+            ...(typeof value.followUp.reviewInstant === 'string'
+              ? { reviewInstant: value.followUp.reviewInstant }
+              : {}),
           },
         }
       : {}),
