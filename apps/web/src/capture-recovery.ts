@@ -1,4 +1,7 @@
-import { validateFileRecoveryReference, type FileRecoveryReference } from './capture-file-recovery';
+import {
+  validateFileRecoveryReference,
+  type FileRecoveryReference,
+} from './capture-file-recovery';
 import {
   CAPTURE_CATEGORIES,
   type CaptureDraft,
@@ -104,8 +107,11 @@ export function parseCaptureOperation(
     !['prepared', 'uncertain', 'auth_required'].includes(String(value.stage))
   )
     return null;
-  if (value.attachment !== undefined &&
-      !validateFileRecoveryReference(value.attachment)) return null;
+  if (
+    value.attachment !== undefined &&
+    !validateFileRecoveryReference(value.attachment)
+  )
+    return null;
   // Copy approved fields only. Unknown or obsolete fields never reach a subsequent request.
   const restoredPayload: CapturePayload = {
     idempotency_key: value.id,
@@ -141,8 +147,7 @@ export function parseCaptureOperation(
       : {}),
     ...(value.attachment
       ? {
-          attachment:
-            value.attachment as FileRecoveryReference,
+          attachment: value.attachment as FileRecoveryReference,
         }
       : {}),
   };
@@ -150,8 +155,13 @@ export function parseCaptureOperation(
 
 /** A user-initiated retry cannot spin in a tight loop. No automatic retries. */
 export const MIN_RETRY_INTERVAL_MS = 1_500;
-export function canRetryCapture(lastAttemptAt: number | undefined, now = Date.now()): boolean {
-  return lastAttemptAt === undefined || now - lastAttemptAt >= MIN_RETRY_INTERVAL_MS;
+export function canRetryCapture(
+  lastAttemptAt: number | undefined,
+  now = Date.now(),
+): boolean {
+  return (
+    lastAttemptAt === undefined || now - lastAttemptAt >= MIN_RETRY_INTERVAL_MS
+  );
 }
 
 export function ensureRecoveryBudget(
