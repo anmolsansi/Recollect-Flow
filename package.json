@@ -20,7 +20,7 @@
     "format": "prettier --check .",
     "format:write": "prettier --write .",
     "release:smoke:test": "node --test scripts/verify-production-release.test.mjs",
-    "test": "npm run release:smoke:test && vitest run --config vitest.node.config.ts && vitest run --config vitest.d1.config.ts",
+    "test": "npm run release:smoke:test && npm run staging:guard:test && vitest run --config vitest.node.config.ts && vitest run --config vitest.d1.config.ts",
     "check": "npm run format && npm run lint && npm run typecheck && npm test && npm run contracts:check && npm run web:lint && npm run web:test && npm run web:build",
     "db:migrate:local": "wrangler d1 migrations apply recollect-flow-prod --local",
     "db:migrate:remote": "wrangler d1 migrations apply recollect-flow-prod --remote",
@@ -36,7 +36,11 @@
     "release:package:test": "node --test scripts/web-release.test.mjs",
     "browser:hosting:test": "node scripts/verify-web-hosting.mjs",
     "browser:creation:test": "node scripts/verify-browser-creation.mjs",
-    "browser:hosting:remote:test": "node scripts/verify-remote-hosting.mjs"
+    "browser:hosting:remote:test": "node scripts/verify-remote-hosting.mjs",
+    "staging:guard:test": "node --test scripts/staging-guard.test.mjs",
+    "staging:prepare": "node scripts/staging-guard.mjs prepare",
+    "staging:verify": "node scripts/staging-guard.mjs verify",
+    "staging:hosted:verify": "node scripts/verify-staging-hosted.mjs"
   },
   "dependencies": {
     "hono": "^4.8.10",
