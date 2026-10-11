@@ -92,7 +92,7 @@ try {
   await navigate(browser, runtime.webOrigin + '/capture/file');
   await waitFor(
     browser,
-    'Boolean(document.querySelector(\'input[name="file"]\'))',
+    'Boolean(document.querySelector(\'input[name="file"]:not([disabled])\'))',
     'file form ready',
   );
   await chooseFile(filePath);
