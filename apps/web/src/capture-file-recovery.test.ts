@@ -43,7 +43,9 @@ describe('BG-17 file recovery policy for the BG-18 file flow', () => {
     expect(
       await verifyFileReselection(reference, { ...bytes('abc'), size: 4 }),
     ).toBe(false);
-    expect(nextFileRecoveryStep(reference, true)).toBe('initialize-deliberately');
+    expect(nextFileRecoveryStep(reference, true)).toBe(
+      'initialize-deliberately',
+    );
   });
 
   it('preserves issued server ID through upload, finalize and capture stages', () => {
