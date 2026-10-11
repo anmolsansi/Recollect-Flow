@@ -46,3 +46,18 @@ A read-only fetch attempt against the documented Worker root and `/api/v1/health
 
 **No new dependency** is needed for this design. The implementation remains BG-21.
 
+## 3. Canonical origin and digest-link contract (BG-20.041–.050)
+
+**Authoritative production origin:** `https://recollect-flow.recollectflow.workers.dev`. Store it as the value of the existing `WEB_INBOX_BASE_URL` secret with optional trailing `/`; canonical runbook value includes the trailing slash: `https://recollect-flow.recollectflow.workers.dev/`. Verify account-controlled domain and actual health in the release approval gate **before** changing this secret or sending production digest links. Cloudflare owns the TLS edge for the workers.dev hostname. No custom DNS records are planned.
+
+- Scheme must be `https:` in production. No userinfo credentials, `?query`, `#fragment` or embedded access tokens.
+- A single final slash is preferred in configuration; the existing renderer already appends a slash when missing, strips query/fragment and rejects credentials/non-HTTPS origins except localhost.
+- Item link shape is `https://recollect-flow.recollectflow.workers.dev/items/<encodeURIComponent(id)>`. Item ID is an opaque identifier, **not an authorization secret**. Do not place bearer tokens in URLs.
+- Preview must use a separately configured preview Worker or isolated local environment with a **preview-only** `WEB_INBOX_BASE_URL` and distinct nonproduction D1/R2/secrets. Do not produce preview links in real production digests.
+- Owner/operator of production origin config: Cloudflare account administrator. Git owns code/config; Wrangler secret store owns secret value. Never write a live token or secret in a GitHub issue.
+- Link availability relies on BG-21's HTML routing, login and item-detail API, not on the existence of the current Worker API hostname alone.
+
+**Read-only proposed verification:** after a BG-21 preview deploy, request `GET /`, `GET /items/<synthetic-id>` without a session and inspect content type and 200 shell status; log in and confirm the exact originally requested `/items/:id` route stays in the address bar. With a missing real item, the protected API must return 404 after auth, not a public item body. Send a synthetic digest through a local renderer unit test and assert the exact URL. A link accessible without login does **not** imply item data is public.
+
+**Operator-required fact:** Dashboard-confirm `recollect-flow.recollectflow.workers.dev` remains owned/routed to the intended Worker and is the desired personal production origin. If this fails, hold BG-21 production release, record `Needs Architect Decision: canonical host differs from documented Worker origin`, and choose the verified replacement without changing origin silently.
+
