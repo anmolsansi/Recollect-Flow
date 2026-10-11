@@ -3,6 +3,7 @@ import { ApiError } from './api';
 import {
   applyCaptureFollowUp,
   emptyFollowUp,
+  freezeFollowUp,
   validateFollowUp,
 } from './capture-follow-up';
 
@@ -58,6 +59,33 @@ describe('BG-19 two-stage follow-up', () => {
       project: 'Release notes',
       review_at: '2026-10-11T03:30:00.000Z',
     });
+  });
+
+  it('keeps the original UTC review instant across a device timezone change', async () => {
+    vi.stubEnv('TZ', 'Asia/Kolkata');
+    const frozen = freezeFollowUp({
+      project: '',
+      reviewLocal: '2026-10-11T09:00',
+    });
+    expect(frozen.reviewInstant).toBe('2026-10-11T03:30:00.000Z');
+    vi.stubEnv('TZ', 'America/New_York');
+    const api = vi
+      .fn()
+      .mockResolvedValueOnce(item())
+      .mockResolvedValueOnce({ item_id: 'item-01', edit_version: 5 })
+      .mockResolvedValueOnce(
+        item({ edit_version: 5, review_at: '2026-10-11T03:30:00.000Z' }),
+      );
+    try {
+      await expect(
+        applyCaptureFollowUp('item-01', null, frozen, api),
+      ).resolves.toEqual({ status: 'applied' });
+      expect(JSON.parse(api.mock.calls[1]![1].body).review_at).toBe(
+        '2026-10-11T03:30:00.000Z',
+      );
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 
   it('never overwrites metadata on an older canonical duplicate', async () => {
