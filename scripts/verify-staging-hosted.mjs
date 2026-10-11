@@ -72,9 +72,24 @@ try {
     0,
     'Hosted isolated HTTPS acceptance failed: BG-21 stays open',
   );
+  const browser = spawnSync(
+    process.execPath,
+    ['scripts/verify-browser-creation.mjs', '--hosted-staging'],
+    {
+      cwd: root,
+      env: { ...process.env, BG_STAGING_ORIGIN: origin },
+      stdio: 'inherit',
+    },
+  );
+  if (browser.error) throw browser.error;
+  assert.equal(
+    browser.status,
+    0,
+    'Five-source hosted browser acceptance failed: BG-22 stays open',
+  );
   console.log(
-    'Staging HTTPS acceptance completed (external identity was operator-confirmed). ' +
-      'BG-21 cache/rollback and BG-22 remaining scenarios need separate proof.',
+    'Authorized BG-21 HTTPS and BG-22 five-source staging checks passed. ' +
+      'BG-21 release rollback/cache and BG-22 extracted-text/provider-retry gates remain.',
   );
 } catch (error) {
   console.error(
