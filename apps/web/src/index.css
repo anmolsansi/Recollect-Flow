@@ -382,3 +382,42 @@ a:hover {
   outline: 3px solid var(--primary-color);
   outline-offset: 3px;
 }
+
+/* BG-19: optional metadata is a separate post-capture stage. */
+.capture-follow-up {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+}
+.capture-follow-up legend {
+  font-weight: 600;
+  padding-inline: 0.25rem;
+}
+.capture-follow-up-status {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  display: grid;
+  gap: 0.75rem;
+  margin-block: 1rem;
+}
+.capture-follow-up input[aria-invalid='true'] {
+  border-color: var(--danger-color);
+}
+.capture-follow-up button:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 3px;
+}
+.capture-form, .capture-queued, .capture-heading, .capture-follow-up-status {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 640px) {
+  .capture-follow-up {
+    padding: 0.75rem;
+  }
+  .capture-heading-actions, .capture-actions {
+    max-width: 100%;
+  }
+}
