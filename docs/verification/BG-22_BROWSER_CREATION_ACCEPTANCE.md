@@ -56,6 +56,47 @@ For the remote production-like pass, verify actual HTTPS `Secure`/`HttpOnly`/`Sa
 
 On failure, identify the particular boundary (auth, save, follow-up, transfer, search, processing, caching or navigation), preserve canonical IDs and safe evidence, leave that checkbox open, and do not promote or merge as accepted. Restore only disposable test resources. No schema migration or destructive cleanup is part of BG-22.
 
+## Verified local release checkpoint (October 11, 2026)
+
+The [full CI run #38142920329](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38142920329)
+passed at draft PR head `1863b19f8273c5c1c798c0028ea8d5a26d30b4b2`.
+The GitHub Actions checkout tested its synthetic PR merge revision
+`2ef444f27304704b8b1322ba1e1c95cd243f86c9`, not a live production release.
+The deterministically packaged artifact reported release ID
+`00f33582481453d574564714176bba8bc621ae0ee73447f2ff1b1289c1144db8`.
+Node was `v22.23.3`, and the isolated local test used
+`Chrome/154.0.8037.97` on `http://127.0.0.1`.
+
+The same CI job passed formatting, ESLint, typechecking, repository unit and D1
+tests, contract tests, Web lint/test/build, release-package tests, Wrangler
+deployment dry-run, local D1 migration, BG-21 browser hosting, the new BG-22
+combined creation script, and existing browser capture, upload, follow-up,
+recovery, download, source recovery, workflow and acquisition suites.
+
+The new five-source combined script emitted these successfully verified stages:
+
+- Fresh profile and real owner login through the bundled Web UI.
+- Public URL, personal text and personal note, then reason-based Inbox search
+  and exact detail reopening for each.
+- One synthetic PNG and one PDF through real file selection, initialized
+  upload, finalization and canonical linking.
+- Browser-downloaded PNG and PDF both matched original size and SHA-256.
+- Owner title persisted after a hard reload.
+- Sharing an existing canonical URL preserved its item identity and added a
+  separate reason-bearing capture event.
+- Logout denied item read, original download and unauthorized capture POST
+  with HTTP `403`, `401` and `401` respectively. A direct item link prompted
+  for login after logout.
+
+The isolated fixtures and temporary resources were ephemeral. IDs in CI logs
+are evidence of that single CI run, not production item identities.
+
+This is **verified local production-shaped HTTP behavior**, not Cloudflare HTTPS
+authorization, `Secure` cookie proof, provider-outage replay, dropped-response
+retry, interrupted-upload session recovery, browser restart proof, or source
+extraction search of image/PDF internal text. Those acceptance boundaries stay
+open. BG-21's nine outstanding steps also remain gating.
+
 ## Completion decision
 
 **NOT ACCEPTED / BG-23 BLOCKED.** The new test and CI integration are implementation work, not a passing result. BG-21 remains open, and hosted BG-22 acceptance plus the outstanding partial-failure scenarios require execution against an approved release candidate. Reconcile issue #85 and the source checklist only after validated proof, exact-head CI, merged-main CI and the predecessor gate.
