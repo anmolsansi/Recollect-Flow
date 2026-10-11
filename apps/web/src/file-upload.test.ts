@@ -317,7 +317,7 @@ describe('BG-18 failure-boundary recovery', () => {
 
   it('recovers an interrupted byte PUT without blindly transferring twice', async () => {
     const original = await make();
-    let latest = original;
+    let latest: CaptureOperation = original;
     let transfers = 0;
     vi.stubGlobal(
       'fetch',
