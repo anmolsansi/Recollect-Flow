@@ -195,7 +195,13 @@ export function FileCaptureForm() {
         setError('File preparation canceled. Nothing was uploaded.');
         return;
       }
-      prepared = prepareFileOperation(file, checksum, reason, privacy, category);
+      prepared = prepareFileOperation(
+        file,
+        checksum,
+        reason,
+        privacy,
+        category,
+      );
       await retain(prepared);
       if (preparing.signal.aborted) {
         setError('File preparation canceled. Nothing was uploaded.');
