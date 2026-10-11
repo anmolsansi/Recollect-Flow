@@ -34,7 +34,8 @@
     "browser:acquisition:test": "node scripts/verify-browser-acquisition.mjs",
     "release:package": "node scripts/web-release.mjs clean && npm run web:build && node scripts/web-release.mjs finalize",
     "release:package:test": "node --test scripts/web-release.test.mjs",
-    "browser:hosting:test": "node scripts/verify-web-hosting.mjs"
+    "browser:hosting:test": "node scripts/verify-web-hosting.mjs",
+    "browser:hosting:remote:test": "node scripts/verify-remote-hosting.mjs"
   },
   "dependencies": {
     "hono": "^4.8.10",
