@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ApiError } from './api';
+import { FollowUpFields, SavedFollowUp } from './CaptureFollowUp';
+import { emptyFollowUp, hasFollowUp, validateFollowUp } from './capture-follow-up';
+import { listPendingFollowUps, savePendingFollowUp, type PendingFollowUp } from './follow-up-recovery';
 import {
   CAPTURE_CATEGORIES,
   type CaptureCategory,
@@ -35,6 +38,10 @@ export function FileCaptureForm() {
   const [reason, setReason] = useState('');
   const [privacy, setPrivacy] = useState<CapturePrivacy>('unknown');
   const [category, setCategory] = useState<'' | CaptureCategory>('');
+  const [followUp, setFollowUp] = useState(emptyFollowUp);
+  const [completedFollowUp, setCompletedFollowUp] = useState(emptyFollowUp);
+  const [followUpErrors, setFollowUpErrors] = useState<Record<string, string>>({});
+  const [recoveredFollowUps, setRecoveredFollowUps] = useState<PendingFollowUp[]>([]);
   const [operation, setOperation] = useState<CaptureOperation | null>(null);
   const [queue, setQueue] = useState<CaptureOperation[]>([]);
   const [result, setResult] = useState<FileCaptureResult | null>(null);
@@ -58,6 +65,7 @@ export function FileCaptureForm() {
         if (!active) return;
         setPolicy(config);
         setQueue(entries.filter(isFile));
+        if (durable) setRecoveredFollowUps(listPendingFollowUps());
       })
       .catch((cause: unknown) => {
         if (active)
@@ -122,6 +130,20 @@ export function FileCaptureForm() {
         },
         abort.signal,
       );
+      if (initial.followUp && hasFollowUp(initial.followUp) && durable && initial.payload.privacy_level !== 'sensitive') {
+        try {
+          savePendingFollowUp({
+            captureId: saved.capture_id,
+            duplicateOf: saved.duplicate_of,
+            followUp: initial.followUp,
+            createdAt: new Date().toISOString(),
+          });
+        } catch (cause) {
+          setWarning('Saved, but follow-up recovery was not retained: ' +
+            (cause instanceof Error ? cause.message : 'Browser storage failed.'));
+        }
+      }
+      setCompletedFollowUp(initial.followUp ?? emptyFollowUp());
       setResult(saved);
       setStage('');
       setOperation(null);
@@ -179,6 +201,13 @@ export function FileCaptureForm() {
       setError(admission);
       return;
     }
+    const metadataErrors = validateFollowUp(followUp);
+    setFollowUpErrors(metadataErrors);
+    if (metadataErrors.project || metadataErrors.review_at) {
+      setError('Correct the optional follow-up fields before uploading.');
+      window.requestAnimationFrame(() => document.querySelector<HTMLElement>(metadataErrors.project ? '[name="project"]' : '[name="review_at"]')?.focus());
+      return;
+    }
     if (reason.length > 2000) {
       setError('Reason can be at most 2,000 characters.');
       return;
@@ -195,13 +224,10 @@ export function FileCaptureForm() {
         setError('File preparation canceled. Nothing was uploaded.');
         return;
       }
-      prepared = prepareFileOperation(
-        file,
-        checksum,
-        reason,
-        privacy,
-        category,
-      );
+      prepared = {
+        ...prepareFileOperation(file, checksum, reason, privacy, category),
+        followUp: structuredClone(followUp),
+      };
       await retain(prepared);
       if (preparing.signal.aborted) {
         setError('File preparation canceled. Nothing was uploaded.');
@@ -313,6 +339,7 @@ export function FileCaptureForm() {
                     setReason(entry.payload.user_reason ?? '');
                     setPrivacy(entry.payload.privacy_level);
                     setCategory(entry.payload.quick_category ?? '');
+                    setFollowUp(entry.followUp ?? emptyFollowUp());
                   }}
                 >
                   Resume this save
@@ -321,6 +348,18 @@ export function FileCaptureForm() {
             ))}
           </div>
         )}
+        {durable && recoveredFollowUps.filter((entry) => entry.captureId !== result?.capture_id).map((entry) => (
+          <section key={entry.captureId} className="capture-queued-entry">
+            <h2>Saved item awaiting follow-up</h2>
+            <SavedFollowUp
+              captureId={entry.captureId}
+              duplicateOf={entry.duplicateOf}
+              followUp={entry.followUp}
+              autoApply={false}
+              onResolved={() => setRecoveredFollowUps(listPendingFollowUps())}
+            />
+          </section>
+        ))}
         {result ? (
           <section role="status" aria-live="polite">
             <h2>
@@ -332,6 +371,12 @@ export function FileCaptureForm() {
               Original bytes finalized and capture confirmed. Processing may
               continue separately.
             </p>
+            <SavedFollowUp
+              captureId={result.capture_id}
+              duplicateOf={result.duplicate_of}
+              followUp={completedFollowUp}
+              onResolved={() => setRecoveredFollowUps(listPendingFollowUps())}
+            />
             <Link
               className="btn btn-primary"
               to={'/items/' + result.capture_id}
@@ -348,6 +393,9 @@ export function FileCaptureForm() {
                 setReason('');
                 setPrivacy('unknown');
                 setCategory('');
+                setFollowUp(emptyFollowUp());
+                setCompletedFollowUp(emptyFollowUp());
+                setFollowUpErrors({});
                 setError('');
               }}
             >
@@ -436,6 +484,15 @@ export function FileCaptureForm() {
                 </select>
               </div>
             </div>
+            <FollowUpFields
+              value={followUp}
+              disabled={busy || !!operation}
+              errors={followUpErrors}
+              onChange={(next) => {
+                setFollowUp(next);
+                setFollowUpErrors({});
+              }}
+            />
             {warning && (
               <p role="alert" className="capture-error">
                 {warning}
