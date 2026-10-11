@@ -144,7 +144,11 @@ export function restartExpiredUpload(
   return {
     ...operation,
     payload,
-    attachment: { ...reference, stage: 'selected', reservationKey: crypto.randomUUID() },
+    attachment: {
+      ...reference,
+      stage: 'selected',
+      reservationKey: crypto.randomUUID(),
+    },
     stage: 'prepared',
   };
 }
@@ -299,7 +303,9 @@ export async function runFileCapture(
     );
     uploadRoute = init.upload_url;
     if (init.attachment_id !== (reference.reservationKey ?? operation.id)) {
-      throw new Error('Server did not confirm the original reservation identity.');
+      throw new Error(
+        'Server did not confirm the original reservation identity.',
+      );
     }
     await advance(
       {
