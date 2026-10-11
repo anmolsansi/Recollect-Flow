@@ -148,6 +148,21 @@ passed. BG-19 is complete in the repository at 100/100; BG-20 is unlocked
 for implementation only. No production deployment or physical-device signoff
 is implied.
 
+## Current Web hosting decision gate
+
+- **BG-19:** repository-complete; existing capture and follow-up behavior precedes Web hosting work.
+- **BG-20:** choose the documented Worker address
+  `https://recollect-flow.recollectflow.workers.dev/` as the production
+  Web Inbox origin, with one Worker/Web artifact and secure same-origin
+  API and cookie behavior. [Full decision and request matrix](verification/BG-20_WEB_ORIGIN_DESIGN.md).
+  This is a reviewable architecture deliverable, **not a deployment**.
+- **BG-21:** implement Worker static asset bundling, direct routes and JSON
+  API precedence, isolate preview and validate app/direct-item links
+  against real Worker runtime and browser evidence.
+- **BG-22:** close full browser creation and hosting acceptance only
+  after the actual release candidate passes. Operator authorization is
+  required for any production change.
+
 ## Product releases
 
 ### V0 — Technical spike
