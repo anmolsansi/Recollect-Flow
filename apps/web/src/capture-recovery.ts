@@ -121,7 +121,8 @@ export function parseCaptureOperation(
     if ((completed && payload.attachment_id !== file.attachmentId) ||
         (!completed && payload.attachment_id !== undefined) ||
         payload.url !== undefined || payload.shared_text !== undefined) return null;
-  } else if (value.attachment !== undefined || payload.attachment_id !== undefined) {
+  } else if (payload.attachment_id !== undefined) {
+    // Text operations may carry BG-17 metadata-only file recovery hints.
     return null;
   }
   // Copy approved fields only. Unknown or obsolete fields never reach a subsequent request.
