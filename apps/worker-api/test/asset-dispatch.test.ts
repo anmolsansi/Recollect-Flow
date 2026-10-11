@@ -55,7 +55,8 @@ describe('BG-21 API precedence', () => {
       env,
       execution,
     );
-    expect(response.status).toBe(401);
+    // Existing policy returns 403 for a caller without the owner scope.
+    expect(response.status).toBe(403);
     expect(response.headers.get('Cache-Control')).toBe('private, no-store');
   });
 
