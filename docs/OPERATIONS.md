@@ -161,7 +161,6 @@ For a recovery incident, use this order:
 
 BG-20 completion is **design signoff**, not a production-hosting acceptance. BG-21 and BG-22 own the implementation and end-to-end release proof.
 
-
 ## BG-21: build and verify the single-origin Web release
 
 The Worker now has a Vite static-assets binding and explicit API-first routing. A release must include assets built from the same source revision as Worker code. Read the [BG-21 hosting record](verification/BG-21_WEB_HOSTING.md) before preparing a preview or rollback.
