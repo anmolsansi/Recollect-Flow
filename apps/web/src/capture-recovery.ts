@@ -35,7 +35,10 @@ export interface CaptureOperation {
   followUp?: FollowUpDraft;
 }
 
-export function newCaptureOperation(payload: CapturePayload, followUp?: FollowUpDraft): CaptureOperation {
+export function newCaptureOperation(
+  payload: CapturePayload,
+  followUp?: FollowUpDraft,
+): CaptureOperation {
   return {
     version: RECORD_VERSION,
     id: payload.idempotency_key,
@@ -137,10 +140,15 @@ export function parseCaptureOperation(
     return null;
   }
   if (value.followUp !== undefined) {
-    if (!isObject(value.followUp) ||
+    if (
+      !isObject(value.followUp) ||
       typeof value.followUp.project !== 'string' ||
-      typeof value.followUp.reviewLocal !== 'string') return null;
-    const validation = validateFollowUp(value.followUp as unknown as FollowUpDraft);
+      typeof value.followUp.reviewLocal !== 'string'
+    )
+      return null;
+    const validation = validateFollowUp(
+      value.followUp as unknown as FollowUpDraft,
+    );
     if (validation.project || validation.review_at) return null;
   }
   // Copy approved fields only. Unknown or obsolete fields never reach a subsequent request.
@@ -181,12 +189,14 @@ export function parseCaptureOperation(
     ...(typeof value.lastError === 'string'
       ? { lastError: value.lastError.slice(0, 300) }
       : {}),
-    ...(value.followUp ? {
-      followUp: {
-        project: (value.followUp as Record<string, string>).project,
-        reviewLocal: (value.followUp as Record<string, string>).reviewLocal,
-      },
-    } : {}),
+    ...(value.followUp
+      ? {
+          followUp: {
+            project: (value.followUp as Record<string, string>).project,
+            reviewLocal: (value.followUp as Record<string, string>).reviewLocal,
+          },
+        }
+      : {}),
     ...(value.attachment
       ? {
           attachment: value.attachment as FileRecoveryReference,
@@ -391,7 +401,8 @@ export function parseSavedCaptureDraft(
     draft.reason.length > 2000 ||
     typeof draft.category !== 'string' ||
     (draft.project !== undefined && typeof draft.project !== 'string') ||
-    (draft.reviewLocal !== undefined && typeof draft.reviewLocal !== 'string') ||
+    (draft.reviewLocal !== undefined &&
+      typeof draft.reviewLocal !== 'string') ||
     (draft.category !== '' &&
       !CAPTURE_CATEGORIES.includes(
         draft.category as CaptureDraft['category'] &
