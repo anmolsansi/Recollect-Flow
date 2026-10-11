@@ -351,7 +351,7 @@ export function FileCaptureForm() {
                 id="capture-file"
                 type="file"
                 name="file"
-                disabled={busy || !loaded || !policy || (!!operation && !!file)}
+                disabled={busy || !loaded || !policy}
                 accept={policy?.allowed_mime_types.join(',')}
                 onChange={(event) => {
                   const selected = event.currentTarget.files?.[0] ?? null;
