@@ -107,24 +107,24 @@ describe('BG-21 public asset routing', () => {
   ])(
     'preserves an ETag 304 for %s without rewriting it to a 503',
     async (path, policy) => {
-    const binding: StaticAssets = {
-      fetch: async (request) => {
-        expect(request.headers.get('If-None-Match')).toBe('"release-a"');
-        return new Response(null, {
-          status: 304,
-          headers: { ETag: '"release-a"' },
-        });
-      },
-    };
-    const response = await servePublicAsset(
-      new Request(origin + path, {
-        headers: { 'If-None-Match': '"release-a"' },
-      }),
-      binding,
-    );
-    expect(response?.status).toBe(304);
-    expect(response?.headers.get('ETag')).toBe('"release-a"');
-    expect(response?.headers.get('Cache-Control')).toBe(policy);
+      const binding: StaticAssets = {
+        fetch: async (request) => {
+          expect(request.headers.get('If-None-Match')).toBe('"release-a"');
+          return new Response(null, {
+            status: 304,
+            headers: { ETag: '"release-a"' },
+          });
+        },
+      };
+      const response = await servePublicAsset(
+        new Request(origin + path, {
+          headers: { 'If-None-Match': '"release-a"' },
+        }),
+        binding,
+      );
+      expect(response?.status).toBe(304);
+      expect(response?.headers.get('ETag')).toBe('"release-a"');
+      expect(response?.headers.get('Cache-Control')).toBe(policy);
       expect(await response?.text()).toBe('');
     },
   );
