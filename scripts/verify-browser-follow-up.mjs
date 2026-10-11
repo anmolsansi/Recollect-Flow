@@ -213,6 +213,7 @@ try {
 
   // Invalid optional input must be associated with its error and receive focus.
   await begin();
+  await setValue('url', 'https://example.com/bg19-validation-' + marker);
   await setValue('project', 'x'.repeat(201));
   await evaluate(
     browser,
