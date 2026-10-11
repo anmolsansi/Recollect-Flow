@@ -92,3 +92,38 @@ The canonical BG-21 checklist currently records **91/100** independently evidenc
 - **BG-21.080:** approved remote publication of the precise checked artifact is not yet performed. The authorized local build and `wrangler deploy --dry-run` alone do not deploy.
 
 **Gate result:** code implementation and local bundled test coverage are advanced, but BG-21 is **not fully accepted** until those specific checks are resolved or a documented architectural exception is approved, exact-head CI passes, and the release evidence is merged. BG-22 remains blocked. No actual production changes, live messages, secrets or remote D1/R2 operations have been performed by this work.
+
+## Follow-up acceptance implementation (October 11, 2026)
+
+A follow-up draft PR adds focused tests without claiming remote evidence:
+`scripts/verify-web-hosting.mjs` now checks an authenticated malformed JSON
+capture request and real React Router browser back/forward behavior on the
+isolated bundled Worker origin. These are candidate proofs for
+`BG-21.040` and `BG-21.046`, subject to green exact-head CI.
+
+`npm run browser:hosting:remote:test` is an operator-controlled, read-only
+HTTPS preview verifier. It deliberately rejects the canonical production Worker,
+requires an explicitly supplied isolated preview origin and admin token,
+checks actual Secure/HttpOnly/Strict session cookies, API/asset routing, and
+compares the hosted JavaScript's SHA-256 to the exact local release manifest.
+It does **not** provision Cloudflare resources or run a deployment. Supply the
+credentials through a secure local/CI secret store, never in version control:
+
+```bash
+npm ci
+npm run release:package
+BG21_PREVIEW_ORIGIN=https://your-isolated-preview.example.workers.dev \
+BG21_PREVIEW_ADMIN_TOKEN="$APPROVED_PREVIEW_ADMIN_TOKEN" \
+npm run browser:hosting:remote:test
+```
+
+Before running this gate, the operator must independently verify the preview's
+Cloudflare account, its distinct D1/R2 resource IDs and separate secrets,
+its chosen hostname and `WEB_INBOX_BASE_URL`, the exact matching Worker/Web
+artifact, and no live owner content or notification side effects. Release
+roll-forward/rollback and edge cache invalidation still require a separately
+authorized multi-release rehearsal. An unrun verification script is **not**
+evidence that any of those gates passed. In particular, `BG-21.059`,
+`.061`, `.062`, `.065`, `.077`, and `.080` remain open until real
+hosted proof exists. Operator-specific UI routing (`.044`) is a deliberate
+scope decision, not an implicitly implemented page.
