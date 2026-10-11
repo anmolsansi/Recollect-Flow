@@ -139,6 +139,21 @@ try {
     'Boolean([...document.querySelectorAll("textarea[readonly]")].some(t => t.value.includes("BG21 bundled app fixture")))',
     'deep link hard reload with signed session',
   );
+  // A malformed request from an authenticated cookie session must never
+  // fall back to the public SPA shell or expose cached private responses.
+  const malformed = await evaluate(
+    browser,
+    '(async () => { const response = await fetch("/api/v1/captures", {' +
+      'method: "POST", credentials: "include", headers: {"Content-Type": "application/json"},' +
+      'body: "{" }); return {status: response.status, contentType: response.headers.get("content-type"),' +
+      'cache: response.headers.get("cache-control"), payload: await response.json()}; })()',
+  );
+  assert.ok([400, 422].includes(malformed.status), 'Malformed authenticated capture must fail validation');
+  assert.match(malformed.contentType ?? '', /application\/json/);
+  assert.equal(malformed.cache, 'private, no-store');
+  assert.ok(malformed.payload?.error?.code, 'Malformed API response must return JSON error envelope');
+  report('BG21-malformed-authenticated-api-stays-json', { status: malformed.status });
+
   const cookies = await browser.client.send(
     'Network.getCookies',
     { urls: [runtime.webOrigin] },
@@ -153,6 +168,18 @@ try {
   report('BG21-bundled-Chrome-login-and-reload', {
     cookie_secure: 'not tested on local HTTP',
   });
+
+  // Prove real React Router Link navigation plus History API back/forward,
+  // not only direct CDP navigation and a hard refresh.
+  await evaluate(browser, 'document.querySelector(\'a[href="/"]\').click()');
+  await waitFor(browser, 'location.pathname === "/" && Boolean(document.querySelector(\'a[href="/capture"]\'))', 'SPA Inbox link');
+  await evaluate(browser, 'document.querySelector(\'a[href="/capture"]\').click()');
+  await waitFor(browser, 'location.pathname === "/capture" && Boolean(document.querySelector("form.capture-form"))', 'SPA capture route');
+  await evaluate(browser, 'history.back()');
+  await waitFor(browser, 'location.pathname === "/" && Boolean(document.querySelector(\'a[href="/capture"]\'))', 'History back to Inbox');
+  await evaluate(browser, 'history.forward()');
+  await waitFor(browser, 'location.pathname === "/capture" && Boolean(document.querySelector("form.capture-form"))', 'History forward to capture');
+  report('BG21-SPA-browser-back-forward', { back: '/', forward: '/capture' });
 
   await navigate(browser, runtime.webOrigin + '/');
   await waitFor(
