@@ -99,4 +99,4 @@ open. BG-21's nine outstanding steps also remain gating.
 
 ## Completion decision
 
-**NOT ACCEPTED / BG-23 BLOCKED.** The new test and CI integration are implementation work, not a passing result. BG-21 remains open, and hosted BG-22 acceptance plus the outstanding partial-failure scenarios require execution against an approved release candidate. Reconcile issue #85 and the source checklist only after validated proof, exact-head CI, merged-main CI and the predecessor gate.
+**NOT ACCEPTED / BG-23 BLOCKED.** The new bundled-browser acceptance test and full CI have passed locally, but this is not the required hosted release acceptance. BG-21 remains open, and hosted BG-22 acceptance plus the outstanding partial-failure scenarios require execution against an approved release candidate. Reconcile issue #85 and the source checklist only after validated proof, exact-head CI, merged-main CI and the predecessor gate.
