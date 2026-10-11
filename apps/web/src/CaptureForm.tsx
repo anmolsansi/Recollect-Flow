@@ -338,6 +338,10 @@ export function CaptureForm() {
   const lastAttempts = useRef(new Map<string, number>());
   const lock = useRef(false);
   const form = useRef<HTMLFormElement>(null);
+  const savedHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (result) savedHeading.current?.focus();
+  }, [result]);
 
   function change<K extends keyof CaptureDraft>(
     field: K,
@@ -502,7 +506,7 @@ export function CaptureForm() {
           ))}
       {result ? (
         <section className="card" aria-live="polite" role="status">
-          <h2>
+          <h2 ref={savedHeading} tabIndex={-1}>
             {result.replayed || result.duplicate_of ? 'Already Saved' : 'Saved'}
           </h2>
           <p>
