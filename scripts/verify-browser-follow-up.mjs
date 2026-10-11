@@ -62,7 +62,7 @@ async function note(value, project = '', reviewLocal = '', skipBegin = false) {
   );
   const id = await evaluate(
     browser,
-    'document.querySelector("a[href^=\\"/items/\\"]").getAttribute("href").split("/").pop()',
+    `document.querySelector('a[href^="/items/"]').getAttribute('href').split('/').pop()`,
   );
   return id;
 }
