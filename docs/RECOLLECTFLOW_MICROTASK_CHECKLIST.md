@@ -2768,16 +2768,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-20 / 03 — Same-origin option
 
-- [ ] `BG-20.021` Read relative API_BASE usage.
-- [ ] `BG-20.022` Read admin cookie attributes.
-- [ ] `BG-20.023` Identify Worker asset capability.
-- [ ] `BG-20.024` Check current official configuration guidance.
-- [ ] `BG-20.025` Assess same-origin asset serving.
-- [ ] `BG-20.026` Assess API route precedence.
-- [ ] `BG-20.027` Assess SPA fallback support.
-- [ ] `BG-20.028` Assess private response isolation.
-- [ ] `BG-20.029` Assess artifact compatibility.
-- [ ] `BG-20.030` Record preferred hosting arrangement.
+- [x] `BG-20.021` Read relative API_BASE usage.
+- [x] `BG-20.022` Read admin cookie attributes.
+- [x] `BG-20.023` Identify Worker asset capability.
+- [x] `BG-20.024` Check current official configuration guidance.
+- [x] `BG-20.025` Assess same-origin asset serving.
+- [x] `BG-20.026` Assess API route precedence.
+- [x] `BG-20.027` Assess SPA fallback support.
+- [x] `BG-20.028` Assess private response isolation.
+- [x] `BG-20.029` Assess artifact compatibility.
+- [x] `BG-20.030` Record preferred hosting arrangement.
 
 #### BG-20 / 04 — Alternative origin
 
