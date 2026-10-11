@@ -77,11 +77,49 @@ while the page is open. A lost response does not imply Saved. Once a canonical
 response is received, its retry record is cleared. On an expired session, sign
 in again and retry the unchanged operation. There is no background retry loop.
 
-BG-17 covers URL, pasted text and note submissions. BG-18 owns the actual
-file upload flow, hash/reselection and resumable server attachment references.
-Do not interpret the optional metadata record type as implemented file recovery.
+BG-17 covers URL, pasted text and note submissions. BG-18 adds the actual
+single-file flow, hash/reselection and resumable server attachment references.
 Physical-iPhone offline retention is separately gated by BG-36. No production
 deployment is implied.
+
+## Browser file upload (BG-18)
+
+After owner sign-in, choose **Upload a file** at `/capture` or visit
+`/capture/file`. Choose exactly one PDF, image, plain-text, or approved audio
+file, and optionally select the reason, category and privacy. Audio uses the
+existing `file` capture source, not an unsupported `audio` capture source.
+Server admission policy comes from `GET /api/v1/uploads/config`. The browser
+also enforces a 25,000,000-byte safety ceiling for the metadata recovery
+contract. The actual upload and signature checks remain server-authoritative.
+
+The client computes SHA-256 of the original bytes in memory and uses:
+`POST /uploads/init` → `PUT /uploads/:id/content` →
+`POST /uploads/:id/finalize` → `POST /captures` with `attachment_id`,
+the original capture time, reason, privacy and idempotency key. All paths here
+are under `/api/v1`. Cookie-backed writes require the allowed browser Origin.
+A successful capture response, not a successful PUT or finalize alone, is
+required to display **Saved**. The item's signed-in download link provides
+the original bytes.
+
+For retries, `GET /uploads/:id/status` reconciles server-owned pending,
+uploaded, finalized and linked states. An ambiguous PUT is never blindly
+repeated after the server reports uploaded. A lost capture response replays
+the identical capture payload and key. Expired reservations require a user
+decision to restart with the same logical key and a new upload reservation.
+Do not delete an attachment that might already have linked. Safe expiry
+cleanup remains server-owned.
+
+Recovery is off by default. Opted-in recovery saves **metadata only**:
+file name, byte length, SHA-256, MIME, upload stage, reservation identifier,
+expiry and immutable capture metadata. Reselect original bytes before
+pending-byte transfer. Sensitive captures never persist locally, and
+discarding a retry only clears local state. A browser reload never retains
+file bytes and is not equivalent to an offline upload queue.
+
+Run `npm run web:test`, `npm run web:build` and
+`npm run browser:file-upload:test` for focused unit/build and isolated
+Chrome/Worker/D1/R2 acceptance. For broader regressions run `npm run check`.
+No production upload deployment or physical-device acceptance is implied.
 
 Focused checks: `npm run web:test`, `npm run web:build`, and
 `npm run browser:recovery:test` with local Worker/D1 and Chrome installed.
