@@ -156,9 +156,12 @@ is implied.
   Web Inbox origin, with one Worker/Web artifact and secure same-origin
   API and cookie behavior. [Full decision and request matrix](verification/BG-20_WEB_ORIGIN_DESIGN.md).
   This is a reviewable architecture deliverable, **not a deployment**.
-- **BG-21:** implement Worker static asset bundling, direct routes and JSON
-  API precedence, isolate preview and validate app/direct-item links
-  against real Worker runtime and browser evidence.
+- **BG-21:** Worker asset binding, explicit SPA/API routing and one-artifact
+  release packaging are implemented on [PR #84](https://github.com/anmolsansi/Recollect-Flow/pull/84),
+  with [verification matrix](verification/BG-21_WEB_HOSTING.md). Release/CI and
+  actual isolated remote HTTPS preview acceptance are not yet proven. No
+  production promotion is authorized; BG-22 remains blocked until BG-21's
+  full required evidence and merge checks pass.
 - **BG-22:** close full browser creation and hosting acceptance only
   after the actual release candidate passes. Operator authorization is
   required for any production change.
