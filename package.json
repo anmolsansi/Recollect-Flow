@@ -14,7 +14,7 @@
     "web:lint": "npm run lint -w apps/web",
     "web:test": "npm run test -w apps/web",
     "contracts:check": "npm run check -w packages/contracts",
-    "deploy": "wrangler deploy",
+    "deploy": "npm run release:package && wrangler deploy",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --check .",
@@ -31,7 +31,9 @@
     "browser:download:test": "node scripts/verify-browser-download.mjs",
     "browser:source-recovery:test": "node scripts/verify-browser-source-recovery.mjs",
     "browser:workflow:test": "node scripts/verify-browser-workflow.mjs",
-    "browser:acquisition:test": "node scripts/verify-browser-acquisition.mjs"
+    "browser:acquisition:test": "node scripts/verify-browser-acquisition.mjs",
+    "release:package": "node scripts/web-release.mjs clean && npm run web:build && node scripts/web-release.mjs finalize",
+    "release:package:test": "node --test scripts/web-release.test.mjs"
   },
   "dependencies": {
     "hono": "^4.8.10",
