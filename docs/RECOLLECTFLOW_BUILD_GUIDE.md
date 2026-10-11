@@ -2611,6 +2611,32 @@ through the deployable Web path. Production/device trials still follow Priority 
 
 Follow the [100 microtasks for BG-22](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-22--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
 
+### Current implementation and acceptance state
+
+**In progress, not accepted (October 11, 2026).** The
+[BG-22 draft PR #86](https://github.com/anmolsansi/Recollect-Flow/pull/86)
+adds `npm run browser:creation:test` and wires it into CI. The combined test
+runs against a bundled Worker/Vite release on disposable local D1/R2, not
+the Vite development server. Its fresh Chrome session creates a URL, text,
+note, PNG and PDF, searches/reopens URL/text/note, verifies original PNG/PDF
+SHA-256, persists a title edit after reload, preserves a canonical duplicate
+reason and rejects reads, downloads and writes after logout.
+
+The [full local CI run #38142920329](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38142920329)
+passed on its exact PR head, including the new test, existing browser suites,
+release packaging and Wrangler dry-run. Full run identity, tested source
+revision and artifact hash are recorded in
+[BG-22 verification](verification/BG-22_BROWSER_CREATION_ACCEPTANCE.md).
+
+**Blocked completion:** BG-21 [issue #83](https://github.com/anmolsansi/Recollect-Flow/issues/83)
+remains 91/100, including hosted HTTPS and release-preview gaps. BG-22
+additionally needs unified provider-outage, uncertain-response, interrupted
+upload/expired-session, binary-text extraction/search and browser-restart
+acceptance against the approved release. Local HTTP proof cannot replace
+hosted HTTPS cookie/cache evidence. No production deploy or new production
+authorization is included. Keep BG-23 blocked until all mandatory evidence
+and predecessor gates pass.
+
 ---
 
 # Part VI — Priority 4: operational hardening and truthful documentation
