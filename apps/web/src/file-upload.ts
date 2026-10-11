@@ -177,8 +177,12 @@ async function uploadOriginalBytes(
     signal,
   });
   if (response.ok) return;
-  if (response.status === 401 || response.status === 403)
+  if (
+    (response.status === 401 || response.status === 403) &&
+    typeof globalThis.dispatchEvent === 'function'
+  ) {
     globalThis.dispatchEvent(new Event(AUTH_REQUIRED_EVENT));
+  }
   const payload = (await response.json().catch(() => null)) as {
     error?: { message?: string; code?: string };
   } | null;
