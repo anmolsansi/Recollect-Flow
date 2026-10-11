@@ -1,4 +1,4 @@
-/* global console, process, fetch, document, crypto */
+/* global console, process, fetch */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { mkdtemp, writeFile, rm, readFile } from 'node:fs/promises';
