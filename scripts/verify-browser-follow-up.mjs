@@ -29,8 +29,8 @@ async function begin() {
   await navigate(browser, runtime.webOrigin + '/capture');
   await waitFor(browser, 'Boolean(document.querySelector("form.capture-form"))', 'BG19 capture form');
 }
-async function note(value, project = '', reviewLocal = '') {
-  await begin();
+async function note(value, project = '', reviewLocal = '', skipBegin = false) {
+  if (!skipBegin) await begin();
   await evaluate(browser, 'document.querySelector("input[name=mode][value=note]").click()');
   await setValue('shared_text', value);
   if (project) await setValue('project', project);
@@ -80,7 +80,7 @@ try {
       return window.__bg19Fetch(...args);
     };
   })()`);
-  const partialId = await note('BG19 partial ' + marker, 'Retry Project');
+  const partialId = await note('BG19 partial ' + marker, 'Retry Project', '', true);
   await waitFor(browser, 'document.body.textContent.includes("Saved; project/reminder needs retry.")', 'partial success warning');
   item = await detail(partialId);
   assert.equal(item.item.project, null);
