@@ -41,16 +41,16 @@
 ## Required final checks
 
 - [ ] Full exact PR-head CI `npm run check` passes unmodified format,
-  lint, typecheck, contracts, unit tests and Web build.
+      lint, typecheck, contracts, unit tests and Web build.
 - [ ] Isolated Chrome/Worker/D1/R2 `npm run browser:file-upload:test`
-  proves PDF/image original bytes and SHA-256 match after canonical linking.
+      proves PDF/image original bytes and SHA-256 match after canonical linking.
 - [ ] Browser test rejects wrong type and server tests reject invalid
-  signature/size while not claiming Saved.
+      signature/size while not claiming Saved.
 - [ ] Browser and unit tests prove uncertain PUT, finalize, lost capture
-  response, repeated same-key retry, expired upload and authorization.
+      response, repeated same-key retry, expired upload and authorization.
 - [ ] Reconcile canonical 100-step checklist and all 50 pairs in issue #77
-  with exact evidence, recording any unsupported cases honestly.
+      with exact evidence, recording any unsupported cases honestly.
 - [ ] Merge only with passing required CI, no bypass; verify merged-main CI
-  and check final BG-18.100 only after that proof.
+      and check final BG-18.100 only after that proof.
 
 **Current verdict:** Implementation candidate, not accepted or deployed.
