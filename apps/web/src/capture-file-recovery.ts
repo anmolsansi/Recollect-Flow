@@ -16,6 +16,7 @@ type ReselectedFile = Pick<File, 'name' | 'size' | 'arrayBuffer'>;
 
 export type FileRecoveryDecision =
   | 'reselect-file'
+  | 'initialize-deliberately'
   | 'upload-existing'
   | 'finalize-existing'
   | 'capture-with-finalized-id'
@@ -83,7 +84,7 @@ export function nextFileRecoveryStep(
   if (reference.stage === 'finalized') return 'capture-with-finalized-id';
   if (reference.stage === 'uploaded') return 'finalize-existing';
   if (!hasVerifiedReselection) return 'reselect-file';
-  return 'upload-existing';
+  return reference.stage === 'selected' ? 'initialize-deliberately' : 'upload-existing';
 }
 
 /** Re-hash the bytes, not the displayed filename. A changed file is never
@@ -119,6 +120,8 @@ export function fileRecoveryNotice(
       return 'The file name was retained, not the bytes. Reselect the original file to verify its SHA-256 before retrying.';
     case 'expired-reservation':
       return 'The previous server upload reservation expired. A deliberate new upload will be needed after BG-18 adds the file flow.';
+    case 'initialize-deliberately':
+      return 'The original bytes match. File upload initialization requires an explicit owner action in BG-18.';
     case 'upload-existing':
       return 'The matching file is verified. Resume the original permitted upload, not a new attachment initialization.';
     case 'finalize-existing':
