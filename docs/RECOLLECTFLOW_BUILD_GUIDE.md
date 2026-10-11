@@ -2460,6 +2460,26 @@ hosted application.
 **Done when:** the plan names the actual origin and explains cookies, API routing,
 deep links and digest URLs. A screenshot of localhost does not close this task.
 
+### BG-20 selected design and next implementation gate
+
+The proposed canonical production Web Inbox origin is
+`https://recollect-flow.recollectflow.workers.dev/`, the existing documented
+Worker origin. BG-20 selects one combined Worker+Web asset deployment so the
+browser can keep relative `/api/v1` and host-only signed cookies. This design
+does **not** claim Web assets are currently served from that URL.
+
+[BG-20 request map and decision evidence](verification/BG-20_WEB_ORIGIN_DESIGN.md)
+specifies an explicit Worker-first API path, an allowlist for existing
+`/`, `/capture`, `/capture/file`, and `/items/:id` routes, missing-asset
+404 behavior, strict API authorization, preview isolation and joint rollback.
+It records known documentation evidence and unverified Cloudflare account and
+live-origin facts separately. Production release remains gated on operator
+verification, isolated preview testing and explicit approval.
+
+BG-21 implements the static assets binding, routing dispatcher and atomic
+release. Do not add `[assets]` to production Wrangler or change
+`WEB_INBOX_BASE_URL` as part of this BG-20 design task.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-20](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-20--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
