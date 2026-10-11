@@ -84,7 +84,9 @@ export function nextFileRecoveryStep(
   if (reference.stage === 'finalized') return 'capture-with-finalized-id';
   if (reference.stage === 'uploaded') return 'finalize-existing';
   if (!hasVerifiedReselection) return 'reselect-file';
-  return reference.stage === 'selected' ? 'initialize-deliberately' : 'upload-existing';
+  return reference.stage === 'selected'
+    ? 'initialize-deliberately'
+    : 'upload-existing';
 }
 
 /** Re-hash the bytes, not the displayed filename. A changed file is never
