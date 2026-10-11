@@ -175,6 +175,40 @@ describe('BG-18 single-file admission and durable replay', () => {
     expect(operation.payload.source_type).toBe('file');
   });
 
+  it('replays the same reservation UUID when the initialize response is lost', async () => {
+    const original = await make();
+    const initBodies: Record<string, unknown>[] = [];
+    let initialized = false;
+    vi.stubGlobal('fetch', vi.fn(async (path: string, options?: RequestInit) => {
+      if (path.endsWith('/uploads/init')) {
+        initBodies.push(JSON.parse(options?.body as string));
+        if (!initialized) {
+          initialized = true;
+          throw new TypeError('Lost initialization reply');
+        }
+        return wrapped({
+          attachment_id: id,
+          upload_url: '/api/v1/uploads/' + id + '/content',
+          expires_at: beforeExpiry,
+        });
+      }
+      if (path.endsWith('/content')) return wrapped({ status: 'uploaded' });
+      if (path.endsWith('/finalize')) return wrapped({
+        status: 'finalized', attachment_id: id,
+        checksum: original.attachment?.sha256,
+      });
+      if (path.endsWith('/captures')) return wrapped({
+        capture_id: 'saved', replayed: false, duplicate_of: null, processing_status: 'pending',
+      });
+      throw new Error('Unexpected request');
+    }));
+    await expect(runFileCapture(original, pdf(), async () => {})).rejects.toThrow('Lost initialization reply');
+    expect((await runFileCapture(original, pdf(), async () => {})).capture_id).toBe('saved');
+    expect(initBodies).toHaveLength(2);
+    expect(initBodies[0]).toMatchObject({ attachment_id: id });
+    expect(initBodies[1]).toEqual(initBodies[0]);
+  });
+
   it('refuses a tampered upload target before transferring original bytes', async () => {
     const original = await make();
     const fetchMock = vi.fn(async () =>
