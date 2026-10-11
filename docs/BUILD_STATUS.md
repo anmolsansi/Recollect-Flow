@@ -190,3 +190,35 @@ reviewed all 87 tracked `.md` files and corrected pre-completion wording in
 current-facing contracts, status reports and the BG-11 successor handoff. A
 restored-item regression test was added to cover the exact `BG-12.089` fixture
 requirement; the audit's CI and merge evidence is recorded in its own report.
+
+## BG-20 — production Web Inbox origin design (merged, CI verified)
+
+BG-19's completed follow-up capture flow unlocked BG-20. The BG-20 design chooses
+`https://recollect-flow.recollectflow.workers.dev/` as the canonical browser
+origin for a future combined Cloudflare Worker and React Web asset deployment.
+The Web app and `/api/v1` must share a host to preserve host-only signed
+session cookies, strict browser write origins and relative API calls. The
+[design record](verification/BG-20_WEB_ORIGIN_DESIGN.md) documents canonical
+digest links, explicit API/SPA routing and missing-asset 404 behavior, protected
+private downloads and exports, preview isolation, atomic release pairing and
+rollback requirements.
+
+A read-only October 11, 2026 probe returned **404 JSON** from the existing
+[Worker homepage](https://recollect-flow.recollectflow.workers.dev/) and
+**200 JSON** from [API health](https://recollect-flow.recollectflow.workers.dev/api/v1/health).
+This confirms API reachability, **not a deployed production Web Inbox**.
+
+[GitHub issue #81](https://github.com/anmolsansi/Recollect-Flow/issues/81),
+[merged PR #82](https://github.com/anmolsansi/Recollect-Flow/pull/82), and
+[Linear OPE-339](https://linear.app/openclaw-neutron/issue/OPE-339/bg-20-choose-the-production-web-inbox-origin)
+track the decision. PR #82 retained 32 incremental commits and merged by rebase
+at `dc231674cae890c0bf2f83857fc695e2c28b8dcf`. Both
+[exact-head PR CI #38133430982](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38133430982)
+and [merged-main CI #38133672564](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38133672564)
+passed the applicable quality gates and browser regressions.
+
+The BG-20 design gate is complete; BG-21 is unlocked **for repository
+implementation only**. Production deployment, DNS or secret changes,
+Cloudflare account verification, remote preview isolation and actual Web
+asset/browser-hosting acceptance remain separate gates requiring appropriate
+authorization. The final documentation closeout commit must also pass main CI.
