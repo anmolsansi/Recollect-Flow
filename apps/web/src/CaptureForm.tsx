@@ -162,7 +162,9 @@ export function CaptureForm() {
     if (lock.current) return;
     const now = Date.now();
     if (!canRetryCapture(lastAttempts.current.get(operation.id), now)) {
-      setFailure('Retry is temporarily paused to avoid repeated requests. Try again shortly.');
+      setFailure(
+        'Retry is temporarily paused to avoid repeated requests. Try again shortly.',
+      );
       return;
     }
     lastAttempts.current.set(operation.id, now);
