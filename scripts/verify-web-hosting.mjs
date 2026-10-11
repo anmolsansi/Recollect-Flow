@@ -129,7 +129,10 @@ try {
       browser.responses.filter(
         (entry) => entry.path === itemApiPath && entry.status === 200,
       ).length > responsesBeforeReload,
-    { timeoutMs: 20_000, description: 'new authenticated item fetch after hard reload' },
+    {
+      timeoutMs: 20_000,
+      description: 'new authenticated item fetch after hard reload',
+    },
   );
   await waitFor(
     browser,
