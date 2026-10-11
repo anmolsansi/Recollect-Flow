@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ApiError, fetchApi } from './api';
+import { ApiError } from './api';
 import {
   applyCaptureFollowUp,
   emptyFollowUp,
