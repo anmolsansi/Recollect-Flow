@@ -62,10 +62,13 @@ async function saveText(
       JSON.stringify('input[name="mode"][value="' + mode + '"]') +
       ').click()',
   );
-  await changeField(
-    mode === 'url' ? '[name="url"]' : '[name="shared_text"]',
-    value,
+  const valueField = mode === 'url' ? '[name="url"]' : '[name="shared_text"]';
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(' + JSON.stringify(valueField) + '))',
+    'rendered ' + mode + ' capture field',
   );
+  await changeField(valueField, value);
   await changeField('[name="user_reason"]', reason);
   await changeField('[name="privacy_level"]', privacy);
   await evaluate(
