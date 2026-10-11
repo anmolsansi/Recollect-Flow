@@ -13,7 +13,7 @@ on commit `b739e5aafd94bb24db060c1ec7e72417a0a5373d`. Formatting, lint,
 typecheck, unit tests, Web build, D1 migrations, Chrome recovery acceptance
 and existing browser regressions all passed. This does **not** close parent
 BG-17: file upload/reselection and explicit expired-session acceptance
-remain unchecked. The final merged-main gate has not yet been established.
+remain unchecked. The final merged-main gate has now passed through PR #75, with CI #38119506197 on the PR head and CI #38119715846 on merged main.
 No remote deployment or live personal capture was performed.
 
 ## Owner behavior
