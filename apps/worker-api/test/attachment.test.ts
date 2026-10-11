@@ -286,6 +286,38 @@ async function createAdminSessionCookie(
   return setCookie!.split(';', 1)[0]!;
 }
 
+describe('BG-18 stable initialization identity', () => {
+  it('returns the same reserved attachment after the init response was lost', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const id = 'a224af4c-6f6a-4f58-84bf-18b49d8aa062';
+    const body = {
+      attachment_id: id,
+      filename: 'resume.pdf',
+      mime_type: 'application/pdf',
+      size_bytes: 8,
+      content_hash: 'a'.repeat(64),
+      source_type: 'file',
+    };
+    const first = await initialize(app, env, body);
+    expect(first.response.status).toBe(201);
+    expect(first.body.data.attachment_id).toBe(id);
+    const replay = await initialize(app, env, body);
+    expect(replay.response.status).toBe(200);
+    expect(replay.body.data.attachment_id).toBe(id);
+    expect(repository.attachments.size).toBe(1);
+
+    const conflict = await initialize(app, env, {
+      ...body,
+      filename: 'different.pdf',
+    });
+    expect(conflict.response.status).toBe(409);
+    expect(repository.attachments.size).toBe(1);
+  });
+});
+
 describe('BG-18 browser upload policy and recovery status', () => {
   it('requires owner authorization for upload config and status', async () => {
     const repository = new MemoryAttachmentRepository();
