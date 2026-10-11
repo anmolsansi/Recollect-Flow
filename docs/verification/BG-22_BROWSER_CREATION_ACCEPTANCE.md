@@ -165,3 +165,41 @@ The URL's internally acquired page phrase, screenshot OCR text, and PDF
 internal-text search (`.031`, `.034`, `.035`) are **not** proven by the
 above tests, because the isolated fixture must actually be acquired and
 indexed before it can legitimately match a query.
+
+## Consolidated browser failure and recovery verification (October 11, 2026)
+
+**Exact executable CI:** [run #38151337473](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38151337473),
+on source head `db9a152ad2106957d89a8b6a5a3d3e664c9313f2`, **passed
+the full repository gate**: checks, clean Worker+Vite packaging, deployment
+dry-run, local migrations, Chrome, and all regression suites. The following
+additional BG-22 proofs use the bundled release with disposable loopback
+HTTP, local D1/R2 and synthetic credentials/files, not an authorized remote
+Cloudflare HTTPS deployment:
+
+| Scenario / source steps | Actual result | Qualification |
+| --- | --- | --- |
+| `.037–.040` detail inspection and scoped search | Raw note source exact, coverage and per-stage processing visibly labelled, unique Inbox phrase yielded only the intended item | No acquired URL, image OCR or PDF internal phrase claim |
+| `.059` one stored linked original after retry | During an injected auth interruption, one retained operation kept its reservation identity; resumed PDF returned a single linked attachment with the original size and SHA-256 | Does not claim inventory of unrelated R2 objects |
+| `.061`, `.063–.067`, `.069–.070` optional-provider outage | Mock AI provider configuration disabled in a local Worker restart, source persisted/searchable/editable, processing stayed `pending`, zero provider usage, then provider mock restored and source/owner project stayed intact | Notion uses synthetic local credentials, but no independent Notion-disable probe; deferred original job eligibility after backoff not yet proven |
+| `.071–.076` interrupted upload and reauth | CDP injected 401 during original PDF PUT and deleted the signed cookie, browser required real re-login, retained same operation/reservation in IndexedDB, resumed after identical-file reselection, exactly one linked object and verified SHA-256 | Isolated synthetic 401 injected at transport boundary, not a production session TTL |
+| `.085–.087` browser health/mobile | Chrome reported zero uncaught runtime exceptions and unexpected failed network requests; 390px viewport had no horizontal overflow at Inbox, text capture, file capture or item detail | Desktop Chrome device emulation; not a physical mobile device |
+| `.081–.082` repository gate/migration review | All CI steps green, including D1 migrations and release dry-run | No remote Cloudflare migration |
+
+**Unverified functional checks:** `.031` URL internal page phrase, `.034`
+screenshot OCR text, `.035` PDF internal phrase, `.062` explicit
+Notion-provider disable and restoration, and `.068` actual continuation of
+the **same** pending AI job after its retry backoff. No test should mark these
+as successful by substituting a filename search, fake token, or mere source
+read.
+
+**External/predecessor gate:** BG-21 still has seven open operator/release
+steps (`.044`, `.059`, `.061`, `.062`, `.065`, `.077`, `.080`).
+Remote resource isolation, Secure cookies, edge-cache transition, previously
+approved operator-route scope and old/new release rollback have not been
+exercised. BG-22 remains **not accepted**, its PR remains draft and BG-23
+remains blocked even though the local test matrix is green.
+
+The verification harness removes only temporary owned D1/R2 paths, upload
+fixtures and Chrome profiles. It has not performed a remote deployment, changed
+production bindings, sent any digest, used real owner data, or modified
+production secrets.
