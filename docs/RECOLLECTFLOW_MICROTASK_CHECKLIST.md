@@ -2846,16 +2846,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-20 / 09 — Design proof
 
-- [ ] `BG-20.081` Review existing-host evidence.
-- [ ] `BG-20.082` Review same-origin request flow.
-- [ ] `BG-20.083` Review direct item link flow.
-- [ ] `BG-20.084` Review digest link flow.
-- [ ] `BG-20.085` Review expired-session flow.
-- [ ] `BG-20.086` Review unknown API behavior.
-- [ ] `BG-20.087` Review private caching assumptions.
-- [ ] `BG-20.088` Record unresolved configuration dependencies.
-- [ ] `BG-20.089` Record selected official references.
-- [ ] `BG-20.090` Freeze hosting design for implementation.
+- [x] `BG-20.081` Review existing-host evidence.
+- [x] `BG-20.082` Review same-origin request flow.
+- [x] `BG-20.083` Review direct item link flow.
+- [x] `BG-20.084` Review digest link flow.
+- [x] `BG-20.085` Review expired-session flow.
+- [x] `BG-20.086` Review unknown API behavior.
+- [x] `BG-20.087` Review private caching assumptions.
+- [x] `BG-20.088` Record unresolved configuration dependencies.
+- [x] `BG-20.089` Record selected official references.
+- [x] `BG-20.090` Freeze hosting design for implementation.
 
 #### BG-20 / 10 — Verify and close this task
 
