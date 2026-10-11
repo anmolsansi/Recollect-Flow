@@ -245,6 +245,45 @@ async function ensureLoggedOutProtection(id, attachmentId) {
   assert.equal(await evaluate(browser, 'location.pathname'), '/items/' + id);
   report('BG22-logout-denies-read-download-write', { statuses: checked });
 }
+async function verifyDirectLinkAfterRestart(id) {
+  await browser.close();
+  browser = await openBrowser(runtime);
+  const path = '/items/' + id;
+  await navigate(browser, runtime.webOrigin + path);
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'input[type="password"]\'))',
+    'fresh browser profile requires login',
+  );
+  assert.equal(await evaluate(browser, 'location.pathname'), path);
+  await evaluate(
+    browser,
+    '(() => { const input = document.querySelector(\'input[type="password"]\');' +
+      'const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;' +
+      'setter.call(input, ' +
+      JSON.stringify(adminToken) +
+      '); input.dispatchEvent(new Event("input", { bubbles: true }));' +
+      'input.dispatchEvent(new Event("change", { bubbles: true }));' +
+      'input.closest("form").requestSubmit(); return true; })()',
+  );
+  await waitFor(
+    browser,
+    'location.pathname === ' + JSON.stringify(path) +
+      ' && document.body.textContent.includes(' + JSON.stringify('BG22 owner title ' + runId) + ')',
+    'direct item link restored after reauthentication',
+  );
+  const status = await evaluate(
+    browser,
+    'fetch(' + JSON.stringify('/api/v1/items/' + id) +
+      ', { credentials: "include" }).then(response => response.status)',
+  );
+  assert.equal(status, 200);
+  report('BG22-direct-item-after-fresh-browser-login', {
+    capture_id: id,
+    status,
+  });
+}
+
 async function run() {
   runtime = await createBg21Preview({
     port: 8993,
@@ -366,6 +405,7 @@ async function run() {
   report('BG22-canonical-duplicate-event', { capture_id: urlId });
 
   await ensureLoggedOutProtection(noteId, image.attachmentId);
+  await verifyDirectLinkAfterRestart(noteId);
   report('BG22-local-browser-creation-matrix', {
     result: 'passed',
     item_count: 5,
