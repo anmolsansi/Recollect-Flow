@@ -75,7 +75,9 @@ export function parseCaptureOperation(
     payload.idempotency_key !== value.id ||
     value.id.length < 12 ||
     value.id.length > 200 ||
-    !['url', 'note', 'text'].includes(String(payload.source_type)) ||
+    !['url', 'note', 'text', 'image', 'file'].includes(
+      String(payload.source_type),
+    ) ||
     payload.source_app !== 'recollect-web' ||
     typeof payload.captured_at !== 'string' ||
     !Number.isFinite(Date.parse(payload.captured_at)) ||
@@ -93,7 +95,7 @@ export function parseCaptureOperation(
           payload.url.toLowerCase().startsWith('http://') ||
           payload.url.toLowerCase().startsWith('https://')
         ))) ||
-    (payload.source_type !== 'url' &&
+    (['text', 'note'].includes(String(payload.source_type)) &&
       (typeof payload.shared_text !== 'string' ||
         !payload.shared_text.trim() ||
         payload.shared_text.length > 100000)) ||
@@ -112,6 +114,24 @@ export function parseCaptureOperation(
     !validateFileRecoveryReference(value.attachment)
   )
     return null;
+  // The server requires a finalized attachment, never a filename-only capture.
+  const fileCapture =
+    payload.source_type === 'image' || payload.source_type === 'file';
+  if (fileCapture) {
+    if (!validateFileRecoveryReference(value.attachment)) return null;
+    const file = value.attachment as FileRecoveryReference;
+    const completed = file.stage === 'finalized';
+    if (
+      (completed && payload.attachment_id !== file.attachmentId) ||
+      (!completed && payload.attachment_id !== undefined) ||
+      payload.url !== undefined ||
+      payload.shared_text !== undefined
+    )
+      return null;
+  } else if (payload.attachment_id !== undefined) {
+    // Text operations may carry BG-17 metadata-only file recovery hints.
+    return null;
+  }
   // Copy approved fields only. Unknown or obsolete fields never reach a subsequent request.
   const restoredPayload: CapturePayload = {
     idempotency_key: value.id,
@@ -125,7 +145,12 @@ export function parseCaptureOperation(
     privacy_level: payload.privacy_level as CapturePayload['privacy_level'],
     ...(payload.source_type === 'url'
       ? { url: payload.url as string }
-      : { shared_text: payload.shared_text as string }),
+      : ['text', 'note'].includes(String(payload.source_type))
+        ? { shared_text: payload.shared_text as string }
+        : {}),
+    ...(fileCapture && typeof payload.attachment_id === 'string'
+      ? { attachment_id: payload.attachment_id }
+      : {}),
     ...(typeof payload.user_reason === 'string'
       ? { user_reason: payload.user_reason }
       : {}),

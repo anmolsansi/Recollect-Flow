@@ -116,6 +116,19 @@ This gate does not imply completion of BG-18. See
 [BG-17 final acceptance](verification/BG-17_FINAL_CLOSEOUT.md).
 No production deployment is included.
 
+## BG-18 browser attachment gate (candidate)
+
+The predecessor BG-17 is verified on merged main. BG-18 implementation is in
+[draft PR #78](https://github.com/anmolsansi/Recollect-Flow/pull/78),
+tracked in [issue #77](https://github.com/anmolsansi/Recollect-Flow/issues/77).
+The candidate provides one-file selection, bounded SHA-256 verification,
+authenticated reservation and status reads, original-byte transfer, finalize,
+canonical capture link and deliberate recovery after uncertain responses.
+It uses metadata-only local recovery and existing R2 orphan cleanup, rather
+than a new storage service. Exact Chrome/D1/R2 acceptance and CI, including
+PDF/image round-trip hashes and failure boundaries, are required before
+this gate is closed and BG-19 is unlocked. No production rollout is claimed.
+
 ## Product releases
 
 ### V0 — Technical spike

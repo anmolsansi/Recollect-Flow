@@ -9,7 +9,10 @@ import {
 } from '../shared/auth';
 import { AppError } from '../shared/errors';
 import { D1AttachmentRepository } from './attachment.repository';
-import type { AttachmentRepository } from './attachment.repository';
+import type {
+  AttachmentRepository,
+  StoredAttachment,
+} from './attachment.repository';
 import {
   AttachmentFinalizeInputSchema,
   AttachmentInitInputSchema,
@@ -32,6 +35,21 @@ export function attachmentRoutes(
   const router = new Hono<AppContext>();
 
   router.use('/uploads/*', requireCaptureWrite);
+
+  // The signed-in browser reads the same deployment-specific admission policy
+  // that the server enforces on initialization. Never hard-code a smaller limit.
+  router.get('/uploads/config', (context) => {
+    return context.json({
+      data: {
+        max_size_bytes: positiveInteger(
+          context.env.MAX_ATTACHMENT_BYTES,
+          25_000_000,
+        ),
+        allowed_mime_types: [...ALLOWED_CONTENT_TYPES].sort(),
+      },
+      meta: { request_id: context.get('requestId') },
+    });
+  });
 
   router.post('/uploads/init', async (context) => {
     const body = await context.req.json().catch(() => {
@@ -66,30 +84,111 @@ export function attachmentRoutes(
 
     const now = new Date();
     const ttlSeconds = positiveInteger(context.env.UPLOAD_TTL_SECONDS, 3600);
-    const id = crypto.randomUUID();
-    const created = await repositoryFactory(context.env).create({
-      id,
-      r2Key: `private/${now.getUTCFullYear()}/${id}`,
-      fileName: safeFilename(parsed.data.filename),
-      declaredContentType: contentType,
-      sizeBytes: parsed.data.size_bytes,
-      contentHash: parsed.data.content_hash?.toLowerCase(),
-      expiresAt: new Date(now.getTime() + ttlSeconds * 1000).toISOString(),
-      createdAt: now.toISOString(),
-    });
-
-    return context.json(
-      {
-        data: {
-          attachment_id: created.id,
-          upload_url: `/api/v1/uploads/${created.id}/content`,
-          expires_at: created.expiresAt,
-          allowed_headers: ['Authorization', 'Content-Type', 'Content-Length'],
+    const id = parsed.data.attachment_id ?? crypto.randomUUID();
+    const filename = safeFilename(parsed.data.filename);
+    const requestedHash = parsed.data.content_hash?.toLowerCase() ?? null;
+    const repository = repositoryFactory(context.env);
+    const respond = (attachment: StoredAttachment, status: 200 | 201) =>
+      context.json(
+        {
+          data: {
+            attachment_id: attachment.id,
+            upload_url: `/api/v1/uploads/${attachment.id}/content`,
+            expires_at: attachment.expiresAt,
+            allowed_headers: [
+              'Authorization',
+              'Content-Type',
+              'Content-Length',
+            ],
+          },
+          meta: { request_id: context.get('requestId') },
         },
-        meta: { request_id: context.get('requestId') },
-      },
-      201,
+        status,
+      );
+
+    // A client-generated UUID is a stable reservation key across a lost
+    // initialization response. Old clients can still omit it.
+    const replay = async () => {
+      if (!parsed.data.attachment_id) return null;
+      const existing = await repository.findById(id);
+      if (!existing) return null;
+      if (
+        existing.fileName !== filename ||
+        existing.declaredContentType !== contentType ||
+        existing.sizeBytes !== parsed.data.size_bytes ||
+        existing.contentHash !== requestedHash
+      ) {
+        throw new AppError(
+          409,
+          'RESERVATION_CONFLICT',
+          'Reservation ID already belongs to different file content.',
+        );
+      }
+      if (
+        existing.expiresAt <= now.toISOString() &&
+        existing.status !== 'linked'
+      ) {
+        throw new AppError(409, 'UPLOAD_EXPIRED', 'Attachment upload expired.');
+      }
+      if (
+        !['pending', 'uploaded', 'finalized', 'linked'].includes(
+          existing.status,
+        )
+      ) {
+        throw new AppError(
+          409,
+          'CONFLICT',
+          'Attachment reservation is unavailable.',
+        );
+      }
+      return existing;
+    };
+
+    const existing = await replay();
+    if (existing) return respond(existing, 200);
+
+    let created: StoredAttachment;
+    try {
+      created = await repository.create({
+        id,
+        r2Key: `private/${now.getUTCFullYear()}/${id}`,
+        fileName: filename,
+        declaredContentType: contentType,
+        sizeBytes: parsed.data.size_bytes,
+        contentHash: requestedHash,
+        expiresAt: new Date(now.getTime() + ttlSeconds * 1000).toISOString(),
+        createdAt: now.toISOString(),
+      });
+    } catch (error) {
+      // Concurrent identical initializes race on the primary key. Recheck
+      // identity rather than creating another reservation.
+      const raced = await replay();
+      if (raced) return respond(raced, 200);
+      throw error;
+    }
+
+    return respond(created, 201);
+  });
+
+  // Reconcile unknown PUT/finalize outcomes without repeating irreversible stages.
+  // This is private owner/capture-token metadata, never the R2 object key.
+  router.get('/uploads/:id/status', async (context) => {
+    const attachment = await repositoryFactory(context.env).findById(
+      context.req.param('id'),
     );
+    if (!attachment)
+      throw new AppError(404, 'NOT_FOUND', 'Attachment not found.');
+    return context.json({
+      data: {
+        attachment_id: attachment.id,
+        status: attachment.status,
+        expires_at: attachment.expiresAt,
+        checksum: attachment.contentHash,
+        size_bytes: attachment.sizeBytes,
+        mime_type: attachment.declaredContentType,
+      },
+      meta: { request_id: context.get('requestId') },
+    });
   });
 
   router.put('/uploads/:id/content', async (context) => {

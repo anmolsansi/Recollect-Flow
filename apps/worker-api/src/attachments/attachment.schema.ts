@@ -6,6 +6,8 @@ const sha256Schema = z
 
 export const AttachmentInitInputSchema = z
   .object({
+    // Optional caller-generated UUID makes initialization replay-safe after a lost reply.
+    attachment_id: z.string().uuid().optional(),
     filename: z.string().min(1).max(255),
     mime_type: z.string().min(1).max(255),
     size_bytes: z.number().int().min(1),

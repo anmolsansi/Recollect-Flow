@@ -31,6 +31,7 @@ import {
 } from './item-actions';
 import { sourceStatusMessage, visibleSourceCoverage } from './source-recovery';
 import { CaptureForm } from './CaptureForm';
+import { FileCaptureForm } from './FileCaptureForm';
 import { forgetCaptureRecovery } from './capture-recovery';
 import './index.css';
 
@@ -1178,6 +1179,7 @@ function Layout() {
       <Routes>
         <Route path="/" element={<Inbox />} />
         <Route path="/capture" element={<CaptureForm />} />
+        <Route path="/capture/file" element={<FileCaptureForm />} />
         <Route path="/items/:id" element={<ItemDetail />} />
       </Routes>
     </div>

@@ -286,6 +286,169 @@ async function createAdminSessionCookie(
   return setCookie!.split(';', 1)[0]!;
 }
 
+describe('BG-18 stable initialization identity', () => {
+  it('returns the same reserved attachment after the init response was lost', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const id = 'a224af4c-6f6a-4f58-84bf-18b49d8aa062';
+    const body = {
+      attachment_id: id,
+      filename: 'resume.pdf',
+      mime_type: 'application/pdf',
+      size_bytes: 8,
+      content_hash: 'a'.repeat(64),
+      source_type: 'file',
+    };
+    const first = await initialize(app, env, body);
+    expect(first.response.status).toBe(201);
+    expect(first.body.data.attachment_id).toBe(id);
+    const replay = await initialize(app, env, body);
+    expect(replay.response.status).toBe(200);
+    expect(replay.body.data.attachment_id).toBe(id);
+    expect(repository.attachments.size).toBe(1);
+
+    const conflict = await initialize(app, env, {
+      ...body,
+      filename: 'different.pdf',
+    });
+    expect(conflict.response.status).toBe(409);
+    expect(repository.attachments.size).toBe(1);
+  });
+});
+
+describe('BG-18 browser upload policy and recovery status', () => {
+  it('requires owner authorization for upload config and status', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const none = await app.request('/api/v1/uploads/config', {}, env);
+    expect(none.status).toBe(401);
+    const policy = await app.request(
+      '/api/v1/uploads/config',
+      {
+        headers: { Authorization: 'Bearer capture-secret' },
+      },
+      env,
+    );
+    expect(policy.status).toBe(200);
+    expect(
+      (
+        await policy.json<{
+          data: { max_size_bytes: number; allowed_mime_types: string[] };
+        }>()
+      ).data,
+    ).toMatchObject({ max_size_bytes: 25_000_000 });
+    const init = await initialize(app, env, {
+      filename: 'resume.pdf',
+      mime_type: 'application/pdf',
+      size_bytes: 8,
+      source_type: 'file',
+    });
+    const id = init.body.data.attachment_id;
+    expect(
+      (await app.request('/api/v1/uploads/' + id + '/status', {}, env)).status,
+    ).toBe(401);
+    const status = await app.request(
+      '/api/v1/uploads/' + id + '/status',
+      {
+        headers: { Authorization: 'Bearer capture-secret' },
+      },
+      env,
+    );
+    expect(status.status).toBe(200);
+    const data = (
+      await status.json<{
+        data: { status: string; size_bytes: number; mime_type: string };
+      }>()
+    ).data;
+    expect(data).toMatchObject({
+      status: 'pending',
+      size_bytes: 8,
+      mime_type: 'application/pdf',
+    });
+    expect(JSON.stringify(data)).not.toContain('private/');
+    expect(
+      (
+        await app.request(
+          '/api/v1/uploads/not-found/status',
+          {
+            headers: { Authorization: 'Bearer capture-secret' },
+          },
+          env,
+        )
+      ).status,
+    ).toBe(404);
+  });
+
+  it('reports uploaded and finalized states after lost client responses', async () => {
+    const repository = new MemoryAttachmentRepository();
+    const r2 = memoryBucket();
+    const env = testEnv(r2.bucket);
+    const app = createApp(unusedCaptureRepository, () => repository);
+    const bytes = new TextEncoder().encode('%PDF-1.7\n').buffer;
+    const { body } = await initialize(app, env, {
+      filename: 'resume.pdf',
+      mime_type: 'application/pdf',
+      size_bytes: bytes.byteLength,
+      source_type: 'file',
+    });
+    const id = body.data.attachment_id;
+    const status = () =>
+      app.request(
+        '/api/v1/uploads/' + id + '/status',
+        {
+          headers: { Authorization: 'Bearer capture-secret' },
+        },
+        env,
+      );
+    expect(
+      (await (await status()).json<{ data: { status: string } }>()).data.status,
+    ).toBe('pending');
+    expect(
+      (
+        await app.request(
+          '/api/v1/uploads/' + id + '/content',
+          {
+            method: 'PUT',
+            headers: {
+              Authorization: 'Bearer capture-secret',
+              'Content-Type': 'application/pdf',
+              'Content-Length': String(bytes.byteLength),
+            },
+            body: bytes,
+          },
+          env,
+        )
+      ).status,
+    ).toBe(200);
+    expect(
+      (await (await status()).json<{ data: { status: string } }>()).data.status,
+    ).toBe('uploaded');
+    expect(
+      (
+        await app.request(
+          '/api/v1/uploads/' + id + '/finalize',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer capture-secret',
+              'Content-Type': 'application/json',
+            },
+            body: '{}',
+          },
+          env,
+        )
+      ).status,
+    ).toBe(200);
+    expect(
+      (await (await status()).json<{ data: { status: string } }>()).data.status,
+    ).toBe('finalized');
+  });
+});
+
 describe('private attachment lifecycle', () => {
   it('uploads, finalizes, and downloads an authorized PDF', async () => {
     const repository = new MemoryAttachmentRepository();

@@ -2245,6 +2245,56 @@ pretending every stage is one atomic POST hides the failures the owner will see.
 on capture, expired upload, bad signature, over-limit file and repeated retry.
 Exactly one canonical item and intended linked object remain after successful replay.
 
+### BG-18 implementation reference (PR #78, validation pending)
+
+The existing server `POST /api/v1/uploads/init`,
+`PUT /api/v1/uploads/:id/content`, `POST /api/v1/uploads/:id/finalize`,
+`POST /api/v1/captures` and attachment download routes remain authoritative.
+BG-18 adds authenticated `GET /api/v1/uploads/config` for the deployed size
+ceiling and allowed media types and `GET /api/v1/uploads/:id/status` for
+pending/uploaded/finalized/linked state, expiry and checksum. Neither route
+reveals object-storage keys. Existing signed admin sessions and same-origin
+cookie write validation remain enforced. No migration is required.
+
+The new `apps/web/src/file-upload.ts` holds the browser admission, SHA-256,
+upload state machine, confirmation and retry rules. The
+`apps/web/src/FileCaptureForm.tsx` page at `/capture/file` exposes one-file
+selection, reason, category, privacy, stage and recovery actions. Browser
+metadata-only recovery is implemented through
+`apps/web/src/capture-recovery.ts`; the original `File` bytes never enter
+IndexedDB. A screenshot or text URL cannot silently stand in for the original
+attachment. Authenticated owner and capture-token requests retain the existing
+permissions and Origin policy. Aborted or lost responses are not Saved.
+
+New browser capture operations preserve `idempotency_key`, `captured_at`,
+reason and privacy throughout all stages. `GET /uploads/:id/status` prevents
+repeating a confirmed upload or finalize stage after a lost response. The
+browser only transfers again when the server confirms `pending`, the upload
+is unexpired, and the owner has supplied bytes matching the original SHA-256.
+If `finalized` or `linked`, the client can retry the same canonical capture
+payload without the original file. Expired reservations require a deliberate
+restart and continue using the original save identity. Each upload attempt
+owns a separate stable UUID, sent with initialization to replay an ambiguous
+response safely. Restart rotates only that upload UUID, not the original
+capture idempotency key or timestamp. Orphan cleanup remains
+server-owned. An unrecognized server status or checksum mismatch blocks
+automatic progress.
+
+`npm run browser:file-upload:test` runs isolated local Chrome, Worker/D1
+and R2 PDF and PNG upload/download hash acceptance, and unsupported-type
+rejection. The unit cases in `apps/web/src/file-upload.test.ts` also cover
+lost PUT and capture replies, an expired reservation and metadata mismatch.
+`apps/worker-api/test/attachment.test.ts` proves authorization and server
+status transitions. None of these proves a production deployment or physical
+iPhone delivery.
+
+**Verification status:** This section describes the proposed implementation
+on [BG-18 draft PR #78](https://github.com/anmolsansi/Recollect-Flow/pull/78).
+The canonical checklist and [issue #77](https://github.com/anmolsansi/Recollect-Flow/issues/77)
+must be reconciled against final successful exact-head CI, isolated Chrome
+acceptance and merged-main CI before BG-18 or BG-19 can be labeled complete.
+Record exact evidence in `verification/BG-18_BROWSER_UPLOAD.md`.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-18](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-18--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
