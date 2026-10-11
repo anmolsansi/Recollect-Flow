@@ -2410,7 +2410,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-17.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-17.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-17.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-17.100` **Gate:** Check the parent completion boundary and record whether BG-18 is unlocked.
+- [x] `BG-17.100` **Gate:** Check the parent completion boundary and record whether BG-18 is unlocked.
 
 ### BG-17 implementation reconciliation (PR #74)
 
@@ -2448,8 +2448,13 @@ later ticket and must prove PUT/finalize/linked-original operations separately.
 
 [BG-17 final scope/evidence record](verification/BG-17_FINAL_CLOSEOUT.md).
 [Implementation completion PR #75](https://github.com/anmolsansi/Recollect-Flow/pull/75).
-Step 100 remains unchecked until exact PR-head CI, merge, and
-merged-main CI are all confirmed. No production deployment is implied.
+Step 100 is verified for the BG-17 browser recovery scope: exact PR-head
+[CI #38119506197](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38119506197),
+merged [PR #75](https://github.com/anmolsansi/Recollect-Flow/pull/75)
+at `9f8864d12be08df4db02ab7638be2391bb28c7ea`, and merged-main
+[CI #38119715846](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38119715846)
+all passed. BG-18's browser file picker, PUT/finalize and linked download
+are not complete or implied. No production deployment is implied.
 
 ## BG-18 — 100 executable microtasks
 
