@@ -158,7 +158,6 @@ try {
   );
   report('BG18-mobile-upload-layout');
 
-
   report('BG18-browser-acceptance', {
     status: 'passed',
     environment: 'isolated Chrome, Worker/D1 and R2',
