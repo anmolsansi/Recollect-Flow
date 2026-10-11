@@ -260,7 +260,7 @@ tracks **95/100** independently evidenced BG-22 source actions.
 **BG-22 remains incomplete and BG-23 remains blocked.** The five still
 unverified BG-22 source checks are URL acquired-phrase search (`.031`),
 screenshot OCR search (`.034`), PDF internal phrase search (`.035`),
-explicitly disabled Notion route (`.062`), and execution of the *same*
+explicitly disabled Notion route (`.062`), and execution of the _same_
 deferred enrichment job once its retry is eligible (`.068`).
 BG-21 is still 93/100 with seven remote/scope gates, including hosted HTTPS
 and actual release rollback/cache validation. This branch and local evidence
