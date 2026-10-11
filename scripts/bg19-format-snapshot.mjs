@@ -1,3 +1,4 @@
+/* global console */
 import { readFileSync } from 'node:fs';
 
 const files = [
@@ -13,6 +14,7 @@ const files = [
   'apps/web/src/follow-up-date.test.ts',
   'apps/web/src/follow-up-recovery.ts',
   'apps/web/src/index.css',
+  'scripts/verify-browser-follow-up.mjs',
 ];
 
 for (const path of files) {
