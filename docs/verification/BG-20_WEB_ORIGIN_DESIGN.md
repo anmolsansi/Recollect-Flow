@@ -138,3 +138,34 @@ Cloudflare's `ASSETS` binding is then used by the Worker entry on exact known br
 
 **Costs:** Worker-first only on API and known SPA routes avoids unnecessary Worker execution on every static asset. Check Cloudflare request quotas/cost during preview; preserve the project $0 policy. BG-20 does not authorize deploy, D1 migrations or new paid plans.
 
+## 7. Verification matrix, open evidence and freeze (BG-20.081–.090)
+
+| Scenario | Required check in BG-21 preview | Fail condition |
+| --- | --- | --- |
+| Same-origin request | Browser `location.origin`, `GET /` and `/api/v1/health` use the same scheme/host/port | API target is another host or session cookie missing |
+| Login cookie | `POST /api/v1/admin/session` with approved synthetic admin token, then `GET /api/v1/admin/session` | Cookie not host-only, HttpOnly, Secure on HTTPS or SameSite Strict |
+| Logged-out direct item link | `GET /items/<synthetic-id>` loads shell, AuthGuard prompts, URL retained | 404 shell or private item JSON rendered unauthenticated |
+| Authenticated deep-link refresh | Authenticate and refresh exact `/items/:id` | 404 from host or unexpected route rewrite |
+| Digest link | `renderDigest` with canonical URL produces `/items/<encoded-id>` | Link references localhost, preview or embeds credentials |
+| Session expiry/logout | Remove/expire cookie and revisit original item URL | Unauthorized API continues returning private data |
+| API JSON precedence | Navigate and fetch `/api/v1/not-a-route` | HTML 200, SPA shell body or non-JSON result |
+| Missing asset | Fetch/navigate `/assets/does-not-exist.js` | index.html 200, incorrect MIME or successful response |
+| Public/private isolation | Load HTML/assets without auth, then call item/content/export API without auth | Any private body downloadable via static origin |
+| Shortcuts | Existing bearer capture request remains authenticated and functional | 401 caused by cookie-only auth regression |
+| Cache behavior | Inspect response and CDN headers for HTML, hashed JS, item API, download | Shared cache on private response or stale shell |
+| Rollback | Rehearse release-version rollback in isolated preview | Mixed Worker/assets version, missing bundles or link breakage |
+
+**Actual BG-20 evidence:** Repository configuration, Web/Worker contract inspection, historical root-404 audit, documented production Worker URL, official Cloudflare docs and the reviewed request matrix here. The publicly available fetch tool could not reach the live Worker URL on October 11, 2026. No live TLS response, DNS dashboard record, secret inspection, screenshot, preview deploy, new CI run or physical phone test can be inferred from that failure.
+
+**Still operator-owned, not fabricated:** Confirm existing separate hosting, Cloudflare Worker account ownership/current routing, current `WEB_INBOX_BASE_URL` value, preview namespace/D1/R2 resources, and any production-change authorization. These checks are **release prerequisites for BG-21**, not grounds to claim production is already live.
+
+### Decision freeze
+
+- **Selected production browser origin:** `https://recollect-flow.recollectflow.workers.dev/`.
+- **Selected topology:** single Worker with static assets and `/api/v1` on one origin.
+- **Selected asset behavior:** Worker-first on API and approved client routes, explicit index.html delivery, no catchall SPA fallback for missing assets.
+- **Selected session behavior:** preserve same-origin host-only signed cookie, strict origin validation, and bearer Shortcut compatibility.
+- **Selected link behavior:** existing `WEB_INBOX_BASE_URL` produces encoded `/items/:id` URLs; preview and production never share digest destinations.
+- **Selected deployment boundary:** BG-21 implements and validates in isolated preview; production change needs explicit approval; BG-20 does not deploy.
+- **Architecture exception:** If the existing account cannot host assets under the documented Worker origin, reopen this ADR before choosing a split-origin setup.
+
