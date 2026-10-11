@@ -2,6 +2,8 @@ import {
   validateFileRecoveryReference,
   type FileRecoveryReference,
 } from './capture-file-recovery';
+import { validateFollowUp, type FollowUpDraft } from './capture-follow-up';
+import { clearPendingFollowUps } from './follow-up-recovery';
 import {
   CAPTURE_CATEGORIES,
   type CaptureDraft,
@@ -30,15 +32,17 @@ export interface CaptureOperation {
   lastError?: string;
   // Metadata only, never persisted original file bytes.
   attachment?: FileRecoveryReference;
+  followUp?: FollowUpDraft;
 }
 
-export function newCaptureOperation(payload: CapturePayload): CaptureOperation {
+export function newCaptureOperation(payload: CapturePayload, followUp?: FollowUpDraft): CaptureOperation {
   return {
     version: RECORD_VERSION,
     id: payload.idempotency_key,
     payload: structuredClone(payload),
     createdAt: new Date().toISOString(),
     stage: 'prepared',
+    ...(followUp ? { followUp: structuredClone(followUp) } : {}),
   };
 }
 
@@ -132,6 +136,13 @@ export function parseCaptureOperation(
     // Text operations may carry BG-17 metadata-only file recovery hints.
     return null;
   }
+  if (value.followUp !== undefined) {
+    if (!isObject(value.followUp) ||
+      typeof value.followUp.project !== 'string' ||
+      typeof value.followUp.reviewLocal !== 'string') return null;
+    const validation = validateFollowUp(value.followUp as unknown as FollowUpDraft);
+    if (validation.project || validation.review_at) return null;
+  }
   // Copy approved fields only. Unknown or obsolete fields never reach a subsequent request.
   const restoredPayload: CapturePayload = {
     idempotency_key: value.id,
@@ -170,6 +181,12 @@ export function parseCaptureOperation(
     ...(typeof value.lastError === 'string'
       ? { lastError: value.lastError.slice(0, 300) }
       : {}),
+    ...(value.followUp ? {
+      followUp: {
+        project: (value.followUp as Record<string, string>).project,
+        reviewLocal: (value.followUp as Record<string, string>).reviewLocal,
+      },
+    } : {}),
     ...(value.attachment
       ? {
           attachment: value.attachment as FileRecoveryReference,
@@ -373,6 +390,8 @@ export function parseSavedCaptureDraft(
     typeof draft.reason !== 'string' ||
     draft.reason.length > 2000 ||
     typeof draft.category !== 'string' ||
+    (draft.project !== undefined && typeof draft.project !== 'string') ||
+    (draft.reviewLocal !== undefined && typeof draft.reviewLocal !== 'string') ||
     (draft.category !== '' &&
       !CAPTURE_CATEGORIES.includes(
         draft.category as CaptureDraft['category'] &
@@ -380,6 +399,11 @@ export function parseSavedCaptureDraft(
       ))
   )
     return null;
+  const followUpValidation = validateFollowUp({
+    project: (draft.project as string | undefined) ?? '',
+    reviewLocal: (draft.reviewLocal as string | undefined) ?? '',
+  });
+  if (followUpValidation.project || followUpValidation.review_at) return null;
   return {
     mode: draft.mode as CaptureDraft['mode'],
     url: draft.url,
@@ -387,6 +411,8 @@ export function parseSavedCaptureDraft(
     reason: draft.reason,
     category: draft.category as CaptureDraft['category'],
     privacy: draft.privacy as CaptureDraft['privacy'],
+    project: (draft.project as string | undefined) ?? '',
+    reviewLocal: (draft.reviewLocal as string | undefined) ?? '',
   };
 }
 
@@ -405,6 +431,8 @@ export async function saveCaptureDraft(draft: CaptureDraft): Promise<void> {
       reason: draft.reason,
       category: draft.category,
       privacy: draft.privacy,
+      project: draft.project,
+      reviewLocal: draft.reviewLocal,
     },
   };
   if (
@@ -451,5 +479,6 @@ export async function clearCaptureDraft(): Promise<void> {
 export async function forgetCaptureRecovery(): Promise<void> {
   await clearCaptureOperations();
   await clearCaptureDraft();
+  clearPendingFollowUps();
   setRecoveryEnabled(false);
 }
