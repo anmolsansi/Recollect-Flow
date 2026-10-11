@@ -15,18 +15,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Temporary BG22 formatting transfer (must fail)
-        run: |
-          npx prettier --write docs/verification/BG-22_BROWSER_CREATION_ACCEPTANCE.md scripts/verify-browser-creation.mjs
-          echo 'BG22_DOC_B64_BEGIN'
-          base64 -w0 docs/verification/BG-22_BROWSER_CREATION_ACCEPTANCE.md
-          echo
-          echo 'BG22_DOC_B64_END'
-          echo 'BG22_SCRIPT_B64_BEGIN'
-          base64 -w0 scripts/verify-browser-creation.mjs
-          echo
-          echo 'BG22_SCRIPT_B64_END'
-          exit 1
       - run: npm run check
       - run: npm run release:package:test
       - run: npm run release:package
