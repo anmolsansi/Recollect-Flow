@@ -185,3 +185,27 @@ The BG-20 outcome is a documented production hosting decision: one concrete cano
 
 **Gate rule:** BG-20.100 may be marked complete only after the final design document and related documentation are on merged `main`, exact PR-head CI succeeds, merged-main CI succeeds, and the review record states that BG-21 is unlocked *for implementation only*. Missing actual production Web hosting, preview browser tests and physical phone tests are not BG-20 passes and remain explicitly under later work.
 
+## 9. Engineering decision log and open verification owners
+
+| Question | Decision or status | Owner / next gate |
+| --- | --- | --- |
+| Can Web and API share host? | Yes, chosen on documented Worker origin. | BG-21 builder implements and verifies Cloudflare routing |
+| Is DNS/certificate provisioning needed? | No new custom DNS for existing `workers.dev`; Cloudflare is TLS edge. | Operator verifies account/hostname currently controlled |
+| How to avoid HTML 200 for API errors? | Worker-first `/api` and `/api/*` to Hono, API JSON 404. | BG-21 route regression tests |
+| How to avoid HTML for missing hashed assets? | `not_found_handling = "none"` plus explicit UI allowlist. | BG-21 browser and HTTP tests |
+| Must API base change? | No. Keep `/api/v1` and cookie `credentials: include`. | BG-21 regression suite |
+| Are direct item links public data? | No. The HTML shell is public, item API requires authentication. | BG-21 auth and link tests |
+| Can stale/new Web and Worker deploy separately? | No. Single bundled version and rollback. | BG-21 release automation |
+| Is preview safely isolated today? | No remote preview isolation proven. | Operator supplies isolated D1/R2/secret plan before preview |
+| Is production Web confirmed online today? | No. Historical Worker root 404, direct read-only probes unavailable. | BG-21 production go/no-go after approval |
+| Are there blockers to a design decision? | No verified blocker to selecting this same-origin design. | Reopen ADR if Cloudflare ownership or host mapping differs |
+
+## 10. Review signoff template
+
+- Design review: verify this ADR against BG-20.001–.100 and current source.
+- Quality review: confirm all new documentation conforms to format/lint and cross-links resolve.
+- Security review: verify server authentication, cookies, origin and shared-cache boundaries are unchanged.
+- Repository review: confirm only BG-20 files changed and all microcommits trace issue #81.
+- Proof review: record PR-head CI, merge SHA and merged-main CI **only when observed**, never pre-fill evidence.
+- Closeout: update issue, canonical checklist and task status after final merged-main check, then unlock BG-21 development.
+
