@@ -2245,7 +2245,7 @@ pretending every stage is one atomic POST hides the failures the owner will see.
 on capture, expired upload, bad signature, over-limit file and repeated retry.
 Exactly one canonical item and intended linked object remain after successful replay.
 
-### BG-18 implementation reference (PR #78, validation pending)
+### BG-18 implementation reference (completed on merged main)
 
 The existing server `POST /api/v1/uploads/init`,
 `PUT /api/v1/uploads/:id/content`, `POST /api/v1/uploads/:id/finalize`,
@@ -2288,12 +2288,14 @@ lost PUT and capture replies, an expired reservation and metadata mismatch.
 status transitions. None of these proves a production deployment or physical
 iPhone delivery.
 
-**Verification status:** This section describes the proposed implementation
-on [BG-18 draft PR #78](https://github.com/anmolsansi/Recollect-Flow/pull/78).
-The canonical checklist and [issue #77](https://github.com/anmolsansi/Recollect-Flow/issues/77)
-must be reconciled against final successful exact-head CI, isolated Chrome
-acceptance and merged-main CI before BG-18 or BG-19 can be labeled complete.
-Record exact evidence in `verification/BG-18_BROWSER_UPLOAD.md`.
+**Verification status:** BG-18 was merged in [PR #78](https://github.com/anmolsansi/Recollect-Flow/pull/78)
+as commit `3a1024609310c8b0b6169b6b886159801300e8df`. Both the
+[PR-head CI run](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38123657728)
+and [merged-main CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38123825547)
+passed, including isolated Chrome PDF/image byte-and-hash acceptance. All 100
+BG-18 microtasks are reconciled; BG-19 may begin. This does not authorize
+production deployment or claim physical-iPhone testing. See
+`verification/BG-18_BROWSER_UPLOAD.md` for detailed evidence.
 
 ### Execution checklist
 
