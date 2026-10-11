@@ -1,4 +1,4 @@
-/* global process, console, fetch */
+/* global process, console, fetch, URL, Buffer */
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
