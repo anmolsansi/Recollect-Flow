@@ -142,7 +142,7 @@ describe('BG-17 recovery record contract', () => {
       parseCaptureOperation(
         {
           ...operation,
-          attachment: { name: 'x.pdf', byteLength: 9, sha256: 'bad' },
+          attachment: { name: 'x.pdf', byteLength: 9, sha256: 'bad', mimeType: 'application/pdf', stage: 'selected' },
         },
         now,
       ),
@@ -151,7 +151,7 @@ describe('BG-17 recovery record contract', () => {
       parseCaptureOperation(
         {
           ...operation,
-          attachment: { name: 'x.pdf', byteLength: 9, sha256: 'a'.repeat(64) },
+          attachment: { name: 'x.pdf', byteLength: 9, sha256: 'a'.repeat(64), mimeType: 'application/pdf', stage: 'selected' },
         },
         now,
       )?.attachment?.byteLength,
