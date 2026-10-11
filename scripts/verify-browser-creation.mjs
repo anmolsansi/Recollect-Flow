@@ -140,6 +140,9 @@ async function saveOriginal(fixture) {
   );
   const details = await itemDetails(id);
   assert.equal(details.item.source_type, fixture.sourceType);
+  assert.equal(details.item.user_note, 'BG22 ' + fixture.kind + ' ' + runId);
+  assert.equal(details.item.privacy_level, 'unknown');
+  assert.ok(details.item.processing_status, 'Processing state must be present');
   assert.equal(details.attachments.length, 1);
   const attachment = details.attachments[0];
   assert.equal(attachment.status, 'linked');
