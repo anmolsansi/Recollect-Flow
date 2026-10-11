@@ -169,3 +169,19 @@ Cloudflare's `ASSETS` binding is then used by the Worker entry on exact known br
 - **Selected deployment boundary:** BG-21 implements and validates in isolated preview; production change needs explicit approval; BG-20 does not deploy.
 - **Architecture exception:** If the existing account cannot host assets under the documented Worker origin, reopen this ADR before choosing a split-origin setup.
 
+## 8. Final design quality and failure review (BG-20.091–.100)
+
+### Acceptance boundary
+
+The BG-20 outcome is a documented production hosting decision: one concrete canonical origin, evidence-backed topology choice, exact routing, cookie/CSRF/credentials boundary, direct-link/digest flows, build/artifact ownership and rollback plan. The plan is reviewable without a production mutation. BG-21, BG-22 and later gates supply actual deployment, end-to-end and real-device proof. **BG-20 passing must never be reported as a working hosted Web UI.**
+
+**Failure review:** A misrouted `/api` path must retain Hono's JSON 404. A missing hashed asset must remain 404. A logged-out `/items/:id` URL may return the public shell but cannot return private item bytes. Unauthorized download/export stays denied. Stale versions, origin/cookie mismatch, unauthorized browser writes or lost D1/R2 bindings block BG-21. This proposal leaves all existing API routes, secrets and DB tables untouched.
+
+**Integrity review:** No sensitive data is moved to public assets; no CORS/cookie relaxation; no cross-origin proxy assumptions; no new database or queue; no production billing or migration changes. All repository edits in BG-20 are docs/tracking only. Any operational dashboard/hostname facts not available from source remain explicitly unverified.
+
+**Cleanup:** No remote resources or production fixtures were created. No temporary task-owned deployment requires cleanup.
+
+**Docs contract:** This evidence document complements a concise current-state explanation in `RECOLLECTFLOW_BUILD_GUIDE.md`, deployment runbook in `OPERATIONS.md`, and engineering/release gate notes. The canonical checklist and GitHub issue must reflect precisely reviewed work, not promised tests.
+
+**Gate rule:** BG-20.100 may be marked complete only after the final design document and related documentation are on merged `main`, exact PR-head CI succeeds, merged-main CI succeeds, and the review record states that BG-21 is unlocked *for implementation only*. Missing actual production Web hosting, preview browser tests and physical phone tests are not BG-20 passes and remain explicitly under later work.
+
