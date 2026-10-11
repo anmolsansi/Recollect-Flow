@@ -30,7 +30,7 @@ No API or D1 schema migration is introduced. No frontend token storage or cookie
 | `GET /api/v1/health`                         | Existing Hono app             | 200 JSON, private/no-store                         |
 | `GET/POST /api/v1/unknown`                   | Existing Hono not-found       | 404 JSON with `error.code=NOT_FOUND`, no-store     |
 | `GET /api/v1/items/:id`, attachments, export | Existing authenticated routes | No public static fallback; private/no-store        |
-| `GET /assets/<hashed>.js                     | css`                          | Worker → `ASSETS`                                  | Correct asset MIME and immutable public cache |
+| `GET /assets/<hashed>.js`, `.css`              | Worker → `ASSETS`          | 200 correct asset MIME, immutable cache            |
 | Missing bundle under `/assets/`              | Worker → `ASSETS`             | 404 text, no-store, never HTML fallback            |
 | `POST /capture` or `POST /items/:id`         | Worker path guard             | 405; no asset body, no mutation                    |
 | Unknown Web route or extra item segment      | Worker                        | 404, no HTML fallback                              |
@@ -67,11 +67,28 @@ The release manifest lives in generated `apps/web/dist/release-manifest.json` an
 | ------------------------------------------------- | --------------------------- | --------------------------------------------------- |
 | BG-20 prerequisite and decision                   | Verified on merged `main`   | PR #82 and merged-main CI from BG-20                |
 | Wrangler assets, routing, package code            | Implemented on BG-21 branch | CI validation required                              |
-| Node/Worker route and package tests               | Added                       | Passing run evidence required                       |
-| Built-asset Chrome/D1/R2 acceptance               | Added                       | CI execution evidence required                      |
+| Node/Worker route and package tests               | Verified in GitHub Actions  | Run #38137343234 passed on earlier head             |
+| Built-asset Chrome/D1/R2 acceptance               | Verified locally in CI      | Run #38139897478 tested login, reload and logout    |
 | Remote isolated HTTPS preview and `Secure` cookie | Not performed               | Requires separately authorized preview resources    |
 | Live production deployment or digest delivery     | Not performed               | BG-32 and separate authorization                    |
 | Physical iPhone proof                             | Not performed               | Later device acceptance gates                       |
-| Final PR-head and merged-main CI                  | Pending                     | Must link exact run and revision before closing #83 |
+| Exact-head and merged-main CI                     | Still pending final merge   | Earlier full green run #38137343234, prior SHA       |
 
 BG-21 remains **in progress** until all required checks have actual evidence. Do not mark BG-22 unblocked based only on this document or on a passing Vite development test.
+
+## Evidence reconciliation and remaining acceptance gates (October 11, 2026)
+
+A full GitHub Actions [CI run #38137343234](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38137343234) passed on earlier implementation SHA `ef54be89c470914589f68af4c83c5f2b6f4fb64e`. Subsequent targeted microcommits expanded bundled download-after-logout proof. The first CI attempt for SHA `d26784b3c52a9351cd9512e6880c71183ab8bf20`, [run #38139897478](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38139897478), passed formatting, all test suites, release packaging, Wrangler dry-run, local migrations, the complete BG-21 bundled Worker browser route matrix, signed session login, item deep-link reload, logout, PDF/PNG capture and byte-integrity checks, and download rejection after logout. That attempt failed later in the existing BG-19 browser follow-up suite with a generic CDP evaluation error; its retry must be checked rather than incorrectly counting the attempt as an entire green run.
+
+The canonical BG-21 checklist currently records **91/100** independently evidenced or reviewed steps. The following nine IDs remain unchecked, with explicit disposition:
+
+- **BG-21.040:** focused malformed authenticated API request in the bundled-asset preview not separately exercised. Existing API test coverage is not substituted without matching evidence.
+- **BG-21.044:** approved operator-specific SPA route does not exist in the current React app. Do not invent an operator view merely for checklist completion.
+- **BG-21.046:** browser History API back/forward traversal is not independently proven on the production-like bundled origin.
+- **BG-21.059:** remote deployment cache invalidation across actual Worker/Web release versions has not been rehearsed.
+- **BG-21.061 and BG-21.062:** actual Cloudflare HTTPS origin control and `Secure` cookie issuance need isolated real HTTPS preview evidence. `http://127.0.0.1` is insufficient.
+- **BG-21.065:** real HTTPS login through the deployed Worker/edge cannot be inferred from a local Worker test.
+- **BG-21.077:** old/new release asset compatibility and rollback are documented, not yet executed in isolated hosted preview.
+- **BG-21.080:** approved remote publication of the precise checked artifact is not yet performed. The authorized local build and `wrangler deploy --dry-run` alone do not deploy.
+
+**Gate result:** code implementation and local bundled test coverage are advanced, but BG-21 is **not fully accepted** until those specific checks are resolved or a documented architectural exception is approved, exact-head CI passes, and the release evidence is merged. BG-22 remains blocked. No actual production changes, live messages, secrets or remote D1/R2 operations have been performed by this work.
