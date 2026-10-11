@@ -33,44 +33,44 @@ export async function createBg21Preview({
   let worker;
   async function boot(unavailable) {
     if (worker) await stopService(worker);
-      worker = startService(
-        npx,
-        [
-          'wrangler',
-          'dev',
-          '--local',
-          ...(enableScheduled ? ['--test-scheduled'] : []),
-          '--port',
-          String(port),
-          '--persist-to',
-          persistDir,
-          '--var',
-          'ADMIN_TOKEN:' + adminToken,
-          '--var',
-          'CAPTURE_TOKEN:' + captureToken,
-          '--var',
-          'LOCAL_WORKER_TOKEN:bg21-local-only-' + randomUUID(),
-          '--var',
-          'NOTION_ACCESS_TOKEN:bg21-local-notion',
-          '--var',
-          'TELEGRAM_BOT_TOKEN:bg21-local-telegram',
-          '--var',
-          'TELEGRAM_CHAT_ID:bg21-local-chat',
-          '--var',
-          'MOCK_AI_ENABLED:' + (unavailable ? 'false' : 'true'),
-          '--var',
-          'AI_PROVIDERS_ENABLED:' + (unavailable ? '' : 'openrouter,cloudflare'),
-          '--var',
-          'AI_PROVIDER_IMPLEMENTATIONS:' +
-            (unavailable ? '{}' : '{"openrouter":"mock","cloudflare":"mock"}'),
-          '--var',
-          'DIGEST_AI_ENABLED:false',
-          '--var',
-          'WEB_INBOX_BASE_URL:' + origin,
-        ],
-        { cwd: rootDir },
-      );
-      await waitForHttp(origin + '/api/v1/health', 'BG-21 bundled Worker health');
+    worker = startService(
+      npx,
+      [
+        'wrangler',
+        'dev',
+        '--local',
+        ...(enableScheduled ? ['--test-scheduled'] : []),
+        '--port',
+        String(port),
+        '--persist-to',
+        persistDir,
+        '--var',
+        'ADMIN_TOKEN:' + adminToken,
+        '--var',
+        'CAPTURE_TOKEN:' + captureToken,
+        '--var',
+        'LOCAL_WORKER_TOKEN:bg21-local-only-' + randomUUID(),
+        '--var',
+        'NOTION_ACCESS_TOKEN:bg21-local-notion',
+        '--var',
+        'TELEGRAM_BOT_TOKEN:bg21-local-telegram',
+        '--var',
+        'TELEGRAM_CHAT_ID:bg21-local-chat',
+        '--var',
+        'MOCK_AI_ENABLED:' + (unavailable ? 'false' : 'true'),
+        '--var',
+        'AI_PROVIDERS_ENABLED:' + (unavailable ? '' : 'openrouter,cloudflare'),
+        '--var',
+        'AI_PROVIDER_IMPLEMENTATIONS:' +
+          (unavailable ? '{}' : '{"openrouter":"mock","cloudflare":"mock"}'),
+        '--var',
+        'DIGEST_AI_ENABLED:false',
+        '--var',
+        'WEB_INBOX_BASE_URL:' + origin,
+      ],
+      { cwd: rootDir },
+    );
+    await waitForHttp(origin + '/api/v1/health', 'BG-21 bundled Worker health');
     await waitForHttp(origin + '/', 'BG-21 bundled Web shell');
   }
   try {
