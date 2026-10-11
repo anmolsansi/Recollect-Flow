@@ -103,3 +103,88 @@ describe('BG-18 single-file admission and durable replay', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('BG-18 failure-boundary recovery', () => {
+  it('checks uploaded state after ambiguous PUT without a second transfer', async () => {
+    const source = await make();
+    const starting: CaptureOperation = {
+      ...source,
+      attachment: { ...source.attachment!, stage: 'initialized', attachmentId: id, expiresAt: beforeExpiry },
+    };
+    const paths: string[] = [];
+    vi.stubGlobal('fetch', vi.fn(async (path: string, init?: RequestInit) => {
+      paths.push((init?.method || 'GET') + ' ' + path);
+      if (path.endsWith('/status')) return wrapped({
+        attachment_id: id, status: 'uploaded', expires_at: beforeExpiry,
+        checksum: starting.attachment?.sha256, size_bytes: bytes.length, mime_type: 'application/pdf',
+      });
+      if (path.endsWith('/finalize')) return wrapped({
+        attachment_id: id, status: 'finalized', checksum: starting.attachment?.sha256,
+      });
+      if (path.endsWith('/captures')) return wrapped({
+        capture_id: 'stable', replayed: false, duplicate_of: null, processing_status: 'pending',
+      });
+      throw new Error('Unexpected request');
+    }));
+    let latest = starting;
+    expect((await runFileCapture(starting, null, async (next) => { latest = next; })).capture_id).toBe('stable');
+    expect(paths).not.toContain('PUT /api/v1/uploads/' + id + '/content');
+    expect(latest.payload.attachment_id).toBe(id);
+  });
+
+  it('replays an identical capture after response loss, avoiding a second item', async () => {
+    const source = await make();
+    const finalized: CaptureOperation = {
+      ...source, attachment: { ...source.attachment!, stage: 'finalized', attachmentId: id, expiresAt: beforeExpiry },
+      payload: { ...source.payload, attachment_id: id },
+    };
+    const requested: unknown[] = [];
+    vi.stubGlobal('fetch', vi.fn(async (path: string, init?: RequestInit) => {
+      if (path.endsWith('/status')) return wrapped({
+        attachment_id: id, status: 'linked', expires_at: beforeExpiry,
+        checksum: source.attachment?.sha256, size_bytes: bytes.length, mime_type: 'application/pdf',
+      });
+      if (path.endsWith('/captures')) {
+        requested.push(JSON.parse(init?.body as string));
+        return wrapped({ capture_id: 'already-created', replayed: true, duplicate_of: null, processing_status: 'complete' });
+      }
+      throw new Error('Unexpected request');
+    }));
+    const output = await runFileCapture(finalized, null, async () => {});
+    expect(output).toMatchObject({ capture_id: 'already-created', replayed: true });
+    expect(requested).toHaveLength(1);
+    expect(requested[0]).toMatchObject(finalized.payload);
+  });
+
+  it('does not silently reinitialize an expired original reservation', async () => {
+    const source = await make();
+    const starting: CaptureOperation = {
+      ...source, attachment: {
+        ...source.attachment!, stage: 'initialized', attachmentId: id,
+        expiresAt: '2020-01-01T00:00:00.000Z',
+      },
+    };
+    const requests: string[] = [];
+    vi.stubGlobal('fetch', vi.fn(async (path: string) => {
+      requests.push(path);
+      return wrapped({
+        attachment_id: id, status: 'pending', expires_at: '2020-01-01T00:00:00.000Z',
+        checksum: source.attachment?.sha256, size_bytes: bytes.length, mime_type: 'application/pdf',
+      });
+    }));
+    await expect(runFileCapture(starting, pdf(), async () => {})).rejects.toThrow('UPLOAD_EXPIRED');
+    expect(requests).toEqual(['/api/v1/uploads/' + id + '/status']);
+  });
+
+  it('rejects server checksum disagreement rather than uploading changed bytes', async () => {
+    const source = await make();
+    const starting: CaptureOperation = {
+      ...source, attachment: { ...source.attachment!, stage: 'uploaded', attachmentId: id, expiresAt: beforeExpiry },
+    };
+    vi.stubGlobal('fetch', vi.fn(async () => wrapped({
+      attachment_id: id, status: 'uploaded', expires_at: beforeExpiry,
+      checksum: 'f'.repeat(64), size_bytes: bytes.length, mime_type: 'application/pdf',
+    })));
+    await expect(runFileCapture(starting, null, async () => {})).rejects.toThrow('does not match');
+  });
+});
