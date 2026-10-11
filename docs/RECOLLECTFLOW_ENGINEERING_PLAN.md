@@ -102,6 +102,25 @@ passed Chrome/Worker/D1/R2 PDF and PNG round-trip byte-hash checks and
 existing regressions. BG-19 may start. No production deployment,
 remote migration or physical-device acceptance is included.
 
+## BG-19 versioned follow-up metadata (under review)
+
+BG-19 is tracked in [issue #79](https://github.com/anmolsansi/Recollect-Flow/issues/79)
+and [draft PR #80](https://github.com/anmolsansi/Recollect-Flow/pull/80).
+The capture request remains strict; after capture confirmation, browser clients
+read the canonical item and patch only requested nonconflicting project/review
+metadata with its current `edit_version`. Partial follow-up errors leave
+the original capture Saved and offer a metadata-only retry. Existing canonical
+duplicate metadata is never silently replaced. Item review-date rendering now
+converts ISO instants to device-local wall-clock components.
+
+Architecture boundary: browser-only follow-up helper and shared capture UI,
+existing Worker item PATCH route, no new database migrations, services or
+changed public capture contracts. Optional browser recovery is metadata-only,
+bounded, and cleared on logout. The
+[verification record](verification/BG-19_FOLLOW_UP_FIELDS.md)
+lists tests and rollout limits. Full CI/Chrome/merged-main verification is
+required before marking BG-20 unlocked. Production deployment is excluded.
+
 ## Deliverables
 
 Create:
