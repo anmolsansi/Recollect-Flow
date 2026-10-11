@@ -63,6 +63,10 @@ export function FileCaptureForm() {
   const [warning, setWarning] = useState('');
   const [loaded, setLoaded] = useState(false);
   const [durable] = useState(isRecoveryEnabled);
+  const savedHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (result) savedHeading.current?.focus();
+  }, [result]);
   const lock = useRef(false);
   const lastAttempts = useRef(new Map<string, number>());
   const controller = useRef<AbortController | null>(null);
@@ -394,7 +398,7 @@ export function FileCaptureForm() {
             ))}
         {result ? (
           <section role="status" aria-live="polite">
-            <h2>
+            <h2 ref={savedHeading} tabIndex={-1}>
               {result.replayed || result.duplicate_of
                 ? 'Already Saved'
                 : 'Saved'}
