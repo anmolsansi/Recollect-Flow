@@ -484,7 +484,10 @@ async function run() {
     );
     assert.ok(
       viewport.scrollWidth <= viewport.width + 8,
-      'Mobile horizontal overflow on ' + route + ': ' + JSON.stringify(viewport),
+      'Mobile horizontal overflow on ' +
+        route +
+        ': ' +
+        JSON.stringify(viewport),
     );
   }
   report('BG22-mobile-viewport-checks', { width: 390, routes: 4 });
