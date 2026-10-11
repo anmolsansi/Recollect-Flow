@@ -186,8 +186,13 @@ try {
       browser,
       `(async () => (await fetch("/api/v1/attachments/${verifiedPdfId}/content", { credentials: "include" })).status)()`,
     );
-    assert.ok([401, 403].includes(denied), 'Logout must revoke attachment access');
-    report('BG21-bundled-download-revoked-after-logout', { status: denied });
+    assert.ok(
+      [401, 403].includes(denied),
+      'Logout must revoke attachment access',
+    );
+    report('BG21-bundled-download-revoked-after-logout', {
+      status: denied,
+    });
   }
 
   report('BG18-browser-acceptance', {
