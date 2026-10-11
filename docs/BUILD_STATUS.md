@@ -248,12 +248,20 @@ now combines bundled Worker/Web browser acceptance for URL, pasted text,
 private note, PNG and PDF. It verifies original SHA-256, UI search/reopen,
 owner metadata persistence, duplicate events, fresh browser deep link,
 logout denial, lost-response recovery and a separately bundled BG-19
-follow-up recovery suite. [Local CI and proof matrix](verification/BG-22_BROWSER_CREATION_ACCEPTANCE.md)
-tracks the **61/100** independently evidenced source actions.
+follow-up recovery suite. A further bundled Chrome run now covers
+optional-AI-provider outage, raw source visibility, scoped search, file-upload
+401 and real reauthentication, one linked original, 390px mobile layout,
+console/network diagnostics and release-migration checks.
+[Full CI #38151337473](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38151337473)
+passed on the implementing code; the
+[proof matrix](verification/BG-22_BROWSER_CREATION_ACCEPTANCE.md)
+tracks **95/100** independently evidenced BG-22 source actions.
 
-**BG-22 remains incomplete and BG-23 remains blocked.** Unproven required
-stories include acquired URL phrase, OCR/PDF internal text search, actual
-optional-provider outage and upload-expired-session recovery, hosted
-HTTPS acceptance, rollback/cache invalidation and the BG-21
-prerequisite. This branch and test evidence do not authorize any
-production deployment, remote migration, secret change or message.
+**BG-22 remains incomplete and BG-23 remains blocked.** The five still
+unverified BG-22 source checks are URL acquired-phrase search (`.031`),
+screenshot OCR search (`.034`), PDF internal phrase search (`.035`),
+explicitly disabled Notion route (`.062`), and execution of the *same*
+deferred enrichment job once its retry is eligible (`.068`).
+BG-21 is still 93/100 with seven remote/scope gates, including hosted HTTPS
+and actual release rollback/cache validation. This branch and local evidence
+do not authorize production deployment, remote migrations, secrets or messages.
