@@ -24,8 +24,8 @@ const wrapped = (data: unknown, status = 200) =>
     headers: { 'Content-Type': 'application/json' },
   });
 const beforeExpiry = '2028-01-01T00:00:00.000Z';
-const make = async () =>
-  prepareFileOperation(
+const make = async () => {
+  const operation = prepareFileOperation(
     pdf(),
     await hashOriginalFile(pdf()),
     'Keep source',
@@ -33,6 +33,11 @@ const make = async () =>
     '',
     id,
   );
+  return {
+    ...operation,
+    attachment: { ...operation.attachment!, reservationKey: id },
+  };
+};
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -83,6 +88,8 @@ describe('BG-18 single-file admission and durable replay', () => {
     expect(reset.payload.captured_at).toBe(operation.payload.captured_at);
     expect(reset.attachment?.stage).toBe('selected');
     expect(reset.attachment?.attachmentId).toBeUndefined();
+    expect(reset.attachment?.reservationKey).not.toBe(id);
+    expect(reset.id).toBe(operation.id);
   });
 
   it('uploads original bytes, finalizes, then links exactly one canonical item', async () => {
