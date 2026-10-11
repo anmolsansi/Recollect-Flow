@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { createBg21Preview } from './bg21-preview-runtime.mjs';
+import { waitUntil } from './browser-cdp.mjs';
 import {
   openBrowser,
   navigate,
@@ -114,7 +115,22 @@ try {
     'authenticated item detail from direct link',
   );
   assert.equal(await evaluate(browser, 'location.pathname'), directLink);
-  await navigate(browser, runtime.webOrigin + directLink);
+  const itemApiPath = '/api/v1/items/' + saved.capture_id;
+  const responsesBeforeReload = browser.responses.filter(
+    (entry) => entry.path === itemApiPath && entry.status === 200,
+  ).length;
+  await browser.client.send(
+    'Page.reload',
+    { ignoreCache: true },
+    browser.sessionId,
+  );
+  await waitUntil(
+    () =>
+      browser.responses.filter(
+        (entry) => entry.path === itemApiPath && entry.status === 200,
+      ).length > responsesBeforeReload,
+    { timeoutMs: 20_000, description: 'new authenticated item fetch after hard reload' },
+  );
   await waitFor(
     browser,
     'Boolean([...document.querySelectorAll("textarea[readonly]")].some(t => t.value.includes("BG21 bundled app fixture")))',
