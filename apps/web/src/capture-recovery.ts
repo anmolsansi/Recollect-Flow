@@ -148,6 +148,12 @@ export function parseCaptureOperation(
   };
 }
 
+/** A user-initiated retry cannot spin in a tight loop. No automatic retries. */
+export const MIN_RETRY_INTERVAL_MS = 1_500;
+export function canRetryCapture(lastAttemptAt: number | undefined, now = Date.now()): boolean {
+  return lastAttemptAt === undefined || now - lastAttemptAt >= MIN_RETRY_INTERVAL_MS;
+}
+
 export function ensureRecoveryBudget(
   existing: CaptureOperation[],
   next: CaptureOperation,
