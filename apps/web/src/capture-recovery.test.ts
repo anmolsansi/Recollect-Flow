@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  MIN_RETRY_INTERVAL_MS,
   RECOVERY_MAX_BYTES,
+  canRetryCapture,
   RECOVERY_TTL_MS,
   ensureRecoveryBudget,
   newCaptureOperation,
@@ -21,6 +23,12 @@ function createOperation(key = '01234567-89ab-4cde-8f01-234567890abc') {
 }
 
 describe('BG-17 recovery record contract', () => {
+  it('bounds rapid manual retry without background activity', () => {
+    expect(canRetryCapture(undefined, now)).toBe(true);
+    expect(canRetryCapture(now, now + MIN_RETRY_INTERVAL_MS - 1)).toBe(false);
+    expect(canRetryCapture(now, now + MIN_RETRY_INTERVAL_MS)).toBe(true);
+  });
+
   it('preserves immutable wire payload, original captured_at, privacy and key', () => {
     const operation = createOperation();
     const restored = parseCaptureOperation(operation, now + 500);
