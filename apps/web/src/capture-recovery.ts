@@ -1,3 +1,4 @@
+import { validateFileRecoveryReference, type FileRecoveryReference } from './capture-file-recovery';
 import {
   CAPTURE_CATEGORIES,
   type CaptureDraft,
@@ -24,13 +25,8 @@ export interface CaptureOperation {
   createdAt: string;
   stage: CaptureStage;
   lastError?: string;
-  // BG-18 will add finalized upload references. Never persist original file bytes here.
-  attachment?: {
-    name: string;
-    byteLength: number;
-    sha256: string;
-    attachmentId?: string;
-  };
+  // Metadata only, never persisted original file bytes.
+  attachment?: FileRecoveryReference;
 }
 
 export function newCaptureOperation(payload: CapturePayload): CaptureOperation {
@@ -108,19 +104,8 @@ export function parseCaptureOperation(
     !['prepared', 'uncertain', 'auth_required'].includes(String(value.stage))
   )
     return null;
-  if (value.attachment !== undefined) {
-    const f = value.attachment;
-    if (
-      !isObject(f) ||
-      typeof f.name !== 'string' ||
-      typeof f.sha256 !== 'string' ||
-      !/^[0-9a-f]{64}$/i.test(f.sha256) ||
-      !Number.isSafeInteger(f.byteLength) ||
-      (f.byteLength as number) < 0 ||
-      (f.attachmentId !== undefined && typeof f.attachmentId !== 'string')
-    )
-      return null;
-  }
+  if (value.attachment !== undefined &&
+      !validateFileRecoveryReference(value.attachment)) return null;
   // Copy approved fields only. Unknown or obsolete fields never reach a subsequent request.
   const restoredPayload: CapturePayload = {
     idempotency_key: value.id,
@@ -157,7 +142,7 @@ export function parseCaptureOperation(
     ...(value.attachment
       ? {
           attachment:
-            value.attachment as unknown as CaptureOperation['attachment'],
+            value.attachment as FileRecoveryReference,
         }
       : {}),
   };
