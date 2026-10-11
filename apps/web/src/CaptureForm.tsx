@@ -1,6 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ApiError, fetchApi } from './api';
+import { FollowUpFields, SavedFollowUp } from './CaptureFollowUp';
+import {
+  emptyFollowUp,
+  hasFollowUp,
+  type FollowUpDraft,
+} from './capture-follow-up';
+import {
+  listPendingFollowUps,
+  savePendingFollowUp,
+  type PendingFollowUp,
+} from './follow-up-recovery';
 import {
   CAPTURE_CATEGORIES,
   buildCapturePayload,
@@ -46,6 +57,11 @@ export function CaptureForm() {
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState('');
   const [result, setResult] = useState<CaptureResult | null>(null);
+  const [completedFollowUp, setCompletedFollowUp] =
+    useState<FollowUpDraft>(emptyFollowUp);
+  const [recoveredFollowUps, setRecoveredFollowUps] = useState<
+    PendingFollowUp[]
+  >([]);
   const [pending, setPending] = useState<CaptureOperation | null>(null);
   const [queue, setQueue] = useState<CaptureOperation[]>([]);
   const [durable, setDurable] = useState(false);
@@ -56,6 +72,7 @@ export function CaptureForm() {
     let alive = true;
     const enabled = isRecoveryEnabled();
     setDurable(enabled);
+    if (enabled) setRecoveredFollowUps(listPendingFollowUps());
     if (!enabled) {
       setLoaded(true);
       return () => {
@@ -150,6 +167,7 @@ export function CaptureForm() {
     } else {
       try {
         await forgetCaptureRecovery();
+        setRecoveredFollowUps([]);
         setDurable(false);
       } catch (error) {
         setStorageWarning(
@@ -188,6 +206,29 @@ export function CaptureForm() {
         method: 'POST',
         body: JSON.stringify(operation.payload),
       });
+      if (
+        operation.followUp &&
+        hasFollowUp(operation.followUp) &&
+        durable &&
+        operation.payload.privacy_level !== 'sensitive'
+      ) {
+        try {
+          savePendingFollowUp({
+            captureId: response.capture_id,
+            duplicateOf: response.duplicate_of,
+            followUp: operation.followUp,
+            createdAt: new Date().toISOString(),
+          });
+        } catch (cause) {
+          setStorageWarning(
+            'Saved, but follow-up recovery was not retained: ' +
+              (cause instanceof Error
+                ? cause.message
+                : 'Browser storage failed.'),
+          );
+        }
+      }
+      setCompletedFollowUp(operation.followUp ?? emptyFollowUp());
       setResult(response);
       lastAttempts.current.delete(operation.id);
       setPending(null);
@@ -216,7 +257,12 @@ export function CaptureForm() {
     } catch (error) {
       if (error instanceof ApiError && error.status === 422 && error.details) {
         setErrors(error.details);
-        if (!fromQueue) setDraft(captureDraftFromPayload(operation.payload));
+        if (!fromQueue)
+          setDraft({
+            ...captureDraftFromPayload(operation.payload),
+            project: operation.followUp?.project ?? '',
+            reviewLocal: operation.followUp?.reviewLocal ?? '',
+          });
         setPending(null);
         setQueue((items) => items.filter((item) => item.id !== operation.id));
         if (durable) {
@@ -292,6 +338,10 @@ export function CaptureForm() {
   const lastAttempts = useRef(new Map<string, number>());
   const lock = useRef(false);
   const form = useRef<HTMLFormElement>(null);
+  const savedHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (result) savedHeading.current?.focus();
+  }, [result]);
 
   function change<K extends keyof CaptureDraft>(
     field: K,
@@ -335,10 +385,16 @@ export function CaptureForm() {
       new Date().toISOString(),
       '0.0.0',
     );
-    await retry(newCaptureOperation(payload));
+    await retry(
+      newCaptureOperation(payload, {
+        project: draft.project,
+        reviewLocal: draft.reviewLocal,
+      }),
+    );
   }
 
   function reset() {
+    setCompletedFollowUp(emptyFollowUp());
     setResult(null);
     setPending(null);
     setErrors({});
@@ -430,9 +486,27 @@ export function CaptureForm() {
           </div>
         )}
       </section>
+      {durable &&
+        recoveredFollowUps
+          .filter((entry) => entry.captureId !== result?.capture_id)
+          .map((entry) => (
+            <section
+              key={entry.captureId}
+              className="card capture-recovery-controls"
+            >
+              <h2>Saved item awaiting follow-up</h2>
+              <SavedFollowUp
+                captureId={entry.captureId}
+                duplicateOf={entry.duplicateOf}
+                followUp={entry.followUp}
+                autoApply={false}
+                onResolved={() => setRecoveredFollowUps(listPendingFollowUps())}
+              />
+            </section>
+          ))}
       {result ? (
         <section className="card" aria-live="polite" role="status">
-          <h2>
+          <h2 ref={savedHeading} tabIndex={-1}>
             {result.replayed || result.duplicate_of ? 'Already Saved' : 'Saved'}
           </h2>
           <p>
@@ -440,6 +514,12 @@ export function CaptureForm() {
             continue separately.
           </p>
           <p>Processing status: {result.processing_status}</p>
+          <SavedFollowUp
+            captureId={result.capture_id}
+            duplicateOf={result.duplicate_of}
+            followUp={completedFollowUp}
+            onResolved={() => setRecoveredFollowUps(listPendingFollowUps())}
+          />
           {result.duplicate_of && (
             <p>
               This capture reused an existing item. Your capture event and
@@ -614,6 +694,23 @@ export function CaptureForm() {
               </small>
             </div>
           </div>
+          <FollowUpFields
+            value={{ project: draft.project, reviewLocal: draft.reviewLocal }}
+            disabled={busy || !!pending || !loaded}
+            errors={errors}
+            onChange={(next) => {
+              setDraft((previous) => ({
+                ...previous,
+                project: next.project,
+                reviewLocal: next.reviewLocal,
+              }));
+              setErrors((previous) => ({
+                ...previous,
+                project: '',
+                review_at: '',
+              }));
+            }}
+          />
           {failure && (
             <p role="alert" className="capture-error">
               {failure}

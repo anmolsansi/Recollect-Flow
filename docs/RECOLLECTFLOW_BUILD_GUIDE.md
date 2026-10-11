@@ -2303,6 +2303,30 @@ Follow the [100 microtasks for BG-18](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-18
 
 ## 25. BG-19 — Complete follow-up fields and accessible success/error behavior
 
+### Current BG-19 implementation (verification pending)
+
+The browser implementation is being developed on
+[`feat/bg-19-follow-up-fields`](https://github.com/anmolsansi/Recollect-Flow/pull/80)
+under [issue #79](https://github.com/anmolsansi/Recollect-Flow/issues/79).
+The current source keeps `POST /captures` strict, then reads the saved item
+and applies project/review metadata with `PATCH /items/:id` and its actual
+`edit_version`. New capture reasons remain event provenance. The project
+field is a nullable text label, not an identifier for a newly created project.
+Existing canonical duplicates and conflicting owner metadata are protected.
+A failed follow-up leaves the capture Saved and offers a metadata-only retry.
+
+The shared form component supports both link/text/note and single-file
+capture. Pending follow-up labels and dates are retained only with explicit
+browser recovery opt-in; the browser does not store original file bytes or
+credentials. Log out and recovery-off clear the pending metadata. Review
+instants convert to local wall-clock values in both the capture form and item
+editor, and invalid/nonexistent/ambiguous local times are rejected.
+
+[Detailed BG-19 implementation and verification record](verification/BG-19_FOLLOW_UP_FIELDS.md)
+describes API contracts, source locations, recovery and failure behavior.
+BG-19 is **not complete** until full CI, isolated browser acceptance and
+merged-main checks pass. No production deployment or physical-iPhone claim.
+
 **What and why.** The mobile specification asks for project and review date, but
 those are not fields in the current capture schema. Adding them to a strict capture
 payload would cause rejection.

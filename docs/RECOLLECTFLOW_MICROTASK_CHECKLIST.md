@@ -2604,120 +2604,120 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-19 / 01 — Establish task context
 
-- [ ] `BG-19.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-19.002` **Dependency:** Verify BG-18's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-19.003` **Baseline:** Record the actual checkout or release candidate used for BG-19.
-- [ ] `BG-19.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-19.005` **Evidence:** Check whether existing evidence already satisfies any BG-19 step; reference it instead of manufacturing work.
-- [ ] `BG-19.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-19.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-19.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-19.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-19.010` **Tracking:** Open a BG-19 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-19.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-19.002` **Dependency:** Verify BG-18's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-19.003` **Baseline:** Record the actual checkout or release candidate used for BG-19.
+- [x] `BG-19.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-19.005` **Evidence:** Check whether existing evidence already satisfies any BG-19 step; reference it instead of manufacturing work.
+- [x] `BG-19.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-19.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-19.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-19.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-19.010` **Tracking:** Open a BG-19 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-19 / 02 — Contract split
 
-- [ ] `BG-19.011` Read capture schema fields.
-- [ ] `BG-19.012` Read item update schema.
-- [ ] `BG-19.013` Identify project follow-up field.
-- [ ] `BG-19.014` Identify review_at field.
-- [ ] `BG-19.015` Identify required edit_version.
-- [ ] `BG-19.016` Keep capture payload strict.
-- [ ] `BG-19.017` Avoid unsupported capture title field.
-- [ ] `BG-19.018` Define follow-up operation boundary.
-- [ ] `BG-19.019` Preserve original capture success.
-- [ ] `BG-19.020` Record selected two-stage design.
+- [x] `BG-19.011` Read capture schema fields.
+- [x] `BG-19.012` Read item update schema.
+- [x] `BG-19.013` Identify project follow-up field.
+- [x] `BG-19.014` Identify review_at field.
+- [x] `BG-19.015` Identify required edit_version.
+- [x] `BG-19.016` Keep capture payload strict.
+- [x] `BG-19.017` Avoid unsupported capture title field.
+- [x] `BG-19.018` Define follow-up operation boundary.
+- [x] `BG-19.019` Preserve original capture success.
+- [x] `BG-19.020` Record selected two-stage design.
 
 #### BG-19 / 03 — Metadata updates
 
-- [ ] `BG-19.021` Wait for canonical capture acknowledgment.
-- [ ] `BG-19.022` Fetch authoritative item detail.
-- [ ] `BG-19.023` Read actual current version.
-- [ ] `BG-19.024` Build project update payload.
-- [ ] `BG-19.025` Build review date update payload.
-- [ ] `BG-19.026` Send versioned item update.
-- [ ] `BG-19.027` Read updated item response.
-- [ ] `BG-19.028` Verify metadata persisted.
-- [ ] `BG-19.029` Preserve owner overrides.
-- [ ] `BG-19.030` Link follow-up to captured item.
+- [x] `BG-19.021` Wait for canonical capture acknowledgment.
+- [x] `BG-19.022` Fetch authoritative item detail.
+- [x] `BG-19.023` Read actual current version.
+- [x] `BG-19.024` Build project update payload.
+- [x] `BG-19.025` Build review date update payload.
+- [x] `BG-19.026` Send versioned item update.
+- [x] `BG-19.027` Read updated item response.
+- [x] `BG-19.028` Verify metadata persisted.
+- [x] `BG-19.029` Preserve owner overrides.
+- [x] `BG-19.030` Link follow-up to captured item.
 
 #### BG-19 / 04 — Partial success
 
-- [ ] `BG-19.031` Handle follow-up validation failure.
-- [ ] `BG-19.032` Handle follow-up network failure.
-- [ ] `BG-19.033` Handle follow-up version conflict.
-- [ ] `BG-19.034` Show Saved plus metadata warning.
-- [ ] `BG-19.035` Retain metadata retry intent.
-- [ ] `BG-19.036` Avoid recapturing original content.
-- [ ] `BG-19.037` Refetch version before retry.
-- [ ] `BG-19.038` Preserve current owner changes.
-- [ ] `BG-19.039` Avoid automatic conflicting overwrite.
-- [ ] `BG-19.040` Clear warning after confirmed update.
+- [x] `BG-19.031` Handle follow-up validation failure.
+- [x] `BG-19.032` Handle follow-up network failure.
+- [x] `BG-19.033` Handle follow-up version conflict.
+- [x] `BG-19.034` Show Saved plus metadata warning.
+- [x] `BG-19.035` Retain metadata retry intent.
+- [x] `BG-19.036` Avoid recapturing original content.
+- [x] `BG-19.037` Refetch version before retry.
+- [x] `BG-19.038` Preserve current owner changes.
+- [x] `BG-19.039` Avoid automatic conflicting overwrite.
+- [x] `BG-19.040` Clear warning after confirmed update.
 
 #### BG-19 / 05 — Duplicate protection
 
-- [ ] `BG-19.041` Detect canonical duplicate response.
-- [ ] `BG-19.042` Fetch existing project value.
-- [ ] `BG-19.043` Fetch existing review date.
-- [ ] `BG-19.044` Preserve existing metadata by default.
-- [ ] `BG-19.045` Explain explicit edit action.
-- [ ] `BG-19.046` Avoid silent reminder replacement.
-- [ ] `BG-19.047` Preserve new share reason separately.
-- [ ] `BG-19.048` Handle conflicting duplicate edits.
-- [ ] `BG-19.049` Verify correct canonical target.
-- [ ] `BG-19.050` Record duplicate metadata behavior.
+- [x] `BG-19.041` Detect canonical duplicate response.
+- [x] `BG-19.042` Fetch existing project value.
+- [x] `BG-19.043` Fetch existing review date.
+- [x] `BG-19.044` Preserve existing metadata by default.
+- [x] `BG-19.045` Explain explicit edit action.
+- [x] `BG-19.046` Avoid silent reminder replacement.
+- [x] `BG-19.047` Preserve new share reason separately.
+- [x] `BG-19.048` Handle conflicting duplicate edits.
+- [x] `BG-19.049` Verify correct canonical target.
+- [x] `BG-19.050` Record duplicate metadata behavior.
 
 #### BG-19 / 06 — Time conversion
 
-- [ ] `BG-19.051` Read stored ISO instant.
-- [ ] `BG-19.052` Convert instant to local fields.
-- [ ] `BG-19.053` Avoid UTC string slicing.
-- [ ] `BG-19.054` Parse local datetime selection.
-- [ ] `BG-19.055` Convert selected instant to ISO.
-- [ ] `BG-19.056` Preserve timezone offset meaning.
-- [ ] `BG-19.057` Represent cleared date as null.
-- [ ] `BG-19.058` Reject invalid dates.
-- [ ] `BG-19.059` Test Asia/Kolkata round trip.
-- [ ] `BG-19.060` Test daylight-saving boundary timezone.
+- [x] `BG-19.051` Read stored ISO instant.
+- [x] `BG-19.052` Convert instant to local fields.
+- [x] `BG-19.053` Avoid UTC string slicing.
+- [x] `BG-19.054` Parse local datetime selection.
+- [x] `BG-19.055` Convert selected instant to ISO.
+- [x] `BG-19.056` Preserve timezone offset meaning.
+- [x] `BG-19.057` Represent cleared date as null.
+- [x] `BG-19.058` Reject invalid dates.
+- [x] `BG-19.059` Test Asia/Kolkata round trip.
+- [x] `BG-19.060` Test daylight-saving boundary timezone.
 
 #### BG-19 / 07 — Accessibility
 
-- [ ] `BG-19.061` Label project input.
-- [ ] `BG-19.062` Label review date input.
-- [ ] `BG-19.063` Explain optional follow-up nature.
-- [ ] `BG-19.064` Associate metadata errors.
-- [ ] `BG-19.065` Announce partial success.
-- [ ] `BG-19.066` Announce final metadata success.
-- [ ] `BG-19.067` Preserve focus after async update.
-- [ ] `BG-19.068` Ensure keyboard-only operation.
-- [ ] `BG-19.069` Keep date picker accessible.
-- [ ] `BG-19.070` Verify screen-reader status text.
+- [x] `BG-19.061` Label project input.
+- [x] `BG-19.062` Label review date input.
+- [x] `BG-19.063` Explain optional follow-up nature.
+- [x] `BG-19.064` Associate metadata errors.
+- [x] `BG-19.065` Announce partial success.
+- [x] `BG-19.066` Announce final metadata success.
+- [x] `BG-19.067` Preserve focus after async update.
+- [x] `BG-19.068` Ensure keyboard-only operation.
+- [x] `BG-19.069` Keep date picker accessible.
+- [x] `BG-19.070` Verify screen-reader status text.
 
 #### BG-19 / 08 — Responsive behavior
 
-- [ ] `BG-19.071` Test narrow phone viewport.
-- [ ] `BG-19.072` Keep primary action visible.
-- [ ] `BG-19.073` Wrap long source URLs.
-- [ ] `BG-19.074` Wrap long server errors.
-- [ ] `BG-19.075` Avoid horizontal form scrolling.
-- [ ] `BG-19.076` Retain draft after login refresh.
-- [ ] `BG-19.077` Keep metadata warning discoverable.
-- [ ] `BG-19.078` Keep navigation usable.
-- [ ] `BG-19.079` Test browser zoom.
-- [ ] `BG-19.080` Check loading layout stability.
+- [x] `BG-19.071` Test narrow phone viewport.
+- [x] `BG-19.072` Keep primary action visible.
+- [x] `BG-19.073` Wrap long source URLs.
+- [x] `BG-19.074` Wrap long server errors.
+- [x] `BG-19.075` Avoid horizontal form scrolling.
+- [x] `BG-19.076` Retain draft after login refresh.
+- [x] `BG-19.077` Keep metadata warning discoverable.
+- [x] `BG-19.078` Keep navigation usable.
+- [x] `BG-19.079` Test browser zoom.
+- [x] `BG-19.080` Check loading layout stability.
 
 #### BG-19 / 09 — End-to-end proof
 
-- [ ] `BG-19.081` Save note with project.
-- [ ] `BG-19.082` Save note with reminder.
-- [ ] `BG-19.083` Read stored reminder after reload.
-- [ ] `BG-19.084` Fail follow-up deliberately.
-- [ ] `BG-19.085` Retry metadata without duplicate capture.
-- [ ] `BG-19.086` Save duplicate with existing reminder.
-- [ ] `BG-19.087` Verify metadata remains protected.
-- [ ] `BG-19.088` Exercise timezone editor correction.
-- [ ] `BG-19.089` Exercise keyboard submission.
-- [ ] `BG-19.090` Record complete capture-follow-up story.
+- [x] `BG-19.081` Save note with project.
+- [x] `BG-19.082` Save note with reminder.
+- [x] `BG-19.083` Read stored reminder after reload.
+- [x] `BG-19.084` Fail follow-up deliberately.
+- [x] `BG-19.085` Retry metadata without duplicate capture.
+- [x] `BG-19.086` Save duplicate with existing reminder.
+- [x] `BG-19.087` Verify metadata remains protected.
+- [x] `BG-19.088` Exercise timezone editor correction.
+- [x] `BG-19.089` Exercise keyboard submission.
+- [x] `BG-19.090` Record complete capture-follow-up story.
 
 #### BG-19 / 10 — Verify and close this task
 

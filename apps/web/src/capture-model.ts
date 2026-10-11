@@ -1,4 +1,5 @@
 import { captureCategorySchema } from '@recollect/contracts';
+import { validateFollowUp } from './capture-follow-up';
 
 export const CAPTURE_CATEGORIES = captureCategorySchema.options;
 export type CaptureCategory = (typeof CAPTURE_CATEGORIES)[number];
@@ -12,6 +13,8 @@ export interface CaptureDraft {
   reason: string;
   category: '' | CaptureCategory;
   privacy: CapturePrivacy;
+  project: string;
+  reviewLocal: string;
 }
 
 export interface CapturePayload {
@@ -35,6 +38,8 @@ export const emptyCaptureDraft = (): CaptureDraft => ({
   reason: '',
   category: '',
   privacy: 'unknown',
+  project: '',
+  reviewLocal: '',
 });
 
 export function validateCapture(draft: CaptureDraft): Record<string, string> {
@@ -60,6 +65,12 @@ export function validateCapture(draft: CaptureDraft): Record<string, string> {
     errors.user_reason = 'Reason can be at most 2,000 characters.';
   if (draft.category && !CAPTURE_CATEGORIES.includes(draft.category))
     errors.quick_category = 'Select a valid category.';
+  const followUpErrors = validateFollowUp({
+    project: draft.project,
+    reviewLocal: draft.reviewLocal,
+  });
+  if (followUpErrors.project) errors.project = followUpErrors.project;
+  if (followUpErrors.review_at) errors.review_at = followUpErrors.review_at;
   return errors;
 }
 
@@ -102,5 +113,7 @@ export function captureDraftFromPayload(payload: CapturePayload): CaptureDraft {
     reason: payload.user_reason ?? '',
     category: payload.quick_category ?? '',
     privacy: payload.privacy_level,
+    project: '',
+    reviewLocal: '',
   };
 }
