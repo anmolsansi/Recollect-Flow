@@ -125,6 +125,22 @@ and merged-main
 passed. The BG-19 checklist is 100/100 and BG-20 is unlocked for development.
 Production deployment and device-specific acceptance remain excluded.
 
+## BG-20 production Web origin decision boundary
+
+BG-20 selects the existing documented production Worker origin,
+`https://recollect-flow.recollectflow.workers.dev/`, as the single Web/API
+origin. The [design record](verification/BG-20_WEB_ORIGIN_DESIGN.md) is the
+authoritative request map and rollback contract for BG-21. It documents
+the Cloudflare Workers static-asset design, strict API precedence,
+host-only cookie/CSRF assumptions, private download/export guards,
+direct item links and the `WEB_INBOX_BASE_URL` digest format.
+
+BG-20 performs no production/preview deployments. BG-21 must implement
+an assets binding and route dispatcher with a missing-asset 404 boundary,
+then prove actual Worker/Web browser behavior on isolated preview before
+production approval. Repository source evidence is not proof of current
+Cloudflare DNS, live TLS or any separate external Web deployment.
+
 ## Deliverables
 
 Create:
