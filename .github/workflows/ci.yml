@@ -15,7 +15,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run format:write && node scripts/bg19-format-snapshot.mjs
       - run: npm run check
       - run: npm run db:migrate:local
       - run: google-chrome --version
