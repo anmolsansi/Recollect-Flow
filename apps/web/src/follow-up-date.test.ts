@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { formatLocalReviewAt, parseLocalReviewAt } from './follow-up-date';
 
+const env = (globalThis as unknown as { process: { env: Record<string, string | undefined> } }).process.env;
+
 describe('BG-19 review time conversion', () => {
   it('returns null for cleared date and rejects malformed input', () => {
     expect(parseLocalReviewAt('')).toBeNull();
@@ -10,9 +12,9 @@ describe('BG-19 review time conversion', () => {
   });
 
   it('round-trips India morning to UTC without UTC digit slicing', () => {
-    const previous = process.env.TZ;
+    const previous = env.TZ;
     try {
-      process.env.TZ = 'Asia/Kolkata';
+      env.TZ = 'Asia/Kolkata';
       expect(parseLocalReviewAt('2026-10-11T09:00')).toBe(
         '2026-10-11T03:30:00.000Z',
       );
@@ -20,15 +22,15 @@ describe('BG-19 review time conversion', () => {
         '2026-10-11T09:00',
       );
     } finally {
-      if (previous === undefined) delete process.env.TZ;
-      else process.env.TZ = previous;
+      if (previous === undefined) delete env.TZ;
+      else env.TZ = previous;
     }
   });
 
   it('rejects both nonexistent and ambiguous New York DST clock times', () => {
-    const previous = process.env.TZ;
+    const previous = env.TZ;
     try {
-      process.env.TZ = 'America/New_York';
+      env.TZ = 'America/New_York';
       expect(() => parseLocalReviewAt('2026-03-08T02:30')).toThrow(
         /does not exist/,
       );
@@ -39,8 +41,8 @@ describe('BG-19 review time conversion', () => {
         '2026-11-01T08:30:00.000Z',
       );
     } finally {
-      if (previous === undefined) delete process.env.TZ;
-      else process.env.TZ = previous;
+      if (previous === undefined) delete env.TZ;
+      else env.TZ = previous;
     }
   });
 });
