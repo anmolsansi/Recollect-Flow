@@ -100,3 +100,37 @@ open. BG-21's nine outstanding steps also remain gating.
 ## Completion decision
 
 **NOT ACCEPTED / BG-23 BLOCKED.** The new bundled-browser acceptance test and full CI have passed locally, but this is not the required hosted release acceptance. BG-21 remains open, and hosted BG-22 acceptance plus the outstanding partial-failure scenarios require execution against an approved release candidate. Reconcile issue #85 and the source checklist only after validated proof, exact-head CI, merged-main CI and the predecessor gate.
+
+## Reconciled existing CI evidence
+
+The complete [packaged Worker CI run #38148456677](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38148456677)
+passed with the combined five-source browser matrix, bundled BG-19 follow-up
+metadata recovery, and bundled BG-17 lost-response and reauthentication
+recovery. The scripts used isolated local D1/R2 resources and disposable Chrome
+profiles. This run is local HTTP proof, **not** hosted Cloudflare acceptance.
+
+The verified existing actions are grouped by their actual proof boundaries:
+
+- `BG-22.011–.020`: release manifest and Worker/Web candidate,
+  isolated D1/R2, synthetic media, fresh unauthenticated Chrome, health,
+  asset routing, real persistence, and runtime version.
+- `BG-22.021–.028`: browser-created URL/text/note, PNG/PDF file picker,
+  logged canonical IDs, durable Saved state, and checked source types.
+- `BG-22.036`: all five exact saved items open in the browser.
+- `BG-22.041–.045`, `.048`: browser-downloaded original PNG/PDF checksums,
+  editable title, and hard reload.
+- `BG-22.051–.058`, `.060`: bundled browser recovery test injects an
+  actual dropped capture response after server commit, retains and retries
+  the same logical operation, and verifies its single canonical ID. The
+  combined test preserves a separate canonical duplicate reason event.
+  Bundled BG-19 acceptance confirms owner metadata isn't overwritten.
+- `BG-22.077`: the signed-out direct item route requires login.
+- `BG-22.083–.084`: Wrangler Worker dry-run and paired Web build in CI.
+- `BG-22.088–.090`: disposable process cleanup, this result matrix,
+  and unresolved production qualifications.
+
+The additional full-revision search, metadata persistence, browser-restart,
+remote HTTPS, provider outage, file-transfer interruption and image/PDF
+extraction tests remain distinct gates until their own exact-head proof
+passes. Do not infer image OCR or PDF text search from a successful file
+checksum or a search for the user-supplied filename/reason.
