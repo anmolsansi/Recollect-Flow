@@ -35,22 +35,40 @@
   [CI run #38121529004](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38121529004)
   **passed**, covering the preexisting complete quality/Chrome suites
   before the dedicated BG-18 browser script was added.
-- Subsequent CI runs with the BG-18 Chrome script initially exposed
-  formatting and lint errors. They are not evidence of acceptance.
+- Intermediate formatting, lint and browser-script failures were corrected
+  in subsequent microcommits. These failed runs are not acceptance evidence.
+- BG-18 commit `5c1ab391546e2a2620b166b7d4cfd86b09d8b875`:
+  [complete CI run #38122817050](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38122817050)
+  **passed** with unmodified formatting, lint, typecheck, Worker tests,
+  contracts, Web lint/build and Web tests. Logs confirm 188 Worker tests,
+  168 additional tests and 50 Web tests passed.
+- The same run's `npm run browser:file-upload:test` **passed** on
+  Chrome 154.0.8037.97 with an isolated Worker/D1/R2 instance:
+  a 51-byte PDF and 68-byte PNG each reached a single `linked` attachment,
+  then downloaded through the browser with identical SHA-256; an obvious
+  unsupported file was visibly rejected and the 390px viewport did not overflow.
+- `apps/web/src/file-upload.test.ts` has 13 passing tests covering
+  upload admission, checksum, original key, lost initialization response,
+  interrupted PUT/finalize, lost capture reply, expired upload restart,
+  server checksum mismatch and verified URL boundaries.
+- `apps/worker-api/test/attachment.test.ts` covers authenticated policy,
+  status transitions and deterministic UUID replay/conflict rejection.
+  Existing private attachment tests cover wrong-size and wrong-signature
+  rejections without persisting invalid objects.
 
 ## Required final checks
 
-- [ ] Full exact PR-head CI `npm run check` passes unmodified format,
+- [x] Full exact PR-head CI `npm run check` passes unmodified format,
       lint, typecheck, contracts, unit tests and Web build.
-- [ ] Isolated Chrome/Worker/D1/R2 `npm run browser:file-upload:test`
+- [x] Isolated Chrome/Worker/D1/R2 `npm run browser:file-upload:test`
       proves PDF/image original bytes and SHA-256 match after canonical linking.
-- [ ] Browser test rejects wrong type and server tests reject invalid
+- [x] Browser test rejects wrong type and server tests reject invalid
       signature/size while not claiming Saved.
-- [ ] Browser and unit tests prove uncertain PUT, finalize, lost capture
+- [x] Browser and unit tests prove uncertain PUT, finalize, lost capture
       response, repeated same-key retry, expired upload and authorization.
 - [ ] Reconcile canonical 100-step checklist and all 50 pairs in issue #77
       with exact evidence, recording any unsupported cases honestly.
 - [ ] Merge only with passing required CI, no bypass; verify merged-main CI
       and check final BG-18.100 only after that proof.
 
-**Current verdict:** Implementation candidate, not accepted or deployed.
+**Current verdict:** Exact source `5c1ab391` passed CI in an isolated test environment. Checklist reconciliation and merged-main CI remain required. No production or physical-device acceptance has occurred.
