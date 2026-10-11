@@ -105,7 +105,9 @@ For retries, `GET /uploads/:id/status` reconciles server-owned pending,
 uploaded, finalized and linked states. An ambiguous PUT is never blindly
 repeated after the server reports uploaded. A lost capture response replays
 the identical capture payload and key. Expired reservations require a user
-decision to restart with the same logical key and a new upload reservation.
+decision to restart with the same logical capture key and a new per-attempt
+reservation UUID. An initial POST retry reuses its reservation UUID, so a
+lost initialization response cannot silently create another object.
 Do not delete an attachment that might already have linked. Safe expiry
 cleanup remains server-owned.
 
