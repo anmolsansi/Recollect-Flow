@@ -49,7 +49,11 @@ async function note(value, project = '', reviewLocal = '', skipBegin = false) {
     browser,
     'document.querySelector("input[name=mode][value=note]").click()',
   );
-  await waitFor(browser, 'Boolean(document.querySelector(\'[name="shared_text"]\'))', 'follow-up note input rendered');
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'[name="shared_text"]\'))',
+    'follow-up note input rendered',
+  );
   await setValue('shared_text', value);
   if (project) await setValue('project', project);
   if (reviewLocal) await setValue('review_at', reviewLocal);
