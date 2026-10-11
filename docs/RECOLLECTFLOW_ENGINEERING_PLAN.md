@@ -135,10 +135,13 @@ the Cloudflare Workers static-asset design, strict API precedence,
 host-only cookie/CSRF assumptions, private download/export guards,
 direct item links and the `WEB_INBOX_BASE_URL` digest format.
 
-BG-20 performs no production/preview deployments. BG-21 must implement
-an assets binding and route dispatcher with a missing-asset 404 boundary,
-then prove actual Worker/Web browser behavior on isolated preview before
-production approval. Repository source evidence is not proof of current
+BG-20 performs no production/preview deployments. BG-21 implements
+an assets binding, API-first route dispatcher, hashed asset and missing-asset
+cache policy, and a fresh Worker/Web release manifest in [PR #84](https://github.com/anmolsansi/Recollect-Flow/pull/84).
+The [BG-21 verification record](verification/BG-21_WEB_HOSTING.md) defines
+production-like local Chrome/Worker evidence and separately gated remote HTTPS
+preview checks. Neither the implementation branch nor local evidence authorizes
+production promotion or proves remote preview isolation. Repository source evidence is not proof of current
 Cloudflare DNS, live TLS or any separate external Web deployment.
 
 ## Deliverables
