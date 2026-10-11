@@ -15,6 +15,14 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Temporary BG21_REMOTE_FORMAT diagnostic
+        run: |
+          npx prettier --write scripts/verify-remote-hosting.mjs
+          echo 'BG21_REMOTE_FORMAT_BEGIN'
+          base64 -w0 scripts/verify-remote-hosting.mjs
+          echo
+          echo 'BG21_REMOTE_FORMAT_END'
+          exit 1
       - run: npm run check
       - run: npm run release:package:test
       - run: npm run release:package
