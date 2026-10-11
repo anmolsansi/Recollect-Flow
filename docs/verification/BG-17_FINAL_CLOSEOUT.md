@@ -54,10 +54,10 @@ them with the existing Worker attachment routes.
 - Previous core implementation [PR #74](https://github.com/anmolsansi/Recollect-Flow/pull/74) merged in `0498ce3e5bb7c955948a0b676eca9c596fa92267`.
 - Core exact-head [CI #38088967812](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38088967812) and merged-main [CI #38089184155](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38089184155) both passed.
 - [PR #75](https://github.com/anmolsansi/Recollect-Flow/pull/75) adds file metadata policy, SHA matching/changed-file rejection, per-operation rate limit and Chrome/D1 cookie-expiration, signed-in recovery acceptance. Exact [PR-head CI #38119506197](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38119506197)
-passed. [PR #75](https://github.com/anmolsansi/Recollect-Flow/pull/75)
-merged to `main` as `9f8864d12be08df4db02ab7638be2391bb28c7ea`,
-and [merged-main CI #38119715846](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38119715846)
-also passed. Issue #73 records the final scope and conditional exceptions.
+  passed. [PR #75](https://github.com/anmolsansi/Recollect-Flow/pull/75)
+  merged to `main` as `9f8864d12be08df4db02ab7638be2391bb28c7ea`,
+  and [merged-main CI #38119715846](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38119715846)
+  also passed. Issue #73 records the final scope and conditional exceptions.
 - Focused `capture-file-recovery.test.ts`, `capture-recovery.test.ts` and `verify-browser-recovery.mjs` cover the boundaries above.
 - No production deployment, real private data, physical iPhone, genuine browser file upload or expired R2 upload was tested. Those remain separate release gates.
 
