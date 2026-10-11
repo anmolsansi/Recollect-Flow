@@ -179,10 +179,14 @@ try {
 
   // Prove real React Router Link navigation plus History API back/forward,
   // not only direct CDP navigation and a hard refresh.
-  await evaluate(browser, 'document.querySelector(\'a[href="/"]\').click()');
+  await evaluate(
+    browser,
+    'document.querySelector(\'a[href="/"]\').click()',
+  );
   await waitFor(
     browser,
-    'location.pathname === "/" && Boolean(document.querySelector(\'a[href="/capture"]\'))', 'SPA Inbox link',
+    'location.pathname === "/" && Boolean(document.querySelector(\'a[href="/capture"]\'))',
+    'SPA Inbox link',
   );
   await evaluate(
     browser,
@@ -190,17 +194,20 @@ try {
   );
   await waitFor(
     browser,
-    'location.pathname === "/capture" && Boolean(document.querySelector("form.capture-form"))', 'SPA capture route',
+    'location.pathname === "/capture" && Boolean(document.querySelector("form.capture-form"))',
+    'SPA capture route',
   );
   await evaluate(browser, 'history.back()');
   await waitFor(
     browser,
-    'location.pathname === "/" && Boolean(document.querySelector(\'a[href="/capture"]\'))', 'History back to Inbox',
+    'location.pathname === "/" && Boolean(document.querySelector(\'a[href="/capture"]\'))',
+    'History back to Inbox',
   );
   await evaluate(browser, 'history.forward()');
   await waitFor(
     browser,
-    'location.pathname === "/capture" && Boolean(document.querySelector("form.capture-form"))', 'History forward to capture',
+    'location.pathname === "/capture" && Boolean(document.querySelector("form.capture-form"))',
+    'History forward to capture',
   );
   report('BG21-SPA-browser-back-forward', { back: '/', forward: '/capture' });
 
