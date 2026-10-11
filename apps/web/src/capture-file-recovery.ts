@@ -8,6 +8,8 @@ export interface FileRecoveryReference {
   sha256: string;
   mimeType: string;
   stage: 'selected' | 'initialized' | 'uploaded' | 'finalized';
+  // Stable per-upload-attempt identifier, rotated only on deliberate restart.
+  reservationKey?: string;
   attachmentId?: string;
   expiresAt?: string;
 }
@@ -49,6 +51,9 @@ export function validateFileRecoveryReference(
     )
   )
     return false;
+  if (ref.reservationKey !== undefined &&
+      (typeof ref.reservationKey !== 'string' ||
+       !UUID_PATTERN.test(ref.reservationKey))) return false;
   if (
     ref.attachmentId !== undefined &&
     (typeof ref.attachmentId !== 'string' ||
