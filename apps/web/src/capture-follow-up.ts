@@ -38,7 +38,9 @@ export function validateFollowUp(
         !Number.isFinite(Date.parse(value.reviewInstant)) ||
         new Date(value.reviewInstant).toISOString() !== value.reviewInstant
       )
-        throw new Error('Invalid stored review instant. Choose the date again.');
+        throw new Error(
+          'Invalid stored review instant. Choose the date again.',
+        );
     } else {
       parseLocalReviewAt(value.reviewLocal);
     }
