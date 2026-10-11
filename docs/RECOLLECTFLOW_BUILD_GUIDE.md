@@ -2273,7 +2273,10 @@ browser only transfers again when the server confirms `pending`, the upload
 is unexpired, and the owner has supplied bytes matching the original SHA-256.
 If `finalized` or `linked`, the client can retry the same canonical capture
 payload without the original file. Expired reservations require a deliberate
-restart and continue using the original save identity. Orphan cleanup remains
+restart and continue using the original save identity. Each upload attempt
+owns a separate stable UUID, sent with initialization to replay an ambiguous
+response safely. Restart rotates only that upload UUID, not the original
+capture idempotency key or timestamp. Orphan cleanup remains
 server-owned. An unrecognized server status or checksum mismatch blocks
 automatic progress.
 
