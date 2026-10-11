@@ -94,3 +94,19 @@ Cloudflare's `ASSETS` binding is then used by the Worker entry on exact known br
 
 **Implementation nuance:** Wrangler's `run_worker_first` routes describe which requests reach Worker code; Worker code must preserve Hono's JSON API 404 behavior and fetch only trusted shell files for client routes. For a missing static resource, `not_found_handling="none"` leaves normal asset 404 behavior. Validate response types and status codes with real Cloudflare preview/Chrome, including `Sec-Fetch-Mode: navigate`, `fetch` and direct reload. If Cloudflare's routing semantics differ for a specific version, update this ADR and tests rather than silently weakening unknown-path behavior.
 
+## 5. Authentication and privacy boundary (BG-20.061–.070)
+
+**Public delivery:** The built `index.html`, script/CSS and harmless favicon can be served without authentication. UI visibility confers **no data access**. `AuthGuard` in `apps/web/src/App.tsx` calls `GET /api/v1/admin/session` after load; on missing/expired session the user sees the login form, including on `/items/:id`. Login `POST /api/v1/admin/session` responds at the same origin and the original URL remains open. Logout `DELETE /api/v1/admin/session` invalidates the host-only cookie; browser clears local capture recovery via existing code. A page refresh after logout returns to authentication, not an item body.
+
+**Server guard stays authoritative:** `apps/worker-api/src/auth/auth.routes.ts` creates `admin_session` as signed, `HttpOnly`, `SameSite=Strict`, `Path=/` with `Secure` when request URL is HTTPS, expiry 24h. Its cookie has no `Domain` attribute. `apps/worker-api/src/shared/auth.ts` validates the signature and expiry and requires exact request `Origin` for cookie-backed mutations. With same-origin hosting, browser Origin and Worker origin match. Any separate trusted `WEB_INBOX_BASE_URL` validation already in the auth middleware is **not** a substitute for cookie scope or proof of proxy safety.
+
+- APIs for reading private items, attachments, downloads, backup, exports, mutations, and operator controls retain their existing bearer/session permissions and resource checks. Raw R2 objects must never enter the static assets directory.
+- Signed cookies go only to the same host over HTTPS. Never add `Domain=.workers.dev`, `SameSite=None`, localStorage tokens or permissive CORS for convenience.
+- Bearer `Authorization` remains valid for Shortcuts/non-browser clients on their current routes, without relying on Cookie/Origin.
+- Unknown API routes are handled by Hono JSON 404 even when a logged-in user navigates to them; the shell cannot swallow API rejections.
+- API responses containing personalized bytes, item metadata, attachment downloads or exports should use `Cache-Control: private, no-store` (or equivalent stronger policy) and prevent shared CDN caching. Inspect existing headers before adding/removing them in BG-21, then assert them in preview acceptance.
+- CSS/JS bundle paths must not include personal item content, API keys or R2 signed URLs. Existing client data fetching is authenticated at the API boundary.
+- A reverse proxy, if introduced later, needs explicit trusted-header rules and an independent CSRF/cookie ADR before deployment; never trust arbitrary `X-Forwarded-Host` or `X-Forwarded-Proto` when forming security decisions.
+
+**Threat review:** Cookie fixation, cross-site state changes, cached private responses, unauthenticated direct-link body leakage, cross-origin download failures and bare Authorization headers must be tested. An HTML shell shown after expiry is normal; a private JSON payload served without authorization is a P0 failure.
+
