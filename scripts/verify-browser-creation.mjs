@@ -303,6 +303,18 @@ async function run() {
   const health = await fetch(runtime.webOrigin + '/api/v1/health');
   assert.equal(health.status, 200);
   browser = await openBrowser(runtime);
+  const browserDiagnostics = { exceptions: [], networkFailures: [] };
+  browser.client.on('Runtime.exceptionThrown', (message) => {
+    browserDiagnostics.exceptions.push(
+      message.params?.exceptionDetails?.text ?? 'Unknown browser exception',
+    );
+  });
+  browser.client.on('Network.loadingFailed', (message) => {
+    if (message.params?.canceled) return;
+    browserDiagnostics.networkFailures.push(
+      message.params?.errorText ?? 'Unknown network failure',
+    );
+  });
   const version = await browser.client.send('Browser.getVersion');
   await navigate(browser, runtime.webOrigin + '/');
   await waitFor(
@@ -349,6 +361,31 @@ async function run() {
 
   await searchByReason(textPhrase, textId);
   await searchByReason(notePhrase, noteId);
+  await navigate(browser, runtime.webOrigin + '/');
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'input[aria-label="Search"]\'))',
+    'search exclusion form',
+  );
+  await changeField('input[aria-label="Search"]', notePhrase);
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(' +
+      JSON.stringify('main a[href="/items/' + noteId + '"]') +
+      '))',
+    'single precise note result',
+  );
+  const visibleResults = await evaluate(
+    browser,
+    '[...document.querySelectorAll(\'main a[href^="/items/"]\')]' +
+      '.map(link => link.getAttribute("href"))',
+  );
+  assert.deepEqual(
+    [...new Set(visibleResults)],
+    ['/items/' + noteId],
+    'Unrelated canonical items must not appear in a unique phrase search',
+  );
+  report('BG22-unique-search-rejects-unrelated-items');
 
   const fixtures = buildBrowserFixtures(runId);
   const png = fixtures.find((fixture) => fixture.kind === 'image');
@@ -380,6 +417,17 @@ async function run() {
     'document.body.textContent.includes("BG22 owner title")',
     'owner edit survives hard reload',
   );
+  const sourceInspection = await evaluate(
+    browser,
+    '({ body: document.body.innerText,' +
+      ' source: document.querySelector("textarea[readonly]")?.value })',
+  );
+  assert.match(sourceInspection.body, /Source and coverage/);
+  assert.match(sourceInspection.body, /Coverage:/);
+  assert.match(sourceInspection.body, /Processing:/);
+  assert.match(sourceInspection.body, /Source:/);
+  assert.equal(sourceInspection.source, 'BG22 private note ' + notePhrase);
+  report('BG22-source-coverage-and-processing-visible');
   const noteDetail = await itemDetails(noteId);
   assert.equal(noteDetail.item.title, 'BG22 owner title ' + runId);
   assert.equal(noteDetail.item.project, 'BG22 Project ' + runId);
@@ -418,6 +466,42 @@ async function run() {
 
   await ensureLoggedOutProtection(noteId, image.attachmentId);
   await verifyDirectLinkAfterRestart(noteId);
+  await browser.client.send(
+    'Emulation.setDeviceMetricsOverride',
+    { width: 390, height: 844, deviceScaleFactor: 1, mobile: true },
+    browser.sessionId,
+  );
+  for (const route of ['/', '/capture', '/capture/file', '/items/' + noteId]) {
+    await navigate(browser, runtime.webOrigin + route);
+    await waitFor(
+      browser,
+      'Boolean(document.querySelector("main")) || Boolean(document.querySelector(".capture-form"))',
+      'mobile route visible: ' + route,
+    );
+    const viewport = await evaluate(
+      browser,
+      '({ width: innerWidth, scrollWidth: document.documentElement.scrollWidth })',
+    );
+    assert.ok(
+      viewport.scrollWidth <= viewport.width + 8,
+      'Mobile horizontal overflow on ' + route + ': ' + JSON.stringify(viewport),
+    );
+  }
+  report('BG22-mobile-viewport-checks', { width: 390, routes: 4 });
+  report('BG22-browser-diagnostics', {
+    uncaught_exceptions: browserDiagnostics.exceptions,
+    failed_requests: browserDiagnostics.networkFailures,
+  });
+  assert.deepEqual(
+    browserDiagnostics.exceptions,
+    [],
+    'Unhandled browser runtime exceptions in bundled creation story',
+  );
+  assert.deepEqual(
+    browserDiagnostics.networkFailures,
+    [],
+    'Unexpected failed browser network requests in bundled creation story',
+  );
   report('BG22-local-browser-creation-matrix', {
     result: 'passed',
     item_count: 5,
