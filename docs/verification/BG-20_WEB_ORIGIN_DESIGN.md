@@ -8,17 +8,17 @@
 
 ## 1. Current-state inventory and evidence classes (BG-20.001–.020)
 
-| Area | Verified repository fact | Operational limit |
-| --- | --- | --- |
-| Existing API origin | `docs/BUILD_STATUS.md` records `https://recollect-flow.recollectflow.workers.dev` and production Worker version `c0e78f89-d7a6-4416-a638-57693d256c03`. | This is a **documented** deployed origin, not a fresh current Worker-version read. |
-| HTML hosting | `wrangler.toml` declares a Worker entry, D1/R2/AI bindings and `workers_dev = true`, but no `[assets]` binding. | The previous audit saw Worker root return 404. It does not establish whether a separate Web deployment exists outside this repository. |
-| Local Web | `apps/web/vite.config.ts` proxies `/api` to `http://localhost:8787`. | Vite's proxy is development-only, not a production ingress. |
-| Browser API | `apps/web/src/api.ts` fixes `API_BASE = '/api/v1'` and sets `credentials: 'include'`. | Changing to cross-origin would alter authentication and CSRF assumptions. |
-| Worker entry | `apps/worker-api/src/index.ts` exports Hono `app.fetch` plus scheduled handler. | There is no routing to built Web assets today. |
-| Worker 404 | `apps/worker-api/src/app.ts` returns structured JSON `NOT_FOUND`. | Preserve its semantics for unknown `/api/v1` requests. |
-| Web routes | `apps/web/src/App.tsx` defines `/`, `/capture`, `/capture/file`, `/items/:id`. | Direct navigation to each URL must load the app shell and let AuthGuard check session. |
-| Digest base | `apps/worker-api/src/digests/digest.renderer.ts` reads `WEB_INBOX_BASE_URL`, requires HTTPS outside localhost and forms `items/<encoded-id>` links. | Runtime secret value and production delivery are not inspectable from repository. |
-| Ownership | `recollectflow.workers.dev` is a Cloudflare-managed workers.dev suffix. The Worker name is `recollect-flow`. | Cloudflare account access, current DNS/dashboard mappings, TLS live-handshake and external Web hostname inventory require operator confirmation. |
+| Area                | Verified repository fact                                                                                                                                | Operational limit                                                                                                                                |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Existing API origin | `docs/BUILD_STATUS.md` records `https://recollect-flow.recollectflow.workers.dev` and production Worker version `c0e78f89-d7a6-4416-a638-57693d256c03`. | This is a **documented** deployed origin, not a fresh current Worker-version read.                                                               |
+| HTML hosting        | `wrangler.toml` declares a Worker entry, D1/R2/AI bindings and `workers_dev = true`, but no `[assets]` binding.                                         | The previous audit saw Worker root return 404. It does not establish whether a separate Web deployment exists outside this repository.           |
+| Local Web           | `apps/web/vite.config.ts` proxies `/api` to `http://localhost:8787`.                                                                                    | Vite's proxy is development-only, not a production ingress.                                                                                      |
+| Browser API         | `apps/web/src/api.ts` fixes `API_BASE = '/api/v1'` and sets `credentials: 'include'`.                                                                   | Changing to cross-origin would alter authentication and CSRF assumptions.                                                                        |
+| Worker entry        | `apps/worker-api/src/index.ts` exports Hono `app.fetch` plus scheduled handler.                                                                         | There is no routing to built Web assets today.                                                                                                   |
+| Worker 404          | `apps/worker-api/src/app.ts` returns structured JSON `NOT_FOUND`.                                                                                       | Preserve its semantics for unknown `/api/v1` requests.                                                                                           |
+| Web routes          | `apps/web/src/App.tsx` defines `/`, `/capture`, `/capture/file`, `/items/:id`.                                                                          | Direct navigation to each URL must load the app shell and let AuthGuard check session.                                                           |
+| Digest base         | `apps/worker-api/src/digests/digest.renderer.ts` reads `WEB_INBOX_BASE_URL`, requires HTTPS outside localhost and forms `items/<encoded-id>` links.     | Runtime secret value and production delivery are not inspectable from repository.                                                                |
+| Ownership           | `recollectflow.workers.dev` is a Cloudflare-managed workers.dev suffix. The Worker name is `recollect-flow`.                                            | Cloudflare account access, current DNS/dashboard mappings, TLS live-handshake and external Web hostname inventory require operator confirmation. |
 
 A read-only public browser check on October 11, 2026, **confirmed** `GET https://recollect-flow.recollectflow.workers.dev/` responds **404** with `application/json` and Hono `NOT_FOUND`, while `GET https://recollect-flow.recollectflow.workers.dev/api/v1/health` responds **200** with `application/json` and `data.status = "ok"`. Neither request redirected. No production mutation or login was performed. The result proves the documented Worker is reachable and the homepage currently is not hosted there. It does **not** independently attest Cloudflare account dashboard ownership or exclude unrelated external Web hostnames.
 
@@ -77,20 +77,20 @@ run_worker_first = ["/api", "/api/*", "/", "/capture", "/capture/*", "/items/*"]
 
 Cloudflare's `ASSETS` binding is then used by the Worker entry on exact known browser routes to retrieve `/index.html` without rewriting the browser's requested URL. Dynamic `/items/:id` must match exactly one nonempty encoded path segment. If the route is unexpected, reject it rather than returning an index document. Keep `/api` and `/api/*` Worker-first **before any shell/asset fallback**. No `single-page-application` fallback is enabled because it can mask bad `/api` and asset URLs.
 
-| Path/method | Decision | Response expected |
-| --- | --- | --- |
-| `GET /` | Worker-first known UI route → `ASSETS.fetch('/index.html')` | HTML 200, with browser AuthGuard before private queries |
-| `GET /capture`, `GET /capture/file` | Same shell allowlist | HTML 200, AuthGuard handles session |
-| `GET /items/<id>` | Shell allowlist for single ID segment | HTML 200, item data fetched only by authorized API |
-| `GET /api/v1/health` | Hono Worker | Existing JSON health envelope |
-| `POST /api/v1/admin/session` | Hono Worker | Signed host-only session cookie on HTTPS |
-| `GET /api/v1/items/<id>` | Hono Worker | Authorized JSON item or authenticated API error |
-| `GET /api/v1/attachments/<id>/content` and export routes | Hono Worker | Guarded bytes/export, never public static file |
-| `GET /api/v1/not-a-route`, `GET /api` | Hono Worker | JSON 404 with `error.code=NOT_FOUND`, never HTML 200 |
-| `GET /assets/<hashed>.js`, `GET /assets/<hashed>.css`, favicon | Static asset service directly | File with correct MIME/ETag |
-| Missing `/assets/<name>.js`, image, favicon | Static asset service, no SPA fallback | HTTP 404, not index.html |
-| `GET /unknown`, `GET /items/a/b`, `GET /capture/unlisted` | No matching valid UI route | HTTP 404, not private data |
-| Unsafe methods on UI shell path | Worker dispatch rejects (e.g. 405); never fall back to asset HTML | Failure status, no state mutation |
+| Path/method                                                    | Decision                                                          | Response expected                                       |
+| -------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------- |
+| `GET /`                                                        | Worker-first known UI route → `ASSETS.fetch('/index.html')`       | HTML 200, with browser AuthGuard before private queries |
+| `GET /capture`, `GET /capture/file`                            | Same shell allowlist                                              | HTML 200, AuthGuard handles session                     |
+| `GET /items/<id>`                                              | Shell allowlist for single ID segment                             | HTML 200, item data fetched only by authorized API      |
+| `GET /api/v1/health`                                           | Hono Worker                                                       | Existing JSON health envelope                           |
+| `POST /api/v1/admin/session`                                   | Hono Worker                                                       | Signed host-only session cookie on HTTPS                |
+| `GET /api/v1/items/<id>`                                       | Hono Worker                                                       | Authorized JSON item or authenticated API error         |
+| `GET /api/v1/attachments/<id>/content` and export routes       | Hono Worker                                                       | Guarded bytes/export, never public static file          |
+| `GET /api/v1/not-a-route`, `GET /api`                          | Hono Worker                                                       | JSON 404 with `error.code=NOT_FOUND`, never HTML 200    |
+| `GET /assets/<hashed>.js`, `GET /assets/<hashed>.css`, favicon | Static asset service directly                                     | File with correct MIME/ETag                             |
+| Missing `/assets/<name>.js`, image, favicon                    | Static asset service, no SPA fallback                             | HTTP 404, not index.html                                |
+| `GET /unknown`, `GET /items/a/b`, `GET /capture/unlisted`      | No matching valid UI route                                        | HTTP 404, not private data                              |
+| Unsafe methods on UI shell path                                | Worker dispatch rejects (e.g. 405); never fall back to asset HTML | Failure status, no state mutation                       |
 
 **Implementation nuance:** Wrangler's `run_worker_first` routes describe which requests reach Worker code; Worker code must preserve Hono's JSON API 404 behavior and fetch only trusted shell files for client routes. For a missing static resource, `not_found_handling="none"` leaves normal asset 404 behavior. Validate response types and status codes with real Cloudflare preview/Chrome, including `Sec-Fetch-Mode: navigate`, `fetch` and direct reload. If Cloudflare's routing semantics differ for a specific version, update this ADR and tests rather than silently weakening unknown-path behavior.
 
@@ -114,17 +114,17 @@ Cloudflare's `ASSETS` binding is then used by the Worker entry on exact known br
 
 ### File-level implementation handoff
 
-| File | BG-21 change | Validation |
-| --- | --- | --- |
-| `wrangler.toml` | Add reviewed `[assets]` block with `apps/web/dist`, `ASSETS` binding, `not_found_handling = "none"` and explicit Worker-first routes. Do not remove existing D1, R2, AI, cron or secret bindings. | Wrangler configuration/type generation, dry-run build and preview route acceptance |
-| `apps/worker-api/src/index.ts` | Keep `scheduled` unchanged. Replace direct `fetch: app.fetch` export with a dispatcher that forwards all `/api` requests to Hono and exact, safe navigation routes to `env.ASSETS.fetch('/index.html')`. Reject unknown UI/method paths. | Worker runtime route tests and live preview with browser navigation headers |
-| `worker-configuration.d.ts` | Regenerate types from Wrangler (if type generation applies) rather than inventing a handwritten binding definition. | Typecheck |
-| `package.json` | Make the deploy command build the Web app before Wrangler deploy or create an explicit atomic release script. Never deploy a Worker referencing a nonexistent/stale `dist`. | Release dry run and exact code/assets version evidence |
-| `apps/web/src/api.ts` | Retain relative `/api/v1` and `credentials: 'include'`; **no cross-origin rewrite**. | Existing Web unit tests and Chrome session flow |
-| `apps/web/src/App.tsx` | Retain React Router client paths and AuthGuard, changing only proven routing defects. | Direct `/items/:id` reload, login, logout and navigation tests |
-| `apps/worker-api/src/app.ts` | Preserve Hono `NOT_FOUND` API envelope; verify unknown `/api/v1` endpoints do not get HTML. | JSON status regression tests |
-| `docs/OPERATIONS.md` + release docs | Record host, owner, secrets, version pairing, request matrix, steps, rollback, signoffs and unknowns. | Manual runbook review |
-| `.github/workflows/ci.yml` | Add an appropriate no-production deployment dry run and API/static/deep-link checks before merge if existing CI does not cover them. | Exact-head CI; no production mutation |
+| File                                | BG-21 change                                                                                                                                                                                                                             | Validation                                                                         |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `wrangler.toml`                     | Add reviewed `[assets]` block with `apps/web/dist`, `ASSETS` binding, `not_found_handling = "none"` and explicit Worker-first routes. Do not remove existing D1, R2, AI, cron or secret bindings.                                        | Wrangler configuration/type generation, dry-run build and preview route acceptance |
+| `apps/worker-api/src/index.ts`      | Keep `scheduled` unchanged. Replace direct `fetch: app.fetch` export with a dispatcher that forwards all `/api` requests to Hono and exact, safe navigation routes to `env.ASSETS.fetch('/index.html')`. Reject unknown UI/method paths. | Worker runtime route tests and live preview with browser navigation headers        |
+| `worker-configuration.d.ts`         | Regenerate types from Wrangler (if type generation applies) rather than inventing a handwritten binding definition.                                                                                                                      | Typecheck                                                                          |
+| `package.json`                      | Make the deploy command build the Web app before Wrangler deploy or create an explicit atomic release script. Never deploy a Worker referencing a nonexistent/stale `dist`.                                                              | Release dry run and exact code/assets version evidence                             |
+| `apps/web/src/api.ts`               | Retain relative `/api/v1` and `credentials: 'include'`; **no cross-origin rewrite**.                                                                                                                                                     | Existing Web unit tests and Chrome session flow                                    |
+| `apps/web/src/App.tsx`              | Retain React Router client paths and AuthGuard, changing only proven routing defects.                                                                                                                                                    | Direct `/items/:id` reload, login, logout and navigation tests                     |
+| `apps/worker-api/src/app.ts`        | Preserve Hono `NOT_FOUND` API envelope; verify unknown `/api/v1` endpoints do not get HTML.                                                                                                                                              | JSON status regression tests                                                       |
+| `docs/OPERATIONS.md` + release docs | Record host, owner, secrets, version pairing, request matrix, steps, rollback, signoffs and unknowns.                                                                                                                                    | Manual runbook review                                                              |
+| `.github/workflows/ci.yml`          | Add an appropriate no-production deployment dry run and API/static/deep-link checks before merge if existing CI does not cover them.                                                                                                     | Exact-head CI; no production mutation                                              |
 
 **Build artifact:** Vite creates `apps/web/dist/index.html` and content-hashed assets from the repository's locked `package-lock.json`. For each release use one Git commit/SHA with both Worker script and built Web assets. Do not independently deploy an older Web bundle against newer private API contracts.
 
@@ -140,20 +140,20 @@ Cloudflare's `ASSETS` binding is then used by the Worker entry on exact known br
 
 ## 7. Verification matrix, open evidence and freeze (BG-20.081–.090)
 
-| Scenario | Required check in BG-21 preview | Fail condition |
-| --- | --- | --- |
-| Same-origin request | Browser `location.origin`, `GET /` and `/api/v1/health` use the same scheme/host/port | API target is another host or session cookie missing |
-| Login cookie | `POST /api/v1/admin/session` with approved synthetic admin token, then `GET /api/v1/admin/session` | Cookie not host-only, HttpOnly, Secure on HTTPS or SameSite Strict |
-| Logged-out direct item link | `GET /items/<synthetic-id>` loads shell, AuthGuard prompts, URL retained | 404 shell or private item JSON rendered unauthenticated |
-| Authenticated deep-link refresh | Authenticate and refresh exact `/items/:id` | 404 from host or unexpected route rewrite |
-| Digest link | `renderDigest` with canonical URL produces `/items/<encoded-id>` | Link references localhost, preview or embeds credentials |
-| Session expiry/logout | Remove/expire cookie and revisit original item URL | Unauthorized API continues returning private data |
-| API JSON precedence | Navigate and fetch `/api/v1/not-a-route` | HTML 200, SPA shell body or non-JSON result |
-| Missing asset | Fetch/navigate `/assets/does-not-exist.js` | index.html 200, incorrect MIME or successful response |
-| Public/private isolation | Load HTML/assets without auth, then call item/content/export API without auth | Any private body downloadable via static origin |
-| Shortcuts | Existing bearer capture request remains authenticated and functional | 401 caused by cookie-only auth regression |
-| Cache behavior | Inspect response and CDN headers for HTML, hashed JS, item API, download | Shared cache on private response or stale shell |
-| Rollback | Rehearse release-version rollback in isolated preview | Mixed Worker/assets version, missing bundles or link breakage |
+| Scenario                        | Required check in BG-21 preview                                                                    | Fail condition                                                     |
+| ------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Same-origin request             | Browser `location.origin`, `GET /` and `/api/v1/health` use the same scheme/host/port              | API target is another host or session cookie missing               |
+| Login cookie                    | `POST /api/v1/admin/session` with approved synthetic admin token, then `GET /api/v1/admin/session` | Cookie not host-only, HttpOnly, Secure on HTTPS or SameSite Strict |
+| Logged-out direct item link     | `GET /items/<synthetic-id>` loads shell, AuthGuard prompts, URL retained                           | 404 shell or private item JSON rendered unauthenticated            |
+| Authenticated deep-link refresh | Authenticate and refresh exact `/items/:id`                                                        | 404 from host or unexpected route rewrite                          |
+| Digest link                     | `renderDigest` with canonical URL produces `/items/<encoded-id>`                                   | Link references localhost, preview or embeds credentials           |
+| Session expiry/logout           | Remove/expire cookie and revisit original item URL                                                 | Unauthorized API continues returning private data                  |
+| API JSON precedence             | Navigate and fetch `/api/v1/not-a-route`                                                           | HTML 200, SPA shell body or non-JSON result                        |
+| Missing asset                   | Fetch/navigate `/assets/does-not-exist.js`                                                         | index.html 200, incorrect MIME or successful response              |
+| Public/private isolation        | Load HTML/assets without auth, then call item/content/export API without auth                      | Any private body downloadable via static origin                    |
+| Shortcuts                       | Existing bearer capture request remains authenticated and functional                               | 401 caused by cookie-only auth regression                          |
+| Cache behavior                  | Inspect response and CDN headers for HTML, hashed JS, item API, download                           | Shared cache on private response or stale shell                    |
+| Rollback                        | Rehearse release-version rollback in isolated preview                                              | Mixed Worker/assets version, missing bundles or link breakage      |
 
 **Actual BG-20 evidence:** Repository configuration, Web/Worker contract inspection, historical root-404 audit, documented production Worker URL, official Cloudflare docs and the reviewed request matrix here. A separate read-only browser run on October 11, 2026, returned a real HTTPS **404 JSON** from the homepage and **200 JSON** from `/api/v1/health`, with no redirects. This confirms public reachability and the Web asset gap. It does **not** verify dashboard DNS ownership, runtime secret values, other hosted Web domains, preview isolation, new PR CI, production Web hosting or physical-device behavior.
 
@@ -187,18 +187,18 @@ The BG-20 outcome is a documented production hosting decision: one concrete cano
 
 ## 9. Engineering decision log and open verification owners
 
-| Question | Decision or status | Owner / next gate |
-| --- | --- | --- |
-| Can Web and API share host? | Yes, chosen on documented Worker origin. | BG-21 builder implements and verifies Cloudflare routing |
-| Is DNS/certificate provisioning needed? | No new custom DNS for existing `workers.dev`; Cloudflare is TLS edge. | Operator verifies account/hostname currently controlled |
-| How to avoid HTML 200 for API errors? | Worker-first `/api` and `/api/*` to Hono, API JSON 404. | BG-21 route regression tests |
-| How to avoid HTML for missing hashed assets? | `not_found_handling = "none"` plus explicit UI allowlist. | BG-21 browser and HTTP tests |
-| Must API base change? | No. Keep `/api/v1` and cookie `credentials: include`. | BG-21 regression suite |
-| Are direct item links public data? | No. The HTML shell is public, item API requires authentication. | BG-21 auth and link tests |
-| Can stale/new Web and Worker deploy separately? | No. Single bundled version and rollback. | BG-21 release automation |
-| Is preview safely isolated today? | No remote preview isolation proven. | Operator supplies isolated D1/R2/secret plan before preview |
-| Is production Web confirmed online today? | No. Historical Worker root 404, direct read-only probes unavailable. | BG-21 production go/no-go after approval |
-| Are there blockers to a design decision? | No verified blocker to selecting this same-origin design. | Reopen ADR if Cloudflare ownership or host mapping differs |
+| Question                                        | Decision or status                                                    | Owner / next gate                                           |
+| ----------------------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Can Web and API share host?                     | Yes, chosen on documented Worker origin.                              | BG-21 builder implements and verifies Cloudflare routing    |
+| Is DNS/certificate provisioning needed?         | No new custom DNS for existing `workers.dev`; Cloudflare is TLS edge. | Operator verifies account/hostname currently controlled     |
+| How to avoid HTML 200 for API errors?           | Worker-first `/api` and `/api/*` to Hono, API JSON 404.               | BG-21 route regression tests                                |
+| How to avoid HTML for missing hashed assets?    | `not_found_handling = "none"` plus explicit UI allowlist.             | BG-21 browser and HTTP tests                                |
+| Must API base change?                           | No. Keep `/api/v1` and cookie `credentials: include`.                 | BG-21 regression suite                                      |
+| Are direct item links public data?              | No. The HTML shell is public, item API requires authentication.       | BG-21 auth and link tests                                   |
+| Can stale/new Web and Worker deploy separately? | No. Single bundled version and rollback.                              | BG-21 release automation                                    |
+| Is preview safely isolated today?               | No remote preview isolation proven.                                   | Operator supplies isolated D1/R2/secret plan before preview |
+| Is production Web confirmed online today?       | No. Historical Worker root 404, direct read-only probes unavailable.  | BG-21 production go/no-go after approval                    |
+| Are there blockers to a design decision?        | No verified blocker to selecting this same-origin design.             | Reopen ADR if Cloudflare ownership or host mapping differs  |
 
 ## 10. Review signoff template
 
