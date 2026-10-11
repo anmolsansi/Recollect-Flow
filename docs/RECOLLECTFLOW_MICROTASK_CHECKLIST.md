@@ -2861,8 +2861,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 - [x] `BG-20.091` **Review:** Compare the completed checklist with BG-20's stated outcome; identify uncovered behavior.
 - [x] `BG-20.092` **Verification:** Run or inspect the focused proof required by BG-20; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-20.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-20.094` **Integrity:** Check that BG-20 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-20.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-20.094` **Integrity:** Check that BG-20 has not weakened its stated data, privacy, scope or recovery guarantees.
 - [ ] `BG-20.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
 - [ ] `BG-20.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
 - [ ] `BG-20.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
