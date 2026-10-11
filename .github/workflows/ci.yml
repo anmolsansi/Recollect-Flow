@@ -15,7 +15,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx prettier --write apps/web/src/capture-follow-up.ts && node scripts/bg19-format-snapshot.mjs
       - run: npm run check
       - run: npm run db:migrate:local
       - run: google-chrome --version
