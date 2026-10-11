@@ -33,6 +33,18 @@ export function attachmentRoutes(
 
   router.use('/uploads/*', requireCaptureWrite);
 
+  // The signed-in browser reads the same deployment-specific admission policy
+  // that the server enforces on initialization. Never hard-code a smaller limit.
+  router.get('/uploads/config', (context) => {
+    return context.json({
+      data: {
+        max_size_bytes: positiveInteger(context.env.MAX_ATTACHMENT_BYTES, 25_000_000),
+        allowed_mime_types: [...ALLOWED_CONTENT_TYPES].sort(),
+      },
+      meta: { request_id: context.get('requestId') },
+    });
+  });
+
   router.post('/uploads/init', async (context) => {
     const body = await context.req.json().catch(() => {
       throw new AppError(400, 'INVALID_JSON', 'Invalid JSON body.');
