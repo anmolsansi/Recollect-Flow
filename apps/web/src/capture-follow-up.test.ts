@@ -17,8 +17,6 @@ const item = (overrides: Record<string, unknown> = {}) => ({
   },
 });
 
-const env = (globalThis as unknown as { process: { env: Record<string, string | undefined> } }).process.env;
-
 describe('BG-19 two-stage follow-up', () => {
   it('does not add metadata to the strict capture payload or call item API if empty', async () => {
     const api = vi.fn();
@@ -40,9 +38,8 @@ describe('BG-19 two-stage follow-up', () => {
           review_at: '2026-10-11T03:30:00.000Z',
         }),
       );
-    const prior = env.TZ;
+    vi.stubEnv('TZ', 'Asia/Kolkata');
     try {
-      env.TZ = 'Asia/Kolkata';
       await expect(
         applyCaptureFollowUp(
           'item-01',
@@ -52,8 +49,7 @@ describe('BG-19 two-stage follow-up', () => {
         ),
       ).resolves.toEqual({ status: 'applied' });
     } finally {
-      if (prior === undefined) delete env.TZ;
-      else env.TZ = prior;
+      vi.unstubAllEnvs();
     }
     expect(api.mock.calls[1]![0]).toBe('/items/item-01');
     expect(api.mock.calls[1]![1].method).toBe('PATCH');
