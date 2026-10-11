@@ -82,6 +82,17 @@ BG-21 owns production hosting and asset packaging. The feature is scoped
 to local browser recovery and does not claim real-device offline support,
 encrypted local storage or indefinite retention.
 
+## Final BG-17 acceptance reconciliation
+
+The original core deliverable was expanded with metadata-only file-stage
+guards, SHA-256 reselection verification, bounded manual retry attempts,
+and Chrome/D1 cookie expiration plus reauthentication regression.
+See [the final closeout record](BG-17_FINAL_CLOSEOUT.md) and
+[PR #75](https://github.com/anmolsansi/Recollect-Flow/pull/75).
+Actual file uploading and file reselect UI remain BG-18 work.
+This section supersedes the earlier in-progress checkpoint above when
+the final PR and merged-main CI pass.
+
 ## Engineering decision
 
 A small IndexedDB adapter reuses the current capture route and does not add

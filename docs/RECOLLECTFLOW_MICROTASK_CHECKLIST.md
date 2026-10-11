@@ -2302,9 +2302,9 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-17.013` Store immutable submitted payload.
 - [x] `BG-17.014` Store original captured_at.
 - [x] `BG-17.015` Store selected privacy.
-- [ ] `BG-17.016` Store optional file hash.
-- [ ] `BG-17.017` Store file byte length.
-- [ ] `BG-17.018` Store server attachment ID.
+- [x] `BG-17.016` Store optional file hash.
+- [x] `BG-17.017` Store file byte length.
+- [x] `BG-17.018` Store server attachment ID.
 - [x] `BG-17.019` Store acknowledged capture ID.
 - [x] `BG-17.020` Define operation stage enum.
 
@@ -2314,7 +2314,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-17.022` Reuse key after timeout.
 - [x] `BG-17.023` Reuse key after reconnect.
 - [x] `BG-17.024` Reuse key after reauthentication.
-- [ ] `BG-17.025` Preserve payload across automatic retry.
+- [x] `BG-17.025` Preserve payload across automatic retry. **N/A:** No automatic retries. Only explicit, bounded manual Retry is allowed.
 - [x] `BG-17.026` Detect changed submitted payload.
 - [x] `BG-17.027` Separate edited new draft.
 - [x] `BG-17.028` Reconcile ambiguous old operation.
@@ -2362,16 +2362,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-17 / 07 — File recovery
 
-- [ ] `BG-17.061` Distinguish filename from bytes.
-- [ ] `BG-17.062` Persist bytes only under selected policy.
-- [ ] `BG-17.063` Retain expected file hash.
-- [ ] `BG-17.064` Request reselection when bytes missing.
-- [ ] `BG-17.065` Hash reselected file.
-- [ ] `BG-17.066` Reject changed file mismatch.
-- [ ] `BG-17.067` Preserve previous server attachment reference.
-- [ ] `BG-17.068` Resume eligible upload stage.
-- [ ] `BG-17.069` Avoid silently starting new upload.
-- [ ] `BG-17.070` Explain unrecoverable local file state.
+- [x] `BG-17.061` Distinguish filename from bytes.
+- [x] `BG-17.062` Persist bytes only under selected policy.
+- [x] `BG-17.063` Retain expected file hash.
+- [x] `BG-17.064` Request reselection when bytes missing. **N/A until BG-18:** No Web file picker/upload yet. Metadata policy requests reselection, but the future BG-18 UI must implement it.
+- [x] `BG-17.065` Hash reselected file.
+- [x] `BG-17.066` Reject changed file mismatch.
+- [x] `BG-17.067` Preserve previous server attachment reference.
+- [x] `BG-17.068` Resume eligible upload stage. **N/A until BG-18:** The policy selects a resume stage. Network PUT/finalize integration belongs to BG-18.
+- [x] `BG-17.069` Avoid silently starting new upload.
+- [x] `BG-17.070` Explain unrecoverable local file state.
 
 #### BG-17 / 08 — Owner controls
 
@@ -2383,8 +2383,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-17.076` Clear confirmed successful retry content.
 - [x] `BG-17.077` Preserve unrelated queued entries.
 - [x] `BG-17.078` Prevent background infinite retry loop.
-- [ ] `BG-17.079` Bound retry cadence.
-- [ ] `BG-17.080` Handle browser session expiry.
+- [x] `BG-17.079` Bound retry cadence.
+- [x] `BG-17.080` Handle browser session expiry.
 
 #### BG-17 / 09 — Failure proof
 
@@ -2395,21 +2395,21 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-17.085` Test reload with durable mode.
 - [x] `BG-17.086` Test reload with nonpersistent disclosure.
 - [x] `BG-17.087` Test browser quota failure.
-- [ ] `BG-17.088` Test changed-file reselection.
+- [x] `BG-17.088` Test changed-file reselection.
 - [x] `BG-17.089` Test two simultaneous pending operations.
 - [x] `BG-17.090` Record draft lifetime acceptance.
 
 #### BG-17 / 10 — Verify and close this task
 
-- [ ] `BG-17.091` **Review:** Compare the completed checklist with BG-17's stated outcome; identify uncovered behavior.
-- [ ] `BG-17.092` **Verification:** Run or inspect the focused proof required by BG-17; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-17.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-17.094` **Integrity:** Check that BG-17 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-17.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-17.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-17.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-17.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-17.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-17.091` **Review:** Compare the completed checklist with BG-17's stated outcome; identify uncovered behavior.
+- [x] `BG-17.092` **Verification:** Run or inspect the focused proof required by BG-17; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-17.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-17.094` **Integrity:** Check that BG-17 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-17.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-17.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-17.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-17.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-17.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-17.100` **Gate:** Check the parent completion boundary and record whether BG-18 is unlocked.
 
 ### BG-17 implementation reconciliation (PR #74)
@@ -2433,6 +2433,23 @@ a real reauthentication/resume acceptance. BG-17.088 needs BG-18's file
 reselection scenario. Final review/CI/merge/documentation steps remain open
 until their exact evidence exists. BG-18 may proceed with its independent
 preparatory work without treating file-recovery acceptance as complete.
+
+### BG-17 final acceptance reconciliation, 2026-10-11
+
+Steps 001–099 are **verified or explicitly scoped N/A**, with 025, 064 and
+068 being conditional N/A for owner-disabled automatic retries and the future
+BG-18 file upload flow. The file metadata-only schema, SHA-256 reselect guard,
+attachment-stage preservation, expired-reservation refusal and changed-file
+test are implemented in `capture-file-recovery.ts` and
+`capture-file-recovery.test.ts`. Chrome/D1 regression adds owner session-cookie
+expiry and reauthentication, and manual retries have a 1.5-second guard.
+**This does not mean BG-18 browser file upload works.** It has a distinct
+later ticket and must prove PUT/finalize/linked-original operations separately.
+
+[BG-17 final scope/evidence record](verification/BG-17_FINAL_CLOSEOUT.md).
+[Implementation completion PR #75](https://github.com/anmolsansi/Recollect-Flow/pull/75).
+Step 100 remains unchecked until exact PR-head CI, merge, and
+merged-main CI are all confirmed. No production deployment is implied.
 
 ## BG-18 — 100 executable microtasks
 

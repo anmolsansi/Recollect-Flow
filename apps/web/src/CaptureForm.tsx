@@ -12,6 +12,7 @@ import {
 } from './capture-model';
 
 import {
+  canRetryCapture,
   clearCaptureDraft,
   deleteCaptureOperation,
   forgetCaptureRecovery,
@@ -159,6 +160,14 @@ export function CaptureForm() {
 
   async function retry(operation: CaptureOperation, fromQueue = false) {
     if (lock.current) return;
+    const now = Date.now();
+    if (!canRetryCapture(lastAttempts.current.get(operation.id), now)) {
+      setFailure(
+        'Retry is temporarily paused to avoid repeated requests. Try again shortly.',
+      );
+      return;
+    }
+    lastAttempts.current.set(operation.id, now);
     lock.current = true;
     setBusy(true);
     setFailure('');
@@ -176,6 +185,7 @@ export function CaptureForm() {
         body: JSON.stringify(operation.payload),
       });
       setResult(response);
+      lastAttempts.current.delete(operation.id);
       setPending(null);
       setQueue((items) => items.filter((item) => item.id !== operation.id));
       if (!fromQueue) {
@@ -262,6 +272,7 @@ export function CaptureForm() {
       return;
     try {
       if (durable) await deleteCaptureOperation(id);
+      lastAttempts.current.delete(id);
       setQueue((items) => items.filter((entry) => entry.id !== id));
       if (pending?.id === id) {
         setPending(null);
@@ -274,6 +285,7 @@ export function CaptureForm() {
       );
     }
   }
+  const lastAttempts = useRef(new Map<string, number>());
   const lock = useRef(false);
   const form = useRef<HTMLFormElement>(null);
 

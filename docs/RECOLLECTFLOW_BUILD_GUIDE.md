@@ -2145,6 +2145,23 @@ PR-head and merged-main CI runs verify it.** Tracking:
 [GitHub #73](https://github.com/anmolsansi/Recollect-Flow/issues/73) and
 [PR #74](https://github.com/anmolsansi/Recollect-Flow/pull/74).
 
+### BG-17 completion scope and final recovery policy
+
+The final BG-17 acceptance implementation is tracked by
+[PR #75](https://github.com/anmolsansi/Recollect-Flow/pull/75) and the
+[final closeout record](verification/BG-17_FINAL_CLOSEOUT.md). It adds
+metadata-only file recovery decisions and SHA-256 reselection verification,
+a bounded manual Retry cadence, and real browser cookie-expiration/login
+recovery proof. The supported capture form is still URL, text and note.
+
+This chapter deliberately **does not claim an implemented file uploader**.
+BG-17.025 is not applicable because automatic retries are disabled.
+BG-17.064 and BG-17.068 are not applicable until BG-18 adds the actual
+browser file picker, network upload, finalize and link stages. The file-stage
+model exists here to make BG-18 safe, not to replace its acceptance gate.
+This distinction is reflected in the 100-step checklist. Its final gate
+requires exact-head CI, merge and merged-main CI, never just a PR draft.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-17](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-17--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.

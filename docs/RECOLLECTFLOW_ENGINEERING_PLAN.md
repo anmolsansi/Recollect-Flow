@@ -76,6 +76,17 @@ count and size bounds. Browser Chrome/D1 testing and exact CI remain the
 acceptance gates. File upload and hash reselection belong to BG-18, not
 this browser text-capture implementation. No production deployment.
 
+## BG-17 acceptance completion candidate
+
+The stable browser recovery implementation from merged PR #74 is extended
+by [PR #75](https://github.com/anmolsansi/Recollect-Flow/pull/75).
+Metadata-only file stage guards and SHA-256 reselection verification prepare
+BG-18 without implementing its upload flow. Chrome/D1 reauthentication
+and bounded manual retry close the remaining non-file acceptance checks.
+[Final BG-17 scope and exceptions](verification/BG-17_FINAL_CLOSEOUT.md)
+record the conditional N/A status of BG-17.025, .064 and .068.
+Completion requires exact PR-head and merged-main CI evidence.
+
 ## Deliverables
 
 Create:
