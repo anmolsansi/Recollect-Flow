@@ -17,6 +17,8 @@ const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 export async function createBg21Preview({
   rootDir = process.cwd(),
   port = 8991,
+  adminToken = 'bg21-admin-' + randomUUID(),
+  captureToken = 'bg21-capture-' + randomUUID(),
 } = {}) {
   if (!existsSync(join(rootDir, 'apps/web/dist/release-manifest.json'))) {
     throw new Error(
@@ -26,8 +28,6 @@ export async function createBg21Preview({
   const tempDir = await mkdtemp(join(tmpdir(), 'recollect-bg21-'));
   const persistDir = join(tempDir, 'isolated-d1-r2');
   const origin = 'http://127.0.0.1:' + port;
-  const adminToken = 'bg21-admin-' + randomUUID();
-  const captureToken = 'bg21-capture-' + randomUUID();
   let worker;
   try {
     await runCommand(
