@@ -319,16 +319,18 @@ async function run() {
   const urlReason = 'bg22url' + runId;
   const textReason = 'bg22text' + runId;
   const noteReason = 'bg22note' + runId;
+  const textPhrase = 'bg22bodytext' + runId;
+  const notePhrase = 'bg22bodynote' + runId;
   const urlId = await saveText('url', url, urlReason, 'public');
   const textId = await saveText(
     'text',
-    'BG22 searchable text ' + runId,
+    'BG22 searchable text ' + textPhrase,
     textReason,
     'personal',
   );
   const noteId = await saveText(
     'note',
-    'BG22 private note ' + runId,
+    'BG22 private note ' + notePhrase,
     noteReason,
     'personal',
   );
@@ -341,6 +343,9 @@ async function run() {
   ]) {
     await searchByReason(reason, id);
   }
+
+  await searchByReason(textPhrase, textId);
+  await searchByReason(notePhrase, noteId);
 
   const fixtures = buildBrowserFixtures(runId);
   const png = fixtures.find((fixture) => fixture.kind === 'image');
@@ -376,7 +381,7 @@ async function run() {
   assert.equal(noteDetail.item.title, 'BG22 owner title ' + runId);
   assert.equal(noteDetail.item.project, 'BG22 Project ' + runId);
   assert.ok(noteDetail.item.review_at, 'Review date must persist');
-  assert.equal(noteDetail.item.raw_text, 'BG22 private note ' + runId);
+  assert.equal(noteDetail.item.raw_text, 'BG22 private note ' + notePhrase);
   const reviewShown = await evaluate(
     browser,
     'document.querySelector("input[type=datetime-local]")?.value',
