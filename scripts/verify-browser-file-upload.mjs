@@ -130,7 +130,11 @@ try {
       });
   browser = await openBrowser(runtime);
   await login(browser, runtime.webOrigin, adminToken);
-  const verifiedPdfId = await verifyOriginal('bg18.pdf', 'application/pdf', pdf);
+  const verifiedPdfId = await verifyOriginal(
+    'bg18.pdf',
+    'application/pdf',
+    pdf,
+  );
   await verifyOriginal('bg18.png', 'image/png', png);
 
   const invalidPath = join(folder, 'blocked.exe');
