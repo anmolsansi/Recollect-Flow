@@ -149,3 +149,19 @@ the original item destination and authorized API status 200.
 This is focused proof for `BG-22.046–.050` and `BG-22.078–.080`.
 It is a fresh local browser profile with isolated D1/R2, not a real
 external digest delivery, production session or remote HTTPS preview.
+
+## Explicit raw-source search and captured intent
+
+The full [CI #38149032742](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38149032742)
+verified distinct known phrases **inside** the submitted pasted text and
+private note, not only their reasons or titles. A separate full
+[CI #38149043326](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38149043326)
+also passed assertions that the browser-created image/PDF preserved the
+submitted reason, default unknown privacy, current processing state and
+original linked attachment hash. These prove source actions
+`BG-22.029`, `.030`, `.032`, and `.033`.
+
+The URL's internally acquired page phrase, screenshot OCR text, and PDF
+internal-text search (`.031`, `.034`, `.035`) are **not** proven by the
+above tests, because the isolated fixture must actually be acquired and
+indexed before it can legitimately match a query.
