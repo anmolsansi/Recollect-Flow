@@ -16,7 +16,8 @@ export interface CaptureDraft {
 
 export interface CapturePayload {
   idempotency_key: string;
-  source_type: CaptureMode;
+  source_type: CaptureMode | 'image' | 'file';
+  attachment_id?: string;
   source_app: string;
   captured_at: string;
   client: { name: string; version: string };
@@ -92,7 +93,9 @@ export function buildCapturePayload(
  */
 export function captureDraftFromPayload(payload: CapturePayload): CaptureDraft {
   return {
-    mode: payload.source_type,
+    mode: ['url', 'text', 'note'].includes(payload.source_type)
+      ? (payload.source_type as CaptureMode)
+      : 'note',
     url: payload.source_type === 'url' ? (payload.url ?? '') : '',
     sharedText:
       payload.source_type === 'url' ? '' : (payload.shared_text ?? ''),
