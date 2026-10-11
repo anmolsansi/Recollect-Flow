@@ -277,15 +277,28 @@ try {
 
   // A physical Enter key event must activate the focused submit control.
   await setValue('url', 'https://example.com/bg19-keyboard-' + marker);
-  await evaluate(browser, 'document.querySelector("button[type=submit]").focus()');
+  await evaluate(
+    browser,
+    'document.querySelector("button[type=submit]").focus()',
+  );
   await browser.client.send(
     'Input.dispatchKeyEvent',
-    { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 },
+    {
+      type: 'keyDown',
+      key: 'Enter',
+      code: 'Enter',
+      windowsVirtualKeyCode: 13,
+    },
     browser.sessionId,
   );
   await browser.client.send(
     'Input.dispatchKeyEvent',
-    { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 },
+    {
+      type: 'keyUp',
+      key: 'Enter',
+      code: 'Enter',
+      windowsVirtualKeyCode: 13,
+    },
     browser.sessionId,
   );
   await waitFor(
@@ -299,7 +312,11 @@ try {
   );
   assert.equal(statusAttributes.role, 'status');
   assert.equal(statusAttributes.live, 'polite');
-  assert.equal(statusAttributes.headingFocus, true, 'Saved heading must receive focus after async save');
+  assert.equal(
+    statusAttributes.headingFocus,
+    true,
+    'Saved heading must receive focus after async save',
+  );
   report('keyboard-submit-and-live-confirmation');
 
   report('BG19-browser-follow-up', {
