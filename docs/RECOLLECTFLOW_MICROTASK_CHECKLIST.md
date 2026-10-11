@@ -2742,16 +2742,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-20 / 01 — Establish task context
 
-- [ ] `BG-20.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-20.002` **Dependency:** Verify BG-19's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-20.003` **Baseline:** Record the actual checkout or release candidate used for BG-20.
-- [ ] `BG-20.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-20.005` **Evidence:** Check whether existing evidence already satisfies any BG-20 step; reference it instead of manufacturing work.
-- [ ] `BG-20.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-20.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-20.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-20.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-20.010` **Tracking:** Open a BG-20 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-20.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-20.002` **Dependency:** Verify BG-19's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-20.003` **Baseline:** Record the actual checkout or release candidate used for BG-20.
+- [x] `BG-20.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-20.005` **Evidence:** Check whether existing evidence already satisfies any BG-20 step; reference it instead of manufacturing work.
+- [x] `BG-20.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-20.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-20.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-20.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-20.010` **Tracking:** Open a BG-20 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-20 / 02 — Hosting inventory
 
