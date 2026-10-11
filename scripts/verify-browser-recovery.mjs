@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
+import { createBg21Preview } from './bg21-preview-runtime.mjs';
 import { waitUntil } from './browser-cdp.mjs';
 import {
   openBrowser,
@@ -37,6 +38,7 @@ async function enterText(value) {
     'Boolean(document.querySelector(\'input[name="mode"][value="note"]\').checked)',
     'note mode',
   );
+  await waitFor(browser, 'Boolean(document.querySelector(\'[name="shared_text"]\'))', 'note input rendered');
   await evaluate(
     browser,
     `(() => {
@@ -90,11 +92,13 @@ async function savedId() {
 }
 
 try {
-  runtime = await createLocalAcceptanceRuntime({
-    captureToken,
-    adminToken,
-    localWorkerToken: 'bg17-worker-' + randomUUID(),
-  });
+  runtime = process.argv.includes('--bundled')
+    ? await createBg21Preview({ port: 8994, captureToken, adminToken })
+    : await createLocalAcceptanceRuntime({
+        captureToken,
+        adminToken,
+        localWorkerToken: 'bg17-worker-' + randomUUID(),
+      });
   browser = await openBrowser(runtime);
   await login(browser, runtime.webOrigin, adminToken);
   await begin();
@@ -380,7 +384,9 @@ try {
 
   report('BG17-browser-recovery', {
     status: 'passed',
-    environment: 'isolated Worker/D1/Chrome',
+    environment: process.argv.includes('--bundled')
+      ? 'bundled Worker/Web, isolated D1/R2 and Chrome'
+      : 'isolated Worker/D1/Chrome',
   });
 } catch (error) {
   console.error(
