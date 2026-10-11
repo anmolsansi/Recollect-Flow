@@ -53,9 +53,9 @@ describe('BG-19 two-stage follow-up', () => {
       if (prior === undefined) delete process.env.TZ;
       else process.env.TZ = prior;
     }
-    expect(api.mock.calls[1][0]).toBe('/items/item-01');
-    expect(api.mock.calls[1][1].method).toBe('PATCH');
-    expect(JSON.parse(api.mock.calls[1][1].body)).toEqual({
+    expect(api.mock.calls[1]![0]).toBe('/items/item-01');
+    expect(api.mock.calls[1]![1].method).toBe('PATCH');
+    expect(JSON.parse(api.mock.calls[1]![1].body)).toEqual({
       edit_version: 4,
       project: 'Release notes',
       review_at: '2026-10-11T03:30:00.000Z',
