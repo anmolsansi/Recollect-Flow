@@ -237,6 +237,72 @@ describe('BG-18 single-file admission and durable replay', () => {
 });
 
 describe('BG-18 failure-boundary recovery', () => {
+  it('recovers an interrupted byte PUT without blindly transferring twice', async () => {
+    const original = await make();
+    let latest = original;
+    let transfers = 0;
+    vi.stubGlobal('fetch', vi.fn(async (path: string) => {
+      if (path.endsWith('/uploads/init')) return wrapped({
+        attachment_id: id,
+        upload_url: '/api/v1/uploads/' + id + '/content',
+        expires_at: beforeExpiry,
+      }, 201);
+      if (path.endsWith('/content')) {
+        transfers += 1;
+        throw new TypeError('Network disconnected after PUT');
+      }
+      if (path.endsWith('/status')) return wrapped({
+        attachment_id: id, status: 'uploaded', expires_at: beforeExpiry,
+        checksum: original.attachment?.sha256,
+        size_bytes: bytes.length, mime_type: 'application/pdf',
+      });
+      if (path.endsWith('/finalize')) return wrapped({
+        status: 'finalized', attachment_id: id,
+        checksum: original.attachment?.sha256,
+      });
+      if (path.endsWith('/captures')) return wrapped({
+        capture_id: 'saved', replayed: false, duplicate_of: null,
+        processing_status: 'pending',
+      });
+      throw new Error('Unexpected request ' + path);
+    }));
+    await expect(runFileCapture(original, pdf(), async (op) => { latest = op; }))
+      .rejects.toThrow('Network disconnected');
+    expect(latest.attachment?.stage).toBe('initialized');
+    expect((await runFileCapture(latest, null, async () => {})).capture_id).toBe('saved');
+    expect(transfers).toBe(1);
+  });
+
+  it('recovers lost finalization response by checking server state', async () => {
+    const original = await make();
+    let state: 'uploaded' | 'finalized' = 'uploaded';
+    const start: CaptureOperation = {
+      ...original,
+      attachment: { ...original.attachment!, stage: 'uploaded', attachmentId: id, expiresAt: beforeExpiry },
+    };
+    let finalizeCount = 0;
+    vi.stubGlobal('fetch', vi.fn(async (path: string) => {
+      if (path.endsWith('/status')) return wrapped({
+        attachment_id: id, status: state, expires_at: beforeExpiry,
+        checksum: original.attachment?.sha256,
+        size_bytes: bytes.length, mime_type: 'application/pdf',
+      });
+      if (path.endsWith('/finalize')) {
+        finalizeCount += 1;
+        state = 'finalized';
+        throw new TypeError('Finalize response lost');
+      }
+      if (path.endsWith('/captures')) return wrapped({
+        capture_id: 'saved', replayed: false, duplicate_of: null,
+        processing_status: 'pending',
+      });
+      throw new Error('Unexpected request ' + path);
+    }));
+    await expect(runFileCapture(start, null, async () => {})).rejects.toThrow('Finalize response lost');
+    expect((await runFileCapture(start, null, async () => {})).capture_id).toBe('saved');
+    expect(finalizeCount).toBe(1);
+  });
+
   it('checks uploaded state after ambiguous PUT without a second transfer', async () => {
     const source = await make();
     const starting: CaptureOperation = {
