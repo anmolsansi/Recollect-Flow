@@ -142,6 +142,20 @@ try {
   );
   report('BG18-rejected-type');
 
+  await browser.client.send(
+    'Emulation.setDeviceMetricsOverride',
+    { width: 390, height: 844, deviceScaleFactor: 1, mobile: true },
+    browser.sessionId,
+  );
+  await navigate(browser, runtime.webOrigin + '/capture/file');
+  const viewport = await evaluate(
+    browser,
+    '({ width: innerWidth, scroll: document.documentElement.scrollWidth })',
+  );
+  assert.ok(viewport.scroll <= viewport.width + 8, 'File form overflows mobile viewport');
+  report('BG18-mobile-upload-layout');
+
+
   report('BG18-browser-acceptance', {
     status: 'passed',
     environment: 'isolated Chrome, Worker/D1 and R2',
