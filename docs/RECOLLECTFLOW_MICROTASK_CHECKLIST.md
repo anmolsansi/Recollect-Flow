@@ -2794,16 +2794,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-20 / 05 — Canonical links
 
-- [ ] `BG-20.041` Choose canonical Web origin.
-- [ ] `BG-20.042` Validate URL scheme.
-- [ ] `BG-20.043` Normalize trailing slash behavior.
-- [ ] `BG-20.044` Update digest base URL plan.
-- [ ] `BG-20.045` Keep preview links separate.
-- [ ] `BG-20.046` Keep production links stable.
-- [ ] `BG-20.047` Define exact item route format.
-- [ ] `BG-20.048` Test logged-out deep link concept.
-- [ ] `BG-20.049` Avoid secrets in item links.
-- [ ] `BG-20.050` Record origin configuration owner.
+- [x] `BG-20.041` Choose canonical Web origin.
+- [x] `BG-20.042` Validate URL scheme.
+- [x] `BG-20.043` Normalize trailing slash behavior.
+- [x] `BG-20.044` Update digest base URL plan.
+- [x] `BG-20.045` Keep preview links separate.
+- [x] `BG-20.046` Keep production links stable.
+- [x] `BG-20.047` Define exact item route format.
+- [x] `BG-20.048` Test logged-out deep link concept.
+- [x] `BG-20.049` Avoid secrets in item links.
+- [x] `BG-20.050` Record origin configuration owner.
 
 #### BG-20 / 06 — Route precedence
 
