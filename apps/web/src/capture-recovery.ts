@@ -192,8 +192,8 @@ export function parseCaptureOperation(
     ...(value.followUp
       ? {
           followUp: {
-            project: (value.followUp as Record<string, string>).project,
-            reviewLocal: (value.followUp as Record<string, string>).reviewLocal,
+            project: (value.followUp as FollowUpDraft).project,
+            reviewLocal: (value.followUp as FollowUpDraft).reviewLocal,
           },
         }
       : {}),
