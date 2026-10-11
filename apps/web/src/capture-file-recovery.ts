@@ -51,9 +51,12 @@ export function validateFileRecoveryReference(
     )
   )
     return false;
-  if (ref.reservationKey !== undefined &&
-      (typeof ref.reservationKey !== 'string' ||
-       !UUID_PATTERN.test(ref.reservationKey))) return false;
+  if (
+    ref.reservationKey !== undefined &&
+    (typeof ref.reservationKey !== 'string' ||
+      !UUID_PATTERN.test(ref.reservationKey))
+  )
+    return false;
   if (
     ref.attachmentId !== undefined &&
     (typeof ref.attachmentId !== 'string' ||
