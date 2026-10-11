@@ -98,12 +98,12 @@ function checkedInit(result: InitResult): InitResult {
   return result;
 }
 
-async function uploadOriginalBytes(id: string, file: File, mime: string): Promise<void> {
+async function uploadOriginalBytes(id: string, file: File, mime: string, signal?: AbortSignal): Promise<void> {
   // Never set Content-Length manually: browsers own it. Keep this URL same-origin.
   const response = await fetch('/api/v1/uploads/' + id + '/content', {
     method: 'PUT', credentials: 'include',
     headers: { 'Content-Type': mime },
-    body: file,
+    body: file, signal,
   });
   if (response.ok) return;
   const payload = await response.json().catch(() => null) as
@@ -114,6 +114,7 @@ async function uploadOriginalBytes(id: string, file: File, mime: string): Promis
 export async function runFileCapture(
   original: CaptureOperation, file: File | null,
   onChange: (operation: CaptureOperation, stage: SaveStage) => Promise<void>,
+  signal?: AbortSignal,
 ): Promise<FileCaptureResult> {
   if (!original.attachment) throw new Error('Missing original file metadata.');
   let operation = original;
@@ -128,7 +129,7 @@ export async function runFileCapture(
   };
   // A restored stage is never trusted as server authority. Recover unknown PUT/finalize outcomes.
   if (reference.attachmentId) {
-    const state = await fetchApi<UploadStatus>('/uploads/' + reference.attachmentId + '/status');
+    const state = await fetchApi<UploadStatus>('/uploads/' + reference.attachmentId + '/status', { signal });
     if (state.attachment_id !== reference.attachmentId || state.size_bytes !== reference.byteLength ||
         state.mime_type !== reference.mimeType ||
         (state.checksum && state.checksum !== reference.sha256)) {
@@ -158,20 +159,20 @@ export async function runFileCapture(
         content_hash: reference.sha256,
         source_type: MIME_IMAGE.has(reference.mimeType) ? 'image' :
           reference.mimeType.startsWith('audio/') ? 'audio' : 'file',
-      }),
+      }), signal,
     }));
     await advance({ ...reference, stage: 'initialized', attachmentId: init.attachment_id, expiresAt: init.expires_at }, 'Uploading file');
   }
   if (reference.stage === 'initialized') {
     await onChange(operation, 'Uploading file');
-    await uploadOriginalBytes(reference.attachmentId!, file!, reference.mimeType);
+    await uploadOriginalBytes(reference.attachmentId!, file!, reference.mimeType, signal);
     await advance({ ...reference, stage: 'uploaded' }, 'Finalizing upload');
   }
   if (reference.stage === 'uploaded') {
     await onChange(operation, 'Finalizing upload');
     const finalized = await fetchApi<{status: string; attachment_id: string; checksum: string}>(
       '/uploads/' + reference.attachmentId + '/finalize',
-      { method: 'POST', body: JSON.stringify({ checksum: reference.sha256 }) },
+      { method: 'POST', body: JSON.stringify({ checksum: reference.sha256 }), signal },
     );
     if (finalized.status !== 'finalized' || finalized.attachment_id !== reference.attachmentId ||
         finalized.checksum !== reference.sha256) throw new Error('Finalization did not confirm original file integrity.');
@@ -181,6 +182,6 @@ export async function runFileCapture(
     throw new Error('Cannot save a capture before the file is finalized.');
   await onChange(operation, 'Saving item');
   return fetchApi<FileCaptureResult>('/captures', {
-    method: 'POST', body: JSON.stringify(operation.payload),
+    method: 'POST', body: JSON.stringify(operation.payload), signal,
   });
 }
