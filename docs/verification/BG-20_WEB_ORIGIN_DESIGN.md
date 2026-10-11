@@ -259,7 +259,7 @@ The BG-20 outcome is a documented production hosting decision: one concrete cano
 
 **Docs contract:** This evidence document complements a concise current-state explanation in `RECOLLECTFLOW_BUILD_GUIDE.md`, deployment runbook in `OPERATIONS.md`, and engineering/release gate notes. The canonical checklist and GitHub issue must reflect precisely reviewed work, not promised tests.
 
-**Gate rule:** BG-20.100 may be marked complete only after the final design document and related documentation are on merged `main`, exact PR-head CI succeeds, merged-main CI succeeds, and the review record states that BG-21 is unlocked *for implementation only*. Missing actual production Web hosting, preview browser tests and physical phone tests are not BG-20 passes and remain explicitly under later work.
+**Gate rule:** BG-20.100 may be marked complete only after the final design document and related documentation are on merged `main`, exact PR-head CI succeeds, merged-main CI succeeds, and the review record states that BG-21 is unlocked _for implementation only_. Missing actual production Web hosting, preview browser tests and physical phone tests are not BG-20 passes and remain explicitly under later work.
 
 ## 9. Engineering decision log and open verification owners
 
@@ -302,4 +302,3 @@ The BG-20 outcome is a documented production hosting decision: one concrete cano
 - Repository review: confirm only BG-20 files changed and all microcommits trace issue #81.
 - Proof review: record PR-head CI, merge SHA and merged-main CI **only when observed**, never pre-fill evidence.
 - Closeout: update issue, canonical checklist and task status after final merged-main check, then unlock BG-21 development.
-
