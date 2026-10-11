@@ -15,18 +15,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Temporary BG22_DOCS_FORMAT diagnostic
-        run: |
-          npx prettier --write docs/BUILD_STATUS.md docs/verification/BG-22_BROWSER_CREATION_ACCEPTANCE.md
-          echo 'BG22_DOCS_FORMAT_0_BEGIN'
-          base64 -w0 docs/BUILD_STATUS.md
-          echo
-          echo 'BG22_DOCS_FORMAT_0_END'
-          echo 'BG22_DOCS_FORMAT_1_BEGIN'
-          base64 -w0 docs/verification/BG-22_BROWSER_CREATION_ACCEPTANCE.md
-          echo
-          echo 'BG22_DOCS_FORMAT_1_END'
-          exit 1
       - run: npm run check
       - run: npm run release:package:test
       - run: npm run release:package
