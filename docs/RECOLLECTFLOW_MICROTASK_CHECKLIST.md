@@ -2466,132 +2466,132 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-18 / 01 — Establish task context
 
-- [ ] `BG-18.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-18.002` **Dependency:** Verify BG-17's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-18.003` **Baseline:** Record the actual checkout or release candidate used for BG-18.
-- [ ] `BG-18.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-18.005` **Evidence:** Check whether existing evidence already satisfies any BG-18 step; reference it instead of manufacturing work.
-- [ ] `BG-18.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-18.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-18.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-18.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-18.010` **Tracking:** Open a BG-18 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-18.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-18.002` **Dependency:** Verify BG-17's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-18.003` **Baseline:** Record the actual checkout or release candidate used for BG-18.
+- [x] `BG-18.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-18.005` **Evidence:** Check whether existing evidence already satisfies any BG-18 step; reference it instead of manufacturing work.
+- [x] `BG-18.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-18.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-18.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-18.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-18.010` **Tracking:** Open a BG-18 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-18 / 02 — File admission
 
-- [ ] `BG-18.011` Add single-file selection control.
-- [ ] `BG-18.012` Define supported V1 types.
-- [ ] `BG-18.013` Read actual size ceiling.
-- [ ] `BG-18.014` Distinguish decimal bytes from MiB.
-- [ ] `BG-18.015` Reject oversized selection visibly.
-- [ ] `BG-18.016` Reject unsupported obvious MIME.
-- [ ] `BG-18.017` Preserve server signature authority.
-- [ ] `BG-18.018` Label selected file accessibly.
-- [ ] `BG-18.019` Show selected size safely.
-- [ ] `BG-18.020` Avoid implying batch upload support.
+- [x] `BG-18.011` Add single-file selection control.
+- [x] `BG-18.012` Define supported V1 types.
+- [x] `BG-18.013` Read actual size ceiling.
+- [x] `BG-18.014` Distinguish decimal bytes from MiB.
+- [x] `BG-18.015` Reject oversized selection visibly.
+- [x] `BG-18.016` Reject unsupported obvious MIME.
+- [x] `BG-18.017` Preserve server signature authority.
+- [x] `BG-18.018` Label selected file accessibly.
+- [x] `BG-18.019` Show selected size safely.
+- [x] `BG-18.020` Avoid implying batch upload support.
 
 #### BG-18 / 03 — Checksum preparation
 
-- [ ] `BG-18.021` Read original file bytes safely.
-- [ ] `BG-18.022` Compute SHA-256 checksum.
-- [ ] `BG-18.023` Bound browser memory use.
-- [ ] `BG-18.024` Preserve original byte length.
-- [ ] `BG-18.025` Store hash with operation.
-- [ ] `BG-18.026` Store filename with operation.
-- [ ] `BG-18.027` Store MIME with operation.
-- [ ] `BG-18.028` Handle read failure.
-- [ ] `BG-18.029` Handle user cancellation.
-- [ ] `BG-18.030` Avoid modifying original bytes.
+- [x] `BG-18.021` Read original file bytes safely.
+- [x] `BG-18.022` Compute SHA-256 checksum.
+- [x] `BG-18.023` Bound browser memory use.
+- [x] `BG-18.024` Preserve original byte length.
+- [x] `BG-18.025` Store hash with operation.
+- [x] `BG-18.026` Store filename with operation.
+- [x] `BG-18.027` Store MIME with operation.
+- [x] `BG-18.028` Handle read failure.
+- [x] `BG-18.029` Handle user cancellation.
+- [x] `BG-18.030` Avoid modifying original bytes.
 
 #### BG-18 / 04 — Upload initialization
 
-- [ ] `BG-18.031` Build strict init payload.
-- [ ] `BG-18.032` Map upload source type.
-- [ ] `BG-18.033` Include optional content_hash.
-- [ ] `BG-18.034` Send authenticated init request.
-- [ ] `BG-18.035` Check response status.
-- [ ] `BG-18.036` Validate returned attachment ID.
-- [ ] `BG-18.037` Retain upload URL.
-- [ ] `BG-18.038` Retain expiry information if returned.
-- [ ] `BG-18.039` Persist initialized operation stage.
-- [ ] `BG-18.040` Avoid repeated initialization on uncertain response.
+- [x] `BG-18.031` Build strict init payload.
+- [x] `BG-18.032` Map upload source type.
+- [x] `BG-18.033` Include optional content_hash.
+- [x] `BG-18.034` Send authenticated init request.
+- [x] `BG-18.035` Check response status.
+- [x] `BG-18.036` Validate returned attachment ID.
+- [x] `BG-18.037` Retain upload URL.
+- [x] `BG-18.038` Retain expiry information if returned.
+- [x] `BG-18.039` Persist initialized operation stage.
+- [x] `BG-18.040` Avoid repeated initialization on uncertain response.
 
 #### BG-18 / 05 — Byte transfer
 
-- [ ] `BG-18.041` Use returned upload route.
-- [ ] `BG-18.042` Send original bytes.
-- [ ] `BG-18.043` Set appropriate content type.
-- [ ] `BG-18.044` Let browser manage Content-Length.
-- [ ] `BG-18.045` Show accurate or indeterminate progress.
-- [ ] `BG-18.046` Handle transfer abort.
-- [ ] `BG-18.047` Handle network disconnect.
-- [ ] `BG-18.048` Handle unauthorized transfer response.
-- [ ] `BG-18.049` Retain operation on failure.
-- [ ] `BG-18.050` Verify upload success before finalization.
+- [x] `BG-18.041` Use returned upload route.
+- [x] `BG-18.042` Send original bytes.
+- [x] `BG-18.043` Set appropriate content type.
+- [x] `BG-18.044` Let browser manage Content-Length.
+- [x] `BG-18.045` Show accurate or indeterminate progress.
+- [x] `BG-18.046` Handle transfer abort.
+- [x] `BG-18.047` Handle network disconnect.
+- [x] `BG-18.048` Handle unauthorized transfer response.
+- [x] `BG-18.049` Retain operation on failure.
+- [x] `BG-18.050` Verify upload success before finalization.
 
 #### BG-18 / 06 — Finalization
 
-- [ ] `BG-18.051` Build checksum finalize payload.
-- [ ] `BG-18.052` Send authenticated finalize request.
-- [ ] `BG-18.053` Validate successful lifecycle result.
-- [ ] `BG-18.054` Preserve finalized attachment ID.
-- [ ] `BG-18.055` Handle checksum mismatch.
-- [ ] `BG-18.056` Handle size mismatch.
-- [ ] `BG-18.057` Handle signature rejection.
-- [ ] `BG-18.058` Handle expired upload.
-- [ ] `BG-18.059` Handle lost finalize response.
-- [ ] `BG-18.060` Reconcile status before repeating work.
+- [x] `BG-18.051` Build checksum finalize payload.
+- [x] `BG-18.052` Send authenticated finalize request.
+- [x] `BG-18.053` Validate successful lifecycle result.
+- [x] `BG-18.054` Preserve finalized attachment ID.
+- [x] `BG-18.055` Handle checksum mismatch.
+- [x] `BG-18.056` Handle size mismatch.
+- [x] `BG-18.057` Handle signature rejection.
+- [x] `BG-18.058` Handle expired upload.
+- [x] `BG-18.059` Handle lost finalize response.
+- [x] `BG-18.060` Reconcile status before repeating work.
 
 #### BG-18 / 07 — Canonical linking
 
-- [ ] `BG-18.061` Build capture payload with attachment_id.
-- [ ] `BG-18.062` Preserve stable capture key.
-- [ ] `BG-18.063` Preserve original capture timestamp.
-- [ ] `BG-18.064` Preserve user reason.
-- [ ] `BG-18.065` Preserve privacy selection.
-- [ ] `BG-18.066` Map image/file source correctly.
-- [ ] `BG-18.067` Map approved audio to file capture.
-- [ ] `BG-18.068` Send canonical capture request.
-- [ ] `BG-18.069` Show Saved only after confirmation.
-- [ ] `BG-18.070` Retain canonical capture ID.
+- [x] `BG-18.061` Build capture payload with attachment_id.
+- [x] `BG-18.062` Preserve stable capture key.
+- [x] `BG-18.063` Preserve original capture timestamp.
+- [x] `BG-18.064` Preserve user reason.
+- [x] `BG-18.065` Preserve privacy selection.
+- [x] `BG-18.066` Map image/file source correctly.
+- [x] `BG-18.067` Map approved audio to file capture.
+- [x] `BG-18.068` Send canonical capture request.
+- [x] `BG-18.069` Show Saved only after confirmation.
+- [x] `BG-18.070` Retain canonical capture ID.
 
 #### BG-18 / 08 — Resume and cleanup
 
-- [ ] `BG-18.071` Resume from confirmed stage.
-- [ ] `BG-18.072` Add scoped status API only if needed.
-- [ ] `BG-18.073` Avoid deleting possibly linked object.
-- [ ] `BG-18.074` Reinitialize expired upload deliberately.
-- [ ] `BG-18.075` Update operation with replacement ID.
-- [ ] `BG-18.076` Leave abandoned object to safe cleanup.
-- [ ] `BG-18.077` Preserve retry state after link failure.
-- [ ] `BG-18.078` Clear successful local operation.
-- [ ] `BG-18.079` Keep unrelated uploads untouched.
-- [ ] `BG-18.080` Document cleanup ownership boundary.
+- [x] `BG-18.071` Resume from confirmed stage.
+- [x] `BG-18.072` Add scoped status API only if needed.
+- [x] `BG-18.073` Avoid deleting possibly linked object.
+- [x] `BG-18.074` Reinitialize expired upload deliberately.
+- [x] `BG-18.075` Update operation with replacement ID.
+- [x] `BG-18.076` Leave abandoned object to safe cleanup.
+- [x] `BG-18.077` Preserve retry state after link failure.
+- [x] `BG-18.078` Clear successful local operation.
+- [x] `BG-18.079` Keep unrelated uploads untouched.
+- [x] `BG-18.080` Document cleanup ownership boundary.
 
 #### BG-18 / 09 — Upload regression
 
-- [ ] `BG-18.081` Test valid PDF round trip.
-- [ ] `BG-18.082` Test image round trip.
-- [ ] `BG-18.083` Test interrupted byte PUT.
-- [ ] `BG-18.084` Test interrupted finalize.
-- [ ] `BG-18.085` Test lost capture response.
-- [ ] `BG-18.086` Test same-key repeated retry.
-- [ ] `BG-18.087` Test expired upload restart.
-- [ ] `BG-18.088` Test bad signature rejection.
-- [ ] `BG-18.089` Test over-limit admission.
-- [ ] `BG-18.090` Assert one intended linked object.
+- [x] `BG-18.081` Test valid PDF round trip.
+- [x] `BG-18.082` Test image round trip.
+- [x] `BG-18.083` Test interrupted byte PUT.
+- [x] `BG-18.084` Test interrupted finalize.
+- [x] `BG-18.085` Test lost capture response.
+- [x] `BG-18.086` Test same-key repeated retry.
+- [x] `BG-18.087` Test expired upload restart.
+- [x] `BG-18.088` Test bad signature rejection.
+- [x] `BG-18.089` Test over-limit admission.
+- [x] `BG-18.090` Assert one intended linked object.
 
 #### BG-18 / 10 — Verify and close this task
 
-- [ ] `BG-18.091` **Review:** Compare the completed checklist with BG-18's stated outcome; identify uncovered behavior.
-- [ ] `BG-18.092` **Verification:** Run or inspect the focused proof required by BG-18; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-18.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-18.094` **Integrity:** Check that BG-18 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-18.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-18.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-18.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-18.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-18.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-18.091` **Review:** Compare the completed checklist with BG-18's stated outcome; identify uncovered behavior.
+- [x] `BG-18.092` **Verification:** Run or inspect the focused proof required by BG-18; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-18.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-18.094` **Integrity:** Check that BG-18 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-18.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-18.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-18.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-18.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-18.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-18.100` **Gate:** Check the parent completion boundary and record whether BG-19 is unlocked.
 
 ## BG-19 — 100 executable microtasks
