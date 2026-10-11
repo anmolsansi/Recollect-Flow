@@ -1,4 +1,4 @@
-/* global process, console */
+/* global process, console, URL */
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
