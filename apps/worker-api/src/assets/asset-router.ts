@@ -17,7 +17,11 @@ function withCacheHeaders(response: Response, cacheControl: string): Response {
   const headers = new Headers(response.headers);
   headers.set('Cache-Control', cacheControl);
   headers.set('X-Content-Type-Options', 'nosniff');
-  return new Response(response.body, { status: response.status, headers });
+  // A 304 has no response body. Preserve conditional ETag replies on reload.
+  return new Response(response.status === 304 ? null : response.body, {
+    status: response.status,
+    headers,
+  });
 }
 
 /** Returns null for requests which must instead be handled by Hono. */
@@ -50,7 +54,7 @@ export async function servePublicAsset(
     headers: request.headers,
   });
   const response = await assets.fetch(assetRequest);
-  if (!response.ok) {
+  if (response.status !== 304 && !response.ok) {
     // Never return a stale HTML shell to a failed script/style request.
     return new Response('Asset unavailable', {
       status: response.status === 404 ? 404 : 503,
