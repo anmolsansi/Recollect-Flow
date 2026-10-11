@@ -73,7 +73,28 @@ layout; long messages wrap rather than overflow.
   `follow-up-date.test.ts` test version conflicts, duplicate preservation,
   recovered PATCH responses, empty values, Asia/Kolkata and New York DST.
 
-**Verification gate:** CI and independent merged-main acceptance must be
-confirmed against exact commit/run IDs before BG-19.091–100 are marked complete.
-A checked box only records tested behavior, never planned implementation.
-No production or physical-device acceptance is implied.
+## Final repository acceptance, October 11, 2026
+
+- [PR #80](https://github.com/anmolsansi/Recollect-Flow/pull/80)
+  merged as `d17fb544721ec66e5a25773bcf52cd3c432dd4cf`, preserving its
+  microcommit history.
+- [Exact PR-head CI #38131123654](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38131123654)
+  **passed** at `7335c0b941aebedcd0776634aee849d4fa95cf0b`.
+- [Merged-main CI #38131384768](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38131384768)
+  **passed** at `d17fb544721ec66e5a25773bcf52cd3c432dd4cf`.
+- Web tests include nine versioned follow-up cases and three timezone
+  conversion cases, including Asia/Kolkata and America/New_York DST.
+- Isolated real Chrome/Worker/D1 acceptance confirmed canonical capture and
+  versioned project/review updates; UTC/local round trip; injected lost
+  metadata response and metadata-only retry; duplicate metadata protection;
+  field-linked validation and focus; a narrow viewport and a zoom-equivalent
+  viewport; and keyboard Enter with accessible live Saved confirmation.
+- All existing browser upload, recovery, download, acquisition, workflow
+  and source-recovery regression suites passed.
+- Canonical [BG-19 100-step checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-19--100-executable-microtasks)
+  is **100/100**. BG-20 is unblocked for repository implementation.
+- No production release, production data mutation, real outbound messaging,
+  or physical-iPhone acceptance was authorized or performed. Browser zoom
+  coverage is viewport emulation, not a physical device certification.
+
+This is a repository acceptance gate, not a production rollout.

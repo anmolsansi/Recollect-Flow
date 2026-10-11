@@ -102,10 +102,10 @@ passed Chrome/Worker/D1/R2 PDF and PNG round-trip byte-hash checks and
 existing regressions. BG-19 may start. No production deployment,
 remote migration or physical-device acceptance is included.
 
-## BG-19 versioned follow-up metadata (under review)
+## BG-19 versioned follow-up metadata (repository complete)
 
 BG-19 is tracked in [issue #79](https://github.com/anmolsansi/Recollect-Flow/issues/79)
-and [draft PR #80](https://github.com/anmolsansi/Recollect-Flow/pull/80).
+and [merged PR #80](https://github.com/anmolsansi/Recollect-Flow/pull/80).
 The capture request remains strict; after capture confirmation, browser clients
 read the canonical item and patch only requested nonconflicting project/review
 metadata with its current `edit_version`. Partial follow-up errors leave
@@ -118,8 +118,12 @@ existing Worker item PATCH route, no new database migrations, services or
 changed public capture contracts. Optional browser recovery is metadata-only,
 bounded, and cleared on logout. The
 [verification record](verification/BG-19_FOLLOW_UP_FIELDS.md)
-lists tests and rollout limits. Full CI/Chrome/merged-main verification is
-required before marking BG-20 unlocked. Production deployment is excluded.
+lists tests and rollout limits. Exact PR-head
+[CI #38131123654](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38131123654)
+and merged-main
+[CI #38131384768](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38131384768)
+passed. The BG-19 checklist is 100/100 and BG-20 is unlocked for development.
+Production deployment and device-specific acceptance remain excluded.
 
 ## Deliverables
 

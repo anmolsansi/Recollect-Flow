@@ -2721,16 +2721,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-19 / 10 — Verify and close this task
 
-- [ ] `BG-19.091` **Review:** Compare the completed checklist with BG-19's stated outcome; identify uncovered behavior.
-- [ ] `BG-19.092` **Verification:** Run or inspect the focused proof required by BG-19; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-19.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-19.094` **Integrity:** Check that BG-19 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-19.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-19.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-19.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-19.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-19.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-19.100` **Gate:** Check the parent completion boundary and record whether BG-20 is unlocked.
+- [x] `BG-19.091` **Review:** Compare the completed checklist with BG-19's stated outcome; identify uncovered behavior.
+- [x] `BG-19.092` **Verification:** Run or inspect the focused proof required by BG-19; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-19.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-19.094` **Integrity:** Check that BG-19 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-19.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-19.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-19.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-19.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-19.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-19.100` **Gate:** Check the parent completion boundary and record whether BG-20 is unlocked.
 
 ## BG-20 — 100 executable microtasks
 

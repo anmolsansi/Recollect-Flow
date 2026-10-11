@@ -2303,10 +2303,10 @@ Follow the [100 microtasks for BG-18](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-18
 
 ## 25. BG-19 — Complete follow-up fields and accessible success/error behavior
 
-### Current BG-19 implementation (verification pending)
+### BG-19 implementation and acceptance (repository complete)
 
-The browser implementation is being developed on
-[`feat/bg-19-follow-up-fields`](https://github.com/anmolsansi/Recollect-Flow/pull/80)
+The browser implementation was merged through
+[PR #80](https://github.com/anmolsansi/Recollect-Flow/pull/80)
 under [issue #79](https://github.com/anmolsansi/Recollect-Flow/issues/79).
 The current source keeps `POST /captures` strict, then reads the saved item
 and applies project/review metadata with `PATCH /items/:id` and its actual
@@ -2324,8 +2324,12 @@ editor, and invalid/nonexistent/ambiguous local times are rejected.
 
 [Detailed BG-19 implementation and verification record](verification/BG-19_FOLLOW_UP_FIELDS.md)
 describes API contracts, source locations, recovery and failure behavior.
-BG-19 is **not complete** until full CI, isolated browser acceptance and
-merged-main checks pass. No production deployment or physical-iPhone claim.
+BG-19 is **complete in the repository**: exact PR-head
+[CI #38131123654](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38131123654)
+and merged-main [CI #38131384768](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38131384768)
+passed the full Worker/Web and Chrome/Worker/D1 browser suite. The canonical
+100-step checklist is complete. BG-20 is unlocked for development only.
+Production deployment and physical-iPhone acceptance remain separate.
 
 **What and why.** The mobile specification asks for project and review date, but
 those are not fields in the current capture schema. Adding them to a strict capture
