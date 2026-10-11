@@ -20,26 +20,35 @@ const item = (overrides: Record<string, unknown> = {}) => ({
 describe('BG-19 two-stage follow-up', () => {
   it('does not add metadata to the strict capture payload or call item API if empty', async () => {
     const api = vi.fn();
-    expect(await applyCaptureFollowUp('item-01', null, emptyFollowUp(), api))
-      .toEqual({ status: 'none' });
+    expect(
+      await applyCaptureFollowUp('item-01', null, emptyFollowUp(), api),
+    ).toEqual({ status: 'none' });
     expect(api).not.toHaveBeenCalled();
   });
 
   it('GETs version, PATCHes only project/review and verifies server state', async () => {
-    const api = vi.fn()
+    const api = vi
+      .fn()
       .mockResolvedValueOnce(item())
       .mockResolvedValueOnce({ item_id: 'item-01', edit_version: 5 })
-      .mockResolvedValueOnce(item({
-        edit_version: 5,
-        project: 'Release notes',
-        review_at: '2026-10-11T03:30:00.000Z',
-      }));
+      .mockResolvedValueOnce(
+        item({
+          edit_version: 5,
+          project: 'Release notes',
+          review_at: '2026-10-11T03:30:00.000Z',
+        }),
+      );
     const prior = process.env.TZ;
     try {
       process.env.TZ = 'Asia/Kolkata';
-      await expect(applyCaptureFollowUp(
-        'item-01', null, { project: ' Release notes ', reviewLocal: '2026-10-11T09:00' }, api,
-      )).resolves.toEqual({ status: 'applied' });
+      await expect(
+        applyCaptureFollowUp(
+          'item-01',
+          null,
+          { project: ' Release notes ', reviewLocal: '2026-10-11T09:00' },
+          api,
+        ),
+      ).resolves.toEqual({ status: 'applied' });
     } finally {
       if (prior === undefined) delete process.env.TZ;
       else process.env.TZ = prior;
@@ -55,45 +64,75 @@ describe('BG-19 two-stage follow-up', () => {
 
   it('never overwrites metadata on an older canonical duplicate', async () => {
     const api = vi.fn().mockResolvedValue(item({ project: 'Original' }));
-    await expect(applyCaptureFollowUp(
-      'item-01', 'item-00', { project: 'New', reviewLocal: '' }, api,
-    )).resolves.toEqual({ status: 'duplicate' });
+    await expect(
+      applyCaptureFollowUp(
+        'item-01',
+        'item-00',
+        { project: 'New', reviewLocal: '' },
+        api,
+      ),
+    ).resolves.toEqual({ status: 'duplicate' });
     expect(api).toHaveBeenCalledTimes(1);
   });
 
   it('does not overwrite a concurrent owner edit', async () => {
-    const api = vi.fn().mockResolvedValue(item({ project: 'Existing project' }));
-    await expect(applyCaptureFollowUp(
-      'item-01', null, { project: 'Different project', reviewLocal: '' }, api,
-    )).resolves.toEqual({ status: 'conflict' });
+    const api = vi
+      .fn()
+      .mockResolvedValue(item({ project: 'Existing project' }));
+    await expect(
+      applyCaptureFollowUp(
+        'item-01',
+        null,
+        { project: 'Different project', reviewLocal: '' },
+        api,
+      ),
+    ).resolves.toEqual({ status: 'conflict' });
     expect(api).toHaveBeenCalledTimes(1);
   });
 
   it('returns conflict instead of blindly replaying a versioned PATCH', async () => {
-    const api = vi.fn()
+    const api = vi
+      .fn()
       .mockResolvedValueOnce(item())
       .mockRejectedValueOnce(new ApiError('stale', 409, 'VERSION_CONFLICT'));
-    await expect(applyCaptureFollowUp(
-      'item-01', null, { project: 'New', reviewLocal: '' }, api,
-    )).resolves.toEqual({ status: 'conflict' });
+    await expect(
+      applyCaptureFollowUp(
+        'item-01',
+        null,
+        { project: 'New', reviewLocal: '' },
+        api,
+      ),
+    ).resolves.toEqual({ status: 'conflict' });
   });
 
   it('reconciles a prior successful PATCH from server state on retry', async () => {
     const api = vi.fn().mockResolvedValue(item({ project: 'Already there' }));
-    await expect(applyCaptureFollowUp(
-      'item-01', null, { project: 'Already there', reviewLocal: '' }, api,
-    )).resolves.toEqual({ status: 'applied' });
+    await expect(
+      applyCaptureFollowUp(
+        'item-01',
+        null,
+        { project: 'Already there', reviewLocal: '' },
+        api,
+      ),
+    ).resolves.toEqual({ status: 'applied' });
     expect(api).toHaveBeenCalledTimes(1);
   });
 
   it('surfaces a network error without pretending capture itself failed', async () => {
     const api = vi.fn().mockRejectedValue(new Error('Network unavailable'));
-    await expect(applyCaptureFollowUp(
-      'item-01', null, { project: 'New', reviewLocal: '' }, api,
-    )).rejects.toThrow('Network unavailable');
+    await expect(
+      applyCaptureFollowUp(
+        'item-01',
+        null,
+        { project: 'New', reviewLocal: '' },
+        api,
+      ),
+    ).rejects.toThrow('Network unavailable');
   });
 
   it('validates bad date locally and reports the input field', () => {
-    expect(validateFollowUp({ project: '', reviewLocal: 'broken' }).review_at).toBeTruthy();
+    expect(
+      validateFollowUp({ project: '', reviewLocal: 'broken' }).review_at,
+    ).toBeTruthy();
   });
 });
