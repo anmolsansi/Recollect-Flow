@@ -89,6 +89,18 @@ Exact PR-head [CI #38119506197](https://github.com/anmolsansi/Recollect-Flow/act
 and merged-main [CI #38119715846](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38119715846)
 passed. BG-18 remains responsible for actual browser uploads.
 
+## BG-18 browser attachment workflow (validation candidate)
+
+[Issue #77](https://github.com/anmolsansi/Recollect-Flow/issues/77)
+tracks the [100-step BG-18 checklist](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-18--100-executable-microtasks)
+through 50 paired progress entries. [Draft PR #78](https://github.com/anmolsansi/Recollect-Flow/pull/78)
+adds one-file upload, server admission/status reads, checksummed
+init/PUT/finalize/link, metadata-only resume and browser-facing retry UI.
+The PDF/PNG Chrome and local D1/R2 acceptance is part of the PR CI gate.
+Do not claim BG-18 complete until exact-commit CI, documented failure cases,
+canonical checklist reconciliation and merged-main verification pass. No
+production deployment or remote migrations are included.
+
 ## Deliverables
 
 Create:
