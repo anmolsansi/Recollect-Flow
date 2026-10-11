@@ -23,6 +23,7 @@ jobs:
       - run: google-chrome --version
       - run: npm run browser:hosting:test
       - run: npm run browser:creation:test
+      - run: node scripts/verify-browser-optional-outage.mjs
       - run: node scripts/verify-browser-follow-up.mjs --bundled
       - run: node scripts/verify-browser-recovery.mjs --bundled
       - run: node scripts/verify-browser-file-upload.mjs --bundled
