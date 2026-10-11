@@ -1,0 +1,18 @@
+name: BG17 documentation formatting
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: |
+          npx prettier --write docs/verification/BG-17_FINAL_CLOSEOUT.md docs/RECOLLECTFLOW_MICROTASK_CHECKLIST.md docs/RECOLLECTFLOW_BUILD_GUIDE.md docs/RELEASE_ROADMAP.md docs/RECOLLECTFLOW_ENGINEERING_PLAN.md docs/verification/BG-17_BROWSER_RECOVERY.md
+          node -e 'const fs=require("fs");for(const p of ["docs/verification/BG-17_FINAL_CLOSEOUT.md","docs/RECOLLECTFLOW_MICROTASK_CHECKLIST.md","docs/RECOLLECTFLOW_BUILD_GUIDE.md","docs/RELEASE_ROADMAP.md","docs/RECOLLECTFLOW_ENGINEERING_PLAN.md","docs/verification/BG-17_BROWSER_RECOVERY.md"]){process.stdout.write("BG17_DOC_JSON "+JSON.stringify({path:p,data:fs.readFileSync(p).toString("base64")})+"\\n")}'
