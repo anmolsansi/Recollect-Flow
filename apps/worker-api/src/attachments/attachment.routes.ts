@@ -9,7 +9,10 @@ import {
 } from '../shared/auth';
 import { AppError } from '../shared/errors';
 import { D1AttachmentRepository } from './attachment.repository';
-import type { AttachmentRepository, StoredAttachment } from './attachment.repository';
+import type {
+  AttachmentRepository,
+  StoredAttachment,
+} from './attachment.repository';
 import {
   AttachmentFinalizeInputSchema,
   AttachmentInitInputSchema,
@@ -92,7 +95,11 @@ export function attachmentRoutes(
             attachment_id: attachment.id,
             upload_url: `/api/v1/uploads/${attachment.id}/content`,
             expires_at: attachment.expiresAt,
-            allowed_headers: ['Authorization', 'Content-Type', 'Content-Length'],
+            allowed_headers: [
+              'Authorization',
+              'Content-Type',
+              'Content-Length',
+            ],
           },
           meta: { request_id: context.get('requestId') },
         },
@@ -117,12 +124,22 @@ export function attachmentRoutes(
           'Reservation ID already belongs to different file content.',
         );
       }
-      if (existing.expiresAt <= now.toISOString() &&
-          existing.status !== 'linked') {
+      if (
+        existing.expiresAt <= now.toISOString() &&
+        existing.status !== 'linked'
+      ) {
         throw new AppError(409, 'UPLOAD_EXPIRED', 'Attachment upload expired.');
       }
-      if (!['pending', 'uploaded', 'finalized', 'linked'].includes(existing.status)) {
-        throw new AppError(409, 'CONFLICT', 'Attachment reservation is unavailable.');
+      if (
+        !['pending', 'uploaded', 'finalized', 'linked'].includes(
+          existing.status,
+        )
+      ) {
+        throw new AppError(
+          409,
+          'CONFLICT',
+          'Attachment reservation is unavailable.',
+        );
       }
       return existing;
     };
