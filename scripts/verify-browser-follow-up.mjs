@@ -171,7 +171,10 @@ try {
   await setValue('url', canonicalUrl);
   await setValue('project', 'Original Project');
   await setValue('review_at', '2026-10-11T09:00');
-  await evaluate(browser, 'document.querySelector("form.capture-form").requestSubmit()');
+  await evaluate(
+    browser,
+    'document.querySelector("form.capture-form").requestSubmit()',
+  );
   await waitFor(
     browser,
     'document.body.textContent.includes("Saved, including the follow-up details.")',
@@ -185,7 +188,10 @@ try {
   await setValue('url', canonicalUrl);
   await setValue('project', 'Replacement Project');
   await setValue('review_at', '2026-10-12T09:00');
-  await evaluate(browser, 'document.querySelector("form.capture-form").requestSubmit()');
+  await evaluate(
+    browser,
+    'document.querySelector("form.capture-form").requestSubmit()',
+  );
   await waitFor(
     browser,
     'document.body.textContent.includes("Already Saved")',
@@ -199,13 +205,19 @@ try {
   item = await detail(canonicalId);
   assert.equal(item.item.project, 'Original Project');
   assert.equal(item.item.review_at, '2026-10-11T03:30:00.000Z');
-  assert.ok(item.provenance.capture_events.length >= 2, 'Each share keeps its own provenance');
+  assert.ok(
+    item.provenance.capture_events.length >= 2,
+    'Each share keeps its own provenance',
+  );
   report('duplicate-does-not-clobber-owner-metadata');
 
   // Invalid optional input must be associated with its error and receive focus.
   await begin();
   await setValue('project', 'x'.repeat(201));
-  await evaluate(browser, 'document.querySelector("form.capture-form").requestSubmit()');
+  await evaluate(
+    browser,
+    'document.querySelector("form.capture-form").requestSubmit()',
+  );
   await waitFor(
     browser,
     'Boolean(document.getElementById("follow-up-project-error"))',
