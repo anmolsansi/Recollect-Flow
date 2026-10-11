@@ -2755,16 +2755,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-20 / 02 — Hosting inventory
 
-- [ ] `BG-20.011` Read documented Worker origin.
-- [ ] `BG-20.012` Inspect current static hosting records.
-- [ ] `BG-20.013` Inspect existing deployment configuration.
-- [ ] `BG-20.014` Check current homepage response.
-- [ ] `BG-20.015` Check existing Web hostname evidence.
-- [ ] `BG-20.016` Identify DNS ownership.
-- [ ] `BG-20.017` Identify TLS termination location.
-- [ ] `BG-20.018` Identify API origin expectation.
-- [ ] `BG-20.019` Identify preview host convention.
-- [ ] `BG-20.020` Record verified versus unknown hosting.
+- [x] `BG-20.011` Read documented Worker origin.
+- [x] `BG-20.012` Inspect current static hosting records.
+- [x] `BG-20.013` Inspect existing deployment configuration.
+- [x] `BG-20.014` Check current homepage response.
+- [x] `BG-20.015` Check existing Web hostname evidence.
+- [x] `BG-20.016` Identify DNS ownership.
+- [x] `BG-20.017` Identify TLS termination location.
+- [x] `BG-20.018` Identify API origin expectation.
+- [x] `BG-20.019` Identify preview host convention.
+- [x] `BG-20.020` Record verified versus unknown hosting.
 
 #### BG-20 / 03 — Same-origin option
 
