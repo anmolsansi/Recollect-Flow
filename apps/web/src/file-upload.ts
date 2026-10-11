@@ -164,13 +164,17 @@ function checkedInit(result: InitResult): InitResult {
 }
 
 async function uploadOriginalBytes(
+  uploadUrl: string,
   id: string,
   file: File,
   mime: string,
   signal?: AbortSignal,
 ): Promise<void> {
-  // Never set Content-Length manually: browsers own it. Keep this URL same-origin.
-  const response = await fetch('/api/v1/uploads/' + id + '/content', {
+  // Never follow an untrusted upload target or manually set Content-Length.
+  if (uploadUrl !== '/api/v1/uploads/' + id + '/content') {
+    throw new Error('Upload route does not match the reserved attachment.');
+  }
+  const response = await fetch(uploadUrl, {
     method: 'PUT',
     credentials: 'include',
     headers: { 'Content-Type': mime },
@@ -272,6 +276,7 @@ export async function runFileCapture(
         'This file does not match the original SHA-256. Choose the original file.',
       );
   }
+  let uploadRoute: string | undefined;
   if (reference.stage === 'selected') {
     await onChange(operation, 'Initializing upload');
     const init = checkedInit(
@@ -292,6 +297,7 @@ export async function runFileCapture(
         signal,
       }),
     );
+    uploadRoute = init.upload_url;
     if (init.attachment_id !== (reference.reservationKey ?? operation.id)) {
       throw new Error('Server did not confirm the original reservation identity.');
     }
@@ -308,6 +314,7 @@ export async function runFileCapture(
   if (reference.stage === 'initialized') {
     await onChange(operation, 'Uploading file');
     await uploadOriginalBytes(
+      uploadRoute ?? '/api/v1/uploads/' + reference.attachmentId + '/content',
       reference.attachmentId!,
       file!,
       reference.mimeType,
