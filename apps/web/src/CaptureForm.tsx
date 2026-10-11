@@ -65,7 +65,9 @@ export function CaptureForm() {
     void Promise.all([listCaptureOperations(), getCaptureDraft()])
       .then(([records, savedDraft]) => {
         if (alive) {
-          setQueue(records);
+          setQueue(records.filter((entry) =>
+            ['url', 'text', 'note'].includes(entry.payload.source_type),
+          ));
           if (savedDraft) setDraft(savedDraft);
         }
       })
@@ -348,12 +350,13 @@ export function CaptureForm() {
           <Link to="/">← Back to Inbox</Link>
           <h1>Save something</h1>
           <p className="capture-muted">
-            Capture a webpage, pasted content, or a personal note.
+            Capture a webpage, pasted content, a personal note, or one original file.
           </p>
         </div>
-        <Link className="btn btn-outline" to="/">
-          Cancel
-        </Link>
+        <div className="capture-actions">
+          <Link className="btn btn-primary" to="/capture/file">Upload a file</Link>
+          <Link className="btn btn-outline" to="/">Cancel</Link>
+        </div>
       </div>
       <section
         className="card capture-recovery-controls"
