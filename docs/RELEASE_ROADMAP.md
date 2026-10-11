@@ -129,6 +129,23 @@ both passed isolated Chrome/D1/R2 PDF and image round-trip hash verification,
 rejection cases, and preexisting regressions. BG-19 is unblocked. No production
 rollout or physical-iPhone acceptance is claimed.
 
+## BG-19 follow-up metadata (implementation branch, verification pending)
+
+[Issue #79](https://github.com/anmolsansi/Recollect-Flow/issues/79) and
+[draft PR #80](https://github.com/anmolsansi/Recollect-Flow/pull/80)
+implement post-capture project/review-date editing without widening the strict
+capture payload. The original capture is confirmed first; a separate versioned
+item update may then apply optional metadata. A partial metadata failure is
+announced as Saved with follow-up retry, not as a failed capture. Duplicates and
+existing owner changes are not silently overwritten. The item date editor
+displays local time rather than UTC digits.
+
+The [BG-19 verification record](verification/BG-19_FOLLOW_UP_FIELDS.md)
+documents tested code boundaries and remaining CI/Chrome/merged-main checks.
+This entry is **not** a completed release gate, and BG-20 must not be marked
+unlocked until the acceptance proof passes. No deployment or real-device
+signoff is implied.
+
 ## Product releases
 
 ### V0 — Technical spike
