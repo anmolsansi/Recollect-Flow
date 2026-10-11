@@ -38,7 +38,10 @@ export function attachmentRoutes(
   router.get('/uploads/config', (context) => {
     return context.json({
       data: {
-        max_size_bytes: positiveInteger(context.env.MAX_ATTACHMENT_BYTES, 25_000_000),
+        max_size_bytes: positiveInteger(
+          context.env.MAX_ATTACHMENT_BYTES,
+          25_000_000,
+        ),
         allowed_mime_types: [...ALLOWED_CONTENT_TYPES].sort(),
       },
       meta: { request_id: context.get('requestId') },
@@ -110,7 +113,8 @@ export function attachmentRoutes(
     const attachment = await repositoryFactory(context.env).findById(
       context.req.param('id'),
     );
-    if (!attachment) throw new AppError(404, 'NOT_FOUND', 'Attachment not found.');
+    if (!attachment)
+      throw new AppError(404, 'NOT_FOUND', 'Attachment not found.');
     return context.json({
       data: {
         attachment_id: attachment.id,
