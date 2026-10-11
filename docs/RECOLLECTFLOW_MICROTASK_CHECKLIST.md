@@ -2820,16 +2820,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-20 / 07 — Authentication boundary
 
-- [ ] `BG-20.061` Separate public assets from data.
-- [ ] `BG-20.062` Keep item APIs authenticated.
-- [ ] `BG-20.063` Keep downloads authenticated.
-- [ ] `BG-20.064` Keep exports authenticated.
-- [ ] `BG-20.065` Validate secure-cookie issuance origin.
-- [ ] `BG-20.066` Define session redirect behavior.
-- [ ] `BG-20.067` Define untrusted proxy handling.
-- [ ] `BG-20.068` Avoid access from page visibility alone.
-- [ ] `BG-20.069` Preserve Shortcut bearer compatibility.
-- [ ] `BG-20.070` Review origin change implications.
+- [x] `BG-20.061` Separate public assets from data.
+- [x] `BG-20.062` Keep item APIs authenticated.
+- [x] `BG-20.063` Keep downloads authenticated.
+- [x] `BG-20.064` Keep exports authenticated.
+- [x] `BG-20.065` Validate secure-cookie issuance origin.
+- [x] `BG-20.066` Define session redirect behavior.
+- [x] `BG-20.067` Define untrusted proxy handling.
+- [x] `BG-20.068` Avoid access from page visibility alone.
+- [x] `BG-20.069` Preserve Shortcut bearer compatibility.
+- [x] `BG-20.070` Review origin change implications.
 
 #### BG-20 / 08 — Release design
 
