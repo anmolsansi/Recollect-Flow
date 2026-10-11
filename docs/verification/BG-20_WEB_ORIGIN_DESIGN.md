@@ -110,3 +110,31 @@ Cloudflare's `ASSETS` binding is then used by the Worker entry on exact known br
 
 **Threat review:** Cookie fixation, cross-site state changes, cached private responses, unauthenticated direct-link body leakage, cross-origin download failures and bare Authorization headers must be tested. An HTML shell shown after expiry is normal; a private JSON payload served without authorization is a P0 failure.
 
+## 6. Build, deployment and rollback plan for BG-21 (BG-20.071–.080)
+
+### File-level implementation handoff
+
+| File | BG-21 change | Validation |
+| --- | --- | --- |
+| `wrangler.toml` | Add reviewed `[assets]` block with `apps/web/dist`, `ASSETS` binding, `not_found_handling = "none"` and explicit Worker-first routes. Do not remove existing D1, R2, AI, cron or secret bindings. | Wrangler configuration/type generation, dry-run build and preview route acceptance |
+| `apps/worker-api/src/index.ts` | Keep `scheduled` unchanged. Replace direct `fetch: app.fetch` export with a dispatcher that forwards all `/api` requests to Hono and exact, safe navigation routes to `env.ASSETS.fetch('/index.html')`. Reject unknown UI/method paths. | Worker runtime route tests and live preview with browser navigation headers |
+| `worker-configuration.d.ts` | Regenerate types from Wrangler (if type generation applies) rather than inventing a handwritten binding definition. | Typecheck |
+| `package.json` | Make the deploy command build the Web app before Wrangler deploy or create an explicit atomic release script. Never deploy a Worker referencing a nonexistent/stale `dist`. | Release dry run and exact code/assets version evidence |
+| `apps/web/src/api.ts` | Retain relative `/api/v1` and `credentials: 'include'`; **no cross-origin rewrite**. | Existing Web unit tests and Chrome session flow |
+| `apps/web/src/App.tsx` | Retain React Router client paths and AuthGuard, changing only proven routing defects. | Direct `/items/:id` reload, login, logout and navigation tests |
+| `apps/worker-api/src/app.ts` | Preserve Hono `NOT_FOUND` API envelope; verify unknown `/api/v1` endpoints do not get HTML. | JSON status regression tests |
+| `docs/OPERATIONS.md` + release docs | Record host, owner, secrets, version pairing, request matrix, steps, rollback, signoffs and unknowns. | Manual runbook review |
+| `.github/workflows/ci.yml` | Add an appropriate no-production deployment dry run and API/static/deep-link checks before merge if existing CI does not cover them. | Exact-head CI; no production mutation |
+
+**Build artifact:** Vite creates `apps/web/dist/index.html` and content-hashed assets from the repository's locked `package-lock.json`. For each release use one Git commit/SHA with both Worker script and built Web assets. Do not independently deploy an older Web bundle against newer private API contracts.
+
+**Preview isolation:** Use an isolated local `wrangler dev` and preview Worker/configuration with nonproduction resources. The current top-level Wrangler configuration names production D1/R2 bindings. Do **not** re-use remote production databases or buckets when creating a preview deployment, and never assume preview URLs alone are safe. Keep preview credentials and `WEB_INBOX_BASE_URL` distinct.
+
+**Release sequence:** (1) finish all BG-21 code/tests; (2) build via `npm ci` + `npm run check`; (3) verify Wrangler types and deploy dry-run without secrets; (4) run real Chrome/Worker/D1 isolated acceptance; (5) record intended hostname, current Cloudflare account routing, Worker version and existing secret value via authorized operator; (6) obtain explicit production-change approval; (7) use one combined code-and-assets Wrangler release; (8) smoke check login, item deep link, direct reload, private download, logout, bad API, missing script, digest link; (9) observe errors and request counts; (10) roll back on failure.
+
+**Rollback:** Re-deploy the previous known good Worker+Web artifact as a unit, preserving D1/R2 and the unchanged canonical host. On failure, do not redirect digest links to localhost or a preview. No database migration is planned for BG-21; any later migration must have its own rollback and compatibility review. If a production secret/origin change is unavoidable, capture its former value securely and reverse it as part of an approved rollback, never in source control.
+
+**Cache policy:** Public fingerprinted assets may be cached immutably after verifying their hash-based paths. HTML must revalidate or use no-store so it cannot pin an old bundle. Private API and attachment/export responses must never enter public/shared cache. Inspect Cloudflare's actual response headers; `_headers` affects assets, not Worker-generated API responses.
+
+**Costs:** Worker-first only on API and known SPA routes avoids unnecessary Worker execution on every static asset. Check Cloudflare request quotas/cost during preview; preserve the project $0 policy. BG-20 does not authorize deploy, D1 migrations or new paid plans.
+
