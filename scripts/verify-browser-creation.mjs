@@ -1,11 +1,18 @@
 /* global console, process, fetch */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { mkdtemp, writeFile, rm, readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 import { createBg21Preview } from './bg21-preview-runtime.mjs';
 import { buildBrowserFixtures } from './browser-acceptance-fixtures.mjs';
+import {
+  validateStagingOrigin,
+  validateStagingResources,
+  renderStagingConfig,
+} from './staging-guard.mjs';
 import {
   apiRequest,
   openBrowser,
@@ -20,7 +27,10 @@ import {
 } from './bg14-browser-utils.mjs';
 
 const runId = randomUUID().replaceAll('-', '');
-const adminToken = 'bg22-admin-' + randomUUID();
+const hostedStaging = process.argv.includes('--hosted-staging');
+const adminToken = hostedStaging
+  ? process.env.BG21_PREVIEW_ADMIN_TOKEN
+  : 'bg22-admin-' + randomUUID();
 const captureToken = 'bg22-capture-' + randomUUID();
 let runtime;
 let browser;
@@ -292,11 +302,39 @@ async function verifyDirectLinkAfterRestart(id) {
 }
 
 async function run() {
-  runtime = await createBg21Preview({
-    port: 8993,
-    adminToken,
-    captureToken,
-  });
+  if (hostedStaging) {
+    assert.equal(
+      process.env.BG_STAGING_BINDINGS_CONFIRMED,
+      'yes',
+      'Hosted browser writes require operator-confirmed staging-only D1/R2 bindings',
+    );
+    assert.ok(adminToken, 'Staging-only ADMIN_TOKEN must come from secure environment');
+    const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
+    const resources = validateStagingResources(
+      process.env,
+      readFileSync(resolve(root, 'wrangler.toml'), 'utf8'),
+    );
+    assert.equal(
+      readFileSync(resolve(root, '.bg21-staging-preview.toml'), 'utf8'),
+      renderStagingConfig(resources),
+      'Refusing hosted writes: staging config identities differ',
+    );
+    const origin = validateStagingOrigin(
+      process.env.BG_STAGING_ORIGIN,
+      resources.worker,
+    );
+    runtime = {
+      webOrigin: origin,
+      apiOrigin: origin,
+      async close() {},
+    };
+  } else {
+    runtime = await createBg21Preview({
+      port: 8993,
+      adminToken,
+      captureToken,
+    });
+  }
   const manifest = JSON.parse(
     await readFile('apps/web/dist/release-manifest.json', 'utf8'),
   );
@@ -326,7 +364,9 @@ async function run() {
     browser_version: version.product,
     node: process.version,
     manifest_keys: Object.keys(manifest).sort(),
-    origin_kind: 'local HTTP, not a remote HTTPS acceptance',
+    origin_kind: hostedStaging
+      ? 'authorized isolated Cloudflare HTTPS staging'
+      : 'local HTTP, not a remote HTTPS acceptance',
   });
   await login(browser, runtime.webOrigin, adminToken);
 
@@ -510,7 +550,9 @@ async function run() {
     item_count: 5,
     pdf_attachment_id: file.attachmentId,
     qualification:
-      'Local bundled Worker test only; BG-21 hosted HTTPS and BG-22 outage/recovery acceptance remain open',
+      hostedStaging
+        ? 'Staging HTTPS five-source proof; distinct external OCR/PDF/outage/backoff and rollback gates remain'
+        : 'Local bundled Worker test only; BG-21 hosted HTTPS and BG-22 outage/recovery acceptance remain open',
   });
 }
 try {
