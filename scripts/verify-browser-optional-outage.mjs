@@ -22,9 +22,20 @@ let runtime, browser;
 
 async function createNote(text) {
   await navigate(browser, runtime.webOrigin + '/capture');
-  await waitFor(browser, 'Boolean(document.querySelector("form.capture-form"))', 'capture form');
-  await evaluate(browser, 'document.querySelector(\'input[name="mode"][value="note"]\').click()');
-  await waitFor(browser, 'Boolean(document.querySelector(\'[name="shared_text"]\'))', 'note field');
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector("form.capture-form"))',
+    'capture form',
+  );
+  await evaluate(
+    browser,
+    'document.querySelector(\'input[name="mode"][value="note"]\').click()',
+  );
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'[name="shared_text"]\'))',
+    'note field',
+  );
   await evaluate(
     browser,
     '(() => {const textarea=document.querySelector(\'[name="shared_text"]\');' +
@@ -32,7 +43,10 @@ async function createNote(text) {
       JSON.stringify(text) +
       ');textarea.dispatchEvent(new Event("input",{bubbles:true}));return true;})()',
   );
-  await evaluate(browser, 'document.querySelector("form.capture-form").requestSubmit()');
+  await evaluate(
+    browser,
+    'document.querySelector("form.capture-form").requestSubmit()',
+  );
   await waitFor(
     browser,
     'document.body.textContent.includes("Processing status:") && Boolean(document.querySelector(\'a[href^="/items/"]\'))',
@@ -69,15 +83,34 @@ try {
   });
   browser = await openBrowser(runtime);
   await login(browser, runtime.webOrigin, adminToken);
-  const itemId = await createNote('Original survives optional AI outage ' + phrase);
+  const itemId = await createNote(
+    'Original survives optional AI outage ' + phrase,
+  );
   let saved = await detail(itemId);
-  assert.equal(saved.item.raw_text, 'Original survives optional AI outage ' + phrase);
-  assert.ok(saved.item.processing_status, 'Raw save must expose processing state');
+  assert.equal(
+    saved.item.raw_text,
+    'Original survives optional AI outage ' + phrase,
+  );
+  assert.ok(
+    saved.item.processing_status,
+    'Raw save must expose processing state',
+  );
   await triggerBackground();
   saved = await detail(itemId);
-  assert.equal(saved.item.raw_text, 'Original survives optional AI outage ' + phrase);
-  assert.equal(saved.item.processing_status, 'pending', 'Provider outage must defer optional enrichment');
-  assert.equal(saved.provenance.provider_usage.length, 0, 'Unavailable providers must not be billed');
+  assert.equal(
+    saved.item.raw_text,
+    'Original survives optional AI outage ' + phrase,
+  );
+  assert.equal(
+    saved.item.processing_status,
+    'pending',
+    'Provider outage must defer optional enrichment',
+  );
+  assert.equal(
+    saved.provenance.provider_usage.length,
+    0,
+    'Unavailable providers must not be billed',
+  );
   await navigate(browser, runtime.webOrigin + '/');
   await waitFor(
     browser,
@@ -93,7 +126,9 @@ try {
   );
   await waitFor(
     browser,
-    'Boolean(document.querySelector(' + JSON.stringify('a[href="/items/' + itemId + '"]') + '))',
+    'Boolean(document.querySelector(' +
+      JSON.stringify('a[href="/items/' + itemId + '"]') +
+      '))',
     'saved raw item searchable without AI',
   );
   await navigate(browser, runtime.webOrigin + '/items/' + itemId);
@@ -129,8 +164,10 @@ try {
   });
   report('BG22-optional-outage-local-bundled', {
     result: 'passed',
-    boundary: 'local isolated mock-provider configuration, no external Notion or live AI request',
-    qualification: 'Deferred original job may respect server backoff; not a hosted provider failover proof',
+    boundary:
+      'local isolated mock-provider configuration, no external Notion or live AI request',
+    qualification:
+      'Deferred original job may respect server backoff; not a hosted provider failover proof',
   });
 } catch (error) {
   console.error(
