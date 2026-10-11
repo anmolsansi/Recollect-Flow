@@ -410,14 +410,18 @@ a:hover {
   outline: 3px solid var(--primary-color);
   outline-offset: 3px;
 }
-.capture-form, .capture-queued, .capture-heading, .capture-follow-up-status {
+.capture-form,
+.capture-queued,
+.capture-heading,
+.capture-follow-up-status {
   overflow-wrap: anywhere;
 }
 @media (max-width: 640px) {
   .capture-follow-up {
     padding: 0.75rem;
   }
-  .capture-heading-actions, .capture-actions {
+  .capture-heading-actions,
+  .capture-actions {
     max-width: 100%;
   }
 }
