@@ -290,9 +290,16 @@ try {
     browser,
     '({ focused: document.activeElement?.matches("button[type=submit]"), disabled: document.querySelector("button[type=submit]")?.disabled, url: document.querySelector("input[name=url]")?.value })',
   );
-  assert.equal(keyboardReady.focused, true, 'Submit button must be keyboard focused');
+  assert.equal(
+    keyboardReady.focused,
+    true,
+    'Submit button must be keyboard focused',
+  );
   assert.equal(keyboardReady.disabled, false, 'Submit button must be enabled');
-  assert.ok(keyboardReady.url.includes('bg19-keyboard-'), 'Valid URL must be present');
+  assert.ok(
+    keyboardReady.url.includes('bg19-keyboard-'),
+    'Valid URL must be present',
+  );
   await browser.client.send(
     'Input.dispatchKeyEvent',
     {
@@ -301,7 +308,7 @@ try {
       code: 'Enter',
       windowsVirtualKeyCode: 13,
       nativeVirtualKeyCode: 13,
-      text: '\\r',
+      text: '\r',
     },
     browser.sessionId,
   );
