@@ -123,10 +123,7 @@ async function saveOriginal(fixture) {
     'file form',
   );
   await chooseFile(path);
-  await changeField(
-    '#file-reason',
-    'BG22 ' + fixture.kind + ' ' + runId,
-  );
+  await changeField('#file-reason', 'BG22 ' + fixture.kind + ' ' + runId);
   await evaluate(browser, 'document.querySelector("form").requestSubmit()');
   await waitFor(
     browser,
