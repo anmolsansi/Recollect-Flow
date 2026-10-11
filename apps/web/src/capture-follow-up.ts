@@ -37,7 +37,8 @@ export function validateFollowUp(
         !value.reviewLocal ||
         !Number.isFinite(Date.parse(value.reviewInstant)) ||
         new Date(value.reviewInstant).toISOString() !== value.reviewInstant
-      ) throw new Error('Invalid stored review instant. Choose the date again.');
+      )
+        throw new Error('Invalid stored review instant. Choose the date again.');
     } else {
       parseLocalReviewAt(value.reviewLocal);
     }
@@ -49,7 +50,9 @@ export function validateFollowUp(
 }
 
 export function hasFollowUp(value: FollowUpDraft): boolean {
-  return Boolean(value.project.trim() || value.reviewLocal || value.reviewInstant);
+  return Boolean(
+    value.project.trim() || value.reviewLocal || value.reviewInstant,
+  );
 }
 
 export type FollowUpOutcome =
@@ -76,7 +79,8 @@ export async function applyCaptureFollowUp(
   if (duplicateOf || detail.item.duplicate_of) return { status: 'duplicate' };
 
   const requestedProject = value.project.trim() || null;
-  const requestedReview = value.reviewInstant ?? parseLocalReviewAt(value.reviewLocal);
+  const requestedReview =
+    value.reviewInstant ?? parseLocalReviewAt(value.reviewLocal);
   const currentProject = detail.item.project;
   const currentReview = detail.item.review_at ?? null;
   if (
