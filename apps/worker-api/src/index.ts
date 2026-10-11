@@ -1,4 +1,5 @@
 import { createApp } from './app';
+import { servePublicAsset, type StaticAssets } from './assets/asset-router';
 import { D1AttachmentRepository } from './attachments/attachment.repository';
 import { cleanupExpiredAttachments } from './attachments/attachment.service';
 import {
@@ -63,7 +64,42 @@ export async function handleScheduled(
   );
 }
 
+/**
+ * Route the API before any static fallback, regardless of Accept or navigation
+ * headers. Authentication still belongs to the existing Hono API middleware.
+ */
+export async function handleFetch(
+  request: Request,
+  env: Cloudflare.Env,
+  context: ExecutionContext,
+): Promise<Response> {
+  const pathname = new URL(request.url).pathname;
+  if (pathname === '/api' || pathname.startsWith('/api/')) {
+    const response = await app.fetch(request, env, context);
+    const headers = new Headers(response.headers);
+    headers.set('Cache-Control', 'private, no-store');
+    headers.set('X-Content-Type-Options', 'nosniff');
+    return new Response(response.body, {
+      status: response.status,
+      headers,
+    });
+  }
+
+  const assets = (env as Cloudflare.Env & { ASSETS?: StaticAssets }).ASSETS;
+  const publicResponse = await servePublicAsset(request, assets);
+  if (publicResponse) return publicResponse;
+
+  return new Response('Not Found', {
+    status: 404,
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+    },
+  });
+}
+
 export default {
-  fetch: app.fetch,
+  fetch: handleFetch,
   scheduled: handleScheduled,
 };
