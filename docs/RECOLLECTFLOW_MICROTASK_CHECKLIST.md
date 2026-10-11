@@ -2833,16 +2833,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-20 / 08 — Release design
 
-- [ ] `BG-20.071` Define build artifact ownership.
-- [ ] `BG-20.072` Define Worker/Web version pairing.
-- [ ] `BG-20.073` Define preview binding isolation.
-- [ ] `BG-20.074` Define production secret ownership.
-- [ ] `BG-20.075` Define canonical host update steps.
-- [ ] `BG-20.076` Define rollback origin behavior.
-- [ ] `BG-20.077` Define asset cache policy.
-- [ ] `BG-20.078` Define HTML freshness policy.
-- [ ] `BG-20.079` Identify hosting implementation tasks.
-- [ ] `BG-20.080` Keep production mutation deferred.
+- [x] `BG-20.071` Define build artifact ownership.
+- [x] `BG-20.072` Define Worker/Web version pairing.
+- [x] `BG-20.073` Define preview binding isolation.
+- [x] `BG-20.074` Define production secret ownership.
+- [x] `BG-20.075` Define canonical host update steps.
+- [x] `BG-20.076` Define rollback origin behavior.
+- [x] `BG-20.077` Define asset cache policy.
+- [x] `BG-20.078` Define HTML freshness policy.
+- [x] `BG-20.079` Identify hosting implementation tasks.
+- [x] `BG-20.080` Keep production mutation deferred.
 
 #### BG-20 / 09 — Design proof
 
