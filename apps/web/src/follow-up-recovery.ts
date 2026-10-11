@@ -28,7 +28,8 @@ function valid(value: unknown, now = Date.now()): value is PendingFollowUp {
     typeof record.followUp.project !== 'string' ||
     typeof record.followUp.reviewLocal !== 'string' ||
     !hasFollowUp(record.followUp)
-  ) return false;
+  )
+    return false;
   const errors = validateFollowUp(record.followUp);
   return !errors.project && !errors.review_at;
 }
@@ -38,15 +39,18 @@ export function listPendingFollowUps(now = Date.now()): PendingFollowUp[] {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) || '[]') as unknown;
     if (!Array.isArray(raw)) return [];
-    return raw.filter((entry) => valid(entry, now)).slice(0, MAX).map((entry) => ({
-      captureId: entry.captureId,
-      duplicateOf: entry.duplicateOf,
-      followUp: {
-        project: entry.followUp.project,
-        reviewLocal: entry.followUp.reviewLocal,
-      },
-      createdAt: entry.createdAt,
-    }));
+    return raw
+      .filter((entry) => valid(entry, now))
+      .slice(0, MAX)
+      .map((entry) => ({
+        captureId: entry.captureId,
+        duplicateOf: entry.duplicateOf,
+        followUp: {
+          project: entry.followUp.project,
+          reviewLocal: entry.followUp.reviewLocal,
+        },
+        createdAt: entry.createdAt,
+      }));
   } catch {
     return [];
   }
@@ -54,15 +58,21 @@ export function listPendingFollowUps(now = Date.now()): PendingFollowUp[] {
 
 export function savePendingFollowUp(value: PendingFollowUp): void {
   if (!valid(value)) throw new Error('Invalid follow-up recovery record.');
-  const others = listPendingFollowUps().filter((entry) => entry.captureId !== value.captureId);
-  if (others.length >= MAX) throw new Error('Finish or discard another saved follow-up first.');
+  const others = listPendingFollowUps().filter(
+    (entry) => entry.captureId !== value.captureId,
+  );
+  if (others.length >= MAX)
+    throw new Error('Finish or discard another saved follow-up first.');
   localStorage.setItem(KEY, JSON.stringify([...others, value]));
 }
 
 export function deletePendingFollowUp(captureId: string): void {
-  localStorage.setItem(KEY, JSON.stringify(
-    listPendingFollowUps().filter((entry) => entry.captureId !== captureId),
-  ));
+  localStorage.setItem(
+    KEY,
+    JSON.stringify(
+      listPendingFollowUps().filter((entry) => entry.captureId !== captureId),
+    ),
+  );
 }
 
 export function clearPendingFollowUps(): void {
