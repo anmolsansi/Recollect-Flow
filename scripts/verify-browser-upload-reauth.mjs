@@ -24,7 +24,11 @@ const captureToken = 'bg22-upload-capture-' + randomUUID();
 let runtime, browser, folder;
 
 async function chooseFile(path) {
-  const dom = await browser.client.send('DOM.getDocument', { depth: -1 }, browser.sessionId);
+  const dom = await browser.client.send(
+    'DOM.getDocument',
+    { depth: -1 },
+    browser.sessionId,
+  );
   const field = await browser.client.send(
     'DOM.querySelector',
     { nodeId: dom.root.nodeId, selector: 'input[name="file"]' },
@@ -69,7 +73,9 @@ async function queuedOperation() {
 }
 
 try {
-  const fixture = buildBrowserFixtures(randomUUID()).find((value) => value.kind === 'pdf');
+  const fixture = buildBrowserFixtures(randomUUID()).find(
+    (value) => value.kind === 'pdf',
+  );
   assert.ok(fixture);
   folder = await mkdtemp(join(tmpdir(), 'recollect-bg22-reauth-'));
   const filePath = join(folder, fixture.filename);
@@ -83,7 +89,10 @@ try {
     'Boolean(document.querySelector(".capture-recovery-controls input[type=checkbox]"))',
     'durable browser-recovery preference',
   );
-  await evaluate(browser, 'document.querySelector(".capture-recovery-controls input[type=checkbox]").click()');
+  await evaluate(
+    browser,
+    'document.querySelector(".capture-recovery-controls input[type=checkbox]").click()',
+  );
   await waitFor(
     browser,
     'localStorage.getItem("recollect:capture-recovery-enabled-v1") === "yes"',
@@ -98,39 +107,50 @@ try {
   await chooseFile(filePath);
 
   let intercepted = false;
-  const unsubscribe = browser.client.on('Fetch.requestPaused', async (message) => {
-    const request = message.params;
-    if (intercepted) {
+  const unsubscribe = browser.client.on(
+    'Fetch.requestPaused',
+    async (message) => {
+      const request = message.params;
+      if (intercepted) {
+        await browser.client.send(
+          'Fetch.continueRequest',
+          { requestId: request.requestId },
+          browser.sessionId,
+        );
+        return;
+      }
+      intercepted = true;
       await browser.client.send(
-        'Fetch.continueRequest',
-        { requestId: request.requestId },
+        'Network.deleteCookies',
+        { name: 'admin_session', url: runtime.webOrigin },
         browser.sessionId,
       );
-      return;
-    }
-    intercepted = true;
-    await browser.client.send(
-      'Network.deleteCookies',
-      { name: 'admin_session', url: runtime.webOrigin },
-      browser.sessionId,
-    );
-    const payload = Buffer.from(
-      JSON.stringify({ error: { code: 'UNAUTHORIZED', message: 'Login required' } }),
-    ).toString('base64');
-    await browser.client.send(
-      'Fetch.fulfillRequest',
-      {
-        requestId: request.requestId,
-        responseCode: 401,
-        responseHeaders: [{ name: 'content-type', value: 'application/json' }],
-        body: payload,
-      },
-      browser.sessionId,
-    );
-  });
+      const payload = Buffer.from(
+        JSON.stringify({
+          error: { code: 'UNAUTHORIZED', message: 'Login required' },
+        }),
+      ).toString('base64');
+      await browser.client.send(
+        'Fetch.fulfillRequest',
+        {
+          requestId: request.requestId,
+          responseCode: 401,
+          responseHeaders: [
+            { name: 'content-type', value: 'application/json' },
+          ],
+          body: payload,
+        },
+        browser.sessionId,
+      );
+    },
+  );
   await browser.client.send(
     'Fetch.enable',
-    { patterns: [{ urlPattern: '*api/v1/uploads/*/content', requestStage: 'Request' }] },
+    {
+      patterns: [
+        { urlPattern: '*api/v1/uploads/*/content', requestStage: 'Request' },
+      ],
+    },
     browser.sessionId,
   );
   await evaluate(browser, 'document.querySelector("form").requestSubmit()');
@@ -149,8 +169,13 @@ try {
 
   const before = await queuedOperation();
   assert.equal(before.length, 1, 'One unsettled original upload retained');
-  assert.ok(before[0].reservationKey, 'Original attachment reservation missing');
-  report('BG22-expired-file-upload-retains-operation', { stage: before[0].stage });
+  assert.ok(
+    before[0].reservationKey,
+    'Original attachment reservation missing',
+  );
+  report('BG22-expired-file-upload-retains-operation', {
+    stage: before[0].stage,
+  });
 
   await login(browser, runtime.webOrigin, adminToken);
   await navigate(browser, runtime.webOrigin + '/capture/file');
@@ -160,7 +185,11 @@ try {
     'pending file operation restored after login',
   );
   const after = await queuedOperation();
-  assert.deepEqual(after, before, 'Reauthentication must not replace the original operation');
+  assert.deepEqual(
+    after,
+    before,
+    'Reauthentication must not replace the original operation',
+  );
   await clickButton(browser, 'Resume this save');
   await waitFor(
     browser,
@@ -179,13 +208,30 @@ try {
     browser,
     'document.querySelector(\'a[href^="/items/"]\').getAttribute("href").split("/").pop()',
   );
-  const item = await apiRequest(runtime.apiOrigin, adminToken, 'GET', '/items/' + id);
-  assert.equal(item.attachments.length, 1, 'Retry must link exactly one original');
+  const item = await apiRequest(
+    runtime.apiOrigin,
+    adminToken,
+    'GET',
+    '/items/' + id,
+  );
+  assert.equal(
+    item.attachments.length,
+    1,
+    'Retry must link exactly one original',
+  );
   assert.equal(item.attachments[0].status, 'linked');
   assert.equal(item.attachments[0].content_hash, fixture.sha256);
   assert.equal(item.attachments[0].size_bytes, fixture.sizeBytes);
-  assert.equal(item.provenance.capture_events.length, 1, 'No second logical capture event');
-  assert.deepEqual(await queuedOperation(), [], 'Acknowledged upload clears retained retry');
+  assert.equal(
+    item.provenance.capture_events.length,
+    1,
+    'No second logical capture event',
+  );
+  assert.deepEqual(
+    await queuedOperation(),
+    [],
+    'Acknowledged upload clears retained retry',
+  );
   report('BG22-expired-file-upload-reauth-and-single-original', {
     capture_id: id,
     attachment_id: item.attachments[0].id,
