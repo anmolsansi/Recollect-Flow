@@ -38,7 +38,11 @@ async function enterText(value) {
     'Boolean(document.querySelector(\'input[name="mode"][value="note"]\').checked)',
     'note mode',
   );
-  await waitFor(browser, 'Boolean(document.querySelector(\'[name="shared_text"]\'))', 'note input rendered');
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'[name="shared_text"]\'))',
+    'note input rendered',
+  );
   await evaluate(
     browser,
     `(() => {
