@@ -2613,29 +2613,37 @@ Follow the [100 microtasks for BG-22](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-22
 
 ### Current implementation and acceptance state
 
-**In progress, not accepted (October 11, 2026).** The
-[BG-22 draft PR #86](https://github.com/anmolsansi/Recollect-Flow/pull/86)
-adds `npm run browser:creation:test` and wires it into CI. The combined test
-runs against a bundled Worker/Vite release on disposable local D1/R2, not
-the Vite development server. Its fresh Chrome session creates a URL, text,
-note, PNG and PDF, searches/reopens URL/text/note, verifies original PNG/PDF
-SHA-256, persists a title edit after reload, preserves a canonical duplicate
-reason and rejects reads, downloads and writes after logout.
+**BG-22 remains in progress, not release-accepted (October 11, 2026).**
+[Draft PR #86](https://github.com/anmolsansi/Recollect-Flow/pull/86)
+builds a bundled Worker/Vite release candidate and tests it using a real
+Chrome profile, disposable loopback D1/R2, synthetic credentials and original
+PNG/PDF fixtures. URL, text, note, image and PDF capture, source/coverage
+visibility, search and exact reopen, SHA-256 download, owner metadata
+updates, canonical duplicate reasons, fresh browser item link and
+signed-out API denial have verified browser evidence. The test also covers
+lost-response capture replay, metadata-only follow-up retry, optional provider
+outage (raw persistence without false save failure), and simulated cookie
+expiry during original PDF upload with same-reservation recovery.
 
-The [full local CI run #38142920329](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38142920329)
-passed on its exact PR head, including the new test, existing browser suites,
-release packaging and Wrangler dry-run. Full run identity, tested source
-revision and artifact hash are recorded in
-[BG-22 verification](verification/BG-22_BROWSER_CREATION_ACCEPTANCE.md).
+[Full CI run #38151337473](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38151337473)
+passed all tests, clean packaging, Wrangler dry-run, local migrations and
+the new combined browser scenarios on implementing source
+`db9a152ad2106957d89a8b6a5a3d3e664c9313f2`. The source
+checklist now records **95/100** evidenced steps. The five open individual
+checks are `BG-22.031` (acquired URL page-text search), `.034` (image OCR),
+`.035` (PDF extracted-text search), `.062` (explicit Notion outage route)
+and `.068` (resuming a deferred job after eligibility). The
+[verification matrix](verification/BG-22_BROWSER_CREATION_ACCEPTANCE.md)
+distinguishes these from the tested raw source and filename scenarios.
 
-**Blocked completion:** BG-21 [issue #83](https://github.com/anmolsansi/Recollect-Flow/issues/83)
-remains 91/100, including hosted HTTPS and release-preview gaps. BG-22
-additionally needs unified provider-outage, uncertain-response, interrupted
-upload/expired-session, binary-text extraction/search and browser-restart
-acceptance against the approved release. Local HTTP proof cannot replace
-hosted HTTPS cookie/cache evidence. No production deploy or new production
-authorization is included. Keep BG-23 blocked until all mandatory evidence
-and predecessor gates pass.
+**Prerequisite/release boundary:** BG-21's implementation is merged into
+`main`, with **93/100** verified source steps and seven outstanding
+operator-route or hosted HTTPS, cookie, edge-cache, rollback and publication
+checks. Neither a local Worker preview nor passing CI proves these external
+conditions. BG-22 **cannot** be signed off and BG-23 must remain blocked
+until BG-21 is accepted and required remaining BG-22 release tests pass or
+receive an explicitly documented scope decision. No production deployment,
+live notification, Cloudflare secret or remote D1/R2 mutation is authorized.
 
 ---
 
