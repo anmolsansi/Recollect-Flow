@@ -152,7 +152,10 @@ try {
     browser,
     '({ width: innerWidth, scroll: document.documentElement.scrollWidth })',
   );
-  assert.ok(viewport.scroll <= viewport.width + 8, 'File form overflows mobile viewport');
+  assert.ok(
+    viewport.scroll <= viewport.width + 8,
+    'File form overflows mobile viewport',
+  );
   report('BG18-mobile-upload-layout');
 
 
