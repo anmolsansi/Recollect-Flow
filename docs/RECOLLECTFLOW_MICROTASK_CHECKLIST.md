@@ -3052,14 +3052,14 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-22.026` Record canonical IDs.
 - [x] `BG-22.027` Confirm durable success messages.
 - [x] `BG-22.028` Confirm source types.
-- [ ] `BG-22.029` Confirm captured reasons.
-- [ ] `BG-22.030` Confirm chosen privacy values.
+- [x] `BG-22.029` Confirm captured reasons.
+- [x] `BG-22.030` Confirm chosen privacy values.
 
 #### BG-22 / 04 — Search and inspection
 
 - [ ] `BG-22.031` Search URL internal phrase.
-- [ ] `BG-22.032` Search pasted text phrase.
-- [ ] `BG-22.033` Search note phrase.
+- [x] `BG-22.032` Search pasted text phrase.
+- [x] `BG-22.033` Search note phrase.
 - [ ] `BG-22.034` Search screenshot known text.
 - [ ] `BG-22.035` Search PDF internal phrase.
 - [x] `BG-22.036` Open each exact item.
