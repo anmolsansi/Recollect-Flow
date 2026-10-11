@@ -20,7 +20,11 @@ const valid = {
 test('staging generator denies missing or ambiguous account identity', () => {
   assert.throws(() => validateStagingResources({}, prod), /required/);
   assert.throws(
-    () => validateStagingResources({ ...valid, CLOUDFLARE_ACCOUNT_ID: 'unknown' }, prod),
+    () =>
+      validateStagingResources(
+        { ...valid, CLOUDFLARE_ACCOUNT_ID: 'unknown' },
+        prod,
+      ),
     /account identity/,
   );
 });
@@ -32,17 +36,24 @@ test('staging generator rejects production Worker, D1 and R2 references', () => 
     ['BG_STAGING_D1_ID', '5fcba514-d0f7-45e7-a632-d4c59233af71'],
     ['BG_STAGING_R2_BUCKET', 'recollect-flow-attachments-prod'],
   ]) {
-    assert.throws(() => validateStagingResources({ ...valid, [key]: value }, prod));
+    assert.throws(() =>
+      validateStagingResources({ ...valid, [key]: value }, prod),
+    );
   }
 });
 
 test('staging generator rejects shell/TOML injection and non-staging names', () => {
   for (const [key, value] of [
-    ['BG_STAGING_WORKER_NAME', 'recollect-flow-bg21-bg22-staging"\nname = "prod'],
+    [
+      'BG_STAGING_WORKER_NAME',
+      'recollect-flow-bg21-bg22-staging"\nname = "prod',
+    ],
     ['BG_STAGING_D1_NAME', 'recollect-flow-dev'],
     ['BG_STAGING_R2_BUCKET', 'recollect_flow_staging'],
   ]) {
-    assert.throws(() => validateStagingResources({ ...valid, [key]: value }, prod));
+    assert.throws(() =>
+      validateStagingResources({ ...valid, [key]: value }, prod),
+    );
   }
 });
 
@@ -50,8 +61,14 @@ test('output has no production binding, custom routes, cron or active external p
   const resources = validateStagingResources(valid, prod);
   const config = renderStagingConfig(resources);
   assert.ok(config.includes('name = "recollect-flow-bg21-bg22-staging"'));
-  assert.ok(config.includes('database_id = "11111111-2222-4333-8444-555555555555"'));
-  assert.ok(config.includes('bucket_name = "recollect-flow-attachments-bg21-bg22-staging"'));
+  assert.ok(
+    config.includes('database_id = "11111111-2222-4333-8444-555555555555"'),
+  );
+  assert.ok(
+    config.includes(
+      'bucket_name = "recollect-flow-attachments-bg21-bg22-staging"',
+    ),
+  );
   assert.ok(config.includes('AI_PROVIDERS_ENABLED = ""'));
   assert.ok(config.includes('DIGEST_AI_ENABLED = "false"'));
   assert.ok(!config.includes('5fcba514-d0f7-45e7-a632-d4c59233af71'));
