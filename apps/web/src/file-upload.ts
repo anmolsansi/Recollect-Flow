@@ -273,6 +273,7 @@ export async function runFileCapture(
       await fetchApi<InitResult>('/uploads/init', {
         method: 'POST',
         body: JSON.stringify({
+          attachment_id: operation.id,
           filename: reference.name,
           mime_type: reference.mimeType,
           size_bytes: reference.byteLength,
@@ -286,6 +287,9 @@ export async function runFileCapture(
         signal,
       }),
     );
+    if (init.attachment_id !== operation.id) {
+      throw new Error('Server did not confirm the original reservation identity.');
+    }
     await advance(
       {
         ...reference,
