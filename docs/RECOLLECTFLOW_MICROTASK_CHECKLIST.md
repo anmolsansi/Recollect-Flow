@@ -2807,16 +2807,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-20 / 06 — Route precedence
 
-- [ ] `BG-20.051` Define API prefix handling.
-- [ ] `BG-20.052` Define unknown API JSON behavior.
-- [ ] `BG-20.053` Define homepage handling.
-- [ ] `BG-20.054` Define item deep-link handling.
-- [ ] `BG-20.055` Define capture route handling.
-- [ ] `BG-20.056` Define operator route handling.
-- [ ] `BG-20.057` Define static asset handling.
-- [ ] `BG-20.058` Define missing asset behavior.
-- [ ] `BG-20.059` Define SPA fallback exclusions.
-- [ ] `BG-20.060` Record route decision table.
+- [x] `BG-20.051` Define API prefix handling.
+- [x] `BG-20.052` Define unknown API JSON behavior.
+- [x] `BG-20.053` Define homepage handling.
+- [x] `BG-20.054` Define item deep-link handling.
+- [x] `BG-20.055` Define capture route handling.
+- [x] `BG-20.056` Define operator route handling.
+- [x] `BG-20.057` Define static asset handling.
+- [x] `BG-20.058` Define missing asset behavior.
+- [x] `BG-20.059` Define SPA fallback exclusions.
+- [x] `BG-20.060` Record route decision table.
 
 #### BG-20 / 07 — Authentication boundary
 
