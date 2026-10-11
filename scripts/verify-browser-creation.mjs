@@ -308,7 +308,10 @@ async function run() {
       'yes',
       'Hosted browser writes require operator-confirmed staging-only D1/R2 bindings',
     );
-    assert.ok(adminToken, 'Staging-only ADMIN_TOKEN must come from secure environment');
+    assert.ok(
+      adminToken,
+      'Staging-only ADMIN_TOKEN must come from secure environment',
+    );
     const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
     const resources = validateStagingResources(
       process.env,
@@ -549,10 +552,9 @@ async function run() {
     result: 'passed',
     item_count: 5,
     pdf_attachment_id: file.attachmentId,
-    qualification:
-      hostedStaging
-        ? 'Staging HTTPS five-source proof; distinct external OCR/PDF/outage/backoff and rollback gates remain'
-        : 'Local bundled Worker test only; BG-21 hosted HTTPS and BG-22 outage/recovery acceptance remain open',
+    qualification: hostedStaging
+      ? 'Staging HTTPS five-source proof; distinct external OCR/PDF/outage/backoff and rollback gates remain'
+      : 'Local bundled Worker test only; BG-21 hosted HTTPS and BG-22 outage/recovery acceptance remain open',
   });
 }
 try {
