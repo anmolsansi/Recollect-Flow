@@ -64,12 +64,12 @@ async function verifyOriginal(name, mime, bytes) {
   await evaluate(browser, 'document.querySelector("form").requestSubmit()');
   await waitFor(
     browser,
-    'Boolean(document.querySelector("a[href^="/items/"]")) && document.body.textContent.includes("Original bytes finalized")',
+    'Boolean(document.querySelector(`a[href^="/items/"]`)) && document.body.textContent.includes("Original bytes finalized")',
     'canonical file Saved state',
   );
   const id = await evaluate(
     browser,
-    'document.querySelector("a[href^="/items/"]").getAttribute("href").split("/").pop()',
+    'document.querySelector(`a[href^="/items/"]`).getAttribute("href").split("/").pop()',
   );
   const details = await apiRequest(
     runtime.apiOrigin,
