@@ -30,7 +30,7 @@ No API or D1 schema migration is introduced. No frontend token storage or cookie
 | `GET /api/v1/health`                         | Existing Hono app             | 200 JSON, private/no-store                         |
 | `GET/POST /api/v1/unknown`                   | Existing Hono not-found       | 404 JSON with `error.code=NOT_FOUND`, no-store     |
 | `GET /api/v1/items/:id`, attachments, export | Existing authenticated routes | No public static fallback; private/no-store        |
-| `GET /assets/<hashed>.js`, `.css`              | Worker → `ASSETS`          | 200 correct asset MIME, immutable cache            |
+| `GET /assets/<hashed>.js`, `.css`            | Worker → `ASSETS`             | 200 correct asset MIME, immutable cache            |
 | Missing bundle under `/assets/`              | Worker → `ASSETS`             | 404 text, no-store, never HTML fallback            |
 | `POST /capture` or `POST /items/:id`         | Worker path guard             | 405; no asset body, no mutation                    |
 | Unknown Web route or extra item segment      | Worker                        | 404, no HTML fallback                              |
@@ -63,16 +63,16 @@ The release manifest lives in generated `apps/web/dist/release-manifest.json` an
 
 ## Validation ledger
 
-| Evidence                                          | Status                      | Boundary                                            |
-| ------------------------------------------------- | --------------------------- | --------------------------------------------------- |
-| BG-20 prerequisite and decision                   | Verified on merged `main`   | PR #82 and merged-main CI from BG-20                |
-| Wrangler assets, routing, package code            | Implemented on BG-21 branch | CI validation required                              |
-| Node/Worker route and package tests               | Verified in GitHub Actions  | Run #38137343234 passed on earlier head             |
-| Built-asset Chrome/D1/R2 acceptance               | Verified locally in CI      | Run #38139897478 tested login, reload and logout    |
-| Remote isolated HTTPS preview and `Secure` cookie | Not performed               | Requires separately authorized preview resources    |
-| Live production deployment or digest delivery     | Not performed               | BG-32 and separate authorization                    |
-| Physical iPhone proof                             | Not performed               | Later device acceptance gates                       |
-| Exact-head and merged-main CI                     | Still pending final merge   | Earlier full green run #38137343234, prior SHA       |
+| Evidence                                          | Status                      | Boundary                                         |
+| ------------------------------------------------- | --------------------------- | ------------------------------------------------ |
+| BG-20 prerequisite and decision                   | Verified on merged `main`   | PR #82 and merged-main CI from BG-20             |
+| Wrangler assets, routing, package code            | Implemented on BG-21 branch | CI validation required                           |
+| Node/Worker route and package tests               | Verified in GitHub Actions  | Run #38137343234 passed on earlier head          |
+| Built-asset Chrome/D1/R2 acceptance               | Verified locally in CI      | Run #38139897478 tested login, reload and logout |
+| Remote isolated HTTPS preview and `Secure` cookie | Not performed               | Requires separately authorized preview resources |
+| Live production deployment or digest delivery     | Not performed               | BG-32 and separate authorization                 |
+| Physical iPhone proof                             | Not performed               | Later device acceptance gates                    |
+| Exact-head and merged-main CI                     | Still pending final merge   | Earlier full green run #38137343234, prior SHA   |
 
 BG-21 remains **in progress** until all required checks have actual evidence. Do not mark BG-22 unblocked based only on this document or on a passing Vite development test.
 
