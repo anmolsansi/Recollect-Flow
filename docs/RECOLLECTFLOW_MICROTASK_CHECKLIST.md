@@ -3075,11 +3075,11 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-22.043` Download PDF original.
 - [x] `BG-22.044` Compare PDF checksum.
 - [x] `BG-22.045` Edit derived title.
-- [ ] `BG-22.046` Edit project metadata.
-- [ ] `BG-22.047` Edit reminder metadata.
+- [x] `BG-22.046` Edit project metadata.
+- [x] `BG-22.047` Edit reminder metadata.
 - [x] `BG-22.048` Refresh item page.
-- [ ] `BG-22.049` Verify persisted values.
-- [ ] `BG-22.050` Verify source evidence unchanged.
+- [x] `BG-22.049` Verify persisted values.
+- [x] `BG-22.050` Verify source evidence unchanged.
 
 #### BG-22 / 06 — Retry and duplicates
 
@@ -3116,9 +3116,9 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [ ] `BG-22.075` Finish canonical capture.
 - [ ] `BG-22.076` Verify one linked object.
 - [x] `BG-22.077` Open direct item URL logged out.
-- [ ] `BG-22.078` Complete login navigation.
-- [ ] `BG-22.079` Open direct link after browser restart.
-- [ ] `BG-22.080` Confirm correct item destination.
+- [x] `BG-22.078` Complete login navigation.
+- [x] `BG-22.079` Open direct link after browser restart.
+- [x] `BG-22.080` Confirm correct item destination.
 
 #### BG-22 / 09 — Release-candidate closure
 
