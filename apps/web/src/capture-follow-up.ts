@@ -53,23 +53,25 @@ export async function applyCaptureFollowUp(
   // Even for duplicates, read the canonical target first. Never silently edit
   // metadata attached to an older independent capture.
   const detail = await api<ItemDetailData>(`/items/${captureId}`);
-  if (duplicateOf || detail.item.duplicate_of)
-    return { status: 'duplicate' };
+  if (duplicateOf || detail.item.duplicate_of) return { status: 'duplicate' };
 
   const requestedProject = value.project.trim() || null;
   const requestedReview = parseLocalReviewAt(value.reviewLocal);
   const currentProject = detail.item.project;
   const currentReview = detail.item.review_at ?? null;
   if (
-    (requestedProject && currentProject && currentProject !== requestedProject) ||
+    (requestedProject &&
+      currentProject &&
+      currentProject !== requestedProject) ||
     (requestedReview && currentReview && currentReview !== requestedReview)
   ) {
     return { status: 'conflict' };
   }
 
-  const patch: { edit_version: number; project?: string; review_at?: string } = {
-    edit_version: detail.item.edit_version,
-  };
+  const patch: { edit_version: number; project?: string; review_at?: string } =
+    {
+      edit_version: detail.item.edit_version,
+    };
   if (requestedProject && currentProject !== requestedProject)
     patch.project = requestedProject;
   if (requestedReview && currentReview !== requestedReview)
