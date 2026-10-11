@@ -268,13 +268,17 @@ async function verifyDirectLinkAfterRestart(id) {
   );
   await waitFor(
     browser,
-    'location.pathname === ' + JSON.stringify(path) +
-      ' && document.body.textContent.includes(' + JSON.stringify('BG22 owner title ' + runId) + ')',
+    'location.pathname === ' +
+      JSON.stringify(path) +
+      ' && document.body.textContent.includes(' +
+      JSON.stringify('BG22 owner title ' + runId) +
+      ')',
     'direct item link restored after reauthentication',
   );
   const status = await evaluate(
     browser,
-    'fetch(' + JSON.stringify('/api/v1/items/' + id) +
+    'fetch(' +
+      JSON.stringify('/api/v1/items/' + id) +
       ', { credentials: "include" }).then(response => response.status)',
   );
   assert.equal(status, 200);
