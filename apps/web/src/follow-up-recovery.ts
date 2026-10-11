@@ -48,6 +48,9 @@ export function listPendingFollowUps(now = Date.now()): PendingFollowUp[] {
         followUp: {
           project: entry.followUp.project,
           reviewLocal: entry.followUp.reviewLocal,
+          ...(typeof entry.followUp.reviewInstant === 'string'
+            ? { reviewInstant: entry.followUp.reviewInstant }
+            : {}),
         },
         createdAt: entry.createdAt,
       }));
