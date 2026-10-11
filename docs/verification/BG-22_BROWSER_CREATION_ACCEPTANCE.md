@@ -134,3 +134,18 @@ remote HTTPS, provider outage, file-transfer interruption and image/PDF
 extraction tests remain distinct gates until their own exact-head proof
 passes. Do not infer image OCR or PDF text search from a successful file
 checksum or a search for the user-supplied filename/reason.
+
+## Metadata and clean-browser acceptance checkpoint
+
+[CI run #38148870214](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38148870214)
+passed on the packaged local Worker source revision that includes the new
+BG-22 acceptance assertions. It tested browser title, project and review-date
+updates, a hard reload, persistence of all edited values, and unchanged
+original note source. After logout denied protected access, the test closed
+the Chrome profile, opened a fresh browser profile, followed the exact
+previous item deep link, authenticated through the real form, and confirmed
+the original item destination and authorized API status 200.
+
+This is focused proof for `BG-22.046–.050` and `BG-22.078–.080`.
+It is a fresh local browser profile with isolated D1/R2, not a real
+external digest delivery, production session or remote HTTPS preview.
