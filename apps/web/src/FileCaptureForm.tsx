@@ -5,6 +5,7 @@ import { FollowUpFields, SavedFollowUp } from './CaptureFollowUp';
 import {
   emptyFollowUp,
   hasFollowUp,
+  freezeFollowUp,
   validateFollowUp,
 } from './capture-follow-up';
 import {
@@ -257,7 +258,7 @@ export function FileCaptureForm() {
       }
       prepared = {
         ...prepareFileOperation(file, checksum, reason, privacy, category),
-        followUp: structuredClone(followUp),
+        followUp: freezeFollowUp(followUp),
       };
       await retain(prepared);
       if (preparing.signal.aborted) {
