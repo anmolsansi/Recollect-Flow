@@ -26,7 +26,13 @@ export function parseLocalReviewAt(local: string): string | null {
   if (!local) return null;
   const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(local);
   if (!match) throw new Error('Enter a valid local review date and time.');
-  const [year, month, day, hour, minute] = match.slice(1).map(Number);
+  const [year, month, day, hour, minute] = [
+    Number(match[1]!),
+    Number(match[2]!),
+    Number(match[3]!),
+    Number(match[4]!),
+    Number(match[5]!),
+  ];
   if (year < 1000 || year > 9999) {
     throw new Error('Enter a valid review year.');
   }
