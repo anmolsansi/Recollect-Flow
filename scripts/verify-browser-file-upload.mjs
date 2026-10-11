@@ -112,6 +112,7 @@ async function verifyOriginal(name, mime, bytes) {
     bytes: bytes.length,
     verified_browser_hash: true,
   });
+  return attachment.id;
 }
 
 try {
@@ -129,7 +130,7 @@ try {
       });
   browser = await openBrowser(runtime);
   await login(browser, runtime.webOrigin, adminToken);
-  await verifyOriginal('bg18.pdf', 'application/pdf', pdf);
+  const verifiedPdfId = await verifyOriginal('bg18.pdf', 'application/pdf', pdf);
   await verifyOriginal('bg18.png', 'image/png', png);
 
   const invalidPath = join(folder, 'blocked.exe');
@@ -164,6 +165,30 @@ try {
     'File form overflows mobile viewport',
   );
   report('BG18-mobile-upload-layout');
+
+  if (process.argv.includes('--bundled')) {
+    await navigate(browser, runtime.webOrigin + '/');
+    await waitFor(
+      browser,
+      '[...document.querySelectorAll("button")].some(b => b.textContent?.trim() === "Logout")',
+      'bundled logout button',
+    );
+    await evaluate(
+      browser,
+      '[...document.querySelectorAll("button")].find(b => b.textContent?.trim() === "Logout").click()',
+    );
+    await waitFor(
+      browser,
+      'Boolean(document.querySelector(\\'input[type="password"]\\'))',
+      'bundled logout requires login',
+    );
+    const denied = await evaluate(
+      browser,
+      `(async () => (await fetch("/api/v1/attachments/${verifiedPdfId}/content", { credentials: "include" })).status)()`,
+    );
+    assert.ok([401, 403].includes(denied), 'Logout must revoke attachment access');
+    report('BG21-bundled-download-revoked-after-logout', { status: denied });
+  }
 
   report('BG18-browser-acceptance', {
     status: 'passed',
