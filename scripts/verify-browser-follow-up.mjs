@@ -252,6 +252,56 @@ try {
     'Follow-up form must not overflow on mobile',
   );
   report('mobile-follow-up-layout');
+
+  // A 200 CSS-pixel viewport approximates a 200% browser zoom of 400 CSS pixels.
+  await browser.client.send(
+    'Emulation.setDeviceMetricsOverride',
+    {
+      width: 200,
+      height: 844,
+      deviceScaleFactor: 1,
+      mobile: true,
+    },
+    browser.sessionId,
+  );
+  await begin();
+  const zoomViewport = await evaluate(
+    browser,
+    '({ viewport: innerWidth, content: document.documentElement.scrollWidth })',
+  );
+  assert.ok(
+    zoomViewport.content <= zoomViewport.viewport + 8,
+    'Follow-up form must not overflow at 200% zoom',
+  );
+  report('browser-zoom-equivalent-layout');
+
+  // A physical Enter key event must activate the focused submit control.
+  await setValue('url', 'https://example.com/bg19-keyboard-' + marker);
+  await evaluate(browser, 'document.querySelector("button[type=submit]").focus()');
+  await browser.client.send(
+    'Input.dispatchKeyEvent',
+    { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 },
+    browser.sessionId,
+  );
+  await browser.client.send(
+    'Input.dispatchKeyEvent',
+    { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 },
+    browser.sessionId,
+  );
+  await waitFor(
+    browser,
+    'document.body.textContent.includes("Processing status:")',
+    'keyboard-only Enter save',
+  );
+  const statusAttributes = await evaluate(
+    browser,
+    '({ role: document.querySelector("section[role=status]")?.getAttribute("role"), live: document.querySelector("section[role=status]")?.getAttribute("aria-live"), headingFocus: document.activeElement?.tagName === "H2" })',
+  );
+  assert.equal(statusAttributes.role, 'status');
+  assert.equal(statusAttributes.live, 'polite');
+  assert.equal(statusAttributes.headingFocus, true, 'Saved heading must receive focus after async save');
+  report('keyboard-submit-and-live-confirmation');
+
   report('BG19-browser-follow-up', {
     status: 'passed',
     environment: 'isolated Chrome/Worker/D1',
