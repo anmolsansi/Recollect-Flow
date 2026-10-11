@@ -1,6 +1,6 @@
 # BG-20 — Production Web Inbox origin: decision and evidence
 
-**Status:** Proposed production topology selected for BG-21 implementation. This is a design gate, not proof of a deployed Web app.
+**Status:** Design complete and merged on `main` October 11, 2026. BG-21 still owns asset routing, release packaging and any approved production deployment.
 **Scope:** BG-20.001–.100, [tracking issue #81](https://github.com/anmolsansi/Recollect-Flow/issues/81).
 **Repository baseline:** `main` `0cb3dae8c5c441aba1d3800842925668ae6f9906`.
 **Prerequisite:** BG-19 checklist 100/100, merged-main Actions run [38131681395](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38131681395) passed.
@@ -302,3 +302,11 @@ The BG-20 outcome is a documented production hosting decision: one concrete cano
 - Repository review: confirm only BG-20 files changed and all microcommits trace issue #81.
 - Proof review: record PR-head CI, merge SHA and merged-main CI **only when observed**, never pre-fill evidence.
 - Closeout: update issue, canonical checklist and task status after final merged-main check, then unlock BG-21 development.
+
+## Final repository acceptance, October 11, 2026
+
+BG-20's design-only acceptance passed on the exact code revision. [PR #82](https://github.com/anmolsansi/Recollect-Flow/pull/82) preserved 32 reviewable commits when merged by rebase to `main` at `dc231674cae890c0bf2f83857fc695e2c28b8dcf`. [PR-head CI #38133430982](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38133430982) passed, followed by [merged-main CI #38133672564](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38133672564). Both gates included the applicable repository checks and configured Chrome/Worker/D1 browser suites.
+
+Read-only HTTPS probes confirmed that the documented Worker returned structured JSON 404 for `/` and healthy JSON 200 for `/api/v1/health`, without redirect. These checks prove that the Web application is **not yet hosted** on the chosen origin. Cloudflare account ownership and other separate hostnames remain operator-verification items for BG-21, not inferred facts.
+
+The canonical BG-20 checklist can now close at 100/100 and unlock BG-21 **for implementation only**, not for unapproved production mutation or real-device acceptance. No Cloudflare production configuration, secrets, DNS, database migration or live Web assets were changed in BG-20.
