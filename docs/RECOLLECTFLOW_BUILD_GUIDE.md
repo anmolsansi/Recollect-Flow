@@ -2492,6 +2492,15 @@ when navigating from `/` will fail exactly when a reminder is most useful.
 **When.** After BG-20. **Where.** Root build scripts, `wrangler.toml`, Worker routing,
 Web static output and CI.
 
+**Implementation status (BG-21 branch):** The selected BG-20 single-Worker design is
+implemented as an explicit `ASSETS` binding and an API-first fetch dispatcher.
+`npm run release:package` cleans and builds the Vite app, validates its assets,
+and records a matching Worker/Web release manifest. A dedicated acceptance script
+runs the bundled Worker path against isolated local D1/R2 and Chrome, not the Vite
+proxy. See [BG-21 hosting and verification](verification/BG-21_WEB_HOSTING.md)
+for routing, configuration, error/cache behavior, release/rollback and remaining
+operator/CI proof. Branch implementation is not evidence of a production deploy.
+
 ### Deploy the application shell without swallowing API errors
 
 Implement the hosting arrangement decided in BG-20. Build Web assets with the
