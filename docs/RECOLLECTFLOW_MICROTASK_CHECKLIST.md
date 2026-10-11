@@ -2880,53 +2880,53 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-21 / 01 — Establish task context
 
-- [ ] `BG-21.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-21.002` **Dependency:** Verify BG-20's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-21.003` **Baseline:** Record the actual checkout or release candidate used for BG-21.
-- [ ] `BG-21.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-21.005` **Evidence:** Check whether existing evidence already satisfies any BG-21 step; reference it instead of manufacturing work.
-- [ ] `BG-21.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-21.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-21.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-21.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-21.010` **Tracking:** Open a BG-21 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-21.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-21.002` **Dependency:** Verify BG-20's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-21.003` **Baseline:** Record the actual checkout or release candidate used for BG-21.
+- [x] `BG-21.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-21.005` **Evidence:** Check whether existing evidence already satisfies any BG-21 step; reference it instead of manufacturing work.
+- [x] `BG-21.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-21.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-21.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-21.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-21.010` **Tracking:** Open a BG-21 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-21 / 02 — Build inputs
 
-- [ ] `BG-21.011` Identify Web build command.
-- [ ] `BG-21.012` Identify static output directory.
-- [ ] `BG-21.013` Confirm source revision.
-- [ ] `BG-21.014` Remove stale artifact assumptions.
-- [ ] `BG-21.015` Define build-before-package dependency.
-- [ ] `BG-21.016` Include matching lockfile.
-- [ ] `BG-21.017` Identify source-map policy.
-- [ ] `BG-21.018` Confirm asset naming behavior.
-- [ ] `BG-21.019` Check missing output failure.
-- [ ] `BG-21.020` Record artifact input manifest.
+- [x] `BG-21.011` Identify Web build command.
+- [x] `BG-21.012` Identify static output directory.
+- [x] `BG-21.013` Confirm source revision.
+- [x] `BG-21.014` Remove stale artifact assumptions.
+- [x] `BG-21.015` Define build-before-package dependency.
+- [x] `BG-21.016` Include matching lockfile.
+- [x] `BG-21.017` Identify source-map policy.
+- [x] `BG-21.018` Confirm asset naming behavior.
+- [x] `BG-21.019` Check missing output failure.
+- [x] `BG-21.020` Record artifact input manifest.
 
 #### BG-21 / 03 — Asset integration
 
-- [ ] `BG-21.021` Read selected runtime configuration.
-- [ ] `BG-21.022` Add supported asset binding.
-- [ ] `BG-21.023` Point binding to built output.
-- [ ] `BG-21.024` Preserve existing D1 binding.
-- [ ] `BG-21.025` Preserve existing R2 binding.
-- [ ] `BG-21.026` Preserve required secret boundaries.
-- [ ] `BG-21.027` Keep preview resources separate.
-- [ ] `BG-21.028` Validate configuration syntax.
-- [ ] `BG-21.029` Build Worker with asset integration.
-- [ ] `BG-21.030` Inspect deployment dry-run output.
+- [x] `BG-21.021` Read selected runtime configuration.
+- [x] `BG-21.022` Add supported asset binding.
+- [x] `BG-21.023` Point binding to built output.
+- [x] `BG-21.024` Preserve existing D1 binding.
+- [x] `BG-21.025` Preserve existing R2 binding.
+- [x] `BG-21.026` Preserve required secret boundaries.
+- [x] `BG-21.027` Keep preview resources separate.
+- [x] `BG-21.028` Validate configuration syntax.
+- [x] `BG-21.029` Build Worker with asset integration.
+- [x] `BG-21.030` Inspect deployment dry-run output.
 
 #### BG-21 / 04 — API routing
 
-- [ ] `BG-21.031` Route API prefix to Worker.
-- [ ] `BG-21.032` Preserve authentication middleware.
-- [ ] `BG-21.033` Preserve health response.
-- [ ] `BG-21.034` Preserve JSON validation errors.
-- [ ] `BG-21.035` Return JSON unknown-route errors.
-- [ ] `BG-21.036` Prevent SPA fallback on API.
-- [ ] `BG-21.037` Test unknown API GET.
-- [ ] `BG-21.038` Test unknown API POST.
+- [x] `BG-21.031` Route API prefix to Worker.
+- [x] `BG-21.032` Preserve authentication middleware.
+- [x] `BG-21.033` Preserve health response.
+- [x] `BG-21.034` Preserve JSON validation errors.
+- [x] `BG-21.035` Return JSON unknown-route errors.
+- [x] `BG-21.036` Prevent SPA fallback on API.
+- [x] `BG-21.037` Test unknown API GET.
+- [x] `BG-21.038` Test unknown API POST.
 - [ ] `BG-21.039` Test unauthorized item request.
 - [ ] `BG-21.040` Test malformed authenticated request.
 
