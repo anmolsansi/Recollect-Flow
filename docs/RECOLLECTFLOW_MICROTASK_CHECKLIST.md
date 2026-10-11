@@ -3063,10 +3063,10 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [ ] `BG-22.034` Search screenshot known text.
 - [ ] `BG-22.035` Search PDF internal phrase.
 - [x] `BG-22.036` Open each exact item.
-- [ ] `BG-22.037` Inspect current coverage.
-- [ ] `BG-22.038` Inspect original source evidence.
-- [ ] `BG-22.039` Inspect per-stage status.
-- [ ] `BG-22.040` Verify no unrelated search result.
+- [x] `BG-22.037` Inspect current coverage.
+- [x] `BG-22.038` Inspect original source evidence.
+- [x] `BG-22.039` Inspect per-stage status.
+- [x] `BG-22.040` Verify no unrelated search result.
 
 #### BG-22 / 05 — Original and edit
 
@@ -3091,30 +3091,30 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-22.056` Use new reason/key.
 - [x] `BG-22.057` Inspect both capture events.
 - [x] `BG-22.058` Confirm metadata not silently overwritten.
-- [ ] `BG-22.059` Confirm no duplicate attachment bytes.
+- [x] `BG-22.059` Confirm no duplicate attachment bytes.
 - [x] `BG-22.060` Record duplicate/retry outcomes.
 
 #### BG-22 / 07 — Provider outage
 
-- [ ] `BG-22.061` Disable approved test AI path.
+- [x] `BG-22.061` Disable approved test AI path.
 - [ ] `BG-22.062` Disable test Notion path.
-- [ ] `BG-22.063` Save another raw item.
-- [ ] `BG-22.064` Retrieve raw item immediately.
-- [ ] `BG-22.065` Search supplied phrase.
-- [ ] `BG-22.066` Inspect deferred optional state.
-- [ ] `BG-22.067` Restore test provider availability.
+- [x] `BG-22.063` Save another raw item.
+- [x] `BG-22.064` Retrieve raw item immediately.
+- [x] `BG-22.065` Search supplied phrase.
+- [x] `BG-22.066` Inspect deferred optional state.
+- [x] `BG-22.067` Restore test provider availability.
 - [ ] `BG-22.068` Resume eligible processing.
-- [ ] `BG-22.069` Verify owner edits survive.
-- [ ] `BG-22.070` Verify no false capture failure.
+- [x] `BG-22.069` Verify owner edits survive.
+- [x] `BG-22.070` Verify no false capture failure.
 
 #### BG-22 / 08 — Authentication recovery
 
-- [ ] `BG-22.071` Expire session during upload.
-- [ ] `BG-22.072` Preserve operation stage.
-- [ ] `BG-22.073` Reauthenticate through real form.
-- [ ] `BG-22.074` Resume confirmed upload stage.
-- [ ] `BG-22.075` Finish canonical capture.
-- [ ] `BG-22.076` Verify one linked object.
+- [x] `BG-22.071` Expire session during upload.
+- [x] `BG-22.072` Preserve operation stage.
+- [x] `BG-22.073` Reauthenticate through real form.
+- [x] `BG-22.074` Resume confirmed upload stage.
+- [x] `BG-22.075` Finish canonical capture.
+- [x] `BG-22.076` Verify one linked object.
 - [x] `BG-22.077` Open direct item URL logged out.
 - [x] `BG-22.078` Complete login navigation.
 - [x] `BG-22.079` Open direct link after browser restart.
@@ -3122,29 +3122,29 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-22 / 09 — Release-candidate closure
 
-- [ ] `BG-22.081` Run full repository gate.
-- [ ] `BG-22.082` Check migration compatibility evidence.
+- [x] `BG-22.081` Run full repository gate.
+- [x] `BG-22.082` Check migration compatibility evidence.
 - [x] `BG-22.083` Check Worker bundle evidence.
 - [x] `BG-22.084` Check Web build evidence.
-- [ ] `BG-22.085` Inspect browser console errors.
-- [ ] `BG-22.086` Inspect safe failed network requests.
-- [ ] `BG-22.087` Verify mobile viewport usability.
+- [x] `BG-22.085` Inspect browser console errors.
+- [x] `BG-22.086` Inspect safe failed network requests.
+- [x] `BG-22.087` Verify mobile viewport usability.
 - [x] `BG-22.088` Close owned preview processes.
 - [x] `BG-22.089` Save scenario result matrix.
 - [x] `BG-22.090` Record remaining production qualifications.
 
 #### BG-22 / 10 — Verify and close this task
 
-- [ ] `BG-22.091` **Review:** Compare the completed checklist with BG-22's stated outcome; identify uncovered behavior.
-- [ ] `BG-22.092` **Verification:** Run or inspect the focused proof required by BG-22; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-22.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-22.094` **Integrity:** Check that BG-22 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-22.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-22.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-22.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-22.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-22.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-22.100` **Gate:** Check the parent completion boundary and record whether BG-23 is unlocked.
+- [x] `BG-22.091` **Review:** Compare the completed checklist with BG-22's stated outcome; identify uncovered behavior.
+- [x] `BG-22.092` **Verification:** Run or inspect the focused proof required by BG-22; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-22.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-22.094` **Integrity:** Check that BG-22 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-22.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-22.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-22.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-22.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-22.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-22.100` **Gate:** Check the parent completion boundary and record whether BG-23 is unlocked.
 
 ## BG-23 — 100 executable microtasks
 
