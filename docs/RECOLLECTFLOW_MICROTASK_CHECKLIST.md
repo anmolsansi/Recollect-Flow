@@ -2927,86 +2927,86 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-21.036` Prevent SPA fallback on API.
 - [x] `BG-21.037` Test unknown API GET.
 - [x] `BG-21.038` Test unknown API POST.
-- [ ] `BG-21.039` Test unauthorized item request.
+- [x] `BG-21.039` Test unauthorized item request.
 - [ ] `BG-21.040` Test malformed authenticated request.
 
 #### BG-21 / 05 — SPA routing
 
-- [ ] `BG-21.041` Serve root entry document.
-- [ ] `BG-21.042` Serve direct item route.
-- [ ] `BG-21.043` Serve capture route.
+- [x] `BG-21.041` Serve root entry document.
+- [x] `BG-21.042` Serve direct item route.
+- [x] `BG-21.043` Serve capture route.
 - [ ] `BG-21.044` Serve approved operator route.
-- [ ] `BG-21.045` Support hard reload.
+- [x] `BG-21.045` Support hard reload.
 - [ ] `BG-21.046` Preserve browser history navigation.
-- [ ] `BG-21.047` Handle unknown client path intentionally.
-- [ ] `BG-21.048` Avoid serving stale HTML indefinitely.
-- [ ] `BG-21.049` Preserve correct asset URLs.
-- [ ] `BG-21.050` Test encoded item path behavior.
+- [x] `BG-21.047` Handle unknown client path intentionally.
+- [x] `BG-21.048` Avoid serving stale HTML indefinitely.
+- [x] `BG-21.049` Preserve correct asset URLs.
+- [x] `BG-21.050` Test encoded item path behavior.
 
 #### BG-21 / 06 — Asset caching
 
-- [ ] `BG-21.051` Identify hashed asset files.
-- [ ] `BG-21.052` Assign intended immutable caching.
-- [ ] `BG-21.053` Define HTML freshness behavior.
-- [ ] `BG-21.054` Exclude private APIs from cache.
-- [ ] `BG-21.055` Exclude downloads from shared cache.
-- [ ] `BG-21.056` Exclude exports from shared cache.
-- [ ] `BG-21.057` Test missing asset status.
-- [ ] `BG-21.058` Check content type per asset.
+- [x] `BG-21.051` Identify hashed asset files.
+- [x] `BG-21.052` Assign intended immutable caching.
+- [x] `BG-21.053` Define HTML freshness behavior.
+- [x] `BG-21.054` Exclude private APIs from cache.
+- [x] `BG-21.055` Exclude downloads from shared cache.
+- [x] `BG-21.056` Exclude exports from shared cache.
+- [x] `BG-21.057` Test missing asset status.
+- [x] `BG-21.058` Check content type per asset.
 - [ ] `BG-21.059` Check deployment cache invalidation.
-- [ ] `BG-21.060` Record cache policy evidence.
+- [x] `BG-21.060` Record cache policy evidence.
 
 #### BG-21 / 07 — TLS and cookies
 
 - [ ] `BG-21.061` Verify actual HTTPS origin.
 - [ ] `BG-21.062` Verify Secure cookie issuance.
-- [ ] `BG-21.063` Verify HttpOnly cookie property.
-- [ ] `BG-21.064` Verify SameSite behavior.
+- [x] `BG-21.063` Verify HttpOnly cookie property.
+- [x] `BG-21.064` Verify SameSite behavior.
 - [ ] `BG-21.065` Verify login through chosen proxy.
-- [ ] `BG-21.066` Reject untrusted forwarding assumptions.
-- [ ] `BG-21.067` Verify session after hard reload.
-- [ ] `BG-21.068` Verify logout on production-like origin.
-- [ ] `BG-21.069` Verify private download after login.
-- [ ] `BG-21.070` Verify private download after logout.
+- [x] `BG-21.066` Reject untrusted forwarding assumptions.
+- [x] `BG-21.067` Verify session after hard reload.
+- [x] `BG-21.068` Verify logout on production-like origin.
+- [x] `BG-21.069` Verify private download after login.
+- [x] `BG-21.070` Verify private download after logout.
 
 #### BG-21 / 08 — Release packaging
 
-- [ ] `BG-21.071` Pair Worker and Web versions.
-- [ ] `BG-21.072` Record schema compatibility requirements.
-- [ ] `BG-21.073` Build artifact in CI.
-- [ ] `BG-21.074` Avoid developer-only dist dependency.
-- [ ] `BG-21.075` Record output hashes where useful.
-- [ ] `BG-21.076` Define rollback artifact selection.
+- [x] `BG-21.071` Pair Worker and Web versions.
+- [x] `BG-21.072` Record schema compatibility requirements.
+- [x] `BG-21.073` Build artifact in CI.
+- [x] `BG-21.074` Avoid developer-only dist dependency.
+- [x] `BG-21.075` Record output hashes where useful.
+- [x] `BG-21.076` Define rollback artifact selection.
 - [ ] `BG-21.077` Verify old/new asset compatibility.
-- [ ] `BG-21.078` Fail packaging on missing build.
-- [ ] `BG-21.079` Keep secrets out of frontend bundle.
+- [x] `BG-21.078` Fail packaging on missing build.
+- [x] `BG-21.079` Keep secrets out of frontend bundle.
 - [ ] `BG-21.080` Publish only intended release artifact.
 
 #### BG-21 / 09 — Preview acceptance
 
-- [ ] `BG-21.081` Start production-like asset preview.
-- [ ] `BG-21.082` Open root page.
-- [ ] `BG-21.083` Open direct item link.
-- [ ] `BG-21.084` Authenticate through actual form.
-- [ ] `BG-21.085` Submit capture through preview.
-- [ ] `BG-21.086` Download original through preview.
-- [ ] `BG-21.087` Test unknown API JSON response.
-- [ ] `BG-21.088` Test missing static asset.
-- [ ] `BG-21.089` Reload client deep link.
-- [ ] `BG-21.090` Record deployable routing proof.
+- [x] `BG-21.081` Start production-like asset preview.
+- [x] `BG-21.082` Open root page.
+- [x] `BG-21.083` Open direct item link.
+- [x] `BG-21.084` Authenticate through actual form.
+- [x] `BG-21.085` Submit capture through preview.
+- [x] `BG-21.086` Download original through preview.
+- [x] `BG-21.087` Test unknown API JSON response.
+- [x] `BG-21.088` Test missing static asset.
+- [x] `BG-21.089` Reload client deep link.
+- [x] `BG-21.090` Record deployable routing proof.
 
 #### BG-21 / 10 — Verify and close this task
 
-- [ ] `BG-21.091` **Review:** Compare the completed checklist with BG-21's stated outcome; identify uncovered behavior.
-- [ ] `BG-21.092` **Verification:** Run or inspect the focused proof required by BG-21; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-21.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-21.094` **Integrity:** Check that BG-21 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-21.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-21.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-21.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-21.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-21.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-21.100` **Gate:** Check the parent completion boundary and record whether BG-22 is unlocked.
+- [x] `BG-21.091` **Review:** Compare the completed checklist with BG-21's stated outcome; identify uncovered behavior.
+- [x] `BG-21.092` **Verification:** Run or inspect the focused proof required by BG-21; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-21.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-21.094` **Integrity:** Check that BG-21 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-21.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-21.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-21.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-21.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-21.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-21.100` **Gate:** Check the parent completion boundary and record whether BG-22 is unlocked.
 
 ## BG-22 — 100 executable microtasks
 
