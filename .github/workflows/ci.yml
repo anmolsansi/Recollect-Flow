@@ -19,6 +19,17 @@ jobs:
       - run: npm run release:package:test
       - run: npm run release:package
       - run: npx wrangler deploy --dry-run --outdir /tmp/bg21-worker
+      - name: Check isolated staging config and Worker dry-run (no remote writes)
+        env:
+          CLOUDFLARE_ACCOUNT_ID: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          BG_STAGING_WORKER_NAME: recollect-flow-bg21-bg22-staging
+          BG_STAGING_D1_NAME: recollect-flow-bg21-bg22-staging
+          BG_STAGING_D1_ID: 11111111-2222-4333-8444-555555555555
+          BG_STAGING_R2_BUCKET: recollect-flow-attachments-bg21-bg22-staging
+        run: |
+          npm run staging:prepare
+          npm run staging:verify
+          npx wrangler deploy --config .bg21-staging-preview.toml --dry-run --outdir /tmp/bg21-staging-worker
       - run: npm run db:migrate:local
       - run: google-chrome --version
       - run: npm run browser:hosting:test
