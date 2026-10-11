@@ -2781,16 +2781,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-20 / 04 — Alternative origin
 
-- [ ] `BG-20.031` Identify actual separate-host requirement.
-- [ ] `BG-20.032` Avoid unnecessary host split.
-- [ ] `BG-20.033` Define proxy ownership if required.
-- [ ] `BG-20.034` Define trusted forwarding headers.
-- [ ] `BG-20.035` Define cookie domain/path behavior.
-- [ ] `BG-20.036` Define CORS credential behavior.
-- [ ] `BG-20.037` Define CSRF origin behavior.
-- [ ] `BG-20.038` Define cross-origin download behavior.
-- [ ] `BG-20.039` Define direct-link authentication flow.
-- [ ] `BG-20.040` Record rejected unsafe shortcuts.
+- [x] `BG-20.031` Identify actual separate-host requirement.
+- [x] `BG-20.032` Avoid unnecessary host split.
+- [x] `BG-20.033` Define proxy ownership if required.
+- [x] `BG-20.034` Define trusted forwarding headers.
+- [x] `BG-20.035` Define cookie domain/path behavior.
+- [x] `BG-20.036` Define CORS credential behavior.
+- [x] `BG-20.037` Define CSRF origin behavior.
+- [x] `BG-20.038` Define cross-origin download behavior.
+- [x] `BG-20.039` Define direct-link authentication flow.
+- [x] `BG-20.040` Record rejected unsafe shortcuts.
 
 #### BG-20 / 05 — Canonical links
 
