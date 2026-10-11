@@ -106,6 +106,7 @@ export function prepareFileOperation(
     sha256: checksum,
     mimeType: file.type.toLowerCase(),
     stage: 'selected',
+    reservationKey: crypto.randomUUID(),
   };
   return {
     version: 1,
@@ -143,7 +144,7 @@ export function restartExpiredUpload(
   return {
     ...operation,
     payload,
-    attachment: { ...reference, stage: 'selected' },
+    attachment: { ...reference, stage: 'selected', reservationKey: crypto.randomUUID() },
     stage: 'prepared',
   };
 }
@@ -277,7 +278,7 @@ export async function runFileCapture(
       await fetchApi<InitResult>('/uploads/init', {
         method: 'POST',
         body: JSON.stringify({
-          attachment_id: operation.id,
+          attachment_id: reference.reservationKey ?? operation.id,
           filename: reference.name,
           mime_type: reference.mimeType,
           size_bytes: reference.byteLength,
@@ -291,7 +292,7 @@ export async function runFileCapture(
         signal,
       }),
     );
-    if (init.attachment_id !== operation.id) {
+    if (init.attachment_id !== (reference.reservationKey ?? operation.id)) {
       throw new Error('Server did not confirm the original reservation identity.');
     }
     await advance(
