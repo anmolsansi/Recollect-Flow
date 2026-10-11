@@ -2928,7 +2928,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-21.037` Test unknown API GET.
 - [x] `BG-21.038` Test unknown API POST.
 - [x] `BG-21.039` Test unauthorized item request.
-- [ ] `BG-21.040` Test malformed authenticated request.
+- [x] `BG-21.040` Test malformed authenticated request.
 
 #### BG-21 / 05 — SPA routing
 
@@ -2937,7 +2937,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-21.043` Serve capture route.
 - [ ] `BG-21.044` Serve approved operator route.
 - [x] `BG-21.045` Support hard reload.
-- [ ] `BG-21.046` Preserve browser history navigation.
+- [x] `BG-21.046` Preserve browser history navigation.
 - [x] `BG-21.047` Handle unknown client path intentionally.
 - [x] `BG-21.048` Avoid serving stale HTML indefinitely.
 - [x] `BG-21.049` Preserve correct asset URLs.
