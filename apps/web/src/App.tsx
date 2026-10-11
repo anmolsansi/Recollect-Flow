@@ -665,7 +665,11 @@ function ItemDetail() {
                   setDraft({ ...draft, review_at: reviewAt });
                   setError('');
                 } catch (cause) {
-                  setError(cause instanceof Error ? cause.message : 'Invalid review date.');
+                  setError(
+                    cause instanceof Error
+                      ? cause.message
+                      : 'Invalid review date.',
+                  );
                 }
               }}
             />
