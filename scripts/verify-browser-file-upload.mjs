@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
+import { createBg21Preview } from './bg21-preview-runtime.mjs';
 import {
   openBrowser,
   login,
@@ -115,11 +116,17 @@ async function verifyOriginal(name, mime, bytes) {
 
 try {
   folder = await mkdtemp(join(tmpdir(), 'recollect-bg18-upload-'));
-  runtime = await createLocalAcceptanceRuntime({
-    captureToken: 'bg18-capture-' + randomUUID(),
-    adminToken,
-    localWorkerToken: 'bg18-worker-' + randomUUID(),
-  });
+  runtime = process.argv.includes('--bundled')
+    ? await createBg21Preview({
+        port: 8992,
+        captureToken: 'bg21-file-capture-' + randomUUID(),
+        adminToken,
+      })
+    : await createLocalAcceptanceRuntime({
+        captureToken: 'bg18-capture-' + randomUUID(),
+        adminToken,
+        localWorkerToken: 'bg18-worker-' + randomUUID(),
+      });
   browser = await openBrowser(runtime);
   await login(browser, runtime.webOrigin, adminToken);
   await verifyOriginal('bg18.pdf', 'application/pdf', pdf);
