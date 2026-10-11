@@ -15,26 +15,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Temporary staging formatter evidence
-        run: |
-          npx prettier --write docs/verification/BG-21_BG-22_ISOLATED_STAGING.md scripts/staging-guard.mjs scripts/staging-guard.test.mjs scripts/verify-browser-creation.mjs
-          echo STAGING_FORMAT_0_BEGIN
-          base64 -w0 docs/verification/BG-21_BG-22_ISOLATED_STAGING.md
-          echo
-          echo STAGING_FORMAT_0_END
-          echo STAGING_FORMAT_1_BEGIN
-          base64 -w0 scripts/staging-guard.mjs
-          echo
-          echo STAGING_FORMAT_1_END
-          echo STAGING_FORMAT_2_BEGIN
-          base64 -w0 scripts/staging-guard.test.mjs
-          echo
-          echo STAGING_FORMAT_2_END
-          echo STAGING_FORMAT_3_BEGIN
-          base64 -w0 scripts/verify-browser-creation.mjs
-          echo
-          echo STAGING_FORMAT_3_END
-          exit 1
       - run: npm run check
       - run: npm run release:package:test
       - run: npm run release:package
