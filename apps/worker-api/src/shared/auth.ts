@@ -29,7 +29,7 @@ const rotationConfigSchema = z
   .object({
     next_id: z.string().regex(/^[A-Za-z0-9_-]{1,64}$/),
     activate_at: z.string().datetime({ offset: true }),
-    expires_at: z.string().datetime({ offset: true }),
+    expires_at: z.string().datetime({ offset: true }).optional(),
     actor: z.string().regex(/^[A-Za-z0-9_-]{1,64}$/),
     revoke_current: z.boolean().default(false),
   })
@@ -70,8 +70,14 @@ export function credentialSchedule(
   if (!parsed.success) invalidRotation();
   const config = parsed.data;
   const activateAt = Date.parse(config.activate_at);
-  const expiresAt = Date.parse(config.expires_at);
-  if (expiresAt <= activateAt) invalidRotation();
+  const expiresAt = config.expires_at
+    ? Date.parse(config.expires_at)
+    : activateAt + SESSION_LIFETIME_MS;
+  if (
+    expiresAt <= activateAt ||
+    expiresAt - activateAt > 3 * SESSION_LIFETIME_MS
+  )
+    invalidRotation();
   current.eligible = !config.revoke_current && now < expiresAt;
   const next = {
     id: config.next_id,

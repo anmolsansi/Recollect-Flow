@@ -30,6 +30,21 @@ afterEach(() => {
 });
 
 describe('bounded credential schedules', () => {
+  it('defaults to 24h and rejects a window longer than 72h', () => {
+    expect(
+      credentialSchedule(rotating({ expires_at: undefined }), 'CAPTURE', T0)
+        .rotation?.expiresAt,
+    ).toBe(T0 + SESSION_LIFETIME_MS);
+    expect(() =>
+      credentialSchedule(
+        rotating({
+          expires_at: new Date(T0 + 3 * SESSION_LIFETIME_MS + 1).toISOString(),
+        }),
+        'CAPTURE',
+        T0,
+      ),
+    ).toThrow('Credential configuration is invalid.');
+  });
   it('keeps one current key for legacy deployment configuration', () => {
     const schedule = credentialSchedule(bindings, 'CAPTURE', T0);
     expect(schedule.keys).toEqual([
