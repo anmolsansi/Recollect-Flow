@@ -8,6 +8,15 @@ type ConfigurableAiVars =
   | 'WEB_INBOX_BASE_URL';
 
 export type Env = Omit<Cloudflare.Env, ConfigurableAiVars> & {
+  CAPTURE_TOKEN_NEXT?: string;
+  CAPTURE_TOKEN_ID?: string;
+  CAPTURE_TOKEN_ROTATION?: string;
+  ADMIN_TOKEN_NEXT?: string;
+  ADMIN_TOKEN_ID?: string;
+  ADMIN_TOKEN_ROTATION?: string;
+  LOCAL_WORKER_TOKEN_NEXT?: string;
+  LOCAL_WORKER_TOKEN_ID?: string;
+  LOCAL_WORKER_TOKEN_ROTATION?: string;
   NOTION_WORKSPACE_ID?: string;
   NOTION_API_KEY?: string;
 
