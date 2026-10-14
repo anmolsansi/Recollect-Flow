@@ -167,6 +167,19 @@ export async function matchesAdminSession(
   return cookies.some((value, index) => {
     if (!schedule.keys[index]?.eligible || typeof value !== 'string')
       return false;
+    const versioned =
+      /^session:v2:([A-Za-z0-9_-]{1,64}):(\d{13}):(\d{13})$/.exec(value);
+    if (versioned) {
+      const issuedAt = Number(versioned[2]);
+      const expiry = Number(versioned[3]);
+      return (
+        versioned[1] === schedule.keys[index]!.id &&
+        issuedAt <= now &&
+        expiry > now &&
+        expiry > issuedAt &&
+        expiry - issuedAt <= SESSION_LIFETIME_MS
+      );
+    }
     const match = /^authenticated:(\d{13})$/.exec(value);
     if (!match) return false;
     const expiry = Number(match[1]);

@@ -72,6 +72,36 @@ async function loginCookie(env: Env, token = env.ADMIN_TOKEN) {
 }
 
 describe('bounded credential schedules', () => {
+  it('keeps versioned next-key sessions valid through promotion with the same ID', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0 + 500);
+    const cookie = await loginCookie(adminRotating());
+    const promoted = {
+      ...bindings,
+      ADMIN_TOKEN: 'dummy-admin-next-secret',
+      ADMIN_TOKEN_ID: 'admin-next',
+    };
+    vi.setSystemTime(T0 + SESSION_LIFETIME_MS);
+    const app = createApp();
+    expect(
+      (
+        await app.request(
+          '/api/v1/admin/session',
+          { headers: { Cookie: cookie } },
+          promoted,
+        )
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await app.request(
+          '/api/v1/admin/session',
+          { headers: { Cookie: cookie } },
+          { ...promoted, ADMIN_TOKEN_ID: 'wrong-id' },
+        )
+      ).status,
+    ).toBe(403);
+  });
   it('signs old-token overlap login with the next admin key', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(T0);
