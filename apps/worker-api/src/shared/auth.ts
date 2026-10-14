@@ -43,6 +43,33 @@ function invalidRotation(): never {
   );
 }
 
+function auditRotation(
+  schedule: CredentialSchedule,
+  scope: CredentialScope,
+  kind: 'bearer' | 'session',
+  slot: string | undefined,
+  now: number,
+): void {
+  if (!schedule.rotation) return;
+  console.log(
+    JSON.stringify({
+      event: 'credential_rotation_auth',
+      scope,
+      credential_kind: kind,
+      current_key_id: schedule.keys[0]?.id,
+      next_key_id: schedule.keys[1]?.id,
+      matched_key_id: slot ?? null,
+      actor: schedule.rotation.actor,
+      activate_at: new Date(schedule.rotation.activateAt).toISOString(),
+      retires_at: new Date(schedule.rotation.expiresAt).toISOString(),
+      current_eligible: schedule.keys[0]?.eligible,
+      revoke_current: schedule.rotation.revokeCurrent,
+      at: new Date(now).toISOString(),
+      outcome: slot ? 'accepted' : 'denied',
+    }),
+  );
+}
+
 export function credentialSchedule(
   env: Env,
   scope: CredentialScope,
@@ -139,11 +166,12 @@ export async function matchCredential(
   const matches = await Promise.all(
     schedule.keys.map((key) => constantTimeEqual(provided ?? '', key.secret)),
   );
-  return (
+  const matched =
     schedule.keys.find(
       (key, index) => key.eligible && matches[index] && provided !== null,
-    ) ?? null
-  );
+    ) ?? null;
+  auditRotation(schedule, scope, 'bearer', matched?.id, now);
+  return matched;
 }
 
 export async function matchesCaptureToken(
@@ -164,7 +192,7 @@ export async function matchesAdminSession(
       getSignedCookie(context, key.secret, 'admin_session'),
     ),
   );
-  return cookies.some((value, index) => {
+  const matchedIndex = cookies.findIndex((value, index) => {
     if (!schedule.keys[index]?.eligible || typeof value !== 'string')
       return false;
     const versioned =
@@ -180,6 +208,8 @@ export async function matchesAdminSession(
         expiry - issuedAt <= SESSION_LIFETIME_MS
       );
     }
+    // Legacy cookies predate key IDs and are accepted only under current.
+    if (index !== 0) return false;
     const match = /^authenticated:(\d{13})$/.exec(value);
     if (!match) return false;
     const expiry = Number(match[1]);
@@ -189,6 +219,14 @@ export async function matchesAdminSession(
       expiry <= now + SESSION_LIFETIME_MS
     );
   });
+  auditRotation(
+    schedule,
+    'ADMIN',
+    'session',
+    schedule.keys[matchedIndex]?.id,
+    now,
+  );
+  return matchedIndex !== -1;
 }
 
 /**
