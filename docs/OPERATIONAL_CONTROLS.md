@@ -97,3 +97,14 @@ Purge audit is workflow-bound; restore/backup/integrity record their own run/out
 | Search-index drift                  | Existing `scripts/rebuild-item-search-index.sql` count output | Approved backup first, rebuild isolated target, zero missing/orphaned/duplicate counts; command-only                                                         |
 
 For every write, show the safe target ID and refreshed server result. A queue acceptance is not external completion; an unavailable capability is **not implemented**, not a disabled-but-working button. Existing operator SQL, external dashboards and restore rehearsal records are manual alternatives, not hidden Web features.
+
+## Minimum V1 interface and handoff
+
+- **BG24-25:** bounded credentials, session behavior, authentication/log safety; normal capture/review remain unchanged.
+- **BG26:** one protected operations page, reachable by an owner navigation link, showing usage/headroom, reset/probe timing and failed/stalled work. Explicitly label unavailable account/storage measurements. Use existing APIs; no UI-derived permission policy.
+- **BG27:** failed processing/sync inspection and eligible retry/recreation using the exact job, sync-attempt or item ID above. Refresh server eligibility; keep unknown/paused/stale/deleted work unavailable with an explanation.
+- **BG28:** digest inspection/review/reconciliation and private authenticated export/backup/integrity surfaces within its approved chapter. External delivery remains deliberate; unknown is never a Retry button.
+- **Command-only:** clean-target restore, Time Travel, SQL snapshot/FTS rebuild and external provider token rotation. Carry actor, target, operation timestamp and verified outcome in a nonsecret operator ledger.
+- **Deferred:** account-wide billing/storage aggregation, newest digest/integrity/restore-rehearsal discovery, purge backlog aggregate, optional-processing toggle and V1.5 vectors/RAG/cache controls. Their current alternatives are safe API IDs, operator-owned SQL/dashboards and rehearsal records. Define a new contract only when a later ticket explicitly owns it.
+
+No settled decision is needed to start these minimal scopes. BG23 is an inventory/design deliverable; it does not complete OPE-247's dashboard or consolidated security acceptance. BG21/BG22 release qualifications and remote/device acceptance remain open regardless of this handoff.
