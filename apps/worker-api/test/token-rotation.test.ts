@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Hono } from 'hono';
 import type { AppContext, Env } from '../src/env';
 import { errorResponse } from '../src/shared/errors';
+import { createApp } from '../src/app';
 import {
   credentialSchedule,
   matchCredential,
@@ -9,6 +10,7 @@ import {
   requireCaptureToken,
   requireAdminToken,
   requireLocalWorkerToken,
+  requireAttachmentContentRead,
   SESSION_LIFETIME_MS,
 } from '../src/shared/auth';
 
@@ -39,7 +41,63 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+async function loginCookie(env: Env, token = env.ADMIN_TOKEN) {
+  const response = await createApp().request(
+    'https://inbox.example.test/api/v1/admin/session',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    },
+    env,
+  );
+  expect(response.status).toBe(200);
+  return response.headers.get('set-cookie')!.split(';')[0]!;
+}
+
 describe('bounded credential schedules', () => {
+  it('rotates original downloads and rejects explicit bad bearer even with a valid cookie', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0 + SESSION_LIFETIME_MS);
+    const cookie = await loginCookie(bindings);
+    const app = new Hono<AppContext>();
+    app.get('/original', requireAttachmentContentRead, (c) =>
+      c.text('synthetic original'),
+    );
+    app.onError((error, context) => errorResponse(context, error));
+    expect(
+      (
+        await app.request(
+          '/original',
+          { headers: { Cookie: cookie } },
+          rotating(),
+        )
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await app.request(
+          '/original',
+          {
+            headers: {
+              Cookie: cookie,
+              Authorization: 'Bearer ' + bindings.CAPTURE_TOKEN,
+            },
+          },
+          rotating(),
+        )
+      ).status,
+    ).toBe(401);
+    expect(
+      (
+        await app.request(
+          '/original',
+          { headers: { Authorization: 'Bearer dummy-capture-next-secret' } },
+          rotating(),
+        )
+      ).status,
+    ).toBe(200);
+  });
   it('rotates Shortcut credentials without accepting admin or retired capture keys', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(T0 + SESSION_LIFETIME_MS);
