@@ -6,6 +6,7 @@ import {
   credentialSchedule,
   matchCredential,
   requireCaptureToken,
+  requireAdminToken,
   SESSION_LIFETIME_MS,
 } from '../src/shared/auth';
 
@@ -37,6 +38,36 @@ afterEach(() => {
 });
 
 describe('bounded credential schedules', () => {
+  it('accepts active admin next credentials and rejects expired admin current', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0 + SESSION_LIFETIME_MS);
+    const env = {
+      ...bindings,
+      ADMIN_TOKEN_NEXT: 'dummy-admin-next-secret',
+      ADMIN_TOKEN_ROTATION: rotating().CAPTURE_TOKEN_ROTATION,
+    };
+    const app = new Hono<AppContext>();
+    app.get('/admin', requireAdminToken, (c) => c.json({ accepted: true }));
+    app.onError((error, context) => errorResponse(context, error));
+    expect(
+      (
+        await app.request(
+          '/admin',
+          { headers: { Authorization: 'Bearer dummy-admin-next-secret' } },
+          env,
+        )
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await app.request(
+          '/admin',
+          { headers: { Authorization: 'Bearer ' + bindings.ADMIN_TOKEN } },
+          env,
+        )
+      ).status,
+    ).toBe(403);
+  });
   it('applies capture schedule without accepting a worker credential', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(T0 + SESSION_LIFETIME_MS);
