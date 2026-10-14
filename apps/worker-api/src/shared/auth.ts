@@ -289,9 +289,7 @@ export const requireAdminToken: MiddlewareHandler<AppContext> = async (
   next,
 ) => {
   const provided = bearerToken(context.req.header('Authorization'));
-  const adminMatch = provided
-    ? await constantTimeEqual(provided, context.env.ADMIN_TOKEN)
-    : false;
+  const adminMatch = await matchCredential(context.env, 'ADMIN', provided);
 
   if (adminMatch) {
     await next();
