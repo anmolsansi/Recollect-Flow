@@ -1,5 +1,6 @@
 import type { Context, MiddlewareHandler } from 'hono';
 import { getSignedCookie } from 'hono/cookie';
+import { z } from 'zod';
 
 import type { AppContext, Env } from '../env';
 import { AppError } from './errors';
@@ -24,6 +25,16 @@ interface CredentialSchedule {
   };
 }
 
+const rotationConfigSchema = z
+  .object({
+    next_id: z.string().regex(/^[A-Za-z0-9_-]{1,64}$/),
+    activate_at: z.string().datetime({ offset: true }),
+    expires_at: z.string().datetime({ offset: true }),
+    actor: z.string().regex(/^[A-Za-z0-9_-]{1,64}$/),
+    revoke_current: z.boolean().default(false),
+  })
+  .strict();
+
 function invalidRotation(): never {
   throw new AppError(
     503,
@@ -40,15 +51,43 @@ export function credentialSchedule(
   const secret = env[`${scope}_TOKEN`];
   const id = env[`${scope}_TOKEN_ID`] ?? 'current';
   if (!/^[A-Za-z0-9_-]{1,64}$/.test(id) || id === secret) invalidRotation();
-  if (
-    env[`${scope}_TOKEN_NEXT`] !== undefined ||
-    env[`${scope}_TOKEN_ROTATION`] !== undefined
-  )
-    invalidRotation();
+  const nextSecret = env[`${scope}_TOKEN_NEXT`];
+  const raw = env[`${scope}_TOKEN_ROTATION`];
   const current = secret ? { id, secret, eligible: true } : undefined;
   // The clock is accepted here so scoped schedules share one request-time boundary.
   if (!Number.isSafeInteger(now)) invalidRotation();
-  return { keys: current ? [current] : [], issuance: current };
+  if (nextSecret === undefined && raw === undefined) {
+    return { keys: current ? [current] : [], issuance: current };
+  }
+  if (!current || !nextSecret || !raw) invalidRotation();
+  let decoded: unknown;
+  try {
+    decoded = JSON.parse(raw);
+  } catch {
+    invalidRotation();
+  }
+  const parsed = rotationConfigSchema.safeParse(decoded);
+  if (!parsed.success) invalidRotation();
+  const config = parsed.data;
+  const activateAt = Date.parse(config.activate_at);
+  const expiresAt = Date.parse(config.expires_at);
+  if (expiresAt <= activateAt) invalidRotation();
+  current.eligible = !config.revoke_current && now < expiresAt;
+  const next = {
+    id: config.next_id,
+    secret: nextSecret,
+    eligible: now >= activateAt,
+  };
+  return {
+    keys: [current, next],
+    issuance: next.eligible ? next : current.eligible ? current : undefined,
+    rotation: {
+      actor: config.actor,
+      activateAt,
+      expiresAt,
+      revokeCurrent: config.revoke_current,
+    },
+  };
 }
 
 export async function constantTimeEqual(
