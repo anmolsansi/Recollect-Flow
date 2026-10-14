@@ -17,6 +17,11 @@ Every API/job attempt has request/job IDs. Record safe entity ID, stage, status,
 
 ## Operations dashboard
 
+Use the [BG23 operational inventory](OPERATIONAL_CONTROLS.md) for the exact current
+API/command alternatives, incident actions and BG26-28 screen scope. The list
+below is an observability requirement, not a claim that a Web dashboard or every
+account-wide measurement currently exists.
+
 - Captures today/week and success/latency.
 - Pending/leased/retry/failed jobs by type and age.
 - Errors by safe code and provider/model/prompt version.
