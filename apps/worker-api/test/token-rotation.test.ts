@@ -7,6 +7,7 @@ import {
   matchCredential,
   requireCaptureToken,
   requireAdminToken,
+  requireLocalWorkerToken,
   SESSION_LIFETIME_MS,
 } from '../src/shared/auth';
 
@@ -38,6 +39,36 @@ afterEach(() => {
 });
 
 describe('bounded credential schedules', () => {
+  it('keeps local-worker authorization isolated during rotation', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0 + SESSION_LIFETIME_MS);
+    const env = {
+      ...bindings,
+      LOCAL_WORKER_TOKEN_NEXT: 'dummy-worker-next-secret',
+      LOCAL_WORKER_TOKEN_ROTATION: rotating().CAPTURE_TOKEN_ROTATION,
+    };
+    const app = new Hono<AppContext>();
+    app.get('/worker', requireLocalWorkerToken, (c) =>
+      c.json({ accepted: true }),
+    );
+    app.onError((error, context) => errorResponse(context, error));
+    for (const [token, status] of [
+      ['dummy-worker-next-secret', 200],
+      [bindings.LOCAL_WORKER_TOKEN, 403],
+      [bindings.ADMIN_TOKEN, 403],
+      [bindings.CAPTURE_TOKEN, 403],
+    ] as const) {
+      expect(
+        (
+          await app.request(
+            '/worker',
+            { headers: { Authorization: 'Bearer ' + token } },
+            env,
+          )
+        ).status,
+      ).toBe(status);
+    }
+  });
   it('accepts active admin next credentials and rejects expired admin current', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(T0 + SESSION_LIFETIME_MS);

@@ -314,9 +314,11 @@ export const requireLocalWorkerToken: MiddlewareHandler<AppContext> = async (
   next,
 ) => {
   const provided = bearerToken(context.req.header('Authorization'));
-  const workerMatch = provided
-    ? await constantTimeEqual(provided, context.env.LOCAL_WORKER_TOKEN)
-    : false;
+  const workerMatch = await matchCredential(
+    context.env,
+    'LOCAL_WORKER',
+    provided,
+  );
   if (!workerMatch) {
     throw new AppError(
       403,
