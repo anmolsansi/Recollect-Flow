@@ -5,6 +5,7 @@ import { errorResponse } from '../src/shared/errors';
 import {
   credentialSchedule,
   matchCredential,
+  matchesCaptureToken,
   requireCaptureToken,
   requireAdminToken,
   requireLocalWorkerToken,
@@ -39,6 +40,19 @@ afterEach(() => {
 });
 
 describe('bounded credential schedules', () => {
+  it('rotates Shortcut credentials without accepting admin or retired capture keys', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0 + SESSION_LIFETIME_MS);
+    expect(
+      await matchesCaptureToken('Bearer dummy-capture-next-secret', rotating()),
+    ).toBe(true);
+    expect(
+      await matchesCaptureToken('Bearer ' + bindings.CAPTURE_TOKEN, rotating()),
+    ).toBe(false);
+    expect(
+      await matchesCaptureToken('Bearer ' + bindings.ADMIN_TOKEN, rotating()),
+    ).toBe(false);
+  });
   it('keeps local-worker authorization isolated during rotation', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(T0 + SESSION_LIFETIME_MS);

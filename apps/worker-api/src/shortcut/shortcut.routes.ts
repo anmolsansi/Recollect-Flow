@@ -81,7 +81,7 @@ export function shortcutRoutes(
       if (
         !(await matchesCaptureToken(
           context.req.header('Authorization'),
-          context.env.CAPTURE_TOKEN,
+          context.env,
         ))
       ) {
         throw new AppError(
