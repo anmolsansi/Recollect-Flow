@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Hono } from 'hono';
+import { getSignedCookie } from 'hono/cookie';
 import type { AppContext, Env } from '../src/env';
 import { errorResponse } from '../src/shared/errors';
 import { createApp } from '../src/app';
@@ -36,6 +37,21 @@ function rotating(overrides = {}) {
   };
 }
 
+function adminRotating(overrides = {}) {
+  return {
+    ...bindings,
+    ADMIN_TOKEN_ID: 'admin-old',
+    ADMIN_TOKEN_NEXT: 'dummy-admin-next-secret',
+    ADMIN_TOKEN_ROTATION: JSON.stringify({
+      next_id: 'admin-next',
+      activate_at: new Date(T0).toISOString(),
+      expires_at: new Date(T0 + SESSION_LIFETIME_MS).toISOString(),
+      actor: 'test-operator',
+      ...overrides,
+    }),
+  };
+}
+
 afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
@@ -56,6 +72,33 @@ async function loginCookie(env: Env, token = env.ADMIN_TOKEN) {
 }
 
 describe('bounded credential schedules', () => {
+  it('signs old-token overlap login with the next admin key', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0);
+    const env = adminRotating();
+    const cookie = await loginCookie(env);
+    const probe = new Hono();
+    probe.get('/', async (c) =>
+      c.json({
+        old: await getSignedCookie(c, env.ADMIN_TOKEN, 'admin_session'),
+        next: await getSignedCookie(c, env.ADMIN_TOKEN_NEXT, 'admin_session'),
+      }),
+    );
+    const verified = await (
+      await probe.request('/', { headers: { Cookie: cookie } })
+    ).json();
+    expect(verified.old).toBe(false);
+    expect(verified.next).toBeTypeOf('string');
+    expect(
+      (
+        await createApp().request(
+          '/api/v1/admin/session',
+          { headers: { Cookie: cookie } },
+          env,
+        )
+      ).status,
+    ).toBe(200);
+  });
   it('rotates original downloads and rejects explicit bad bearer even with a valid cookie', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(T0 + SESSION_LIFETIME_MS);

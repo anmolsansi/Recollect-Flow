@@ -3,7 +3,12 @@ import { deleteCookie, setSignedCookie } from 'hono/cookie';
 import { z } from 'zod';
 
 import type { AppContext } from '../env';
-import { constantTimeEqual, requireAdminToken } from '../shared/auth';
+import {
+  credentialSchedule,
+  matchCredential,
+  requireAdminToken,
+  SESSION_LIFETIME_MS,
+} from '../shared/auth';
 import { AppError } from '../shared/errors';
 
 const loginSchema = z.object({ token: z.string() }).strict();
@@ -25,20 +30,29 @@ export function authRoutes() {
       throw new AppError(422, 'VALIDATION_ERROR', 'Invalid payload');
     }
 
-    const match = await constantTimeEqual(
+    const now = Date.now();
+    const match = await matchCredential(
+      context.env,
+      'ADMIN',
       result.data.token,
-      context.env.ADMIN_TOKEN,
+      now,
     );
-    if (!match) throw new AppError(401, 'UNAUTHORIZED', 'Invalid token');
+    const schedule = credentialSchedule(context.env, 'ADMIN', now);
+    if (!match || !schedule.issuance)
+      throw new AppError(401, 'UNAUTHORIZED', 'Invalid token');
 
-    const expires = new Date(Date.now() + 1000 * 60 * 60 * 24);
+    const expires = new Date(
+      schedule.rotation && schedule.issuance === schedule.keys[0]
+        ? Math.min(now + SESSION_LIFETIME_MS, schedule.rotation.expiresAt)
+        : now + SESSION_LIFETIME_MS,
+    );
     const secure = new URL(context.req.url).protocol === 'https:';
 
     await setSignedCookie(
       context,
       'admin_session',
       `authenticated:${expires.getTime()}`,
-      context.env.ADMIN_TOKEN,
+      schedule.issuance.secret,
       {
         path: '/',
         secure,
