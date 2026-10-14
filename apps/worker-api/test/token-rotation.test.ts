@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Hono } from 'hono';
-import { getSignedCookie } from 'hono/cookie';
+import { getSignedCookie, setSignedCookie } from 'hono/cookie';
 import type { AppContext, Env } from '../src/env';
 import { errorResponse } from '../src/shared/errors';
 import { createApp } from '../src/app';
@@ -71,7 +71,54 @@ async function loginCookie(env: Env, token = env.ADMIN_TOKEN) {
   return response.headers.get('set-cookie')!.split(';')[0]!;
 }
 
+async function signedCookie(value: string, secret: string) {
+  const app = new Hono();
+  app.get('/', async (c) => {
+    await setSignedCookie(c, 'admin_session', value, secret);
+    return c.text('dummy');
+  });
+  return (await app.request('/')).headers.get('set-cookie')!.split(';')[0]!;
+}
+
 describe('bounded credential schedules', () => {
+  it('emits only safe rotation identifiers, actor, times and outcome', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    await matchCredential(rotating(), 'CAPTURE', bindings.CAPTURE_TOKEN, T0);
+    const events = log.mock.calls.map((call) => JSON.parse(String(call[0])));
+    expect(events).toContainEqual(
+      expect.objectContaining({
+        event: 'credential_rotation_auth',
+        scope: 'CAPTURE',
+        actor: 'test-operator',
+        outcome: 'accepted',
+        matched_key_id: 'capture-old',
+      }),
+    );
+    expect(JSON.stringify(events)).not.toContain(bindings.CAPTURE_TOKEN);
+    expect(JSON.stringify(events)).not.toContain('dummy-capture-next-secret');
+  });
+  it('accepts bounded current-key legacy cookies but never unbounded or next-key legacy cookies', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0);
+    const app = createApp();
+    const env = adminRotating();
+    for (const [value, secret, status] of [
+      ['authenticated:' + String(T0 + 1000), env.ADMIN_TOKEN, 200],
+      ['authenticated', env.ADMIN_TOKEN, 403],
+      ['authenticated:' + String(T0 + 1000), env.ADMIN_TOKEN_NEXT, 403],
+    ] as const) {
+      const cookie = await signedCookie(value, secret);
+      expect(
+        (
+          await app.request(
+            '/api/v1/admin/session',
+            { headers: { Cookie: cookie } },
+            env,
+          )
+        ).status,
+      ).toBe(status);
+    }
+  });
   it('keeps versioned next-key sessions valid through promotion with the same ID', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(T0 + 500);
