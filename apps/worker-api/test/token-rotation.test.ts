@@ -9,6 +9,21 @@ const bindings = {
   LOCAL_WORKER_TOKEN: 'dummy-worker-old-secret',
 } as Env;
 
+function rotating(overrides = {}) {
+  return {
+    ...bindings,
+    CAPTURE_TOKEN_ID: 'capture-old',
+    CAPTURE_TOKEN_NEXT: 'dummy-capture-next-secret',
+    CAPTURE_TOKEN_ROTATION: JSON.stringify({
+      next_id: 'capture-next',
+      activate_at: new Date(T0).toISOString(),
+      expires_at: new Date(T0 + SESSION_LIFETIME_MS).toISOString(),
+      actor: 'test-operator',
+      ...overrides,
+    }),
+  };
+}
+
 afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
@@ -22,5 +37,22 @@ describe('bounded credential schedules', () => {
     ]);
     expect(schedule.issuance?.id).toBe('current');
     expect(SESSION_LIFETIME_MS).toBe(86_400_000);
+  });
+  it('activates next and retires current at exact request-time boundaries', () => {
+    expect(
+      credentialSchedule(rotating(), 'CAPTURE', T0 - 1).keys.map(
+        (k) => k.eligible,
+      ),
+    ).toEqual([true, false]);
+    expect(
+      credentialSchedule(rotating(), 'CAPTURE', T0).keys.map((k) => k.eligible),
+    ).toEqual([true, true]);
+    expect(
+      credentialSchedule(
+        rotating(),
+        'CAPTURE',
+        T0 + SESSION_LIFETIME_MS,
+      ).keys.map((k) => k.eligible),
+    ).toEqual([false, true]);
   });
 });
