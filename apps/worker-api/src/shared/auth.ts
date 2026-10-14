@@ -148,10 +148,10 @@ export async function matchCredential(
 
 export async function matchesCaptureToken(
   header: string | undefined,
-  expectedToken: string,
+  env: Env,
 ): Promise<boolean> {
   const provided = bearerToken(header);
-  return provided ? constantTimeEqual(provided, expectedToken) : false;
+  return Boolean(await matchCredential(env, 'CAPTURE', provided));
 }
 
 export async function matchesAdminSession(
