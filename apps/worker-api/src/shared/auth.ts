@@ -157,20 +157,25 @@ export async function matchesCaptureToken(
 export async function matchesAdminSession(
   context: Context<AppContext>,
 ): Promise<boolean> {
-  const cookieMatch = await getSignedCookie(
-    context,
-    context.env.ADMIN_TOKEN,
-    'admin_session',
+  const now = Date.now();
+  const schedule = credentialSchedule(context.env, 'ADMIN', now);
+  const cookies = await Promise.all(
+    schedule.keys.map((key) =>
+      getSignedCookie(context, key.secret, 'admin_session'),
+    ),
   );
-  if (typeof cookieMatch !== 'string') return false;
-  const match = /^authenticated:(\d{13})$/.exec(cookieMatch);
-  if (!match) return false;
-  const expiry = Number(match[1]);
-  return (
-    Number.isSafeInteger(expiry) &&
-    expiry > Date.now() &&
-    expiry <= Date.now() + 24 * 60 * 60 * 1000
-  );
+  return cookies.some((value, index) => {
+    if (!schedule.keys[index]?.eligible || typeof value !== 'string')
+      return false;
+    const match = /^authenticated:(\d{13})$/.exec(value);
+    if (!match) return false;
+    const expiry = Number(match[1]);
+    return (
+      Number.isSafeInteger(expiry) &&
+      expiry > now &&
+      expiry <= now + SESSION_LIFETIME_MS
+    );
+  });
 }
 
 /**
