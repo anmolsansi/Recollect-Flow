@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Env } from '../src/env';
-import { credentialSchedule, SESSION_LIFETIME_MS } from '../src/shared/auth';
+import {
+  credentialSchedule,
+  matchCredential,
+  SESSION_LIFETIME_MS,
+} from '../src/shared/auth';
 
 const T0 = Date.parse('2026-10-14T20:00:00Z');
 const bindings = {
@@ -30,6 +34,22 @@ afterEach(() => {
 });
 
 describe('bounded credential schedules', () => {
+  it('compares both configured slots even when the first matches', async () => {
+    const digest = vi.spyOn(crypto.subtle, 'digest');
+    expect(
+      (await matchCredential(rotating(), 'CAPTURE', bindings.CAPTURE_TOKEN, T0))
+        ?.id,
+    ).toBe('capture-old');
+    expect(digest).toHaveBeenCalledTimes(4);
+    expect(
+      await matchCredential(
+        rotating(),
+        'CAPTURE',
+        'dummy-capture-next-secret',
+        T0 - 1,
+      ),
+    ).toBeNull();
+  });
   it('fails closed for incomplete rotation, duplicate labels or secret-bearing labels', () => {
     for (const env of [
       { ...bindings, CAPTURE_TOKEN_NEXT: 'next-without-metadata' },

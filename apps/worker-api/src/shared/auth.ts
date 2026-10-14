@@ -129,6 +129,23 @@ export function bearerToken(header: string | undefined): string | null {
   return value.length > 0 ? value : null;
 }
 
+export async function matchCredential(
+  env: Env,
+  scope: CredentialScope,
+  provided: string | null,
+  now = Date.now(),
+): Promise<ScheduledCredential | null> {
+  const schedule = credentialSchedule(env, scope, now);
+  const matches = await Promise.all(
+    schedule.keys.map((key) => constantTimeEqual(provided ?? '', key.secret)),
+  );
+  return (
+    schedule.keys.find(
+      (key, index) => key.eligible && matches[index] && provided !== null,
+    ) ?? null
+  );
+}
+
 export async function matchesCaptureToken(
   header: string | undefined,
   expectedToken: string,
