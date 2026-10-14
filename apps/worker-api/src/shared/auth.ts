@@ -1,8 +1,55 @@
 import type { Context, MiddlewareHandler } from 'hono';
 import { getSignedCookie } from 'hono/cookie';
 
-import type { AppContext } from '../env';
+import type { AppContext, Env } from '../env';
 import { AppError } from './errors';
+
+export type CredentialScope = 'CAPTURE' | 'ADMIN' | 'LOCAL_WORKER';
+export const SESSION_LIFETIME_MS = 24 * 60 * 60 * 1000;
+
+interface ScheduledCredential {
+  id: string;
+  secret: string;
+  eligible: boolean;
+}
+
+interface CredentialSchedule {
+  keys: ScheduledCredential[];
+  issuance: ScheduledCredential | undefined;
+  rotation?: {
+    actor: string;
+    activateAt: number;
+    expiresAt: number;
+    revokeCurrent: boolean;
+  };
+}
+
+function invalidRotation(): never {
+  throw new AppError(
+    503,
+    'AUTH_CONFIGURATION_INVALID',
+    'Credential configuration is invalid.',
+  );
+}
+
+export function credentialSchedule(
+  env: Env,
+  scope: CredentialScope,
+  now = Date.now(),
+): CredentialSchedule {
+  const secret = env[`${scope}_TOKEN`];
+  const id = env[`${scope}_TOKEN_ID`] ?? 'current';
+  if (!/^[A-Za-z0-9_-]{1,64}$/.test(id) || id === secret) invalidRotation();
+  if (
+    env[`${scope}_TOKEN_NEXT`] !== undefined ||
+    env[`${scope}_TOKEN_ROTATION`] !== undefined
+  )
+    invalidRotation();
+  const current = secret ? { id, secret, eligible: true } : undefined;
+  // The clock is accepted here so scoped schedules share one request-time boundary.
+  if (!Number.isSafeInteger(now)) invalidRotation();
+  return { keys: current ? [current] : [], issuance: current };
+}
 
 export async function constantTimeEqual(
   left: string,
