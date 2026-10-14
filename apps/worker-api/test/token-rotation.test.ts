@@ -1,8 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { Env } from '../src/env';
+import { Hono } from 'hono';
+import type { AppContext, Env } from '../src/env';
+import { errorResponse } from '../src/shared/errors';
 import {
   credentialSchedule,
   matchCredential,
+  requireCaptureToken,
   SESSION_LIFETIME_MS,
 } from '../src/shared/auth';
 
@@ -34,6 +37,29 @@ afterEach(() => {
 });
 
 describe('bounded credential schedules', () => {
+  it('applies capture schedule without accepting a worker credential', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0 + SESSION_LIFETIME_MS);
+    const app = new Hono<AppContext>();
+    app.get('/capture', requireCaptureToken, (c) => c.json({ accepted: true }));
+    app.onError((error, context) => errorResponse(context, error));
+    for (const [token, status] of [
+      [bindings.CAPTURE_TOKEN, 401],
+      ['dummy-capture-next-secret', 200],
+      [bindings.ADMIN_TOKEN, 200],
+      [bindings.LOCAL_WORKER_TOKEN, 401],
+    ] as const) {
+      expect(
+        (
+          await app.request(
+            '/capture',
+            { headers: { Authorization: 'Bearer ' + token } },
+            rotating(),
+          )
+        ).status,
+      ).toBe(status);
+    }
+  });
   it('compares both configured slots even when the first matches', async () => {
     const digest = vi.spyOn(crypto.subtle, 'digest');
     expect(

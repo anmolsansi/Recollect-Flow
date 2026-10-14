@@ -241,12 +241,10 @@ export const requireCaptureToken: MiddlewareHandler<AppContext> = async (
   next,
 ) => {
   const provided = bearerToken(context.req.header('Authorization'));
-  const captureMatch = provided
-    ? await constantTimeEqual(provided, context.env.CAPTURE_TOKEN)
-    : false;
-  const adminMatch = provided
-    ? await constantTimeEqual(provided, context.env.ADMIN_TOKEN)
-    : false;
+  const [captureMatch, adminMatch] = await Promise.all([
+    matchCredential(context.env, 'CAPTURE', provided),
+    matchCredential(context.env, 'ADMIN', provided),
+  ]);
 
   if (!captureMatch && !adminMatch) {
     throw new AppError(
