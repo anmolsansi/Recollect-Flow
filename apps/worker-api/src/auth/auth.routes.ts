@@ -51,7 +51,7 @@ export function authRoutes() {
     await setSignedCookie(
       context,
       'admin_session',
-      `authenticated:${expires.getTime()}`,
+      `session:v2:${schedule.issuance.id}:${now}:${expires.getTime()}`,
       schedule.issuance.secret,
       {
         path: '/',
