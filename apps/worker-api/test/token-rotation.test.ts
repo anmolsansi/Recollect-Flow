@@ -30,6 +30,20 @@ afterEach(() => {
 });
 
 describe('bounded credential schedules', () => {
+  it('fails closed for incomplete rotation, duplicate labels or secret-bearing labels', () => {
+    for (const env of [
+      { ...bindings, CAPTURE_TOKEN_NEXT: 'next-without-metadata' },
+      { ...rotating(), CAPTURE_TOKEN_NEXT: undefined },
+      { ...rotating(), CAPTURE_TOKEN_NEXT: bindings.CAPTURE_TOKEN },
+      rotating({ next_id: 'capture-old' }),
+      rotating({ actor: bindings.CAPTURE_TOKEN }),
+      rotating({ surprise: true }),
+    ]) {
+      expect(() => credentialSchedule(env, 'CAPTURE', T0)).toThrow(
+        'Credential configuration is invalid.',
+      );
+    }
+  });
   it('defaults to 24h and rejects a window longer than 72h', () => {
     expect(
       credentialSchedule(rotating({ expires_at: undefined }), 'CAPTURE', T0)

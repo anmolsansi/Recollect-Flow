@@ -53,13 +53,14 @@ export function credentialSchedule(
   if (!/^[A-Za-z0-9_-]{1,64}$/.test(id) || id === secret) invalidRotation();
   const nextSecret = env[`${scope}_TOKEN_NEXT`];
   const raw = env[`${scope}_TOKEN_ROTATION`];
-  const current = secret ? { id, secret, eligible: true } : undefined;
+  const current = secret?.trim() ? { id, secret, eligible: true } : undefined;
   // The clock is accepted here so scoped schedules share one request-time boundary.
   if (!Number.isSafeInteger(now)) invalidRotation();
   if (nextSecret === undefined && raw === undefined) {
     return { keys: current ? [current] : [], issuance: current };
   }
-  if (!current || !nextSecret || !raw) invalidRotation();
+  if (!current || !nextSecret?.trim() || !raw || raw.length > 4096)
+    invalidRotation();
   let decoded: unknown;
   try {
     decoded = JSON.parse(raw);
@@ -69,6 +70,14 @@ export function credentialSchedule(
   const parsed = rotationConfigSchema.safeParse(decoded);
   if (!parsed.success) invalidRotation();
   const config = parsed.data;
+  if (
+    secret === nextSecret ||
+    config.next_id === id ||
+    [id, config.next_id, config.actor].some(
+      (label) => label === secret || label === nextSecret,
+    )
+  )
+    invalidRotation();
   const activateAt = Date.parse(config.activate_at);
   const expiresAt = config.expires_at
     ? Date.parse(config.expires_at)
