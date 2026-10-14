@@ -2617,6 +2617,12 @@ Follow the [100 microtasks for BG-22](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-22
 
 ## 29. BG-23 — Make an operational control inventory
 
+The [operational control inventory](OPERATIONAL_CONTROLS.md) maps actual routes,
+credentials, schemas, eligibility, audit, repeat/cancellation behavior and safe
+actions for every runbook incident. It freezes the minimum BG24-28 scope and
+names manual/deferred capabilities. No operations page is implemented by BG23.
+The owner authorized this work while BG21/BG22 release checks remain open.
+
 **What and why.** A backend endpoint is not automatically a usable operator tool.
 The owner needs to recognize a problem and know which safe action resolves it.
 
