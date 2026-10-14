@@ -260,19 +260,20 @@ export const requireAttachmentContentRead: MiddlewareHandler<
   AppContext
 > = async (context, next) => {
   const provided = bearerToken(context.req.header('Authorization'));
-  const captureMatch = provided
-    ? await constantTimeEqual(provided, context.env.CAPTURE_TOKEN)
-    : false;
-  const adminMatch = provided
-    ? await constantTimeEqual(provided, context.env.ADMIN_TOKEN)
-    : false;
+  const [captureMatch, adminMatch] = await Promise.all([
+    matchCredential(context.env, 'CAPTURE', provided),
+    matchCredential(context.env, 'ADMIN', provided),
+  ]);
 
   if (captureMatch || adminMatch) {
     await next();
     return;
   }
 
-  if (await matchesAdminSession(context)) {
+  if (
+    context.req.header('Authorization') === undefined &&
+    (await matchesAdminSession(context))
+  ) {
     await next();
     return;
   }
