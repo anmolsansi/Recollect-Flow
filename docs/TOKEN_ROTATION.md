@@ -4,6 +4,12 @@ ADR-033 requires a default 24-hour overlap, maximum 72 hours and immediate old-k
 
 ## Environment contract
 
+| Scope   | Current secret       | Optional next secret      | Optional stable ID      | Optional schedule JSON        |
+| ------- | -------------------- | ------------------------- | ----------------------- | ----------------------------- |
+| Capture | `CAPTURE_TOKEN`      | `CAPTURE_TOKEN_NEXT`      | `CAPTURE_TOKEN_ID`      | `CAPTURE_TOKEN_ROTATION`      |
+| Admin   | `ADMIN_TOKEN`        | `ADMIN_TOKEN_NEXT`        | `ADMIN_TOKEN_ID`        | `ADMIN_TOKEN_ROTATION`        |
+| Worker  | `LOCAL_WORKER_TOKEN` | `LOCAL_WORKER_TOKEN_NEXT` | `LOCAL_WORKER_TOKEN_ID` | `LOCAL_WORKER_TOKEN_ROTATION` |
+
 For each scope, the current secret keeps its existing name (`CAPTURE_TOKEN`, `ADMIN_TOKEN`, `LOCAL_WORKER_TOKEN`). Optional `<SCOPE>_TOKEN_NEXT` is a Worker **secret**. Optional `<SCOPE>_TOKEN_ID` is a stable nonsecret key label, default `current`. Optional `<SCOPE>_TOKEN_ROTATION` is nonsecret JSON configuration:
 
 ```json
@@ -67,3 +73,11 @@ Rollback must never restore a compromised/expired current secret or lengthen its
 `npm run auth:rotation:test` runs `test/token-rotation.test.ts` plus the migrated local-D1 `test/token-rotation.d1.spec.ts`. Fixtures use dummy keys and a restored controlled clock: before/at/after activation and expiry, 24h/72h limits, invalid config, scope/Shortcut/download permissions, active issuance, legacy/v2 expiry, promotion, fresh-key compromise, cookie Origin/attributes, logout limits, redaction and unchanged capture/replay data. No hosted secrets, billing, messages or physical device are involved.
 
 `apps/worker-api/src/shared/auth.ts` owns schedules, constant-time candidate comparison and verification. `auth/auth.routes.ts` owns login issuance and browser logout. `shortcut/shortcut.routes.ts` uses capture-only scheduled verification. `env.ts` declares optional bindings. No new schema/table, auth service, dependency or operations UI is introduced. Existing no-rotation deployments keep a single active key; their bounded legacy sessions remain supported.
+
+## Deployment compatibility
+
+The optional names are declared in application `Env`; they are deliberately not added to Wrangler's required-secret list, which would break ordinary single-key/local/CI deployments. Omit all next/rotation settings until an actual rotation. In local development supply paired values through ignored `.dev.vars`; do not add empty next-key templates because empty configured slots are invalid. Never copy production `.dev.vars` into an acceptance fixture.
+
+Deploy the tested rotation-aware Worker/Web artifact before scheduling overlap. Preserve optional metadata across subsequent code deployments, using the same binding type selected for rotation. A default key ID is stable until explicitly changed; changing it requires reauthentication for sessions signed under the former ID. Use a new key ID when replacing a key, and retain the same ID only when moving that same secret from next to current. Promotion is configuration-only, requires no migration and has no data rollback step.
+
+This implementation changes source only. Actual hostname/TLS, production bindings, secret values, edge rollout timing and phone-client updates require separate authorized hosted/device evidence. The unfinished BG21/BG22 release checks are not waived by the local rotation rehearsal.
