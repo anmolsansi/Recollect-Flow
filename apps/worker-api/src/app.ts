@@ -48,7 +48,7 @@ export function createApp(
           event: 'http_request_completed',
           request_id: id,
           method: context.req.method,
-          path: new URL(context.req.url).pathname,
+          route: context.req.routePath,
           status: context.res.status,
           duration_ms: Date.now() - startedAt,
         }),
