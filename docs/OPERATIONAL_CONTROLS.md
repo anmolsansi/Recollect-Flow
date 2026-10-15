@@ -15,7 +15,7 @@ All paths below are relative to `/api/v1`. Normal capture/review remains on `/`,
 
 Classify every control as **read-only**, **reversible**, **external**, or **destructive**. A POST inspection may still store a result/audit or call Notion, so it is not automatically a pure read. An absent UI does not imply a missing API. No generic dashboard, new aggregate API, external send or production operation is implemented by this inventory.
 
-Unless a download is identified, results use `{data, meta: {request_id}}`; rejections use `{error: {code, message}, meta}`. Reads never perform a retry/purge/restore implicitly. Current helper `apps/web/src/api.ts` expects JSON envelopes; use authenticated download navigation/fetch for exports and originals instead.
+Operator APIs below use `{data, meta: {request_id}}`; rejections use `{error: {code, message}, meta}`, except named downloads. Shortcut capture is a separate form-only endpoint whose HTTP-200 `ok/saved/outcome/code` envelope must be inspected even on failure. Reads never perform a retry/purge/restore implicitly. Current helper `apps/web/src/api.ts` expects JSON envelopes; use authenticated download navigation/fetch for exports and originals instead. BG24 makes explicit invalid bearers fail closed for original reads too; remove a stale Authorization header rather than relying on an ambient cookie fallback.
 
 ## Usage and capacity (read-only, admin)
 
@@ -36,6 +36,14 @@ Source: `jobs/job.routes.ts`, `job.schema.ts`, `job.admin.service.ts`.
 - `retry_wait` means pending with `available_at > now`; do not reset it or steal a live lease. Display `available_at`, lease expiry, attempts, error code and safe entity ID. Successful queueing is **queued**, not completed processing. Refresh the exact job row/item afterward. This retry API has no cancellation endpoint.
 
 ## Notion projection recovery (external, admin)
+
+### Source recovery alternative for URL jobs
+
+`GET /items/<id>/source/retry-eligibility?source_revision=<positive integer>` is read-only. `POST /items/<id>/source/retry` requires `{"source_revision":<same revision>}`; the server rechecks current generation, state, privacy and retry timing. For legacy captures, `GET /admin/source-reprocess/preview?limit=20` is a bounded read-only candidate list (1–20), and `POST /admin/source-reprocess/run` accepts `{"items":[{"item_id":"<id>","source_revision":1}]}` (1–20 entries). Inspect each returned result; it is not a generic failed-job retry or a promise that fetching succeeded.
+
+Existing item UI also uses `POST /items/<id>/source/text` with `{"edit_version":<current positive integer>,"text":"<owner excerpt>"}` (trimmed 1–250000 chars), or `/source/url` with the same version and `source_url` (valid URL ≤2048 chars). These are explicit evidence changes with version guards, not background inspection. Never overwrite acquired evidence with an unlabeled owner excerpt. Source-service audit/version records remain authoritative; there is no generic `/items/:id/reprocess` endpoint.
+
+### Notion recreation
 
 Inspect `GET /items/<item-id>` for `notion_recreation` eligibility and `GET /jobs?kind=sync&status=failed&item_id=<item-id>` for the stored failure. `POST /items/<item-id>/notion/recreate` has no request body or version field; the server rechecks that the item is active and its stored projection is confirmed missing. A missing page alone never authorizes canonical deletion.
 
@@ -77,7 +85,7 @@ Source: `recovery/*.routes.ts` and [existing procedures](OPERATIONS.md#ope-228-b
 | `POST /restore?dry_run=true`          | Portable JSON document as body; validation/restore plan                  | Explicit dry-run required in procedure; inspect target and purge-ledger exclusions first                                                         |
 | `POST /restore?dry_run=false`         | Same full JSON; result with verification                                 | Destructive clean-target insert only; refuses populated canonical target. Omitting flag invokes non-dry-run, so never omit it in tooling         |
 
-Purge audit is workflow-bound; restore/backup/integrity record their own run/outcome evidence. See `purge.service.ts`, `restore.service.ts` and repositories for exact event/result detail. No API cancellation is available for confirmed purge or restore. Confirmation copy: **Permanently purge this exact item and its controlled originals? External owner-downloaded copies cannot be recalled.** Advanced restore remains command/procedure-only: identify Worker/account/D1/R2, preserve purge receipts, run dry-run, verify clean target and backup before explicit approval. Existing Time Travel and SQL-export commands in the runbook remain separate from portable restore; do not expose an in-place restore button.
+Purge preparation writes `purge_confirmation_requested`; approval writes `purge_confirmed`, followed by workflow/step/receipt evidence. Restore/backup/integrity retain run/artifact outcome records rather than a universal operator audit feed. Restore dry-run also writes a run record; it returns `{run,plannedItemCount,skippedPurgedItemIds}` while leaving canonical item data unchanged. Non-dry-run returns the same shape after verification, or 409 `RESTORE_TARGET_NOT_EMPTY` for a populated target. No API cancellation is available for confirmed purge or restore. Confirmation copy: **Permanently purge this exact item and its controlled originals? External owner-downloaded copies cannot be recalled.** Advanced restore remains command/procedure-only: identify Worker/account/D1/R2, preserve purge receipts, run dry-run, verify clean target and backup before explicit approval. Existing Time Travel and SQL-export commands in the runbook remain separate from portable restore; do not expose an in-place restore button.
 
 ## Incident-to-control mapping
 

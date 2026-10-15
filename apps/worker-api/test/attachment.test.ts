@@ -903,7 +903,7 @@ describe('private attachment lifecycle', () => {
     });
   });
 
-  it('treats permitted attachment-read credentials as alternatives', async () => {
+  it('gives explicit attachment-read bearer credentials precedence over cookies', async () => {
     const repository = new MemoryAttachmentRepository();
     const r2 = memoryBucket();
     const env = testEnv(r2.bucket);
@@ -921,8 +921,10 @@ describe('private attachment lifecycle', () => {
       },
       env,
     );
-    expect(validCookieWithWrongScopeBearer.status).toBe(200);
-    expect(await validCookieWithWrongScopeBearer.arrayBuffer()).toEqual(bytes);
+    expect(validCookieWithWrongScopeBearer.status).toBe(401);
+    expect(await validCookieWithWrongScopeBearer.json()).toMatchObject({
+      error: { code: 'UNAUTHENTICATED' },
+    });
 
     const validBearerWithTamperedCookie = await app.request(
       `/api/v1/attachments/${id}/content`,
