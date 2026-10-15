@@ -90,6 +90,40 @@ describe('BG-25 login admission', () => {
     );
     expect(allowed.status).toBe(200);
     expect(allowed.headers.get('set-cookie')).toContain('HttpOnly');
+
+    // BG-16 local Web origin differs from the API Worker origin behind Vite.
+    const proxy = await createApp().request(
+      'http://127.0.0.1:8787/api/v1/admin/session',
+      {
+        method: 'POST',
+        headers: {
+          Origin: 'http://127.0.0.1:5173',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: base.ADMIN_TOKEN }),
+      },
+      {
+        ...env,
+        WEB_INBOX_BASE_URL: 'http://127.0.0.1:5173',
+      },
+    );
+    expect(proxy.status).toBe(200);
+    const forged = await createApp().request(
+      'http://127.0.0.1:8787/api/v1/admin/session',
+      {
+        method: 'POST',
+        headers: {
+          Origin: 'http://127.0.0.1:9999',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: base.ADMIN_TOKEN }),
+      },
+      {
+        ...env,
+        WEB_INBOX_BASE_URL: 'http://127.0.0.1:5173',
+      },
+    );
+    expect(forged.status).toBe(403);
   });
 
   it('fails closed on real hosts without an edge binding or when limiter errors', async () => {
