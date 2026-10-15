@@ -12,6 +12,7 @@ import {
   requireAdminToken,
   requireLocalWorkerToken,
   requireAttachmentContentRead,
+  requireCaptureWrite,
   SESSION_LIFETIME_MS,
 } from '../src/shared/auth';
 
@@ -81,6 +82,40 @@ async function signedCookie(value: string, secret: string) {
 }
 
 describe('bounded credential schedules', () => {
+  it('never borrows an ambient cookie after an explicit invalid bearer on reads or writes', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0);
+    const cookie = await loginCookie(bindings);
+    const app = new Hono<AppContext>();
+    app.post('/capture', requireCaptureWrite, (c) => c.text('accepted'));
+    app.post('/admin', requireAdminToken, (c) => c.text('accepted'));
+    app.get('/original', requireAttachmentContentRead, (c) =>
+      c.text('accepted'),
+    );
+    app.onError((error, context) => errorResponse(context, error));
+    for (const [method, path, status] of [
+      ['POST', '/capture', 401],
+      ['POST', '/admin', 403],
+      ['GET', '/original', 401],
+    ] as const) {
+      expect(
+        (
+          await app.request(
+            path,
+            {
+              method,
+              headers: {
+                Cookie: cookie,
+                Authorization: 'Bearer invalid-explicit',
+                Origin: 'http://localhost',
+              },
+            },
+            bindings,
+          )
+        ).status,
+      ).toBe(status);
+    }
+  });
   it('rejects malformed, missing, unexpected and oversized metadata with safe errors', () => {
     for (const metadata of [
       '{',
