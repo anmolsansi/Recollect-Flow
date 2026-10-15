@@ -82,6 +82,88 @@ async function signedCookie(value: string, secret: string) {
 }
 
 describe('bounded credential schedules', () => {
+  it('preserves cookie attributes, actual-origin security and browser-only logout', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0);
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    const app = createApp();
+    const response = await app.request(
+      'https://inbox.example.test/api/v1/admin/session',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: bindings.ADMIN_TOKEN }),
+      },
+      bindings,
+    );
+    const header = response.headers.get('set-cookie')!;
+    for (const property of [
+      'HttpOnly',
+      'Secure',
+      'SameSite=Strict',
+      'Path=/',
+      'Expires=',
+    ])
+      expect(header).toContain(property);
+    expect(header).not.toContain('Domain=');
+    const cookie = header.split(';')[0]!;
+    const write = new Hono<AppContext>();
+    write.post('/protected', requireAdminToken, (c) => c.text('accepted'));
+    write.onError((error, context) => errorResponse(context, error));
+    for (const [origin, status] of [
+      ['https://inbox.example.test', 200],
+      ['https://evil.example.test', 403],
+      ['null', 403],
+      [undefined, 403],
+    ] as const) {
+      expect(
+        (
+          await write.request(
+            'https://inbox.example.test/protected',
+            {
+              method: 'POST',
+              headers: {
+                Cookie: cookie,
+                ...(origin ? { Origin: origin } : {}),
+              },
+            },
+            bindings,
+          )
+        ).status,
+      ).toBe(status);
+    }
+    const local = await app.request(
+      'http://localhost/api/v1/admin/session',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Forwarded-Proto': 'https',
+        },
+        body: JSON.stringify({ token: bindings.ADMIN_TOKEN }),
+      },
+      bindings,
+    );
+    expect(local.headers.get('set-cookie')).not.toContain('Secure');
+    const logout = await app.request(
+      '/api/v1/admin/session',
+      { method: 'DELETE', headers: { Cookie: cookie } },
+      bindings,
+    );
+    expect(logout.headers.get('set-cookie')).toContain('Max-Age=0');
+    expect(
+      (
+        await app.request(
+          '/api/v1/admin/session',
+          { headers: { Cookie: cookie } },
+          bindings,
+        )
+      ).status,
+    ).toBe(200);
+    expect(
+      (await app.request('/api/v1/admin/session', {}, bindings)).status,
+    ).toBe(403);
+  });
   it('rejects expired, future, excessive, mismarked and tampered sessions', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(T0);
@@ -108,7 +190,7 @@ describe('bounded credential schedules', () => {
       ).toBe(403);
     }
     const good = await loginCookie(bindings);
-    const tampered = good.replace('session', 'changed');
+    const tampered = good.replace('v2', 'v9');
     expect(
       (
         await app.request(
