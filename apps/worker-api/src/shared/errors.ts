@@ -15,6 +15,7 @@ export function errorResponse(context: Context, error: unknown) {
   const requestId = context.get('requestId') as string;
 
   if (error instanceof AppError) {
+    if (error.status === 429) context.header('Retry-After', '60');
     return context.json(
       {
         error: {
