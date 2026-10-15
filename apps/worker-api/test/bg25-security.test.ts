@@ -170,23 +170,20 @@ describe('BG-25 bounded bodies and safe diagnostics', () => {
 
   it('bounds streaming Shortcut multipart before form parsing', async () => {
     const bytes = new Uint8Array(1_050_000);
-    const request = new Request(
-      'http://localhost/api/v1/shortcut/captures',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer ' + base.CAPTURE_TOKEN,
-          'Content-Type': 'multipart/form-data; boundary=test',
+    const request = new Request('http://localhost/api/v1/shortcut/captures', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + base.CAPTURE_TOKEN,
+        'Content-Type': 'multipart/form-data; boundary=test',
+      },
+      body: new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(bytes);
+          controller.close();
         },
-        body: new ReadableStream<Uint8Array>({
-          start(controller) {
-            controller.enqueue(bytes);
-            controller.close();
-          },
-        }),
-        duplex: 'half',
-      } as RequestInit & { duplex: 'half' },
-    );
+      }),
+      duplex: 'half',
+    } as RequestInit & { duplex: 'half' });
     const response = await createApp().fetch(request, {
       ...base,
       MAX_ATTACHMENT_BYTES: '1000',
@@ -208,10 +205,19 @@ describe('BG-25 bounded bodies and safe diagnostics', () => {
         },
         body: '{}',
       },
-      { ...base, LOGIN_RATE_LIMITER: { limit: () => { throw new Error('login limiter used on capture'); } } },
+      {
+        ...base,
+        LOGIN_RATE_LIMITER: {
+          limit: () => {
+            throw new Error('login limiter used on capture');
+          },
+        },
+      },
     );
     expect(response.status).toBe(422);
-    expect(await response.json()).toMatchObject({ error: { code: 'VALIDATION_ERROR' } });
+    expect(await response.json()).toMatchObject({
+      error: { code: 'VALIDATION_ERROR' },
+    });
   });
 
   it('never logs an upstream exception, raw path segment or URL query marker', async () => {
