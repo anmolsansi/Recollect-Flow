@@ -168,6 +168,52 @@ describe('BG-25 bounded bodies and safe diagnostics', () => {
     });
   });
 
+  it('bounds streaming Shortcut multipart before form parsing', async () => {
+    const bytes = new Uint8Array(1_050_000);
+    const request = new Request(
+      'http://localhost/api/v1/shortcut/captures',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + base.CAPTURE_TOKEN,
+          'Content-Type': 'multipart/form-data; boundary=test',
+        },
+        body: new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(bytes);
+            controller.close();
+          },
+        }),
+        duplex: 'half',
+      } as RequestInit & { duplex: 'half' },
+    );
+    const response = await createApp().fetch(request, {
+      ...base,
+      MAX_ATTACHMENT_BYTES: '1000',
+    });
+    expect(response.status).toBe(413);
+    expect(await response.json()).toMatchObject({
+      error: { code: 'PAYLOAD_TOO_LARGE' },
+    });
+  });
+
+  it('permits non-browser capture-bearer validation without login throttling', async () => {
+    const response = await createApp().request(
+      '/api/v1/captures',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + base.CAPTURE_TOKEN,
+          'Content-Type': 'application/json',
+        },
+        body: '{}',
+      },
+      { ...base, LOGIN_RATE_LIMITER: { limit: () => { throw new Error('login limiter used on capture'); } } },
+    );
+    expect(response.status).toBe(422);
+    expect(await response.json()).toMatchObject({ error: { code: 'VALIDATION_ERROR' } });
+  });
+
   it('never logs an upstream exception, raw path segment or URL query marker', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
