@@ -10,6 +10,7 @@ import {
   SESSION_LIFETIME_MS,
 } from '../shared/auth';
 import { AppError } from '../shared/errors';
+import { enforceLoginAbuseLimit, requireLoginOrigin } from './login-abuse';
 
 const loginSchema = z.object({ token: z.string() }).strict();
 
@@ -24,6 +25,8 @@ export function authRoutes() {
   );
 
   router.post('/admin/session', async (context) => {
+    requireLoginOrigin(context);
+    await enforceLoginAbuseLimit(context);
     const body = await context.req.json().catch(() => ({}));
     const result = loginSchema.safeParse(body);
     if (!result.success) {
