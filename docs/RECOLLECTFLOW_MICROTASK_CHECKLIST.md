@@ -3148,6 +3148,10 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 ## BG-23 — 100 executable microtasks
 
+**Source/focused-check checkpoint:** 99/100 reviewed or evidenced; final published/merged CI gate remains open.
+See [BG23/BG24 acceptance and inherited release qualifications](verification/BG-23_BG-24_ACCEPTANCE.md).
+No production credential rotation or BG21/BG22 release completion is implied.
+
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#29-bg-23--make-an-operational-control-inventory).
 
 These unchecked steps inherit this task's **what, why, when, where and proof** above.
@@ -3156,135 +3160,139 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-23 / 01 — Establish task context
 
-- [ ] `BG-23.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-23.002` **Dependency:** Verify BG-22's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-23.003` **Baseline:** Record the actual checkout or release candidate used for BG-23.
-- [ ] `BG-23.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-23.005` **Evidence:** Check whether existing evidence already satisfies any BG-23 step; reference it instead of manufacturing work.
-- [ ] `BG-23.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-23.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-23.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-23.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-23.010` **Tracking:** Open a BG-23 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-23.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-23.002` **Dependency:** Verify BG-22's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-23.003` **Baseline:** Record the actual checkout or release candidate used for BG-23.
+- [x] `BG-23.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-23.005` **Evidence:** Check whether existing evidence already satisfies any BG-23 step; reference it instead of manufacturing work.
+- [x] `BG-23.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-23.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-23.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-23.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-23.010` **Tracking:** Open a BG-23 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-23 / 02 — Requirement inventory
 
-- [ ] `BG-23.011` Read OPE-247 scope.
-- [ ] `BG-23.012` Read operational runbook incidents.
-- [ ] `BG-23.013` List mandatory read controls.
-- [ ] `BG-23.014` List mandatory write controls.
-- [ ] `BG-23.015` List external actions.
-- [ ] `BG-23.016` List destructive actions.
-- [ ] `BG-23.017` Identify currently absent controls.
-- [ ] `BG-23.018` Separate UI from API availability.
-- [ ] `BG-23.019` Separate V1 from later scope.
-- [ ] `BG-23.020` Record inventory baseline SHA.
+- [x] `BG-23.011` Read OPE-247 scope.
+- [x] `BG-23.012` Read operational runbook incidents.
+- [x] `BG-23.013` List mandatory read controls.
+- [x] `BG-23.014` List mandatory write controls.
+- [x] `BG-23.015` List external actions.
+- [x] `BG-23.016` List destructive actions.
+- [x] `BG-23.017` Identify currently absent controls.
+- [x] `BG-23.018` Separate UI from API availability.
+- [x] `BG-23.019` Separate V1 from later scope.
+- [x] `BG-23.020` Record inventory baseline SHA.
 
 #### BG-23 / 03 — Usage controls
 
-- [ ] `BG-23.021` Locate usage endpoint.
-- [ ] `BG-23.022` Identify quota dimensions.
-- [ ] `BG-23.023` Identify breaker metadata.
-- [ ] `BG-23.024` Identify deferred-job counts.
-- [ ] `BG-23.025` Identify last-success timestamps.
-- [ ] `BG-23.026` Identify reset timing fields.
-- [ ] `BG-23.027` Identify unavailable dimensions.
-- [ ] `BG-23.028` Identify provider-account measurement gaps.
-- [ ] `BG-23.029` Choose usage presentation surface.
-- [ ] `BG-23.030` Define operator interpretation notes.
+- [x] `BG-23.021` Locate usage endpoint.
+- [x] `BG-23.022` Identify quota dimensions.
+- [x] `BG-23.023` Identify breaker metadata.
+- [x] `BG-23.024` Identify deferred-job counts.
+- [x] `BG-23.025` Identify last-success timestamps.
+- [x] `BG-23.026` Identify reset timing fields.
+- [x] `BG-23.027` Identify unavailable dimensions.
+- [x] `BG-23.028` Identify provider-account measurement gaps.
+- [x] `BG-23.029` Choose usage presentation surface.
+- [x] `BG-23.030` Define operator interpretation notes.
 
 #### BG-23 / 04 — Failure controls
 
-- [ ] `BG-23.031` Locate job inspection route.
-- [ ] `BG-23.032` Locate manual retry route.
-- [ ] `BG-23.033` Locate Notion recreation route.
-- [ ] `BG-23.034` Locate digest inspection routes.
-- [ ] `BG-23.035` Locate purge inspection route.
-- [ ] `BG-23.036` Locate backup list route.
-- [ ] `BG-23.037` Locate integrity result route.
-- [ ] `BG-23.038` Identify eligibility fields.
-- [ ] `BG-23.039` Identify missing aggregate query.
-- [ ] `BG-23.040` Record safe action per failure.
+- [x] `BG-23.031` Locate job inspection route.
+- [x] `BG-23.032` Locate manual retry route.
+- [x] `BG-23.033` Locate Notion recreation route.
+- [x] `BG-23.034` Locate digest inspection routes.
+- [x] `BG-23.035` Locate purge inspection route.
+- [x] `BG-23.036` Locate backup list route.
+- [x] `BG-23.037` Locate integrity result route.
+- [x] `BG-23.038` Identify eligibility fields.
+- [x] `BG-23.039` Identify missing aggregate query.
+- [x] `BG-23.040` Record safe action per failure.
 
 #### BG-23 / 05 — Control contracts
 
-- [ ] `BG-23.041` Specify required credential per control.
-- [ ] `BG-23.042` Specify required version field.
-- [ ] `BG-23.043` Specify required confirmation phrase.
-- [ ] `BG-23.044` Specify idempotency behavior.
-- [ ] `BG-23.045` Specify success response.
-- [ ] `BG-23.046` Specify rejection response.
-- [ ] `BG-23.047` Specify expected audit event.
-- [ ] `BG-23.048` Specify retry eligibility.
-- [ ] `BG-23.049` Specify content disclosure limit.
-- [ ] `BG-23.050` Specify cancellation semantics.
+- [x] `BG-23.041` Specify required credential per control.
+- [x] `BG-23.042` Specify required version field.
+- [x] `BG-23.043` Specify required confirmation phrase.
+- [x] `BG-23.044` Specify idempotency behavior.
+- [x] `BG-23.045` Specify success response.
+- [x] `BG-23.046` Specify rejection response.
+- [x] `BG-23.047` Specify expected audit event.
+- [x] `BG-23.048` Specify retry eligibility.
+- [x] `BG-23.049` Specify content disclosure limit.
+- [x] `BG-23.050` Specify cancellation semantics.
 
 #### BG-23 / 06 — Surface selection
 
-- [ ] `BG-23.051` Keep normal review in Web.
-- [ ] `BG-23.052` Choose small operations page scope.
-- [ ] `BG-23.053` Keep advanced restore procedure explicit.
-- [ ] `BG-23.054` Avoid duplicate backend logic.
-- [ ] `BG-23.055` Identify command-only operations.
-- [ ] `BG-23.056` Document command input format.
-- [ ] `BG-23.057` Document command result interpretation.
-- [ ] `BG-23.058` Mark unimplemented UI honestly.
-- [ ] `BG-23.059` Record owner-facing navigation need.
-- [ ] `BG-23.060` Freeze minimum V1 operator surface.
+- [x] `BG-23.051` Keep normal review in Web.
+- [x] `BG-23.052` Choose small operations page scope.
+- [x] `BG-23.053` Keep advanced restore procedure explicit.
+- [x] `BG-23.054` Avoid duplicate backend logic.
+- [x] `BG-23.055` Identify command-only operations.
+- [x] `BG-23.056` Document command input format.
+- [x] `BG-23.057` Document command result interpretation.
+- [x] `BG-23.058` Mark unimplemented UI honestly.
+- [x] `BG-23.059` Record owner-facing navigation need.
+- [x] `BG-23.060` Freeze minimum V1 operator surface.
 
 #### BG-23 / 07 — Safety classification
 
-- [ ] `BG-23.061` Mark read-only inspection actions.
-- [ ] `BG-23.062` Mark reversible edits.
-- [ ] `BG-23.063` Mark external projection actions.
-- [ ] `BG-23.064` Mark external delivery actions.
-- [ ] `BG-23.065` Mark permanent purge actions.
-- [ ] `BG-23.066` Mark clean-target restore actions.
-- [ ] `BG-23.067` Define target identification display.
-- [ ] `BG-23.068` Define confirmation copy.
-- [ ] `BG-23.069` Define partial-success copy.
-- [ ] `BG-23.070` Define unsupported-action behavior.
+- [x] `BG-23.061` Mark read-only inspection actions.
+- [x] `BG-23.062` Mark reversible edits.
+- [x] `BG-23.063` Mark external projection actions.
+- [x] `BG-23.064` Mark external delivery actions.
+- [x] `BG-23.065` Mark permanent purge actions.
+- [x] `BG-23.066` Mark clean-target restore actions.
+- [x] `BG-23.067` Define target identification display.
+- [x] `BG-23.068` Define confirmation copy.
+- [x] `BG-23.069` Define partial-success copy.
+- [x] `BG-23.070` Define unsupported-action behavior.
 
 #### BG-23 / 08 — Incident mapping
 
-- [ ] `BG-23.071` Map capture failure to diagnosis.
-- [ ] `BG-23.072` Map AI pause to quota state.
-- [ ] `BG-23.073` Map Notion failure to recovery.
-- [ ] `BG-23.074` Map digest unknown to reconciliation.
-- [ ] `BG-23.075` Map backup failure to verification.
-- [ ] `BG-23.076` Map partial purge to steps.
-- [ ] `BG-23.077` Map stale lease to retry timing.
-- [ ] `BG-23.078` Map missing file to integrity.
-- [ ] `BG-23.079` Map token compromise to revocation.
-- [ ] `BG-23.080` Identify incidents without usable action.
+- [x] `BG-23.071` Map capture failure to diagnosis.
+- [x] `BG-23.072` Map AI pause to quota state.
+- [x] `BG-23.073` Map Notion failure to recovery.
+- [x] `BG-23.074` Map digest unknown to reconciliation.
+- [x] `BG-23.075` Map backup failure to verification.
+- [x] `BG-23.076` Map partial purge to steps.
+- [x] `BG-23.077` Map stale lease to retry timing.
+- [x] `BG-23.078` Map missing file to integrity.
+- [x] `BG-23.079` Map token compromise to revocation.
+- [x] `BG-23.080` Identify incidents without usable action.
 
 #### BG-23 / 09 — Inventory proof
 
-- [ ] `BG-23.081` Walk each runbook incident.
-- [ ] `BG-23.082` Locate its actual operator surface.
-- [ ] `BG-23.083` Verify endpoint authorization.
-- [ ] `BG-23.084` Verify command examples match schema.
-- [ ] `BG-23.085` Verify no hidden write on inspect.
-- [ ] `BG-23.086` Verify unresolved controls named.
-- [ ] `BG-23.087` Record implementation versus planned state.
-- [ ] `BG-23.088` Link controls to existing tickets.
-- [ ] `BG-23.089` Record scope decisions.
-- [ ] `BG-23.090` Prepare operational implementation checklist.
+- [x] `BG-23.081` Walk each runbook incident.
+- [x] `BG-23.082` Locate its actual operator surface.
+- [x] `BG-23.083` Verify endpoint authorization.
+- [x] `BG-23.084` Verify command examples match schema.
+- [x] `BG-23.085` Verify no hidden write on inspect.
+- [x] `BG-23.086` Verify unresolved controls named.
+- [x] `BG-23.087` Record implementation versus planned state.
+- [x] `BG-23.088` Link controls to existing tickets.
+- [x] `BG-23.089` Record scope decisions.
+- [x] `BG-23.090` Prepare operational implementation checklist.
 
 #### BG-23 / 10 — Verify and close this task
 
-- [ ] `BG-23.091` **Review:** Compare the completed checklist with BG-23's stated outcome; identify uncovered behavior.
-- [ ] `BG-23.092` **Verification:** Run or inspect the focused proof required by BG-23; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-23.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-23.094` **Integrity:** Check that BG-23 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-23.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-23.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-23.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-23.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-23.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-23.091` **Review:** Compare the completed checklist with BG-23's stated outcome; identify uncovered behavior.
+- [x] `BG-23.092` **Verification:** Run or inspect the focused proof required by BG-23; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-23.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-23.094` **Integrity:** Check that BG-23 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-23.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-23.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-23.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-23.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-23.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-23.100` **Gate:** Check the parent completion boundary and record whether BG-24 is unlocked.
 
 ## BG-24 — 100 executable microtasks
+
+**Source/focused-check checkpoint:** 99/100 reviewed or evidenced; final published/merged CI gate remains open.
+See [BG23/BG24 acceptance and inherited release qualifications](verification/BG-23_BG-24_ACCEPTANCE.md).
+No production credential rotation or BG21/BG22 release completion is implied.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#30-bg-24--implement-bounded-token-rotation-and-session-behavior).
 
@@ -3294,132 +3302,132 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-24 / 01 — Establish task context
 
-- [ ] `BG-24.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-24.002` **Dependency:** Verify BG-23's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-24.003` **Baseline:** Record the actual checkout or release candidate used for BG-24.
-- [ ] `BG-24.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-24.005` **Evidence:** Check whether existing evidence already satisfies any BG-24 step; reference it instead of manufacturing work.
-- [ ] `BG-24.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-24.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-24.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-24.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-24.010` **Tracking:** Open a BG-24 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-24.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-24.002` **Dependency:** Verify BG-23's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-24.003` **Baseline:** Record the actual checkout or release candidate used for BG-24.
+- [x] `BG-24.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-24.005` **Evidence:** Check whether existing evidence already satisfies any BG-24 step; reference it instead of manufacturing work.
+- [x] `BG-24.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-24.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-24.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-24.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-24.010` **Tracking:** Open a BG-24 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-24 / 02 — Rotation contract
 
-- [ ] `BG-24.011` Read ADR-033 requirements.
-- [ ] `BG-24.012` Confirm normal overlap duration.
-- [ ] `BG-24.013` Confirm maximum overlap duration.
-- [ ] `BG-24.014` Confirm compromise revocation rule.
-- [ ] `BG-24.015` Identify capture credential scope.
-- [ ] `BG-24.016` Identify admin credential scope.
-- [ ] `BG-24.017` Identify worker credential scope.
-- [ ] `BG-24.018` Define current/next slot semantics.
-- [ ] `BG-24.019` Define safe slot identifiers.
-- [ ] `BG-24.020` Document token-free audit requirements.
+- [x] `BG-24.011` Read ADR-033 requirements.
+- [x] `BG-24.012` Confirm normal overlap duration.
+- [x] `BG-24.013` Confirm maximum overlap duration.
+- [x] `BG-24.014` Confirm compromise revocation rule.
+- [x] `BG-24.015` Identify capture credential scope.
+- [x] `BG-24.016` Identify admin credential scope.
+- [x] `BG-24.017` Identify worker credential scope.
+- [x] `BG-24.018` Define current/next slot semantics.
+- [x] `BG-24.019` Define safe slot identifiers.
+- [x] `BG-24.020` Document token-free audit requirements.
 
 #### BG-24 / 03 — Configuration shape
 
-- [ ] `BG-24.021` Choose documented secret slot names.
-- [ ] `BG-24.022` Define activation metadata.
-- [ ] `BG-24.023` Define expiry metadata.
-- [ ] `BG-24.024` Define issuance slot metadata.
-- [ ] `BG-24.025` Define retirement metadata.
-- [ ] `BG-24.026` Keep secret values outside D1.
-- [ ] `BG-24.027` Validate metadata types.
-- [ ] `BG-24.028` Reject impossible time ordering.
-- [ ] `BG-24.029` Reject overlap beyond maximum.
-- [ ] `BG-24.030` Reject indefinite secondary validity.
+- [x] `BG-24.021` Choose documented secret slot names.
+- [x] `BG-24.022` Define activation metadata.
+- [x] `BG-24.023` Define expiry metadata.
+- [x] `BG-24.024` Define issuance slot metadata.
+- [x] `BG-24.025` Define retirement metadata.
+- [x] `BG-24.026` Keep secret values outside D1.
+- [x] `BG-24.027` Validate metadata types.
+- [x] `BG-24.028` Reject impossible time ordering.
+- [x] `BG-24.029` Reject overlap beyond maximum.
+- [x] `BG-24.030` Reject indefinite secondary validity.
 
 #### BG-24 / 04 — Bearer verification
 
-- [ ] `BG-24.031` Reuse constant-time helper.
-- [ ] `BG-24.032` Identify eligible current credential.
-- [ ] `BG-24.033` Identify eligible next credential.
-- [ ] `BG-24.034` Check activation before acceptance.
-- [ ] `BG-24.035` Check expiry before acceptance.
-- [ ] `BG-24.036` Preserve endpoint scope rules.
-- [ ] `BG-24.037` Reject unrelated scope credential.
-- [ ] `BG-24.038` Define mixed-credential precedence.
-- [ ] `BG-24.039` Avoid timing-sensitive short-circuit changes.
-- [ ] `BG-24.040` Return safe authentication failures.
+- [x] `BG-24.031` Reuse constant-time helper.
+- [x] `BG-24.032` Identify eligible current credential.
+- [x] `BG-24.033` Identify eligible next credential.
+- [x] `BG-24.034` Check activation before acceptance.
+- [x] `BG-24.035` Check expiry before acceptance.
+- [x] `BG-24.036` Preserve endpoint scope rules.
+- [x] `BG-24.037` Reject unrelated scope credential.
+- [x] `BG-24.038` Define mixed-credential precedence.
+- [x] `BG-24.039` Avoid timing-sensitive short-circuit changes.
+- [x] `BG-24.040` Return safe authentication failures.
 
 #### BG-24 / 05 — Promotion and retirement
 
-- [ ] `BG-24.041` Define next-to-current promotion.
-- [ ] `BG-24.042` Define old-slot removal.
-- [ ] `BG-24.043` Clear obsolete overlap metadata.
-- [ ] `BG-24.044` Preserve clients using promoted token.
-- [ ] `BG-24.045` Avoid data migrations.
-- [ ] `BG-24.046` Record promotion timestamp.
-- [ ] `BG-24.047` Record retiring actor.
-- [ ] `BG-24.048` Reject expired old credential.
-- [ ] `BG-24.049` Verify retirement idempotency.
-- [ ] `BG-24.050` Document rollback-safe rotation procedure.
+- [x] `BG-24.041` Define next-to-current promotion.
+- [x] `BG-24.042` Define old-slot removal.
+- [x] `BG-24.043` Clear obsolete overlap metadata.
+- [x] `BG-24.044` Preserve clients using promoted token.
+- [x] `BG-24.045` Avoid data migrations.
+- [x] `BG-24.046` Record promotion timestamp.
+- [x] `BG-24.047` Record retiring actor.
+- [x] `BG-24.048` Reject expired old credential.
+- [x] `BG-24.049` Verify retirement idempotency.
+- [x] `BG-24.050` Document rollback-safe rotation procedure.
 
 #### BG-24 / 06 — Cookie design
 
-- [ ] `BG-24.051` Identify existing signing key source.
-- [ ] `BG-24.052` Define active issuance key.
-- [ ] `BG-24.053` Define accepted verification keys.
-- [ ] `BG-24.054` Define cookie key/version marker.
-- [ ] `BG-24.055` Preserve HttpOnly attribute.
-- [ ] `BG-24.056` Preserve cookie lifetime bound.
-- [ ] `BG-24.057` Prevent old-token login lifetime extension.
-- [ ] `BG-24.058` Keep promoted-key sessions valid.
-- [ ] `BG-24.059` Expire revoked-key sessions.
-- [ ] `BG-24.060` Test tampered key marker rejection.
+- [x] `BG-24.051` Identify existing signing key source.
+- [x] `BG-24.052` Define active issuance key.
+- [x] `BG-24.053` Define accepted verification keys.
+- [x] `BG-24.054` Define cookie key/version marker.
+- [x] `BG-24.055` Preserve HttpOnly attribute.
+- [x] `BG-24.056` Preserve cookie lifetime bound.
+- [x] `BG-24.057` Prevent old-token login lifetime extension.
+- [x] `BG-24.058` Keep promoted-key sessions valid.
+- [x] `BG-24.059` Expire revoked-key sessions.
+- [x] `BG-24.060` Test tampered key marker rejection.
 
 #### BG-24 / 07 — Compromise path
 
-- [ ] `BG-24.061` Select compromised scope fixture.
-- [ ] `BG-24.062` Revoke old token immediately.
-- [ ] `BG-24.063` Disable overlap for incident.
-- [ ] `BG-24.064` Revoke old signed sessions.
-- [ ] `BG-24.065` Preserve unaffected scope behavior.
-- [ ] `BG-24.066` Require owner reauthentication.
-- [ ] `BG-24.067` Record incident without secret.
-- [ ] `BG-24.068` Verify old cookie rejection.
-- [ ] `BG-24.069` Verify old bearer rejection.
-- [ ] `BG-24.070` Verify new credential continuity.
+- [x] `BG-24.061` Select compromised scope fixture.
+- [x] `BG-24.062` Revoke old token immediately.
+- [x] `BG-24.063` Disable overlap for incident.
+- [x] `BG-24.064` Revoke old signed sessions.
+- [x] `BG-24.065` Preserve unaffected scope behavior.
+- [x] `BG-24.066` Require owner reauthentication.
+- [x] `BG-24.067` Record incident without secret.
+- [x] `BG-24.068` Verify old cookie rejection.
+- [x] `BG-24.069` Verify old bearer rejection.
+- [x] `BG-24.070` Verify new credential continuity.
 
 #### BG-24 / 08 — Clock boundaries
 
-- [ ] `BG-24.071` Test before activation.
-- [ ] `BG-24.072` Test exact activation.
-- [ ] `BG-24.073` Test within overlap.
-- [ ] `BG-24.074` Test exact expiry.
-- [ ] `BG-24.075` Test after expiry.
-- [ ] `BG-24.076` Test maximum window acceptance.
-- [ ] `BG-24.077` Test overlong window rejection.
-- [ ] `BG-24.078` Test missing metadata rejection.
-- [ ] `BG-24.079` Test next promotion boundary.
-- [ ] `BG-24.080` Restore controlled clock after tests.
+- [x] `BG-24.071` Test before activation.
+- [x] `BG-24.072` Test exact activation.
+- [x] `BG-24.073` Test within overlap.
+- [x] `BG-24.074` Test exact expiry.
+- [x] `BG-24.075` Test after expiry.
+- [x] `BG-24.076` Test maximum window acceptance.
+- [x] `BG-24.077` Test overlong window rejection.
+- [x] `BG-24.078` Test missing metadata rejection.
+- [x] `BG-24.079` Test next promotion boundary.
+- [x] `BG-24.080` Restore controlled clock after tests.
 
 #### BG-24 / 09 — Runbook rehearsal
 
-- [ ] `BG-24.081` Prepare dummy rotation credentials.
-- [ ] `BG-24.082` Exercise capture client update.
-- [ ] `BG-24.083` Exercise admin login update.
-- [ ] `BG-24.084` Exercise local-worker update.
-- [ ] `BG-24.085` Verify no item changes.
-- [ ] `BG-24.086` Scan audit output for secrets.
-- [ ] `BG-24.087` Document interactive secret input.
-- [ ] `BG-24.088` Document immediate retirement command.
-- [ ] `BG-24.089` Record routine rotation evidence.
-- [ ] `BG-24.090` Record compromise rotation evidence.
+- [x] `BG-24.081` Prepare dummy rotation credentials.
+- [x] `BG-24.082` Exercise capture client update.
+- [x] `BG-24.083` Exercise admin login update.
+- [x] `BG-24.084` Exercise local-worker update.
+- [x] `BG-24.085` Verify no item changes.
+- [x] `BG-24.086` Scan audit output for secrets.
+- [x] `BG-24.087` Document interactive secret input.
+- [x] `BG-24.088` Document immediate retirement command.
+- [x] `BG-24.089` Record routine rotation evidence.
+- [x] `BG-24.090` Record compromise rotation evidence.
 
 #### BG-24 / 10 — Verify and close this task
 
-- [ ] `BG-24.091` **Review:** Compare the completed checklist with BG-24's stated outcome; identify uncovered behavior.
-- [ ] `BG-24.092` **Verification:** Run or inspect the focused proof required by BG-24; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-24.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-24.094` **Integrity:** Check that BG-24 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-24.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-24.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-24.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-24.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-24.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-24.091` **Review:** Compare the completed checklist with BG-24's stated outcome; identify uncovered behavior.
+- [x] `BG-24.092` **Verification:** Run or inspect the focused proof required by BG-24; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-24.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-24.094` **Integrity:** Check that BG-24 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-24.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-24.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-24.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-24.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-24.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-24.100` **Gate:** Check the parent completion boundary and record whether BG-25 is unlocked.
 
 ## BG-25 — 100 executable microtasks
