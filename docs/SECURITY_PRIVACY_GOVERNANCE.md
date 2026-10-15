@@ -103,15 +103,15 @@ Do not bypass access control, account login, bot protection, platform terms, or 
 
 The [BG-25 working evidence](verification/BG-25_SECURITY_HARDENING.md) identifies the tested baseline, affected source, current checks and remaining release blockers. The PR is not a production acceptance or a claim of live remote validation.
 
-| Boundary | Enforcement / evidence | Release status |
-| --- | --- | --- |
-| Browser login abuse | Edge-native fixed-key limiter, 8 requests / 60 seconds; controlled synthetic test | Source implementation, production edge behavior must be proven |
-| Browser session and CSRF | Signed HttpOnly/SameSite cookie, explicit Origin for login and authenticated writes | Existing BG-24 local tests, new exact-head and hosted HTTPS proof pending |
-| Credential scope | Capture, admin and local-worker authorization remain separate | Existing BG-24 route matrix reused; new regression suite pending |
-| Request admission | Hono 4.12.30 bounded JSON, multipart, raw upload and restore | Source implementation, unknown-length and real multipart proof pending |
-| Exception and path logs | Raw errors removed from HTTP, capture, Shortcut and extraction failure logs; route patterns replace raw request paths | Synthetic sentinel tests and exception-path review pending |
-| Private objects and exports | Existing authenticated R2 read, no-store API, opaque attachment IDs | Existing BG-06/BG-18 checks reused; new guessed-key/remote cache audit pending |
-| Web rendering | React-escaped dynamic strings, no unsafe HTML insertion found | Source inspection, malicious-snippet browser test pending |
+| Boundary                    | Enforcement / evidence                                                                                                | Release status                                                                 |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Browser login abuse         | Edge-native fixed-key limiter, 8 requests / 60 seconds; controlled synthetic test                                     | Source implementation, production edge behavior must be proven                 |
+| Browser session and CSRF    | Signed HttpOnly/SameSite cookie, explicit Origin for login and authenticated writes                                   | Existing BG-24 local tests, new exact-head and hosted HTTPS proof pending      |
+| Credential scope            | Capture, admin and local-worker authorization remain separate                                                         | Existing BG-24 route matrix reused; new regression suite pending               |
+| Request admission           | Hono 4.12.30 bounded JSON, multipart, raw upload and restore                                                          | Source implementation, unknown-length and real multipart proof pending         |
+| Exception and path logs     | Raw errors removed from HTTP, capture, Shortcut and extraction failure logs; route patterns replace raw request paths | Synthetic sentinel tests and exception-path review pending                     |
+| Private objects and exports | Existing authenticated R2 read, no-store API, opaque attachment IDs                                                   | Existing BG-06/BG-18 checks reused; new guessed-key/remote cache audit pending |
+| Web rendering               | React-escaped dynamic strings, no unsafe HTML insertion found                                                         | Source inspection, malicious-snippet browser test pending                      |
 
 No test or scanner run by itself closes the broader OPE-247 security release gate. Temporary browser logout does not revoke copies of an already-issued cookie. Signed-session incident response requires an authorized secret rotation.
 
