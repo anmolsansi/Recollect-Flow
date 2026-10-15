@@ -82,6 +82,35 @@ async function signedCookie(value: string, secret: string) {
 }
 
 describe('bounded credential schedules', () => {
+  it('rejects copied old-key sessions exactly at the rotation retirement boundary', async () => {
+    vi.useFakeTimers();
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    const expiry = T0 + 3_600_000;
+    const env = adminRotating({ expires_at: new Date(expiry).toISOString() });
+    const app = createApp();
+    for (const value of [
+      `authenticated:${T0 + 7_200_000}`,
+      `session:v2:admin-old:${T0 - 1000}:${T0 + 7_200_000}`,
+    ]) {
+      const cookie = await signedCookie(value, env.ADMIN_TOKEN);
+      for (const [time, status] of [
+        [expiry - 1, 200],
+        [expiry, 403],
+        [expiry + 1, 403],
+      ] as const) {
+        vi.setSystemTime(time);
+        expect(
+          (
+            await app.request(
+              '/api/v1/admin/session',
+              { headers: { Cookie: cookie } },
+              env,
+            )
+          ).status,
+        ).toBe(status);
+      }
+    }
+  });
   it('chooses the issuance key at activation for either eligible login token', async () => {
     vi.useFakeTimers();
     vi.spyOn(console, 'log').mockImplementation(() => {});
