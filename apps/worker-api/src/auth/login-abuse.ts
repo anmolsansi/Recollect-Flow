@@ -82,7 +82,10 @@ export function requireLoginOrigin(context: Context<AppContext>): void {
       // An invalid configured origin must never authorize a foreign browser.
     }
   }
-  if (origin === 'null' || (origin !== requestOrigin && origin !== allowedWebOrigin)) {
+  if (
+    origin === 'null' ||
+    (origin !== requestOrigin && origin !== allowedWebOrigin)
+  ) {
     throw new AppError(
       403,
       'ORIGIN_FORBIDDEN',
