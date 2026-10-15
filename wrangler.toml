@@ -13,6 +13,13 @@ not_found_handling = "none"
 # Hashed bundle paths run through Worker for explicit immutable caching.
 run_worker_first = ["/api", "/api/*", "/", "/capture", "/capture/*", "/items/*", "/assets/*"]
 
+# Per-edge, short-window login abuse limit. Unique namespace for this Worker.
+# Bounded client keys are derived only from Cloudflare's connecting-IP header.
+[[ratelimits]]
+name = "LOGIN_RATE_LIMITER"
+namespace_id = "250125"
+simple = { limit = 8, period = 60 }
+
 [[d1_databases]]
 binding = "DB"
 database_name = "recollect-flow-prod"
