@@ -82,6 +82,69 @@ async function signedCookie(value: string, secret: string) {
 }
 
 describe('bounded credential schedules', () => {
+  it('preserves actual operator, worker and Shortcut route permissions', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0 + SESSION_LIFETIME_MS);
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    const app = createApp();
+    const env = rotating();
+    for (const token of [
+      'dummy-capture-next-secret',
+      bindings.LOCAL_WORKER_TOKEN,
+    ]) {
+      for (const path of ['/api/v1/jobs', '/api/v1/usage']) {
+        expect(
+          (
+            await app.request(
+              path,
+              { headers: { Authorization: 'Bearer ' + token } },
+              env,
+            )
+          ).status,
+        ).toBe(403);
+      }
+    }
+    expect(
+      (
+        await app.request(
+          '/api/v1/worker/jobs/lease',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer ' + bindings.ADMIN_TOKEN,
+              'Content-Type': 'application/json',
+            },
+            body: '{}',
+          },
+          env,
+        )
+      ).status,
+    ).toBe(403);
+    for (const [token, code] of [
+      ['dummy-capture-next-secret', 'INVALID_FORM'],
+      [bindings.CAPTURE_TOKEN, 'UNAUTHORIZED'],
+      [bindings.ADMIN_TOKEN, 'UNAUTHORIZED'],
+    ] as const) {
+      const response = await app.request(
+        '/api/v1/shortcut/captures',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json',
+          },
+          body: '{}',
+        },
+        env,
+      );
+      expect(response.status).toBe(200);
+      expect(await response.json()).toMatchObject({
+        ok: false,
+        saved: false,
+        code,
+      });
+    }
+  });
   it('never borrows an ambient cookie after an explicit invalid bearer on reads or writes', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(T0);
