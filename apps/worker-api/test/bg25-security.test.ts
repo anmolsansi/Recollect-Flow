@@ -27,7 +27,10 @@ const login = (
     bindings,
   );
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => {
+  vi.useRealTimers();
+  vi.restoreAllMocks();
+});
 
 describe('BG-25 login admission', () => {
   it('bounds repeated attempts per fixed hashed client key and preserves a distinct client', async () => {
@@ -66,6 +69,29 @@ describe('BG-25 login admission', () => {
     expect(seen[0]).toMatch(/^admin-login:[a-f0-9]{32}$/);
     expect(JSON.stringify(seen)).not.toContain(marker);
     expect(JSON.stringify(seen)).not.toContain('192.0.2.5');
+  });
+
+  it('recovers after the configured short window without an account lockout', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    const start = Date.parse('2026-10-15T18:00:00Z');
+    vi.setSystemTime(start);
+    const buckets = new Map<string, number>();
+    const env = {
+      ...base,
+      LOGIN_RATE_LIMITER: {
+        limit: async ({ key }: { key: string }) => {
+          const slot = key + ':' + Math.floor(Date.now() / 60_000);
+          const count = (buckets.get(slot) ?? 0) + 1;
+          buckets.set(slot, count);
+          return { success: count <= 1 };
+        },
+      },
+    };
+    expect((await login(env, { token: marker })).status).toBe(401);
+    expect((await login(env, { token: marker })).status).toBe(429);
+    vi.setSystemTime(start + 60_000);
+    expect((await login(env, { token: marker })).status).toBe(401);
+    vi.useRealTimers();
   });
 
   it('rejects cross-origin login, including null Origin, without limiter calls', async () => {
