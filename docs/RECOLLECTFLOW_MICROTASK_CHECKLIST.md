@@ -3148,7 +3148,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 ## BG-23 — 100 executable microtasks
 
-**Source/focused-check checkpoint:** 99/100 reviewed or evidenced; final published/merged CI gate remains open.
+**Repository completion boundary:** 100/100 reviewed or evidenced, including the downstream source-work handoff. [PR #89](https://github.com/anmolsansi/Recollect-Flow/pull/89) passed complete quality/package/browser CI; final-head and merged-main evidence is tracked in [issue #88](https://github.com/anmolsansi/Recollect-Flow/issues/88). Inherited hosted release blockers remain open.
 See [BG23/BG24 acceptance and inherited release qualifications](verification/BG-23_BG-24_ACCEPTANCE.md).
 No production credential rotation or BG21/BG22 release completion is implied.
 
@@ -3286,11 +3286,11 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-23.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-23.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-23.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-23.100` **Gate:** Check the parent completion boundary and record whether BG-24 is unlocked.
+- [x] `BG-23.100` **Gate:** Check the parent completion boundary and record whether BG-24 is unlocked.
 
 ## BG-24 — 100 executable microtasks
 
-**Source/focused-check checkpoint:** 99/100 reviewed or evidenced; final published/merged CI gate remains open.
+**Repository completion boundary:** 100/100 reviewed or evidenced, including the downstream source-work handoff. [PR #89](https://github.com/anmolsansi/Recollect-Flow/pull/89) passed complete quality/package/browser CI; final-head and merged-main evidence is tracked in [issue #88](https://github.com/anmolsansi/Recollect-Flow/issues/88). Inherited hosted release blockers remain open.
 See [BG23/BG24 acceptance and inherited release qualifications](verification/BG-23_BG-24_ACCEPTANCE.md).
 No production credential rotation or BG21/BG22 release completion is implied.
 
@@ -3428,7 +3428,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-24.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-24.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-24.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-24.100` **Gate:** Check the parent completion boundary and record whether BG-25 is unlocked.
+- [x] `BG-24.100` **Gate:** Check the parent completion boundary and record whether BG-25 is unlocked.
 
 ## BG-25 — 100 executable microtasks
 
