@@ -141,7 +141,10 @@ export class CaptureService {
         }
       } else {
         console.error(
-          JSON.stringify({ event: 'capture.persistence_failed', error_code: 'STORAGE_UNAVAILABLE' }),
+          JSON.stringify({
+            event: 'capture.persistence_failed',
+            error_code: 'STORAGE_UNAVAILABLE',
+          }),
         );
         throw new AppError(
           503,
