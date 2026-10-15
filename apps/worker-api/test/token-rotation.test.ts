@@ -81,6 +81,20 @@ async function signedCookie(value: string, secret: string) {
 }
 
 describe('bounded credential schedules', () => {
+  it.each(['CAPTURE', 'ADMIN', 'LOCAL_WORKER'] as const)(
+    'rejects empty %s credentials and keeps the single-slot deployment valid',
+    async (scope) => {
+      for (const secret of ['', '   ']) {
+        const env = { ...bindings, [`${scope}_TOKEN`]: secret };
+        expect(credentialSchedule(env, scope, T0).keys).toEqual([]);
+        expect(await matchCredential(env, scope, secret, T0)).toBeNull();
+      }
+      expect(
+        await matchCredential(bindings, scope, bindings[`${scope}_TOKEN`], T0),
+      ).toMatchObject({ id: 'current' });
+      expect(await matchCredential(bindings, scope, null, T0)).toBeNull();
+    },
+  );
   it('emits only safe rotation identifiers, actor, times and outcome', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
     await matchCredential(rotating(), 'CAPTURE', bindings.CAPTURE_TOKEN, T0);
