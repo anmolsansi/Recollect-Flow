@@ -81,6 +81,51 @@ async function signedCookie(value: string, secret: string) {
 }
 
 describe('bounded credential schedules', () => {
+  it('rejects malformed, missing, unexpected and oversized metadata with safe errors', () => {
+    for (const metadata of [
+      '{',
+      'null',
+      '[]',
+      '{}',
+      'x'.repeat(4097),
+      JSON.stringify({
+        next_id: 'next',
+        activate_at: 'yesterday',
+        actor: 'owner',
+      }),
+    ]) {
+      expect(() =>
+        credentialSchedule(
+          { ...rotating(), CAPTURE_TOKEN_ROTATION: metadata },
+          'CAPTURE',
+          T0,
+        ),
+      ).toThrow('Credential configuration is invalid.');
+    }
+    for (const override of [
+      { activate_at: undefined },
+      { next_id: undefined },
+      { actor: undefined },
+      { actor: 'private@example.test' },
+      { revoke_current: 'false' },
+      { next_id: 'next:invalid' },
+      { expires_at: '2026-10-15' },
+    ]) {
+      expect(() =>
+        credentialSchedule(rotating(override), 'CAPTURE', T0),
+      ).toThrow('Credential configuration is invalid.');
+    }
+    expect(() =>
+      credentialSchedule(
+        { ...bindings, CAPTURE_TOKEN_ID: 'bad.id' },
+        'CAPTURE',
+        T0,
+      ),
+    ).toThrow('Credential configuration is invalid.');
+    expect(() => credentialSchedule(bindings, 'CAPTURE', NaN)).toThrow(
+      'Credential configuration is invalid.',
+    );
+  });
   it('accepts exactly 72h and rejects zero, reversed and excessive windows', () => {
     const maximum = rotating({
       expires_at: new Date(T0 + 3 * SESSION_LIFETIME_MS).toISOString(),
