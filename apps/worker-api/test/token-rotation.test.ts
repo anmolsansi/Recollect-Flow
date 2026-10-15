@@ -164,8 +164,7 @@ describe('bounded credential schedules', () => {
     const verified = await (
       await probe.request('/', { headers: { Cookie: cookie } })
     ).json();
-    expect(verified.old).toBe(false);
-    expect(verified.next).toBeTypeOf('string');
+    expect(verified).toMatchObject({ old: false, next: expect.any(String) });
     expect(
       (
         await createApp().request(
