@@ -82,6 +82,54 @@ async function signedCookie(value: string, secret: string) {
 }
 
 describe('bounded credential schedules', () => {
+  it('chooses the issuance key at activation for either eligible login token', async () => {
+    vi.useFakeTimers();
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    const env = adminRotating();
+    const app = createApp();
+    for (const [time, token, status, keyId] of [
+      [T0 - 1, env.ADMIN_TOKEN, 200, 'admin-old'],
+      [T0 - 1, env.ADMIN_TOKEN_NEXT, 401, null],
+      [T0, env.ADMIN_TOKEN, 200, 'admin-next'],
+      [T0, env.ADMIN_TOKEN_NEXT, 200, 'admin-next'],
+      [T0 + SESSION_LIFETIME_MS, env.ADMIN_TOKEN, 401, null],
+      [T0 + SESSION_LIFETIME_MS, env.ADMIN_TOKEN_NEXT, 200, 'admin-next'],
+    ] as const) {
+      vi.setSystemTime(time);
+      const response = await app.request(
+        '/api/v1/admin/session',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        },
+        env,
+      );
+      expect(response.status).toBe(status);
+      if (!keyId) {
+        expect(response.headers.get('set-cookie')).toBeNull();
+        continue;
+      }
+      const cookie = response.headers.get('set-cookie')!.split(';')[0]!;
+      const probe = new Hono();
+      probe.get('/', async (c) =>
+        c.text(
+          String(
+            await getSignedCookie(
+              c,
+              keyId === 'admin-old' ? env.ADMIN_TOKEN : env.ADMIN_TOKEN_NEXT,
+              'admin_session',
+            ),
+          ),
+        ),
+      );
+      expect(
+        await (
+          await probe.request('/', { headers: { Cookie: cookie } })
+        ).text(),
+      ).toBe(`session:v2:${keyId}:${time}:${time + SESSION_LIFETIME_MS}`);
+    }
+  });
   it('preserves actual operator, worker and Shortcut route permissions', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(T0 + SESSION_LIFETIME_MS);
