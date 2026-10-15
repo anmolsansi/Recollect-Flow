@@ -82,6 +82,91 @@ async function signedCookie(value: string, secret: string) {
 }
 
 describe('bounded credential schedules', () => {
+  it('protects every inventoried operator endpoint before work and redacts failure diagnostics', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0);
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const app = createApp();
+    const controls = [
+      ['GET', '/usage'],
+      ['GET', '/jobs'],
+      ['GET', '/jobs/processing-reconciliation'],
+      ['POST', '/jobs/processing-reconciliation'],
+      ['POST', '/jobs/id/retry'],
+      ['POST', '/items/id/notion/recreate'],
+      ['POST', '/digests/generate'],
+      ['GET', '/digests/id'],
+      ['POST', '/digests/id/regenerate'],
+      ['POST', '/digests/id/review'],
+      ['POST', '/digests/id/deliver'],
+      ['POST', '/digest-deliveries/id/retry'],
+      ['POST', '/digest-deliveries/id/reconcile'],
+      ['POST', '/digest-deliveries/id/cancel'],
+      ['GET', '/export?format=json'],
+      ['GET', '/export?format=csv'],
+      ['GET', '/backups'],
+      ['POST', '/backups'],
+      ['GET', '/backups/id/download'],
+      ['POST', '/integrity-checks'],
+      ['GET', '/integrity-checks/id'],
+      ['POST', '/items/id/purge-request'],
+      ['POST', '/purges/id/confirm'],
+      ['POST', '/purges/id/run'],
+      ['GET', '/purges/id'],
+      ['POST', '/restore?dry_run=true'],
+    ];
+    for (const [method, path] of controls) {
+      for (const token of [
+        undefined,
+        bindings.CAPTURE_TOKEN,
+        bindings.LOCAL_WORKER_TOKEN,
+      ]) {
+        expect(
+          (
+            await app.request(
+              '/api/v1' + path,
+              {
+                method,
+                headers: token ? { Authorization: 'Bearer ' + token } : {},
+              },
+              bindings,
+            )
+          ).status,
+          method + ' ' + path,
+        ).toBe(403);
+      }
+    }
+    const cookie = await loginCookie(adminRotating());
+    await app.request(
+      '/api/v1/admin/session',
+      { headers: { Cookie: cookie } },
+      adminRotating(),
+    );
+    const invalid = await app.request(
+      '/api/v1/admin/session',
+      { headers: { Authorization: 'Bearer ' + bindings.ADMIN_TOKEN } },
+      {
+        ...adminRotating(),
+        ADMIN_TOKEN_ROTATION: JSON.stringify({ secret: bindings.ADMIN_TOKEN }),
+      },
+    );
+    expect(invalid.status).toBe(503);
+    const diagnostics = JSON.stringify({
+      logs: log.mock.calls,
+      error: await invalid.json(),
+    });
+    for (const secret of [
+      bindings.CAPTURE_TOKEN,
+      bindings.ADMIN_TOKEN,
+      bindings.LOCAL_WORKER_TOKEN,
+      'dummy-admin-next-secret',
+      cookie,
+    ])
+      expect(diagnostics).not.toContain(secret);
+    expect((await app.request('/api/v1/health', {}, bindings)).status).toBe(
+      200,
+    );
+  });
   it('preserves cookie attributes, actual-origin security and browser-only logout', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(T0);
