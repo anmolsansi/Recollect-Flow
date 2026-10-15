@@ -82,6 +82,37 @@ async function signedCookie(value: string, secret: string) {
 }
 
 describe('bounded credential schedules', () => {
+  it.each(['CAPTURE', 'ADMIN', 'LOCAL_WORKER'] as const)(
+    'keeps promoted %s clients valid after repeat retirement cleanup',
+    async (scope) => {
+      const promoted = {
+        ...bindings,
+        [`${scope}_TOKEN`]: 'dummy-promoted-secret',
+        [`${scope}_TOKEN_ID`]: 'promoted-key',
+      };
+      for (let repeat = 0; repeat < 2; repeat++) {
+        expect(
+          await matchCredential(
+            promoted,
+            scope,
+            'dummy-promoted-secret',
+            T0 + SESSION_LIFETIME_MS,
+          ),
+        ).toMatchObject({ id: 'promoted-key' });
+        expect(
+          await matchCredential(
+            promoted,
+            scope,
+            bindings[`${scope}_TOKEN`],
+            T0 + SESSION_LIFETIME_MS,
+          ),
+        ).toBeNull();
+        expect(
+          credentialSchedule(promoted, scope, T0).rotation,
+        ).toBeUndefined();
+      }
+    },
+  );
   it('rejects copied old-key sessions exactly at the rotation retirement boundary', async () => {
     vi.useFakeTimers();
     vi.spyOn(console, 'log').mockImplementation(() => {});
