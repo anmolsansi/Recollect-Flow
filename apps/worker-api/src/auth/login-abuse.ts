@@ -46,7 +46,7 @@ export async function enforceLoginAbuseLimit(
     .map((byte) => byte.toString(16).padStart(2, '0'))
     .join('');
 
-  let permitted = false;
+  let permitted: boolean;
   try {
     permitted = (await limiter.limit({ key: `admin-login:${key}` })).success;
   } catch {
