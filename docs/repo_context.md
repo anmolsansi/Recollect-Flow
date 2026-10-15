@@ -112,6 +112,15 @@ ADR-033 defines the desired OPE-247 rotation model: current/next secret slots, 2
 
 That overlap/rotation behavior was **not** established as implemented by the September audit. The inspected authentication middleware still effectively compares against one active token per scope. Do not claim OPE-247 credential rotation is complete until the current code and acceptance evidence prove it.
 
+**BG23/BG24 source update, October 15, 2026:** the
+[operational inventory](OPERATIONAL_CONTROLS.md) distinguishes existing APIs from
+planned BG26-28 screens. [Token rotation](TOKEN_ROTATION.md) now defines and
+implements optional per-scope current/next schedules, 24h default/72h maximum,
+immediate old-key revocation, stable-key-ID session promotion and server-enforced
+session age. `npm run auth:rotation:test` is the dummy-key/local-D1 rehearsal.
+This supersedes the September implementation gap above; OPE-247 consolidated
+hardening, BG21/BG22 release qualifications and live/device evidence stay open.
+
 ## Current API capability groups
 
 Application endpoints use `/api/v1`.
