@@ -81,6 +81,28 @@ async function signedCookie(value: string, secret: string) {
 }
 
 describe('bounded credential schedules', () => {
+  it('accepts exactly 72h and rejects zero, reversed and excessive windows', () => {
+    const maximum = rotating({
+      expires_at: new Date(T0 + 3 * SESSION_LIFETIME_MS).toISOString(),
+    });
+    expect(
+      credentialSchedule(maximum, 'CAPTURE', T0 + 3 * SESSION_LIFETIME_MS - 1)
+        .keys[0]?.eligible,
+    ).toBe(true);
+    expect(
+      credentialSchedule(maximum, 'CAPTURE', T0 + 3 * SESSION_LIFETIME_MS)
+        .keys[0]?.eligible,
+    ).toBe(false);
+    for (const end of [T0, T0 - 1, T0 + 3 * SESSION_LIFETIME_MS + 1]) {
+      expect(() =>
+        credentialSchedule(
+          rotating({ expires_at: new Date(end).toISOString() }),
+          'CAPTURE',
+          T0,
+        ),
+      ).toThrow('Credential configuration is invalid.');
+    }
+  });
   it.each(['CAPTURE', 'ADMIN', 'LOCAL_WORKER'] as const)(
     'enforces every activation/expiry edge for %s',
     async (scope) => {
