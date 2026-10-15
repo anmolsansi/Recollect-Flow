@@ -7,15 +7,15 @@
 
 ## Threat boundary inventory
 
-| Boundary | Routes and trust | Expected denial |
-| --- | --- | --- |
-| Login | `POST /api/v1/admin/session`, bearer presented in JSON, browser Origin if sent | 403 unexpected/null Origin; 401 invalid token; 429 exceeded edge window; 503 missing production limiter |
-| Session | `GET/DELETE /api/v1/admin/session`, signed HttpOnly cookie | 403 for unauthorized privileged introspection; logout clears browser cookie but is not worldwide revocation |
-| Capture | `POST /api/v1/captures`, `POST /api/v1/shortcut/captures` | 401 without capture/admin bearer or approved same-origin owner session; invalid explicit bearer never falls back to cookie |
-| Upload | `POST /api/v1/uploads/init`, `PUT /api/v1/uploads/:id/content`, `POST /api/v1/uploads/:id/finalize` | Credential guard before R2 operations; size, expiry, signature and canonical reservation checks |
-| Read | `GET /api/v1/attachments/:id/content`, `GET /api/v1/export`, `GET /api/v1/backups/:id/download` | Scope-specific read permission; no public R2 URL, no shared cache |
-| Privileged mutation | Item edits, jobs, digests, recovery, backup, restore, purge and integrity routes | Admin bearer or valid signed cookie with exact approved Origin; no arbitrary credentialed CORS |
-| Public liveness | `GET /api/v1/health` | Only status and request ID, no private service readiness or token state |
+| Boundary            | Routes and trust                                                                                    | Expected denial                                                                                                            |
+| ------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Login               | `POST /api/v1/admin/session`, bearer presented in JSON, browser Origin if sent                      | 403 unexpected/null Origin; 401 invalid token; 429 exceeded edge window; 503 missing production limiter                    |
+| Session             | `GET/DELETE /api/v1/admin/session`, signed HttpOnly cookie                                          | 403 for unauthorized privileged introspection; logout clears browser cookie but is not worldwide revocation                |
+| Capture             | `POST /api/v1/captures`, `POST /api/v1/shortcut/captures`                                           | 401 without capture/admin bearer or approved same-origin owner session; invalid explicit bearer never falls back to cookie |
+| Upload              | `POST /api/v1/uploads/init`, `PUT /api/v1/uploads/:id/content`, `POST /api/v1/uploads/:id/finalize` | Credential guard before R2 operations; size, expiry, signature and canonical reservation checks                            |
+| Read                | `GET /api/v1/attachments/:id/content`, `GET /api/v1/export`, `GET /api/v1/backups/:id/download`     | Scope-specific read permission; no public R2 URL, no shared cache                                                          |
+| Privileged mutation | Item edits, jobs, digests, recovery, backup, restore, purge and integrity routes                    | Admin bearer or valid signed cookie with exact approved Origin; no arbitrary credentialed CORS                             |
+| Public liveness     | `GET /api/v1/health`                                                                                | Only status and request ID, no private service readiness or token state                                                    |
 
 ## Implementation decisions
 
@@ -28,18 +28,18 @@
 
 ## Evidence matrix (status must stay honest)
 
-| BG-25 area | Current evidence | State |
-| --- | --- | --- |
-| BG-24 prerequisite | Accepted merged-main CI and issue #88 | Previously verified |
-| Bounded login attempts and reset | Synthetic limiter unit fixture, platform 60-second window configuration | Code ready, exact-head CI pending; actual edge reset unverified |
-| Cookie attributes, expiry, token rotation | BG-24 authenticated test cases and D1 replay at predecessor SHA | Previously verified locally, no new live HTTPS claim |
-| Cookie CSRF/origin | BG-15/24 regression matrix, plus new login-origin tests | Pending exact-head CI; remote origins not tested |
-| JSON, multipart and chunked byte bounds | Bounded Hono middleware and focused tests | Pending exact-head CI; no full streaming or multipart gateway proof yet |
-| Synthetic secret redaction | Request/error and background-catch code review and new probes | Pending CI; upstream/vendor-log controls outside scope not attested |
-| React escaping and file key authorization | Source inspection and BG-18/BG-07 prior local checks | No new hosted object-traversal/security proof |
-| API no-store and asset security headers | `src/index.ts` and asset router from BG-21 | Static review, remote HTTPS/cache acceptance still blocked |
-| Full code/security gate | GitHub PR #91 status is authoritative | Not yet accepted |
-| OPE-247 release/real-origin gate | No production deploy or operator-approved remote credentials | Blocked |
+| BG-25 area                                | Current evidence                                                        | State                                                                   |
+| ----------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| BG-24 prerequisite                        | Accepted merged-main CI and issue #88                                   | Previously verified                                                     |
+| Bounded login attempts and reset          | Synthetic limiter unit fixture, platform 60-second window configuration | Code ready, exact-head CI pending; actual edge reset unverified         |
+| Cookie attributes, expiry, token rotation | BG-24 authenticated test cases and D1 replay at predecessor SHA         | Previously verified locally, no new live HTTPS claim                    |
+| Cookie CSRF/origin                        | BG-15/24 regression matrix, plus new login-origin tests                 | Pending exact-head CI; remote origins not tested                        |
+| JSON, multipart and chunked byte bounds   | Bounded Hono middleware and focused tests                               | Pending exact-head CI; no full streaming or multipart gateway proof yet |
+| Synthetic secret redaction                | Request/error and background-catch code review and new probes           | Pending CI; upstream/vendor-log controls outside scope not attested     |
+| React escaping and file key authorization | Source inspection and BG-18/BG-07 prior local checks                    | No new hosted object-traversal/security proof                           |
+| API no-store and asset security headers   | `src/index.ts` and asset router from BG-21                              | Static review, remote HTTPS/cache acceptance still blocked              |
+| Full code/security gate                   | GitHub PR #91 status is authoritative                                   | Not yet accepted                                                        |
+| OPE-247 release/real-origin gate          | No production deploy or operator-approved remote credentials            | Blocked                                                                 |
 
 ## Run and recovery
 
