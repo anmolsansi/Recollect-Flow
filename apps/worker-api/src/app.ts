@@ -79,7 +79,7 @@ export function createApp(
           : pathname === '/api/v1/restore'
             ? attachmentBytes
             : 1_048_576;
-    await bodyLimit({
+    return bodyLimit({
       maxSize: limit,
       onError: (c) =>
         c.json(
