@@ -84,7 +84,10 @@ export function createApp(
       onError: (c) =>
         c.json(
           {
-            error: { code: 'PAYLOAD_TOO_LARGE', message: 'Request body is too large.' },
+            error: {
+              code: 'PAYLOAD_TOO_LARGE',
+              message: 'Request body is too large.',
+            },
             meta: { request_id: c.get('requestId') },
           },
           413,
