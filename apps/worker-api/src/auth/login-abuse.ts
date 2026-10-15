@@ -64,7 +64,25 @@ export async function enforceLoginAbuseLimit(
 /** Browser-initiated login may not be triggered by a foreign origin. */
 export function requireLoginOrigin(context: Context<AppContext>): void {
   const origin = context.req.header('Origin');
-  if (origin !== undefined && origin !== new URL(context.req.url).origin) {
+  if (origin === undefined) return; // Native clients can omit Origin with a valid admin secret.
+  const requestOrigin = new URL(context.req.url).origin;
+  const configuredWeb = context.env.WEB_INBOX_BASE_URL;
+  let allowedWebOrigin: string | undefined;
+  if (configuredWeb) {
+    try {
+      const url = new URL(configuredWeb);
+      if (
+        url.protocol === 'https:' ||
+        url.hostname === 'localhost' ||
+        url.hostname === '127.0.0.1'
+      ) {
+        allowedWebOrigin = url.origin;
+      }
+    } catch {
+      // An invalid configured origin must never authorize a foreign browser.
+    }
+  }
+  if (origin === 'null' || (origin !== requestOrigin && origin !== allowedWebOrigin)) {
     throw new AppError(
       403,
       'ORIGIN_FORBIDDEN',
