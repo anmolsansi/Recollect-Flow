@@ -1,5 +1,10 @@
 # Operations
 
+Credential operations: [BG24 bounded rotation, atomic staging, compromise and rollback](TOKEN_ROTATION.md).
+Use [BG23's control inventory](OPERATIONAL_CONTROLS.md) to distinguish current API
+operations from planned Web screens and command-only recovery. No production
+secret change or deployment follows automatically from these implementation guides.
+
 <!-- OPE-227 START -->
 
 ## OPE-227 zero-cost AI capacity operations
