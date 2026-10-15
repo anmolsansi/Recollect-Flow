@@ -48,9 +48,7 @@ export async function enforceLoginAbuseLimit(
 
   let permitted = false;
   try {
-    permitted = (
-      await limiter.limit({ key: `admin-login:${key}` })
-    ).success;
+    permitted = (await limiter.limit({ key: `admin-login:${key}` })).success;
   } catch {
     throw new AppError(
       503,
