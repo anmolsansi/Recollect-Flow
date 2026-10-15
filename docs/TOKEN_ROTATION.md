@@ -33,3 +33,21 @@ Logout deletes the current browser cookie; it does not revoke an already copied 
 ## Audit boundary
 
 Rotation authentication emits only safe scope/key IDs, operator label, activation/retirement schedule, revocation flag, observation time and accepted/denied outcome. It never logs tokens, token-derived fingerprints, cookies or request content. These observations complement the Cloudflare deployment/secret-change audit and an operator-owned operation ledger; they do not prove a deployment or promotion was performed. Record each activation, promotion and retirement with scope, labels, actor, effective time, target deployment and verification outcome. No raw secret is stored in D1 or source control.
+
+## Routine operator procedure (separate remote authorization required)
+
+1. Verify the exact account, Worker, deployed code, client owners and old key ID. Run `npm run auth:rotation:test`; preserve safe actor/time/version evidence. Production secrets are never needed for that dummy rehearsal.
+2. Choose a fresh random next secret, unique next ID, activation and ≤72h expiry (24h default). Enter the credential privately using a password manager/private editor, never a shell argument, pasted chat, log or Git file. Keep the input JSON outside the checkout with owner-only permissions. For atomic staging, the metadata binding may also be stored as a Worker secret; do not define the same name as both a var and a secret.
+3. Prepare one JSON object containing `ADMIN_TOKEN_NEXT` and `ADMIN_TOKEN_ROTATION` (the latter is a serialized JSON string following the contract above). Preserve the current token and current key ID. Substitute CAPTURE or LOCAL_WORKER for the other scopes. Omit unrelated bindings so they are preserved.
+4. Stage both changes in one candidate version, inspect its safe binding names/version, then deploy that exact candidate at 100% only after approval. Never deploy a NEXT-only or metadata-only intermediate state. Do not split traffic across pre-revocation and post-revocation versions.
+
+```bash
+npx wrangler versions secret bulk /secure/operator/rotation-stage.json --name "<approved-worker-name>"
+npx wrangler versions deploy "<verified-candidate-version-id>@100%" --name "<approved-worker-name>"
+```
+
+5. Verify current before activation, both during overlap, and denied current at expiry using each scope's actual client path. Admin logins after activation issue next-key cookies. Refresh clients deliberately; do not change captured item records. Record safe outcomes, not credentials or cookie values.
+6. For promotion, prepare a separate private JSON object with the promoted secret in `ADMIN_TOKEN`, `ADMIN_TOKEN_ID` equal to the former `next_id`, and JSON **null** for `ADMIN_TOKEN_NEXT` and `ADMIN_TOKEN_ROTATION` (deletion, not empty strings). Stage/deploy the single candidate as above. Verify promoted bearer and its prior next-key session, old bearer denial and unchanged canonical item identity. Repeating the same cleanup leaves the same valid single slot.
+7. Record activation/promotion/retirement time, scope, IDs, actor, deployment ID and accepted/denied verification results in the protected operator ledger; retain the platform change audit. Remove private input files under the owner's secret-handling policy. A normal code rollback must keep the new safe credential state.
+
+The installed Wrangler 4.116 toolchain supports staged secret versions. [Cloudflare's command reference](https://developers.cloudflare.com/workers/wrangler/commands/workers/#versions-secret-bulk) documents bulk JSON changes and null deletion; the `versions` form stages a version without immediate deployment. The ordinary `wrangler secret` form deploys immediately, so it is unsuitable for a multi-binding cutover performed as separate commands. No remote command above was executed as part of BG24 implementation.
