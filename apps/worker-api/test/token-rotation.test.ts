@@ -82,6 +82,53 @@ async function signedCookie(value: string, secret: string) {
 }
 
 describe('bounded credential schedules', () => {
+  it('rejects expired, future, excessive, mismarked and tampered sessions', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0);
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    const app = createApp();
+    for (const value of [
+      `session:v2:current:${T0 - 1000}:${T0}`,
+      `session:v2:current:${T0 + 1}:${T0 + 1000}`,
+      `session:v2:current:${T0}:${T0 + SESSION_LIFETIME_MS + 1}`,
+      `session:v2:wrong:${T0}:${T0 + 1000}`,
+      `session:v2:current:${T0}:${T0 - 1}`,
+      `session:v3:current:${T0}:${T0 + 1000}`,
+      `authenticated:${T0 + SESSION_LIFETIME_MS + 1}`,
+    ]) {
+      const cookie = await signedCookie(value, bindings.ADMIN_TOKEN);
+      expect(
+        (
+          await app.request(
+            '/api/v1/admin/session',
+            { headers: { Cookie: cookie } },
+            bindings,
+          )
+        ).status,
+      ).toBe(403);
+    }
+    const good = await loginCookie(bindings);
+    const tampered = good.replace('session', 'changed');
+    expect(
+      (
+        await app.request(
+          '/api/v1/admin/session',
+          { headers: { Cookie: tampered } },
+          bindings,
+        )
+      ).status,
+    ).toBe(403);
+    vi.setSystemTime(T0 + SESSION_LIFETIME_MS);
+    expect(
+      (
+        await app.request(
+          '/api/v1/admin/session',
+          { headers: { Cookie: good } },
+          bindings,
+        )
+      ).status,
+    ).toBe(403);
+  });
   it('immediately revokes compromised admin bearer and sessions with a fresh replacement', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(T0);
