@@ -247,23 +247,23 @@ export class ShortcutCaptureService {
     const at = new Date().toISOString();
     try {
       await this.bucket.delete(attachment.r2Key);
-    } catch (error) {
+    } catch {
       console.error(
         JSON.stringify({
           event: 'shortcut.attachment_cleanup_failed',
           attachment_id: attachment.id,
-          error,
+          error_code: 'STORAGE_UNAVAILABLE',
         }),
       );
     }
     try {
       await this.attachments.markOrphaned(attachment.id, at);
-    } catch (error) {
+    } catch {
       console.error(
         JSON.stringify({
           event: 'shortcut.attachment_mark_orphaned_failed',
           attachment_id: attachment.id,
-          error,
+          error_code: 'STORAGE_UNAVAILABLE',
         }),
       );
     }
@@ -354,7 +354,7 @@ export class ShortcutCaptureService {
         JSON.stringify({
           event: 'shortcut.attachment_save_failed',
           attachment_id: attachment.id,
-          error,
+          error_code: 'STORAGE_UNAVAILABLE',
         }),
       );
       throw new AppError(
