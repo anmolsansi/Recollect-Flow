@@ -2682,6 +2682,13 @@ Follow the [100 microtasks for BG-23](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-23
 
 ## 30. BG-24 — Implement bounded token rotation and session behavior
 
+The current implementation is documented in [bounded credential rotation](TOKEN_ROTATION.md).
+Shared authentication now applies per-scope current/next schedules and emits safe
+rotation observations. New sessions carry signed key ID, issuance and expiry;
+promotion preserves the next key ID. `npm run auth:rotation:test` rehearses the
+clock, scope, compromise, cookie and canonical-data boundaries with dummy keys.
+No production secret or deployed version was changed by this implementation.
+
 **What and why.** Rotating a credential should let the owner update authorized
 clients without an indefinite period in which two old keys remain usable.
 
@@ -2710,12 +2717,14 @@ life. Record only token identifiers/fingerprints, never the full secret.
 
 ### Treat browser sessions as a separate credential lifecycle
 
-At the inspected baseline, the signed admin cookie contains the constant value
-'authenticated' and the browser receives a 24-hour expiration. That expiration
-tells the browser when to discard it; it does not by itself give the server an
-issued-at timestamp to validate in a copied cookie. Decide the required server
-lifetime/revocation semantics and implement them explicitly if the release relies
-on them.
+The server now verifies versioned admin sessions with key ID, issued-at and
+expires-at, independently of browser expiry, with a maximum 24-hour lifetime.
+Bounded legacy `authenticated:<expiry>` cookies remain current-key-only; constant
+`authenticated` cookies are rejected. After activation, either eligible login
+token issues a next-key session. Old-key cookies stop at key retirement; next-key
+cookies survive promotion when the stable ID is retained. Logout clears this
+browser only; compromise requires key revocation and a fresh replacement if the
+exposed old token could already have issued next-key sessions.
 
 Test before, at and after the overlap boundary, plus the compromise path and
 logout behavior. Distinguish deleting the current browser's cookie from revoking

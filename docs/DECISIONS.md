@@ -133,6 +133,10 @@ Notion removal is a downstream purge step. If the Notion step fails, the purge r
 
 Capture, admin and local-worker credentials will support current/next secret slots.
 
+BG24 implements this schedule in shared authentication; see the
+[configuration, session semantics and operator procedure](TOKEN_ROTATION.md).
+The decision does not authorize live secret changes or close OPE-247's other gates.
+
 Routine rotation policy:
 
 - default overlap: 24 hours;
