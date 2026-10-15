@@ -82,6 +82,36 @@ async function signedCookie(value: string, secret: string) {
 
 describe('bounded credential schedules', () => {
   it.each(['CAPTURE', 'ADMIN', 'LOCAL_WORKER'] as const)(
+    'enforces every activation/expiry edge for %s',
+    async (scope) => {
+      vi.spyOn(console, 'log').mockImplementation(() => {});
+      const env = {
+        ...bindings,
+        [`${scope}_TOKEN_NEXT`]: 'dummy-next-scope-secret',
+        [`${scope}_TOKEN_ROTATION`]: rotating().CAPTURE_TOKEN_ROTATION,
+      };
+      for (const [now, oldAllowed, nextAllowed] of [
+        [T0 - 1, true, false],
+        [T0, true, true],
+        [T0 + 1, true, true],
+        [T0 + SESSION_LIFETIME_MS - 1, true, true],
+        [T0 + SESSION_LIFETIME_MS, false, true],
+        [T0 + SESSION_LIFETIME_MS + 1, false, true],
+      ] as const) {
+        expect(
+          Boolean(
+            await matchCredential(env, scope, bindings[`${scope}_TOKEN`], now),
+          ),
+        ).toBe(oldAllowed);
+        expect(
+          Boolean(
+            await matchCredential(env, scope, 'dummy-next-scope-secret', now),
+          ),
+        ).toBe(nextAllowed);
+      }
+    },
+  );
+  it.each(['CAPTURE', 'ADMIN', 'LOCAL_WORKER'] as const)(
     'rejects empty %s credentials and keeps the single-slot deployment valid',
     async (scope) => {
       for (const secret of ['', '   ']) {
