@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { bodyLimit } from 'hono/body-limit';
 
 import type { CaptureRepository } from './captures/capture.repository';
 import { D1CaptureRepository } from './captures/capture.repository';
@@ -54,6 +55,41 @@ export function createApp(
         }),
       );
     }
+  });
+
+  // Request admission runs before JSON/multipart parsers or provider work.
+  // Hono >=4.12.16 also counts chunked/unknown-length streams correctly.
+  app.use('/api/*', async (context, next) => {
+    if (['GET', 'HEAD', 'OPTIONS'].includes(context.req.method)) {
+      await next();
+      return;
+    }
+    const pathname = new URL(context.req.url).pathname;
+    const configuredAttachmentBytes = Number(context.env.MAX_ATTACHMENT_BYTES);
+    const attachmentBytes =
+      Number.isSafeInteger(configuredAttachmentBytes) &&
+      configuredAttachmentBytes > 0
+        ? Math.min(configuredAttachmentBytes, 50_000_000)
+        : 25_000_000;
+    const limit =
+      pathname.endsWith('/content') && pathname.startsWith('/api/v1/uploads/')
+        ? attachmentBytes
+        : pathname === '/api/v1/shortcut/captures'
+          ? attachmentBytes + 1_048_576
+          : pathname === '/api/v1/restore'
+            ? attachmentBytes
+            : 1_048_576;
+    await bodyLimit({
+      maxSize: limit,
+      onError: (c) =>
+        c.json(
+          {
+            error: { code: 'PAYLOAD_TOO_LARGE', message: 'Request body is too large.' },
+            meta: { request_id: c.get('requestId') },
+          },
+          413,
+        ),
+    })(context, next);
   });
 
   app.get('/api/v1/health', (context) =>
