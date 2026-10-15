@@ -82,6 +82,52 @@ async function signedCookie(value: string, secret: string) {
 }
 
 describe('bounded credential schedules', () => {
+  it('immediately revokes compromised admin bearer and sessions with a fresh replacement', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0);
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    const priorNextCookie = await loginCookie(adminRotating());
+    const oldCookie = await signedCookie(
+      `session:v2:admin-old:${T0 - 1000}:${T0 + 1000}`,
+      bindings.ADMIN_TOKEN,
+    );
+    const emergency = {
+      ...adminRotating({ next_id: 'admin-emergency', revoke_current: true }),
+      ADMIN_TOKEN_NEXT: 'dummy-emergency-secret',
+    };
+    const app = createApp();
+    for (const cookie of [oldCookie, priorNextCookie]) {
+      expect(
+        (
+          await app.request(
+            '/api/v1/admin/session',
+            { headers: { Cookie: cookie } },
+            emergency,
+          )
+        ).status,
+      ).toBe(403);
+    }
+    for (const token of [bindings.ADMIN_TOKEN, 'dummy-admin-next-secret']) {
+      expect(await matchCredential(emergency, 'ADMIN', token, T0)).toBeNull();
+    }
+    expect(
+      await matchCredential(emergency, 'ADMIN', 'dummy-emergency-secret', T0),
+    ).toMatchObject({ id: 'admin-emergency' });
+    expect(
+      await matchCredential(emergency, 'CAPTURE', bindings.CAPTURE_TOKEN, T0),
+    ).not.toBeNull();
+    expect(
+      await matchCredential(
+        emergency,
+        'LOCAL_WORKER',
+        bindings.LOCAL_WORKER_TOKEN,
+        T0,
+      ),
+    ).not.toBeNull();
+    expect(await loginCookie(emergency, 'dummy-emergency-secret')).toContain(
+      'admin_session=',
+    );
+  });
   it.each(['CAPTURE', 'ADMIN', 'LOCAL_WORKER'] as const)(
     'keeps promoted %s clients valid after repeat retirement cleanup',
     async (scope) => {
