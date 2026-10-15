@@ -245,6 +245,12 @@ and Linear OPE-327 can close and BG-08 is unlocked.
 - [Passing implementation PR-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38082248375) includes actual isolated Chrome URL, note and pasted-text saves and Worker/D1 reads
 - BG-17 cross-reload retries, BG-18 file upload, and production deployment are not BG-16 acceptance
 
+### BG-25 — authentication, payload admission and redaction (in progress)
+
+- [BG-25 evidence and threat matrix](BG-25_SECURITY_HARDENING.md)
+- Tracking: [issue #90](https://github.com/anmolsansi/Recollect-Flow/issues/90), [draft PR #91](https://github.com/anmolsansi/Recollect-Flow/pull/91)
+- No production deployment, rotation, remote HTTPS/private-R2 test or final security signoff is claimed. Validate PR CI and canonical checklist before marking complete.
+
 ## Evidence rules
 
 - Tie claims to a revision and environment.
