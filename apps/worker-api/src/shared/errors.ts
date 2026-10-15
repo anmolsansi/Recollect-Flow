@@ -28,7 +28,15 @@ export function errorResponse(context: Context, error: unknown) {
     );
   }
 
-  console.error(JSON.stringify({ request_id: requestId, error }));
+  // Upstream Error objects can carry credentials, private text or full URLs.
+  // Log only the stable code and request identifier, never the thrown value.
+  console.error(
+    JSON.stringify({
+      event: 'http_unhandled_error',
+      request_id: requestId,
+      code: 'INTERNAL_ERROR',
+    }),
+  );
   return context.json(
     {
       error: {
