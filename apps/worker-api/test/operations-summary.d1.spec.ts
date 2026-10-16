@@ -97,6 +97,7 @@ describe('BG-26 operational visibility', () => {
           status: 'retry_wait',
           count: 1,
           next_available_at: later,
+          oldest_eligible_created_at: null,
           sample_error_code: 'QUOTA_PAUSED',
         }),
         expect.objectContaining({
@@ -108,6 +109,9 @@ describe('BG-26 operational visibility', () => {
       ]),
     );
     expect(summary.recovery.partial_purges).toBe(1);
+    expect(summary.recovery.partial_purge_samples).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: 'bg26-purge' })]),
+    );
     expect(summary.recovery.failed_backups).toBe(1);
     expect(summary.recovery.ambiguous_digests).toBe(1);
     expect(JSON.stringify(summary)).not.toContain('canonical_payload_json');
