@@ -147,7 +147,15 @@ export class TelegramClient {
       clearTimeout(timeout);
     }
 
-    const rawBody = await response.text();
+    let rawBody: string;
+    try {
+      rawBody = await response.text();
+    } catch {
+      throw new TelegramDeliveryError(
+        'TELEGRAM_RESPONSE_AMBIGUOUS',
+        'unknown',
+      );
+    }
     let body: TelegramResponse | null = null;
     try {
       body = JSON.parse(rawBody) as TelegramResponse;
