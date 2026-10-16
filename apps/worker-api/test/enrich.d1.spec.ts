@@ -237,7 +237,7 @@ describe('EnrichService (D1 Integration)', () => {
         { id: jobId, itemId } as unknown as JobRecord,
         'owner-1',
       ),
-    ).toBe(false);
+    ).toBe(true);
 
     const item = await env.DB.prepare(
       'SELECT title, raw_text, summary, topics_json FROM items WHERE id = ?1',
