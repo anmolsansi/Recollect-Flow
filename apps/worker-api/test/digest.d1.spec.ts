@@ -573,4 +573,24 @@ describe('OPE-226 digest integration', () => {
   });
 
 
+
+  it('never automatically resends an expired Telegram lease', async () => {
+    await insertItem({ id: 'lease-item', title: 'Daily review item' });
+    const generated = await service().generatePeriod(dailyPeriod);
+    const repository = new DigestRepository(env.DB);
+    const start = new Date('2026-08-03T02:00:00.000Z');
+    const pending = await repository.queueTelegramDelivery(generated.run.id, start);
+    const first = await repository.leaseTelegramDeliveries('first', 1, 10, start);
+    expect(first.map((entry) => entry.id)).toEqual([pending.id]);
+
+    const later = new Date('2026-08-03T02:02:00.000Z');
+    const second = await repository.leaseTelegramDeliveries('second', 1, 10, later);
+    expect(second).toEqual([]);
+    const uncertain = await repository.getDelivery(pending.id);
+    expect(uncertain?.state).toBe('unknown');
+    expect(uncertain?.lastErrorCode).toBe('TELEGRAM_LEASE_EXPIRED_AMBIGUOUS');
+    await expect(repository.retryFailedDelivery(pending.id)).resolves.toBe(false);
+  });
+
+
 });
