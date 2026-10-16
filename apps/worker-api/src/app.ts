@@ -13,7 +13,7 @@ import type { PolicyRepository } from './policy/policy.repository';
 import type { AppContext, Env } from './env';
 import { errorResponse } from './shared/errors';
 import { requireAdminToken, requireCaptureWrite } from './shared/auth';
-import { shortcutRoutes } from './shortcut/shortcut.routes';
+import { admitShortcutBeforeBody, shortcutRoutes } from './shortcut/shortcut.routes';
 import { itemRoutes } from './items/item.routes';
 import { searchRoutes } from './search/search.routes';
 import { authRoutes } from './auth/auth.routes';
@@ -69,6 +69,13 @@ export function createApp(
       /^\/api\/v1\/uploads\/[^/]+\/content$/.test(pathname)
     ) {
       await requireCaptureWrite(context, async () => {});
+    }
+    if (
+      context.req.method === 'POST' &&
+      pathname === '/api/v1/shortcut/captures'
+    ) {
+      const rejection = await admitShortcutBeforeBody(context);
+      if (rejection) return rejection;
     }
     if (context.req.method === 'POST' && pathname === '/api/v1/restore') {
       await requireAdminToken(context, async () => {});
