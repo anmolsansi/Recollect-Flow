@@ -122,8 +122,14 @@ describe('BG-26 operational visibility', () => {
       ),
     ).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ count: 1, sample_error_code: 'PROVIDER_UNAVAILABLE' }),
-        expect.objectContaining({ count: 1, sample_error_code: 'SYNC_AUTH_EXPIRED' }),
+        expect.objectContaining({
+          count: 1,
+          sample_error_code: 'PROVIDER_UNAVAILABLE',
+        }),
+        expect.objectContaining({
+          count: 1,
+          sample_error_code: 'SYNC_AUTH_EXPIRED',
+        }),
       ]),
     );
     expect(summary.recovery.partial_purges).toBe(1);
