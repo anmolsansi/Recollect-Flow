@@ -309,6 +309,14 @@ export function OperationsPage() {
                   Partial purge workflows:{' '}
                   {snapshot.operations.recovery.partial_purges}
                 </p>
+                {snapshot.operations.recovery.partial_purge_samples.map((purge) => (
+                  <p key={purge.id}>
+                    <a href={'/api/v1/purges/' + encodeURIComponent(purge.id)} target="_blank" rel="noreferrer">
+                      Inspect purge {purge.id}
+                    </a>
+                    {purge.last_error_code ? ' · ' + purge.last_error_code : ''}
+                  </p>
+                ))}
                 <p>
                   Failed hosted backups:{' '}
                   {snapshot.operations.recovery.failed_backups}
