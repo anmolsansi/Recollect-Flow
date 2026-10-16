@@ -271,6 +271,11 @@ export function OperationsPage() {
                         snapshot.operations.generated_at,
                       )}
                     </p>
+                    <p>
+                      Oldest eligible queued: {g.oldest_eligible_created_at
+                        ? age(g.oldest_eligible_created_at, snapshot.operations.generated_at)
+                        : 'None in this group'}
+                    </p>
                     {g.next_available_at ? (
                       <p>Next retry: {timestamp(g.next_available_at)}</p>
                     ) : null}
