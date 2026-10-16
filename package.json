@@ -41,7 +41,8 @@
     "browser:hosting:test": "node scripts/verify-web-hosting.mjs",
     "browser:hosting:remote:test": "node scripts/verify-remote-hosting.mjs",
     "bg29:latency:test": "node --test scripts/bg29-capture-bench.test.mjs",
-    "bg29:latency:bench": "node scripts/run-bg29-capture-bench.mjs"
+    "bg29:latency:bench": "node scripts/run-bg29-capture-bench.mjs",
+    "bg29:fts:smoke": "node scripts/bg29-fts-rebuild.mjs"
   },
   "dependencies": {
     "hono": "^4.8.10",
