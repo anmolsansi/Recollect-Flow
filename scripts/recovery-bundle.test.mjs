@@ -9,7 +9,8 @@ import { verifyRecoveryBundle } from './recovery-bundle.mjs';
 
 const roots = [];
 afterEach(async () => {
-  for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true });
+  for (const root of roots.splice(0))
+    await rm(root, { recursive: true, force: true });
 });
 
 async function fixture() {
@@ -17,7 +18,9 @@ async function fixture() {
   roots.push(root);
   const objectsDir = path.join(root, 'independent-objects');
   const objectKey = 'uploads/synthetic/original.pdf';
-  await mkdir(path.join(objectsDir, 'uploads', 'synthetic'), { recursive: true });
+  await mkdir(path.join(objectsDir, 'uploads', 'synthetic'), {
+    recursive: true,
+  });
   const bytes = Buffer.from('a synthetic original for a recovery audit');
   await writeFile(path.join(objectsDir, objectKey), bytes);
   const sha256 = createHash('sha256').update(bytes).digest('hex');
@@ -28,16 +31,20 @@ async function fixture() {
     schemaVersion: '2026-09-19.1',
     generatedAt: '2026-10-16T00:00:00.000Z',
     itemCount: 1,
-    items: [{
-      item: { id: 'synthetic-item' },
-      attachments: [{
-        id: 'synthetic-attachment',
-        object_key: objectKey,
-        status: 'linked',
-        size_bytes: bytes.byteLength,
-        content_hash: sha256,
-      }],
-    }],
+    items: [
+      {
+        item: { id: 'synthetic-item' },
+        attachments: [
+          {
+            id: 'synthetic-attachment',
+            object_key: objectKey,
+            status: 'linked',
+            size_bytes: bytes.byteLength,
+            content_hash: sha256,
+          },
+        ],
+      },
+    ],
     purgeReceipts: [],
     disclosures: {
       attachmentBytesIncluded: false,
@@ -70,7 +77,10 @@ test('missing and modified original bytes fail instead of reporting success', as
 test('correct-length tampering is caught by the checksum', async () => {
   const input = await fixture();
   const original = await readFile(path.join(input.objectsDir, input.objectKey));
-  await writeFile(path.join(input.objectsDir, input.objectKey), Buffer.alloc(original.length, 0));
+  await writeFile(
+    path.join(input.objectsDir, input.objectKey),
+    Buffer.alloc(original.length, 0),
+  );
   await assert.rejects(verifyRecoveryBundle(input), /ATTACHMENT_HASH_MISMATCH/);
 });
 
