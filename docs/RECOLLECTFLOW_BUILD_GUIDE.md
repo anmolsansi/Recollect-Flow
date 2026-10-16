@@ -3025,6 +3025,61 @@ send, a confirmed delivery, a rejection and an ambiguous response. The control i
 complete when each state leads to the appropriate action and repeated clicks do
 not bypass the backend's duplicate/unknown protections.
 
+### Implementation map and operating sequence (BG-27 branch)
+
+The authenticated Web Inbox now has a `/digests` review page, separate from
+`/operations`. It uses the existing admin session and the canonical routes in
+`apps/worker-api/src/digests/digest.routes.ts`. **Generate preview only** calls
+`POST /api/v1/digests/generate` with a digest type, with `queueDelivery: false`
+on the server. A bounded private `GET /api/v1/digests` lists recent runs.
+`GET /api/v1/digests/:id` returns the stored run, its delivery history and
+a freshly rendered `preview`. This read does not enqueue or call Telegram.
+Both reads set `Cache-Control: private, no-store`.
+
+The preview is rendered from current D1 item state, not blindly replayed from
+its original saved message. `digest.renderer.ts` returns current eligible
+item links and neutral labels when privacy is not Public, plus the actual
+eligible count. It omits deleted and duplicate items. The message links are
+built from the configured Web Inbox base URL, validated for HTTPS except
+localhost. Test both a logged-in and logged-out item URL before claiming
+production origin/deep-link acceptance. No live browser or production origin
+acceptance is implied by unit tests alone.
+
+An operator must explicitly mark a generated run reviewed before clicking
+**Queue reviewed digest**. The Web UI requests confirmation and calls the
+existing `POST /api/v1/digests/:id/deliver`; it never calls Telegram directly.
+The queue returns a pending/skipped record, not proof of provider delivery.
+Scheduled background digest generation follows its separate scheduler contract
+and is not an operator preview. The Worker re-renders against current deletion
+and privacy state immediately before sending.
+
+`DigestRepository.queueTelegramDelivery` uses an atomic INSERT guard across
+all generations of the same digest type and period. Non-skipped delivery history
+in a different generation blocks a second send with
+`DIGEST_PERIOD_DELIVERY_EXISTS`. Regeneration creates a separate version for
+inspection but never silently mutates sent history. Retry remains limited to
+definite `failed` delivery records.
+
+A lost Telegram response, unreadable response, or expired leased send is
+**unknown**, not a retryable confirmed failure. The Worker quarantines expired
+leases instead of resending, and post-acceptance persistence failures remain
+unknown. The operator must inspect destination/provider evidence and use
+`POST /api/v1/digest-deliveries/:id/reconcile`. A verified `sent` resolution
+requires the real Telegram message ID. A verified `failed` resolution must
+rest on affirmative non-delivery evidence, not merely an absent message.
+The UI disables Retry for unknown states. Failed deliveries can be retried
+through the existing guarded route after review. Definite 429 responses retain
+the backend-calculated next eligible time, and pending retries are not exposed
+as immediate manual retries.
+
+An empty digest is displayed as **skipped**, not failed and not a successful
+eligible delivery day. A preview may become empty after privacy/deletion
+recheck. No deployment, live provider send or production changes are part of
+BG-27's isolated implementation. Run `npm run check`, the focused D1 digest
+route/worker tests and the applicable browser acceptance against a synthetic,
+non-production environment. Record the exact passing commit and CI run before
+checking completion and unlocking BG-28.
+
 ### Small implementation steps
 
 1. Map existing generation, inspection, review, regeneration, queue and reconcile
