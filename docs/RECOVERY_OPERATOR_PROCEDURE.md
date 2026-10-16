@@ -22,6 +22,17 @@ A backup created in the same R2 bucket as the original attachments cannot surviv
 
 Independently copy every `purge-receipts/v1/*.json` mirror into protected, separately retained storage. Read back and verify their stored R2 SHA-256 metadata before assembling a JSON array of their receipt bodies as `independent-receipts.json`. Do not rely on a copy of receipts embedded in the old export. Record full object listing/pagination, object count, snapshot time and independent copy identity. A missing, incomplete or stale ledger is a **stop condition** for any restore. If D1 was lost and only the original R2 bucket held receipts, anti-resurrection cannot be guaranteed without that independent copy.
 
+For an explicitly authorized, named R2 source profile, use the Cloudflare-documented `rclone` bulk-copy approach. Configure the source and destination profiles separately and confirm that the destination is outside the source bucket's failure domain. Example for a protected offline directory, **not** an instruction to run against production without approval:
+
+```bash
+# Source profile and bucket are illustrative, never use default credentials.
+rclone copy r2-source:<source-bucket> /secure/recovery/objects
+rclone lsf --recursive r2-source:<source-bucket> > /secure/recovery/source-object-keys.txt
+rclone lsf --recursive /secure/recovery/objects > /secure/recovery/copied-object-keys.txt
+```
+
+Check listing completeness and source/destination identity before creating a manifest. The copied object-key listing includes `purge-receipts/v1/`; **do not** mistake that directory for the up-to-date receipt array consumed by the verifier. Separately parse and validate those JSON receipt objects into `independent-receipts.json` only after verifying their recorded hashes and listing pagination. Keep receipt mirrors available beyond hosted JSON expiration so an older owner copy cannot silently resurrect purged content. Owner-controlled original-byte copies use an owner-approved encrypted retention schedule, not the hosted JSON 30-day policy. Do not erase the previous independent set until the replacement set, hashes and newest receipt ledger have all passed verification.
+
 For a previously downloaded **synthetic or approved** bundle use:
 
 ```bash
