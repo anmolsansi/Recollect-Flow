@@ -52,3 +52,70 @@
 ## Open acceptance conditions
 
 BG-25 must remain open until exact-head quality/CI, rate-reset behavior, unauthorized no-Content-Length request costs, representative private object/traversal/wrong-scope tests, preexisting download and export regressions, external HTTPS cookie/caching review, and the full canonical 100-step reconciliation are supported by recorded evidence. No scanner result alone establishes completion. BG-26 is not unlocked by a partial green test suite.
+
+## October 16 reconciliation, scoped source implementation
+
+The canonical BG-25 checklist records **97/100** source steps with local or
+previously accepted CI evidence, leaving exactly three live-origin verification
+steps unverified. The counts do not establish production acceptance. The
+separate rate limiter is intentionally edge-local, not a global account lock.
+
+### Additional controls reviewed
+
+- Login and logout both reject a foreign or null explicit Origin. The
+  configured Web Inbox origin is allowed only under the existing HTTPS or
+  loopback policy. Missing Origin for native credential clients remains an
+  intentional, documented compatibility rule.
+- Upload bytes, restore JSON and Shortcut multipart now authenticate before
+  reading an unknown-length body. Shortcut auth failures retain the established
+  HTTP 200 `KEEP_STOP` queue envelope. Route middleware independently verifies
+  the credentials again and enforces lifecycle and schema constraints.
+- Server-generated opaque request IDs prevent a malicious `X-Request-Id`
+  header from reflecting arbitrary secrets into routine request logs.
+- Synthetic login/body/URL/header tests, a fake timer for window reset and
+  a real capture repository exception carrying private content exercise the
+  actual route and service error paths. The latter returns `STORAGE_UNAVAILABLE`
+  without logging the private marker.
+- Existing attachment tests cover guessed and traversal-shaped identifiers,
+  wrong-scope bearer access, tampered cookies, expired reservations, MIME
+  signature failures, Unicode filename disposition and genuine authorized
+  byte-for-byte PDF/PNG/text downloads. Existing recovery D1 regressions
+  reject unauthenticated and capture-scoped exports.
+- Source review found no React `dangerouslySetInnerHTML` use. Acquired text,
+  filenames and displayed error strings are rendered in React text positions.
+  This is not a substitute for a hosted browser exploit regression.
+
+### Independent local validation evidence
+
+- The earlier exact-head [CI acceptance run](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38793384830)
+  passed on the initial BG-25 implementation branch. New work after that run
+  requires another passing exact-head CI before review.
+- The isolated BG-25 format/lint/types/focused-test workflow passed with
+  twelve tests prior to the later Shortcut admission regression. The disposable
+  diagnostic workflow was removed from the branch after use.
+- Previous BG-24 token-rotation and earlier BG-07/BG-18 file tests are reused
+  at their original source revisions. No new production credentials or actual
+  customer file contents were used.
+- The eleven previously reported dependency advisories are not silently
+  treated as remediated or as BG-25-specific vulnerabilities.
+
+### Three unverified live-origin conditions
+
+1. **BG-25.029:** Observe the actual Cloudflare native limiter across an
+   exhausted eight-attempt window, its reset and a new authorized attempt.
+   Synthetic minute-based fake timers are not edge-reset evidence.
+2. **BG-25.031:** Verify a real staging HTTPS origin issues a Secure,
+   HttpOnly and SameSite=Strict cookie, enforces expiry and rejects tampering.
+   A mocked HTTPS Worker request alone does not establish edge behavior.
+3. **BG-25.083:** Inspect deployed API/private-download/export caching,
+   Content-Type and security headers on the matching staged release asset
+   rather than relying only on source and local replay evidence.
+
+The authenticated Cloudflare staging environment could not be inspected: the
+available browser redirected from `https://dash.cloudflare.com/` to the
+[login page](https://dash.cloudflare.com/login). No account authorization,
+staging deployment, remote D1 or private R2 data change occurred. Before
+deploying, confirm the `LOGIN_RATE_LIMITER` namespace is unique for the account
+and use independent staging D1/R2 resources and synthetic credentials. Do not
+promote to production, weaken the limiter, or close OPE-247 to manufacture
+completion. **BG-26 remains locked.**
