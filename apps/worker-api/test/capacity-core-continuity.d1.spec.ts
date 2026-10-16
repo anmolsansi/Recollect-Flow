@@ -115,7 +115,7 @@ describe('OPE-227 AI-independent core continuity', () => {
         expect.objectContaining({
           kind: 'processing',
           type: 'enrich',
-          status: 'pending',
+          status: 'retry_wait',
         }),
       ]),
     );
