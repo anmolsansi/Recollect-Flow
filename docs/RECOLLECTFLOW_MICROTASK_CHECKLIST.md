@@ -3791,7 +3791,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-27.046` Validate Web origin in links.
 - [x] `BG-27.047` Validate exact item identifier.
 - [x] `BG-27.048` Reject untrusted link construction.
-- [ ] `BG-27.049` Test logged-out link opening.
+- [x] `BG-27.049` Test logged-out link opening.
 - [x] `BG-27.050` Preserve item auth boundary.
 
 #### BG-27 / 06 — Definite failures
@@ -3813,7 +3813,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-27.062` Store unknown state.
 - [x] `BG-27.063` Prevent automatic resend.
 - [x] `BG-27.064` Show reconciliation requirement.
-- [ ] `BG-27.065` Inspect actual destination evidence.
+- [x] `BG-27.065` Inspect actual destination evidence.
 - [x] `BG-27.066` Require message ID for sent conclusion.
 - [x] `BG-27.067` Use supported failed conclusion.
 - [x] `BG-27.068` Avoid guessing from immediate absence.
@@ -3848,16 +3848,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-27 / 10 — Verify and close this task
 
-- [ ] `BG-27.091` **Review:** Compare the completed checklist with BG-27's stated outcome; identify uncovered behavior.
-- [ ] `BG-27.092` **Verification:** Run or inspect the focused proof required by BG-27; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-27.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-27.094` **Integrity:** Check that BG-27 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-27.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-27.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-27.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-27.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-27.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-27.100` **Gate:** Check the parent completion boundary and record whether BG-28 is unlocked.
+- [x] `BG-27.091` **Review:** Compare the completed checklist with BG-27's stated outcome; identify uncovered behavior.
+- [x] `BG-27.092` **Verification:** Run or inspect the focused proof required by BG-27; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-27.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-27.094` **Integrity:** Check that BG-27 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-27.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-27.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-27.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-27.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-27.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-27.100` **Gate:** Check the parent completion boundary and record whether BG-28 is unlocked.
 
 ## BG-28 — 100 executable microtasks
 
