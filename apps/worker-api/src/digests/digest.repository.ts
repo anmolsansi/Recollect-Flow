@@ -394,6 +394,18 @@ export class DigestRepository {
     const expiresAt = new Date(
       now.getTime() + ttlMinutes * 60_000,
     ).toISOString();
+    // A worker may have sent Telegram's request before losing its lease.
+    // Never replay that request automatically after the lease expires.
+    await this.db
+      .prepare(
+        `UPDATE digest_deliveries
+         SET state = 'unknown', last_error_code = 'TELEGRAM_LEASE_EXPIRED_AMBIGUOUS',
+             lease_owner = NULL, lease_expires_at = NULL, updated_at = ?1
+         WHERE destination = 'telegram' AND state = 'leased'
+           AND lease_expires_at IS NOT NULL AND lease_expires_at <= ?1`,
+      )
+      .bind(nowIso)
+      .run();
     const rows = await this.db
       .prepare(
         `UPDATE digest_deliveries
@@ -402,11 +414,7 @@ export class DigestRepository {
          WHERE id IN (
            SELECT id FROM digest_deliveries
            WHERE destination = 'telegram'
-             AND (
-               (state = 'pending' AND available_at <= ?3)
-               OR (state = 'leased' AND lease_expires_at IS NOT NULL
-                   AND lease_expires_at <= ?3)
-             )
+             AND state = 'pending' AND available_at <= ?3
            ORDER BY available_at ASC, created_at ASC, id ASC
            LIMIT ?4
          )
