@@ -67,15 +67,18 @@ describe('BG-29 upload limit, size and interrupted transfer acceptance', () => {
     );
     const measuredUploadMs = Date.now() - startedUploadMs;
     expect(upload.status).toBe(200);
-    console.log(JSON.stringify({
-      event: 'bg29_isolated_upload_timing',
-      bytes: MAX_BYTES,
-      upload_ms: measuredUploadMs,
-      environment: 'workerd-vitest-d1-r2',
-      includes_capture_ack: false,
-      includes_optional_processing: false,
-      caveat: 'Isolated workerd fixture, not physical-device or hosted Worker throughput',
-    }));
+    console.log(
+      JSON.stringify({
+        event: 'bg29_isolated_upload_timing',
+        bytes: MAX_BYTES,
+        upload_ms: measuredUploadMs,
+        environment: 'workerd-vitest-d1-r2',
+        includes_capture_ack: false,
+        includes_optional_processing: false,
+        caveat:
+          'Isolated workerd fixture, not physical-device or hosted Worker throughput',
+      }),
+    );
     const uploadResult = await upload.json<{ data: { checksum: string } }>();
     expect(uploadResult.data.checksum).toMatch(/^[a-f0-9]{64}$/);
 
@@ -115,7 +118,9 @@ describe('BG-29 upload limit, size and interrupted transfer acceptance', () => {
     const partial = new ReadableStream<Uint8Array>({
       pull(controller) {
         if (!emitted) {
-          controller.enqueue(new TextEncoder().encode('%PDF-1.7\nsynthetic partial'));
+          controller.enqueue(
+            new TextEncoder().encode('%PDF-1.7\nsynthetic partial'),
+          );
           emitted = true;
         } else {
           controller.error(new Error('BG29_SYNTHETIC_NETWORK_CANCEL'));
@@ -127,7 +132,9 @@ describe('BG-29 upload limit, size and interrupted transfer acceptance', () => {
       {
         method: 'PUT',
         headers: {
-          ...auth, 'Content-Type': 'application/pdf', 'Content-Length': '256',
+          ...auth,
+          'Content-Type': 'application/pdf',
+          'Content-Length': '256',
         },
         body: partial,
         duplex: 'half',
@@ -143,7 +150,9 @@ describe('BG-29 upload limit, size and interrupted transfer acceptance', () => {
     expect(refused).toBe(true);
     const retained = await env.DB.prepare(
       'SELECT status, object_key FROM attachments WHERE id = ?1',
-    ).bind(id).first<{ status: string; object_key: string }>();
+    )
+      .bind(id)
+      .first<{ status: string; object_key: string }>();
     expect(retained?.status).toBe('pending');
     expect(await env.ATTACHMENTS.head(retained!.object_key)).toBeNull();
   });
