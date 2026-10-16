@@ -25,12 +25,6 @@ import { integrityRoutes } from './recovery/integrity.routes';
 import { purgeRoutes } from './recovery/purge.routes';
 import { restoreRoutes } from './recovery/restore.routes';
 
-function requestId(value: string | undefined): string {
-  return value && /^[A-Za-z0-9._:-]{1,100}$/.test(value)
-    ? value
-    : crypto.randomUUID();
-}
-
 export function createApp(
   repositoryFactory?: (env: Env) => CaptureRepository,
   attachmentRepositoryFactory?: (env: Env) => AttachmentRepository,
@@ -39,7 +33,9 @@ export function createApp(
   const app = new Hono<AppContext>();
 
   app.use('*', async (context, next) => {
-    const id = requestId(context.req.header('X-Request-Id'));
+    // Caller-controlled request IDs can contain bearer tokens or private text.
+    // Generate a safe opaque ID rather than reflecting that header into logs.
+    const id = crypto.randomUUID();
     const startedAt = Date.now();
     context.set('requestId', id);
     try {
