@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
+import { createBg21Preview } from './bg21-preview-runtime.mjs';
 import {
   openBrowser,
   login,
@@ -48,6 +49,11 @@ async function note(value, project = '', reviewLocal = '', skipBegin = false) {
     browser,
     'document.querySelector("input[name=mode][value=note]").click()',
   );
+  await waitFor(
+    browser,
+    'Boolean(document.querySelector(\'[name="shared_text"]\'))',
+    'follow-up note input rendered',
+  );
   await setValue('shared_text', value);
   if (project) await setValue('project', project);
   if (reviewLocal) await setValue('review_at', reviewLocal);
@@ -71,11 +77,17 @@ async function detail(id) {
 }
 
 try {
-  runtime = await createLocalAcceptanceRuntime({
-    captureToken: 'bg19-capture-' + randomUUID(),
-    adminToken,
-    localWorkerToken: 'bg19-worker-' + randomUUID(),
-  });
+  runtime = process.argv.includes('--bundled')
+    ? await createBg21Preview({
+        port: 8995,
+        captureToken: 'bg22-follow-up-capture-' + randomUUID(),
+        adminToken,
+      })
+    : await createLocalAcceptanceRuntime({
+        captureToken: 'bg19-capture-' + randomUUID(),
+        adminToken,
+        localWorkerToken: 'bg19-worker-' + randomUUID(),
+      });
   browser = await openBrowser(runtime);
   await browser.client.send(
     'Emulation.setTimezoneOverride',
@@ -342,7 +354,9 @@ try {
 
   report('BG19-browser-follow-up', {
     status: 'passed',
-    environment: 'isolated Chrome/Worker/D1',
+    environment: process.argv.includes('--bundled')
+      ? 'bundled Worker/Web, isolated D1/R2 and Chrome'
+      : 'isolated Chrome/Worker/D1',
   });
 } catch (error) {
   console.error(

@@ -3018,133 +3018,133 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-22 / 01 — Establish task context
 
-- [ ] `BG-22.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-22.002` **Dependency:** Verify BG-21's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-22.003` **Baseline:** Record the actual checkout or release candidate used for BG-22.
-- [ ] `BG-22.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-22.005` **Evidence:** Check whether existing evidence already satisfies any BG-22 step; reference it instead of manufacturing work.
-- [ ] `BG-22.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-22.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-22.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-22.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-22.010` **Tracking:** Open a BG-22 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-22.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-22.002` **Dependency:** Verify BG-21's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-22.003` **Baseline:** Record the actual checkout or release candidate used for BG-22.
+- [x] `BG-22.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-22.005` **Evidence:** Check whether existing evidence already satisfies any BG-22 step; reference it instead of manufacturing work.
+- [x] `BG-22.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-22.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-22.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-22.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-22.010` **Tracking:** Open a BG-22 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-22 / 02 — Candidate environment
 
-- [ ] `BG-22.011` Identify production-like preview artifact.
-- [ ] `BG-22.012` Record Worker/Web revision pair.
-- [ ] `BG-22.013` Select isolated bindings.
-- [ ] `BG-22.014` Select synthetic fixture set.
-- [ ] `BG-22.015` Open fresh browser profile.
-- [ ] `BG-22.016` Verify no persisted login.
-- [ ] `BG-22.017` Confirm preview health.
-- [ ] `BG-22.018` Confirm asset routing active.
-- [ ] `BG-22.019` Confirm API is not stubbed.
-- [ ] `BG-22.020` Record browser/runtime versions.
+- [x] `BG-22.011` Identify production-like preview artifact.
+- [x] `BG-22.012` Record Worker/Web revision pair.
+- [x] `BG-22.013` Select isolated bindings.
+- [x] `BG-22.014` Select synthetic fixture set.
+- [x] `BG-22.015` Open fresh browser profile.
+- [x] `BG-22.016` Verify no persisted login.
+- [x] `BG-22.017` Confirm preview health.
+- [x] `BG-22.018` Confirm asset routing active.
+- [x] `BG-22.019` Confirm API is not stubbed.
+- [x] `BG-22.020` Record browser/runtime versions.
 
 #### BG-22 / 03 — Creation matrix
 
-- [ ] `BG-22.021` Save public URL through form.
-- [ ] `BG-22.022` Save pasted text through form.
-- [ ] `BG-22.023` Save private note through form.
-- [ ] `BG-22.024` Save image through upload.
-- [ ] `BG-22.025` Save PDF through upload.
-- [ ] `BG-22.026` Record canonical IDs.
-- [ ] `BG-22.027` Confirm durable success messages.
-- [ ] `BG-22.028` Confirm source types.
-- [ ] `BG-22.029` Confirm captured reasons.
-- [ ] `BG-22.030` Confirm chosen privacy values.
+- [x] `BG-22.021` Save public URL through form.
+- [x] `BG-22.022` Save pasted text through form.
+- [x] `BG-22.023` Save private note through form.
+- [x] `BG-22.024` Save image through upload.
+- [x] `BG-22.025` Save PDF through upload.
+- [x] `BG-22.026` Record canonical IDs.
+- [x] `BG-22.027` Confirm durable success messages.
+- [x] `BG-22.028` Confirm source types.
+- [x] `BG-22.029` Confirm captured reasons.
+- [x] `BG-22.030` Confirm chosen privacy values.
 
 #### BG-22 / 04 — Search and inspection
 
 - [ ] `BG-22.031` Search URL internal phrase.
-- [ ] `BG-22.032` Search pasted text phrase.
-- [ ] `BG-22.033` Search note phrase.
+- [x] `BG-22.032` Search pasted text phrase.
+- [x] `BG-22.033` Search note phrase.
 - [ ] `BG-22.034` Search screenshot known text.
 - [ ] `BG-22.035` Search PDF internal phrase.
-- [ ] `BG-22.036` Open each exact item.
-- [ ] `BG-22.037` Inspect current coverage.
-- [ ] `BG-22.038` Inspect original source evidence.
-- [ ] `BG-22.039` Inspect per-stage status.
-- [ ] `BG-22.040` Verify no unrelated search result.
+- [x] `BG-22.036` Open each exact item.
+- [x] `BG-22.037` Inspect current coverage.
+- [x] `BG-22.038` Inspect original source evidence.
+- [x] `BG-22.039` Inspect per-stage status.
+- [x] `BG-22.040` Verify no unrelated search result.
 
 #### BG-22 / 05 — Original and edit
 
-- [ ] `BG-22.041` Download image original.
-- [ ] `BG-22.042` Compare image checksum.
-- [ ] `BG-22.043` Download PDF original.
-- [ ] `BG-22.044` Compare PDF checksum.
-- [ ] `BG-22.045` Edit derived title.
-- [ ] `BG-22.046` Edit project metadata.
-- [ ] `BG-22.047` Edit reminder metadata.
-- [ ] `BG-22.048` Refresh item page.
-- [ ] `BG-22.049` Verify persisted values.
-- [ ] `BG-22.050` Verify source evidence unchanged.
+- [x] `BG-22.041` Download image original.
+- [x] `BG-22.042` Compare image checksum.
+- [x] `BG-22.043` Download PDF original.
+- [x] `BG-22.044` Compare PDF checksum.
+- [x] `BG-22.045` Edit derived title.
+- [x] `BG-22.046` Edit project metadata.
+- [x] `BG-22.047` Edit reminder metadata.
+- [x] `BG-22.048` Refresh item page.
+- [x] `BG-22.049` Verify persisted values.
+- [x] `BG-22.050` Verify source evidence unchanged.
 
 #### BG-22 / 06 — Retry and duplicates
 
-- [ ] `BG-22.051` Drop capture response after commit.
-- [ ] `BG-22.052` Retain submitted operation.
-- [ ] `BG-22.053` Retry original key.
-- [ ] `BG-22.054` Confirm canonical ID stability.
-- [ ] `BG-22.055` Share canonical URL again intentionally.
-- [ ] `BG-22.056` Use new reason/key.
-- [ ] `BG-22.057` Inspect both capture events.
-- [ ] `BG-22.058` Confirm metadata not silently overwritten.
-- [ ] `BG-22.059` Confirm no duplicate attachment bytes.
-- [ ] `BG-22.060` Record duplicate/retry outcomes.
+- [x] `BG-22.051` Drop capture response after commit.
+- [x] `BG-22.052` Retain submitted operation.
+- [x] `BG-22.053` Retry original key.
+- [x] `BG-22.054` Confirm canonical ID stability.
+- [x] `BG-22.055` Share canonical URL again intentionally.
+- [x] `BG-22.056` Use new reason/key.
+- [x] `BG-22.057` Inspect both capture events.
+- [x] `BG-22.058` Confirm metadata not silently overwritten.
+- [x] `BG-22.059` Confirm no duplicate attachment bytes.
+- [x] `BG-22.060` Record duplicate/retry outcomes.
 
 #### BG-22 / 07 — Provider outage
 
-- [ ] `BG-22.061` Disable approved test AI path.
+- [x] `BG-22.061` Disable approved test AI path.
 - [ ] `BG-22.062` Disable test Notion path.
-- [ ] `BG-22.063` Save another raw item.
-- [ ] `BG-22.064` Retrieve raw item immediately.
-- [ ] `BG-22.065` Search supplied phrase.
-- [ ] `BG-22.066` Inspect deferred optional state.
-- [ ] `BG-22.067` Restore test provider availability.
+- [x] `BG-22.063` Save another raw item.
+- [x] `BG-22.064` Retrieve raw item immediately.
+- [x] `BG-22.065` Search supplied phrase.
+- [x] `BG-22.066` Inspect deferred optional state.
+- [x] `BG-22.067` Restore test provider availability.
 - [ ] `BG-22.068` Resume eligible processing.
-- [ ] `BG-22.069` Verify owner edits survive.
-- [ ] `BG-22.070` Verify no false capture failure.
+- [x] `BG-22.069` Verify owner edits survive.
+- [x] `BG-22.070` Verify no false capture failure.
 
 #### BG-22 / 08 — Authentication recovery
 
-- [ ] `BG-22.071` Expire session during upload.
-- [ ] `BG-22.072` Preserve operation stage.
-- [ ] `BG-22.073` Reauthenticate through real form.
-- [ ] `BG-22.074` Resume confirmed upload stage.
-- [ ] `BG-22.075` Finish canonical capture.
-- [ ] `BG-22.076` Verify one linked object.
-- [ ] `BG-22.077` Open direct item URL logged out.
-- [ ] `BG-22.078` Complete login navigation.
-- [ ] `BG-22.079` Open direct link after browser restart.
-- [ ] `BG-22.080` Confirm correct item destination.
+- [x] `BG-22.071` Expire session during upload.
+- [x] `BG-22.072` Preserve operation stage.
+- [x] `BG-22.073` Reauthenticate through real form.
+- [x] `BG-22.074` Resume confirmed upload stage.
+- [x] `BG-22.075` Finish canonical capture.
+- [x] `BG-22.076` Verify one linked object.
+- [x] `BG-22.077` Open direct item URL logged out.
+- [x] `BG-22.078` Complete login navigation.
+- [x] `BG-22.079` Open direct link after browser restart.
+- [x] `BG-22.080` Confirm correct item destination.
 
 #### BG-22 / 09 — Release-candidate closure
 
-- [ ] `BG-22.081` Run full repository gate.
-- [ ] `BG-22.082` Check migration compatibility evidence.
-- [ ] `BG-22.083` Check Worker bundle evidence.
-- [ ] `BG-22.084` Check Web build evidence.
-- [ ] `BG-22.085` Inspect browser console errors.
-- [ ] `BG-22.086` Inspect safe failed network requests.
-- [ ] `BG-22.087` Verify mobile viewport usability.
-- [ ] `BG-22.088` Close owned preview processes.
-- [ ] `BG-22.089` Save scenario result matrix.
-- [ ] `BG-22.090` Record remaining production qualifications.
+- [x] `BG-22.081` Run full repository gate.
+- [x] `BG-22.082` Check migration compatibility evidence.
+- [x] `BG-22.083` Check Worker bundle evidence.
+- [x] `BG-22.084` Check Web build evidence.
+- [x] `BG-22.085` Inspect browser console errors.
+- [x] `BG-22.086` Inspect safe failed network requests.
+- [x] `BG-22.087` Verify mobile viewport usability.
+- [x] `BG-22.088` Close owned preview processes.
+- [x] `BG-22.089` Save scenario result matrix.
+- [x] `BG-22.090` Record remaining production qualifications.
 
 #### BG-22 / 10 — Verify and close this task
 
-- [ ] `BG-22.091` **Review:** Compare the completed checklist with BG-22's stated outcome; identify uncovered behavior.
-- [ ] `BG-22.092` **Verification:** Run or inspect the focused proof required by BG-22; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-22.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-22.094` **Integrity:** Check that BG-22 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-22.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-22.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-22.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-22.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-22.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-22.100` **Gate:** Check the parent completion boundary and record whether BG-23 is unlocked.
+- [x] `BG-22.091` **Review:** Compare the completed checklist with BG-22's stated outcome; identify uncovered behavior.
+- [x] `BG-22.092` **Verification:** Run or inspect the focused proof required by BG-22; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-22.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-22.094` **Integrity:** Check that BG-22 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-22.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-22.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-22.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-22.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-22.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-22.100` **Gate:** Check the parent completion boundary and record whether BG-23 is unlocked.
 
 ## BG-23 — 100 executable microtasks
 

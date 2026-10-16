@@ -8,3 +8,7 @@ dist/
 worker-startup.cpuprofile
 artifacts/bg14/
 .bg14-fixture-*.toml
+
+# Generated, binding-validated Cloudflare staging config (never commit).
+.bg21-staging-preview.toml
+.bg21-staging-secrets.json

@@ -2611,6 +2611,40 @@ through the deployable Web path. Production/device trials still follow Priority 
 
 Follow the [100 microtasks for BG-22](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-22--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
 
+### Current implementation and acceptance state
+
+**BG-22 remains in progress, not release-accepted (October 11, 2026).**
+[Draft PR #86](https://github.com/anmolsansi/Recollect-Flow/pull/86)
+builds a bundled Worker/Vite release candidate and tests it using a real
+Chrome profile, disposable loopback D1/R2, synthetic credentials and original
+PNG/PDF fixtures. URL, text, note, image and PDF capture, source/coverage
+visibility, search and exact reopen, SHA-256 download, owner metadata
+updates, canonical duplicate reasons, fresh browser item link and
+signed-out API denial have verified browser evidence. The test also covers
+lost-response capture replay, metadata-only follow-up retry, optional provider
+outage (raw persistence without false save failure), and simulated cookie
+expiry during original PDF upload with same-reservation recovery.
+
+[Full CI run #38151337473](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38151337473)
+passed all tests, clean packaging, Wrangler dry-run, local migrations and
+the new combined browser scenarios on implementing source
+`db9a152ad2106957d89a8b6a5a3d3e664c9313f2`. The source
+checklist now records **95/100** evidenced steps. The five open individual
+checks are `BG-22.031` (acquired URL page-text search), `.034` (image OCR),
+`.035` (PDF extracted-text search), `.062` (explicit Notion outage route)
+and `.068` (resuming a deferred job after eligibility). The
+[verification matrix](verification/BG-22_BROWSER_CREATION_ACCEPTANCE.md)
+distinguishes these from the tested raw source and filename scenarios.
+
+**Prerequisite/release boundary:** BG-21's implementation is merged into
+`main`, with **93/100** verified source steps and seven outstanding
+operator-route or hosted HTTPS, cookie, edge-cache, rollback and publication
+checks. Neither a local Worker preview nor passing CI proves these external
+conditions. BG-22 **cannot** be signed off and BG-23 must remain blocked
+until BG-21 is accepted and required remaining BG-22 release tests pass or
+receive an explicitly documented scope decision. No production deployment,
+live notification, Cloudflare secret or remote D1/R2 mutation is authorized.
+
 ---
 
 # Part VI — Priority 4: operational hardening and truthful documentation

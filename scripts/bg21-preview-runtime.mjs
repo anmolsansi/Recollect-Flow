@@ -19,6 +19,8 @@ export async function createBg21Preview({
   port = 8991,
   adminToken = 'bg21-admin-' + randomUUID(),
   captureToken = 'bg21-capture-' + randomUUID(),
+  enableScheduled = false,
+  optionalProvidersUnavailable = false,
 } = {}) {
   if (!existsSync(join(rootDir, 'apps/web/dist/release-manifest.json'))) {
     throw new Error(
@@ -29,27 +31,15 @@ export async function createBg21Preview({
   const persistDir = join(tempDir, 'isolated-d1-r2');
   const origin = 'http://127.0.0.1:' + port;
   let worker;
-  try {
-    await runCommand(
-      npx,
-      [
-        'wrangler',
-        'd1',
-        'migrations',
-        'apply',
-        'recollect-flow-prod',
-        '--local',
-        '--persist-to',
-        persistDir,
-      ],
-      { cwd: rootDir },
-    );
+  async function boot(unavailable) {
+    if (worker) await stopService(worker);
     worker = startService(
       npx,
       [
         'wrangler',
         'dev',
         '--local',
+        ...(enableScheduled ? ['--test-scheduled'] : []),
         '--port',
         String(port),
         '--persist-to',
@@ -67,9 +57,12 @@ export async function createBg21Preview({
         '--var',
         'TELEGRAM_CHAT_ID:bg21-local-chat',
         '--var',
-        'MOCK_AI_ENABLED:true',
+        'MOCK_AI_ENABLED:' + (unavailable ? 'false' : 'true'),
         '--var',
-        'AI_PROVIDER_IMPLEMENTATIONS:{"openrouter":"mock","cloudflare":"mock"}',
+        'AI_PROVIDERS_ENABLED:' + (unavailable ? '' : 'openrouter,cloudflare'),
+        '--var',
+        'AI_PROVIDER_IMPLEMENTATIONS:' +
+          (unavailable ? '{}' : '{"openrouter":"mock","cloudflare":"mock"}'),
         '--var',
         'DIGEST_AI_ENABLED:false',
         '--var',
@@ -79,6 +72,23 @@ export async function createBg21Preview({
     );
     await waitForHttp(origin + '/api/v1/health', 'BG-21 bundled Worker health');
     await waitForHttp(origin + '/', 'BG-21 bundled Web shell');
+  }
+  try {
+    await runCommand(
+      npx,
+      [
+        'wrangler',
+        'd1',
+        'migrations',
+        'apply',
+        'recollect-flow-prod',
+        '--local',
+        '--persist-to',
+        persistDir,
+      ],
+      { cwd: rootDir },
+    );
+    await boot(optionalProvidersUnavailable);
   } catch (error) {
     if (worker) await stopService(worker);
     await rm(tempDir, { recursive: true, force: true });
@@ -96,6 +106,9 @@ export async function createBg21Preview({
     adminToken,
     captureToken,
     persistDir,
+    async setOptionalProvidersAvailable(available) {
+      await boot(!available);
+    },
     async close() {
       await stopService(worker);
       await rm(tempDir, { recursive: true, force: true });
