@@ -52,6 +52,7 @@ export interface OperationsSummary {
   backlog: { groups: BacklogGroup[]; truncated: boolean; scope: string };
   recovery: {
     partial_purges: number;
+    partial_purge_samples: Array<{ id: string; updated_at: string; last_error_code: string | null }>;
     failed_backups: number;
     latest_verified_backup: null | {
       id: string;
