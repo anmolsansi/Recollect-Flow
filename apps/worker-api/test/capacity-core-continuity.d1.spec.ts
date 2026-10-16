@@ -107,11 +107,15 @@ describe('OPE-227 AI-independent core continuity', () => {
     expect(quota?.request_consumed).toBe(quota?.request_limit);
 
     // BG-26 must report waiting work while canonical capture/search still work.
-    const operations = await new OperationsSummaryService(env.DB).status(current);
+    const operations = await new OperationsSummaryService(env.DB).status(
+      current,
+    );
     expect(operations.backlog.groups).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          kind: 'processing', type: 'enrich', status: 'pending',
+          kind: 'processing',
+          type: 'enrich',
+          status: 'pending',
         }),
       ]),
     );
