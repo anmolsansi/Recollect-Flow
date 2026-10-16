@@ -1,0 +1,25 @@
+name: BG29 recovery formatter
+on:
+  push:
+    branches: [feat/bg-29-resilience-capacity-performance]
+permissions:
+  contents: write
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format only recovery source and measured evidence
+        run: |
+          npx prettier --write scripts/bg29-fts-rebuild.mjs docs/verification/BG-29_RESILIENCE_ACCEPTANCE.md
+          git add scripts/bg29-fts-rebuild.mjs docs/verification/BG-29_RESILIENCE_ACCEPTANCE.md
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'style(bg29): format isolated FTS rebuild and measurements (#99)'
+            git push origin HEAD:refs/heads/feat/bg-29-resilience-capacity-performance
+          fi
