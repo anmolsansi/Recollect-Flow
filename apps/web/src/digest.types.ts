@@ -1,11 +1,6 @@
 export type DigestReviewStatus = 'generated' | 'reviewed';
 export type DigestDeliveryState =
-  | 'pending'
-  | 'leased'
-  | 'sent'
-  | 'failed'
-  | 'unknown'
-  | 'skipped';
+  'pending' | 'leased' | 'sent' | 'failed' | 'unknown' | 'skipped';
 
 export interface DigestSummary {
   id: string;

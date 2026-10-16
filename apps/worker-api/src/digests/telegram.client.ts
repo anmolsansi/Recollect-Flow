@@ -151,10 +151,7 @@ export class TelegramClient {
     try {
       rawBody = await response.text();
     } catch {
-      throw new TelegramDeliveryError(
-        'TELEGRAM_RESPONSE_AMBIGUOUS',
-        'unknown',
-      );
+      throw new TelegramDeliveryError('TELEGRAM_RESPONSE_AMBIGUOUS', 'unknown');
     }
     let body: TelegramResponse | null = null;
     try {

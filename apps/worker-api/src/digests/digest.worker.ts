@@ -127,7 +127,10 @@ export async function processDigestDeliveries(
     } catch (error) {
       const failureTime = now();
       const telegramError = providerAccepted
-        ? new TelegramDeliveryError('TELEGRAM_SENT_PERSISTENCE_AMBIGUOUS', 'unknown')
+        ? new TelegramDeliveryError(
+            'TELEGRAM_SENT_PERSISTENCE_AMBIGUOUS',
+            'unknown',
+          )
         : error instanceof TelegramDeliveryError
           ? error
           : new TelegramDeliveryError(

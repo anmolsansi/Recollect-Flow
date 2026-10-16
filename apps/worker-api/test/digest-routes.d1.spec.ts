@@ -269,6 +269,4 @@ describe('digest administrative routes', () => {
     ).first<{ count: number }>();
     expect(count?.count).toBe(0);
   });
-
-
 });

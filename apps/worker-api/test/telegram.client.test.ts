@@ -171,6 +171,4 @@ describe('TelegramClient', () => {
       'unknown',
     );
   });
-
-
 });

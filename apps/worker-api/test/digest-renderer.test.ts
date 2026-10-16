@@ -89,26 +89,29 @@ describe('deterministic digest rendering', () => {
       nearingArchiveItemIds: [],
       contradictionStatus: 'not_evaluated_no_explicit_relation' as const,
     };
-    const current = [{
-      id: 'secret',
-      title: 'Sensitive account details',
-      privacyLevel: 'sensitive' as const,
-      topicsJson: '[]',
-      importance: null,
-      project: null,
-      suggestedAction: null,
-      lifecycleStatus: 'Inbox',
-      capturedAt: '2026-08-02T10:00:00.000Z',
-      updatedAt: '2026-08-02T10:00:00.000Z',
-      deletedAt: null,
-    }];
+    const current = [
+      {
+        id: 'secret',
+        title: 'Sensitive account details',
+        privacyLevel: 'sensitive' as const,
+        topicsJson: '[]',
+        importance: null,
+        project: null,
+        suggestedAction: null,
+        lifecycleStatus: 'Inbox',
+        capturedAt: '2026-08-02T10:00:00.000Z',
+        updatedAt: '2026-08-02T10:00:00.000Z',
+        deletedAt: null,
+      },
+    ];
     const rendered = renderDigest(raw, current, 'https://inbox.example.test/');
-    expect(rendered.items).toEqual([{
-      id: 'secret',
-      label: 'Private item',
-      url: 'https://inbox.example.test/items/secret',
-    }]);
+    expect(rendered.items).toEqual([
+      {
+        id: 'secret',
+        label: 'Private item',
+        url: 'https://inbox.example.test/items/secret',
+      },
+    ]);
     expect(rendered.text).not.toContain('Sensitive account details');
   });
-
 });

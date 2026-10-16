@@ -309,9 +309,10 @@ export function renderDigest(
     currentEligibleCount: currentEligible.length,
     items: currentEligible.slice(0, 50).map((item) => ({
       id: item.id,
-      label: item.privacyLevel === 'public'
-        ? safeLabel(item.title, 'Saved item')
-        : 'Private item',
+      label:
+        item.privacyLevel === 'public'
+          ? safeLabel(item.title, 'Saved item')
+          : 'Private item',
       url: itemLink(baseUrl, item.id),
     })),
   };

@@ -20,7 +20,10 @@ function dateInIndia(value: string | null): string {
 }
 
 function errorMessage(error: unknown): string {
-  if (error instanceof ApiError && error.code === 'DIGEST_PERIOD_DELIVERY_EXISTS') {
+  if (
+    error instanceof ApiError &&
+    error.code === 'DIGEST_PERIOD_DELIVERY_EXISTS'
+  ) {
     return 'Another generation already has delivery history for this period. Inspect its delivery and reconcile it before doing anything else.';
   }
   return error instanceof Error ? error.message : 'Digest request failed.';
@@ -50,7 +53,9 @@ export function DigestReviewPage() {
   const [digestType, setDigestType] = useState<'daily' | 'weekly'>('daily');
   const [reviewer, setReviewer] = useState('admin');
   const [confirmedEvidence, setConfirmedEvidence] = useState(false);
-  const [reconciledState, setReconciledState] = useState<'sent' | 'failed'>('sent');
+  const [reconciledState, setReconciledState] = useState<'sent' | 'failed'>(
+    'sent',
+  );
   const [messageId, setMessageId] = useState('');
   const [listVersion, setListVersion] = useState(0);
   const [detailVersion, setDetailVersion] = useState(0);
@@ -82,10 +87,9 @@ export function DigestReviewPage() {
     if (!selectedId) {
       return () => controller.abort();
     }
-    void fetchApi<DigestDetails>(
-      '/digests/' + encodeURIComponent(selectedId),
-      { signal: controller.signal },
-    )
+    void fetchApi<DigestDetails>('/digests/' + encodeURIComponent(selectedId), {
+      signal: controller.signal,
+    })
       .then((data) => {
         if (!controller.signal.aborted) setDetails(data);
       })
@@ -132,10 +136,13 @@ export function DigestReviewPage() {
   function markReviewed() {
     if (!details) return;
     void act(async () => {
-      await fetchApi('/digests/' + encodeURIComponent(details.run.id) + '/review', {
-        method: 'POST',
-        body: JSON.stringify({ reviewed_by: reviewer.trim() || 'admin' }),
-      });
+      await fetchApi(
+        '/digests/' + encodeURIComponent(details.run.id) + '/review',
+        {
+          method: 'POST',
+          body: JSON.stringify({ reviewed_by: reviewer.trim() || 'admin' }),
+        },
+      );
     }, 'Digest marked reviewed. Delivery has not been queued.');
   }
 
@@ -152,9 +159,12 @@ export function DigestReviewPage() {
 
   function queueDelivery() {
     if (!details || busy || details.run.reviewStatus !== 'reviewed') return;
-    if (!window.confirm(
-      'Queue this reviewed digest to the configured private Telegram destination? This can cause an external message. Previewing alone never sends.',
-    )) return;
+    if (
+      !window.confirm(
+        'Queue this reviewed digest to the configured private Telegram destination? This can cause an external message. Previewing alone never sends.',
+      )
+    )
+      return;
     void act(async () => {
       await fetchApi(
         '/digests/' + encodeURIComponent(details.run.id) + '/deliver',
@@ -166,7 +176,9 @@ export function DigestReviewPage() {
   function reconcile(delivery: DigestDelivery) {
     if (!confirmedEvidence || delivery.state !== 'unknown') return;
     if (reconciledState === 'sent' && !messageId.trim()) {
-      setError('Enter the actual Telegram message ID observed in the destination.');
+      setError(
+        'Enter the actual Telegram message ID observed in the destination.',
+      );
       return;
     }
     void act(async () => {
@@ -186,9 +198,12 @@ export function DigestReviewPage() {
 
   function retry(delivery: DigestDelivery) {
     if (delivery.state !== 'failed') return;
-    if (!window.confirm(
-      'Retry this definite failed delivery? Only proceed after checking the earlier outcome.',
-    )) return;
+    if (
+      !window.confirm(
+        'Retry this definite failed delivery? Only proceed after checking the earlier outcome.',
+      )
+    )
+      return;
     void act(async () => {
       await fetchApi(
         '/digest-deliveries/' + encodeURIComponent(delivery.id) + '/retry',
@@ -203,7 +218,8 @@ export function DigestReviewPage() {
         <h1>Digest review</h1>
         <p className="digest-muted">
           Review a private daily or weekly digest before queueing delivery.
-          Generating a preview does not send Telegram or advance delivery history.
+          Generating a preview does not send Telegram or advance delivery
+          history.
         </p>
       </header>
 
@@ -213,13 +229,20 @@ export function DigestReviewPage() {
           id="digest-type"
           className="input"
           value={digestType}
-          onChange={(event) => setDigestType(event.target.value as 'daily' | 'weekly')}
+          onChange={(event) =>
+            setDigestType(event.target.value as 'daily' | 'weekly')
+          }
           disabled={busy}
         >
           <option value="daily">Daily</option>
           <option value="weekly">Weekly</option>
         </select>
-        <button type="button" className="btn btn-primary" disabled={busy} onClick={generate}>
+        <button
+          type="button"
+          className="btn btn-primary"
+          disabled={busy}
+          onClick={generate}
+        >
           Generate preview only
         </button>
         <label htmlFor="digest-run">Inspect existing digest</label>
@@ -234,10 +257,13 @@ export function DigestReviewPage() {
           }}
           disabled={busy || summaries.length === 0}
         >
-          {summaries.length === 0 && <option value="">No digest runs yet</option>}
+          {summaries.length === 0 && (
+            <option value="">No digest runs yet</option>
+          )}
           {summaries.map((run) => (
             <option key={run.id} value={run.id}>
-              {run.digest_type} · {dateInIndia(run.period_start)} · generation {run.generation_version}
+              {run.digest_type} · {dateInIndia(run.period_start)} · generation{' '}
+              {run.generation_version}
             </option>
           ))}
         </select>
@@ -252,9 +278,17 @@ export function DigestReviewPage() {
       </section>
 
       <p role="status" aria-live="polite">
-        {busy ? 'Updating digest state…' : loading ? 'Loading preview…' : notice}
+        {busy
+          ? 'Updating digest state…'
+          : loading
+            ? 'Loading preview…'
+            : notice}
       </p>
-      {error && <p role="alert" className="digest-error">{error}</p>}
+      {error && (
+        <p role="alert" className="digest-error">
+          {error}
+        </p>
+      )}
       {!details && !loading && !selectedId && (
         <p>No digest has been generated yet. Start with a preview.</p>
       )}
@@ -262,16 +296,46 @@ export function DigestReviewPage() {
       {details && (
         <>
           <section className="card" aria-label="Current digest preview">
-            <h2>{details.run.digestType === 'daily' ? 'Daily digest' : 'Weekly review'}</h2>
+            <h2>
+              {details.run.digestType === 'daily'
+                ? 'Daily digest'
+                : 'Weekly review'}
+            </h2>
             <dl className="digest-facts">
-              <div><dt>Run ID</dt><dd><code>{details.run.id}</code></dd></div>
-              <div><dt>Period starts, IST</dt><dd>{dateInIndia(details.run.periodStart)}</dd></div>
-              <div><dt>Period ends, IST (exclusive)</dt><dd>{dateInIndia(details.run.periodEnd)}</dd></div>
-              <div><dt>Timezone</dt><dd>{details.run.timezone}</dd></div>
-              <div><dt>Generation</dt><dd>{details.run.generationVersion}</dd></div>
-              <div><dt>Current eligible items</dt><dd>{details.preview.currentEligibleCount}</dd></div>
-              <div><dt>Review</dt><dd>{details.run.reviewStatus}</dd></div>
-              <div><dt>Delivery</dt><dd>{details.deliveries[0]?.state ?? 'Not queued'}</dd></div>
+              <div>
+                <dt>Run ID</dt>
+                <dd>
+                  <code>{details.run.id}</code>
+                </dd>
+              </div>
+              <div>
+                <dt>Period starts, IST</dt>
+                <dd>{dateInIndia(details.run.periodStart)}</dd>
+              </div>
+              <div>
+                <dt>Period ends, IST (exclusive)</dt>
+                <dd>{dateInIndia(details.run.periodEnd)}</dd>
+              </div>
+              <div>
+                <dt>Timezone</dt>
+                <dd>{details.run.timezone}</dd>
+              </div>
+              <div>
+                <dt>Generation</dt>
+                <dd>{details.run.generationVersion}</dd>
+              </div>
+              <div>
+                <dt>Current eligible items</dt>
+                <dd>{details.preview.currentEligibleCount}</dd>
+              </div>
+              <div>
+                <dt>Review</dt>
+                <dd>{details.run.reviewStatus}</dd>
+              </div>
+              <div>
+                <dt>Delivery</dt>
+                <dd>{details.deliveries[0]?.state ?? 'Not queued'}</dd>
+              </div>
             </dl>
             <p className="digest-muted">
               Preview only, not a delivery receipt. Current privacy and deletion
@@ -279,7 +343,8 @@ export function DigestReviewPage() {
             </p>
             {details.preview.empty && (
               <p role="status">
-                Empty period. Delivery will be skipped, not counted as a successful day.
+                Empty period. Delivery will be skipped, not counted as a
+                successful day.
               </p>
             )}
             <pre className="digest-message">{details.preview.text}</pre>
@@ -289,20 +354,30 @@ export function DigestReviewPage() {
                 <ul className="digest-links">
                   {details.preview.items.map((item) => (
                     <li key={item.id}>
-                      <a href={item.url} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         {item.label}
                       </a>
                     </li>
                   ))}
                 </ul>
-                {details.preview.currentEligibleCount > details.preview.items.length && (
-                  <p className="digest-muted">Showing the first 50 eligible item links.</p>
+                {details.preview.currentEligibleCount >
+                  details.preview.items.length && (
+                  <p className="digest-muted">
+                    Showing the first 50 eligible item links.
+                  </p>
                 )}
               </>
             )}
           </section>
 
-          <section className="card digest-controls" aria-label="Digest review actions">
+          <section
+            className="card digest-controls"
+            aria-label="Digest review actions"
+          >
             <h2>Review and queue</h2>
             <label htmlFor="digest-reviewer">Review operator</label>
             <input
@@ -333,8 +408,12 @@ export function DigestReviewPage() {
               <button
                 type="button"
                 className="btn btn-primary"
-                disabled={busy || details.run.reviewStatus !== 'reviewed' ||
-                  details.deliveries.length > 0 || details.preview.empty}
+                disabled={
+                  busy ||
+                  details.run.reviewStatus !== 'reviewed' ||
+                  details.deliveries.length > 0 ||
+                  details.preview.empty
+                }
                 onClick={queueDelivery}
               >
                 Queue reviewed digest
@@ -347,43 +426,71 @@ export function DigestReviewPage() {
             </p>
           </section>
 
-          <section aria-label="Delivery and recovery status" className="digest-deliveries">
+          <section
+            aria-label="Delivery and recovery status"
+            className="digest-deliveries"
+          >
             <h2>Delivery records</h2>
-            {details.deliveries.length === 0 && <p>No delivery has been queued.</p>}
+            {details.deliveries.length === 0 && (
+              <p>No delivery has been queued.</p>
+            )}
             {details.deliveries.map((delivery) => (
               <article className="card" key={delivery.id}>
                 <h3>Telegram · {delivery.state}</h3>
                 <p>{deliveryDescription(delivery)}</p>
-                <p><strong>Delivery ID:</strong> <code>{delivery.id}</code></p>
+                <p>
+                  <strong>Delivery ID:</strong> <code>{delivery.id}</code>
+                </p>
                 <p>Attempts: {delivery.attempts}</p>
-                <p>Next eligible time, IST: {dateInIndia(delivery.availableAt)}</p>
+                <p>
+                  Next eligible time, IST: {dateInIndia(delivery.availableAt)}
+                </p>
                 {delivery.leaseExpiresAt && (
-                  <p>Lease expires, IST: {dateInIndia(delivery.leaseExpiresAt)}</p>
+                  <p>
+                    Lease expires, IST: {dateInIndia(delivery.leaseExpiresAt)}
+                  </p>
                 )}
                 {delivery.lastErrorCode && (
-                  <p>Safe error code: <code>{delivery.lastErrorCode}</code></p>
+                  <p>
+                    Safe error code: <code>{delivery.lastErrorCode}</code>
+                  </p>
                 )}
                 {delivery.state === 'sent' && (
-                  <p>Telegram message ID: {delivery.telegramMessageId ?? 'Unavailable'}</p>
+                  <p>
+                    Telegram message ID:{' '}
+                    {delivery.telegramMessageId ?? 'Unavailable'}
+                  </p>
                 )}
                 {delivery.state === 'failed' && (
-                  <button type="button" disabled={busy} className="btn btn-outline" onClick={() => retry(delivery)}>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    className="btn btn-outline"
+                    onClick={() => retry(delivery)}
+                  >
                     Retry definite failure
                   </button>
                 )}
                 {delivery.state === 'unknown' && (
                   <div className="digest-reconcile">
                     <p>
-                      Check the configured Telegram destination and trusted provider
-                      records using this run ID, delivery ID and attempt time. Do not
-                      infer non-delivery from an absent message.
+                      Check the configured Telegram destination and trusted
+                      provider records using this run ID, delivery ID and
+                      attempt time. Do not infer non-delivery from an absent
+                      message.
                     </p>
-                    <label htmlFor={'reconcile-state-' + delivery.id}>Verified outcome</label>
+                    <label htmlFor={'reconcile-state-' + delivery.id}>
+                      Verified outcome
+                    </label>
                     <select
                       className="input"
                       id={'reconcile-state-' + delivery.id}
                       value={reconciledState}
-                      onChange={(event) => setReconciledState(event.target.value as 'sent' | 'failed')}
+                      onChange={(event) =>
+                        setReconciledState(
+                          event.target.value as 'sent' | 'failed',
+                        )
+                      }
                       disabled={busy}
                     >
                       <option value="sent">Confirmed sent</option>
@@ -391,7 +498,9 @@ export function DigestReviewPage() {
                     </select>
                     {reconciledState === 'sent' && (
                       <>
-                        <label htmlFor={'message-id-' + delivery.id}>Observed Telegram message ID</label>
+                        <label htmlFor={'message-id-' + delivery.id}>
+                          Observed Telegram message ID
+                        </label>
                         <input
                           id={'message-id-' + delivery.id}
                           className="input"
@@ -406,7 +515,9 @@ export function DigestReviewPage() {
                       <input
                         type="checkbox"
                         checked={confirmedEvidence}
-                        onChange={(event) => setConfirmedEvidence(event.target.checked)}
+                        onChange={(event) =>
+                          setConfirmedEvidence(event.target.checked)
+                        }
                         disabled={busy}
                       />
                       I examined reliable delivery evidence and verified this
@@ -415,8 +526,11 @@ export function DigestReviewPage() {
                     <button
                       type="button"
                       className="btn btn-outline"
-                      disabled={busy || !confirmedEvidence ||
-                        (reconciledState === 'sent' && !messageId.trim())}
+                      disabled={
+                        busy ||
+                        !confirmedEvidence ||
+                        (reconciledState === 'sent' && !messageId.trim())
+                      }
                       onClick={() => reconcile(delivery)}
                     >
                       Record verified reconciliation
