@@ -22,6 +22,8 @@ Operator checks: inspect `GET /api/v1/usage`; confirm no hard-window exhaustion 
 
 ## OPE-228 backup, export, purge, and recovery operations
 
+For exact isolated-target preparation, independent attachment replication, receipt-ledger verification, and a safe incident runbook, follow [BG-28 recovery operator procedure](RECOVERY_OPERATOR_PROCEDURE.md). A JSON archive alone is not a complete original-byte backup.
+
 ### Owner-portable export
 
 Use the admin-only export route when the owner needs an independently readable copy:
@@ -42,7 +44,7 @@ POST /api/v1/backups
 GET  /api/v1/backups
 ```
 
-The Worker writes each artifact once under `backups/v1/<backup-id>.json` in the private R2 bucket, records a SHA-256 digest, reads the object back, and marks the D1 backup row `complete` only after the content hash and byte size match. Application cleanup does not remove a completed hosted backup before its 30-day OPE-228 retention boundary. The hourly background job removes expired hosted backup objects and keeps non-content backup audit metadata.
+The Worker writes each artifact once under `backups/v1/<backup-id>.json` in the private R2 bucket, records a SHA-256 digest, reads the object back, and marks the D1 backup row `complete` only after the content hash and byte size match. Application cleanup does not remove a completed hosted backup before its 30-day OPE-228 retention boundary. The hourly background job removes expired hosted backup objects and keeps non-content backup audit metadata. **It does not create backups.** BG-28 adds an opt-in Monday 02:15 UTC JSON creator gated by `HOSTED_BACKUP_AUTOCREATE_ENABLED=true`, the new `0025` migration and explicit operator approval. It is disabled by default. Original R2 bytes and purge receipts still require separate independent replication; inspect `scheduled_backup_periods` in D1 and the verified artifact record after authorized activation.
 
 A backup failure is not a canonical-data recovery action. Do not delete or rewrite D1, item attachment objects, or Notion pages in response to backup creation/verification failure.
 
@@ -104,9 +106,9 @@ POST /api/v1/restore?dry_run=true
 POST /api/v1/restore?dry_run=false
 ```
 
-Always run `dry_run=true` first. Restore merges purge receipts from the export, current D1 receipt ledger, and the private `purge-receipts/v1/` R2 ledger before it plans item insertion. A receipt wins over an older backup record for the same item. Normal non-dry-run restore refuses a database that already contains canonical item/capture/attachment/job/sync data; restore is a clean-target recovery operation, not a live merge tool.
+The endpoint now rejects an omitted or invalid `dry_run` value with 422, rather than interpreting it as a real restore. Always run `dry_run=true` first. Restore merges purge receipts from the export, current D1 receipt ledger, and the private `purge-receipts/v1/` R2 ledger before it plans item insertion. A receipt wins over an older backup record for the same item. Normal non-dry-run restore refuses a database that already contains canonical item/capture/attachment/job/sync data; restore is a clean-target recovery operation, not a live merge tool.
 
-A successful restore verifies foreign keys, canonical item count, FTS coverage for active items, and absence of every item skipped by the merged purge ledger. Jobs/sync attempts that were captured while `processing` are returned to a safe `pending` state with transient leases cleared.
+Dry-run output also includes `attachmentReadiness` with checked original-reference count and any missing or byte-size-mismatched objects. Real apply refuses missing or undersized originals, and the separate offline bundle verifier checks SHA-256 of the copied bytes. A successful restore verifies foreign keys, canonical item count, FTS coverage for active items, and absence of every item skipped by the merged purge ledger. Jobs/sync attempts that were captured while `processing` are returned to a safe `pending` state with transient leases cleared.
 
 ### Soft delete and permanent purge
 

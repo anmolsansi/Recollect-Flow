@@ -3112,6 +3112,10 @@ Follow the [100 microtasks for BG-27](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-27
 
 ## 34. BG-28 — Make backup, restore and purge procedures complete
 
+The concrete operator workflow is in [BG-28 recovery procedure](RECOVERY_OPERATOR_PROCEDURE.md), with source/test evidence in [BG-28 verification](verification/BG-28_BACKUP_RESTORE_PURGE.md). The implementation now requires an explicit `dry_run=true|false` on the restore endpoint. Dry runs return an attachment-object preflight, and real apply refuses absent/undersized originals. Independently downloaded originals can be audited by size and SHA-256 with `scripts/recovery-bundle.mjs` and its six synthetic Node regressions. These are local code and isolated verification capabilities, not proof that any production object has been independently replicated.
+
+**Backup scheduling boundary:** the hourly background job only cleans expired hosted backups. BG-28 adds opt-in once-per-Monday UTC 02:15 JSON creation with `HOSTED_BACKUP_AUTOCREATE_ENABLED=true` and migration `0025`. It is **disabled by default** and does **not** replicate original R2 bytes or independent purge receipts. Verify artifact readback and account quota after authorization. Until then, weekly creation is an operator action, not an active automatic backup.
+
 **What and why.** Recovery is only useful if an operator can execute it under
 pressure and verify that both retained and deliberately deleted data behave correctly.
 
@@ -3133,9 +3137,9 @@ how a verified backup is identified.
 
 ### Make restore and purge procedures precise
 
-At the inspected restore route, only dry_run=true selects a dry run; omitting the
-parameter performs a real restore. Every rehearsal command must therefore include
-an explicit dry-run value and an isolated target. Explain the expected report
+The BG-28 restore route rejects omitted or invalid dry_run with HTTP 422, and
+only an explicit dry_run=false can apply content. Every rehearsal command must
+include dry_run=true and an isolated target. Explain the expected report
 before providing the real-apply step. A dry run that parses JSON does not prove
 objects can be recovered.
 
@@ -3159,8 +3163,8 @@ later proves an independent end-to-end recovery with those instructions.
    creation schedule/mechanism if periodic creation is a release requirement.
 5. Preserve immutable hosted backup retention for 30 days under ADR-031. State that
    owner-downloaded copies are outside remote deletion control.
-6. Document explicit `POST /restore?dry_run=true`. Omitting that query currently
-   means a real restore attempt; every example must make the mode visible.
+6. Document explicit `POST /restore?dry_run=true`. Omitting the query is now
+   rejected with HTTP 422; every example must make the mode visible.
 7. Require a clean intended target for real restore. Verify target identity,
    compatible migrations, counts, references, attachment bytes and purge receipts.
 8. Describe soft-delete -> purge-request with current version -> separate phrase

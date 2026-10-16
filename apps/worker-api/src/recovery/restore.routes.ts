@@ -10,15 +10,12 @@ export function restoreRoutes() {
 
   router.post('/restore', requireAdminToken, async (context) => {
     const dryRunRaw = context.req.query('dry_run');
-    if (
-      dryRunRaw !== undefined &&
-      dryRunRaw !== 'true' &&
-      dryRunRaw !== 'false'
-    ) {
+    // Never let an omitted query parameter turn a rehearsal into a write.
+    if (dryRunRaw !== 'true' && dryRunRaw !== 'false') {
       throw new AppError(
         422,
         'VALIDATION_ERROR',
-        'dry_run must be true or false when provided.',
+        'dry_run must be explicitly true or false.',
       );
     }
     const payload = await context.req.json().catch(() => {

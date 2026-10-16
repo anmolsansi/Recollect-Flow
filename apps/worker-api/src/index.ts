@@ -1,4 +1,5 @@
 import { createApp } from './app';
+import type { Env } from './env';
 import { servePublicAsset, type StaticAssets } from './assets/asset-router';
 import { D1AttachmentRepository } from './attachments/attachment.repository';
 import { cleanupExpiredAttachments } from './attachments/attachment.service';
@@ -12,6 +13,7 @@ import { processEnrichJobs } from './jobs/enrich.worker';
 import { processExtractionJobs } from './jobs/extraction/extraction.worker';
 import { processSourceAcquisitionJobs } from './jobs/extraction/source-acquisition.worker';
 import { cleanupExpiredHostedBackups } from './recovery/backup-cleanup';
+import { createWeeklyHostedBackup } from './recovery/backup-schedule';
 import { processPurgeWorkflows } from './recovery/purge.worker';
 import { processNotionSyncJobs } from './sync/sync.worker';
 
@@ -53,6 +55,20 @@ export async function handleScheduled(
     context.waitUntil(
       processScheduledDigest(env, work, new Date(controller.scheduledTime)),
     );
+    // Explicit opt-in only. The default Cron must not silently create backups
+    // (nor claim that a JSON-only backup contains original attachment bytes).
+    if (
+      work === 'weekly' &&
+      (env as Env).HOSTED_BACKUP_AUTOCREATE_ENABLED === 'true'
+    ) {
+      context.waitUntil(
+        createWeeklyHostedBackup(
+          env.DB,
+          env.ATTACHMENTS,
+          new Date(controller.scheduledTime),
+        ),
+      );
+    }
     return;
   }
   console.warn(

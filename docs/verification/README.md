@@ -253,6 +253,15 @@ and Linear OPE-327 can close and BG-08 is unlocked.
 - [Full CI on the pre-signoff implementation head](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38846686913) passed. Merge requires successful CI on the signoff documentation head too.
 - No production deployment, remote R2/D1 mutation, credential rotation or broader OPE-247 acceptance is claimed.
 
+### BG-28 — Backup, restore and purge operator readiness (in progress)
+
+- [BG-28 recovery evidence and external exception register](BG-28_BACKUP_RESTORE_PURGE.md)
+- [BG-28 implementation closeout and local-versus-remote acceptance boundary](BG-28_FINAL_CLOSEOUT.md)
+- [Recovery operator procedure](../RECOVERY_OPERATOR_PROCEDURE.md)
+- Tracking: [GitHub #97](https://github.com/anmolsansi/Recollect-Flow/issues/97), [draft PR #98](https://github.com/anmolsansi/Recollect-Flow/pull/98), Linear OPE-343
+- Working scope: explicit restore mode, R2-original preflight, offline SHA-256 manifest verification, opt-in weekly hosted JSON creation, tested purge-receipt anti-resurrection and operator instructions
+- No actual production original-byte replication, hosted schedule activation, destructive purge or independent Cloudflare restore is claimed
+
 ## Evidence rules
 
 - Tie claims to a revision and environment.
