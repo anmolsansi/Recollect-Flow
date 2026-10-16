@@ -27,24 +27,28 @@ function assets(
 }
 
 describe('BG-21 public asset routing', () => {
-  it.each(['/', '/capture', '/capture/file', '/operations', '/items/123', '/items/%3F'])(
-    'serves only the public shell for %s',
-    async (pathname) => {
-      const binding = assets();
-      const response = await servePublicAsset(
-        new Request(origin + pathname),
-        binding,
-      );
-      expect(response?.status).toBe(200);
-      expect(response?.headers.get('Content-Type')).toContain('text/html');
-      expect(response?.headers.get('Cache-Control')).toBe(
-        'no-cache, must-revalidate',
-      );
-      expect(new URL(binding.fetch.mock.calls[0]![0].url).pathname).toBe(
-        '/index.html',
-      );
-    },
-  );
+  it.each([
+    '/',
+    '/capture',
+    '/capture/file',
+    '/operations',
+    '/items/123',
+    '/items/%3F',
+  ])('serves only the public shell for %s', async (pathname) => {
+    const binding = assets();
+    const response = await servePublicAsset(
+      new Request(origin + pathname),
+      binding,
+    );
+    expect(response?.status).toBe(200);
+    expect(response?.headers.get('Content-Type')).toContain('text/html');
+    expect(response?.headers.get('Cache-Control')).toBe(
+      'no-cache, must-revalidate',
+    );
+    expect(new URL(binding.fetch.mock.calls[0]![0].url).pathname).toBe(
+      '/index.html',
+    );
+  });
 
   it.each([
     '/items/',
