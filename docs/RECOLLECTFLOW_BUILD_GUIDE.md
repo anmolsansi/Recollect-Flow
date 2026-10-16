@@ -3252,6 +3252,33 @@ reproduction steps, and feed real billing verification into BG-39.
 **Done when:** security/data-loss/cost blockers are resolved and measured behavior
 meets the agreed V1 targets. A numerical result needs fixture size, load and environment.
 
+### Isolated performance implementation and acceptance evidence
+
+BG-29 uses the [scenario contract and evidence register](verification/BG-29_RESILIENCE_ACCEPTANCE.md)
+to distinguish implemented checks from actual measurements. The synthetic
+20-case input/privacy matrix is verified separately from optional provider
+permissions. No image or PDF extraction is assumed when raw storage succeeds.
+
+Run `npm run bg29:latency:test` for the Node sampler checks. Run
+`npm run bg29:latency:bench` to launch disposable local Wrangler D1/R2 and
+Web processes, submit bounded synthetic text/note captures, record
+acknowledgment P50/P95, then prove a saved raw marker is searchable. Adjust
+`BG29_CAPTURE_COUNT` (1–200), `BG29_CAPTURE_CONCURRENCY` (1–5) and
+`BG29_CAPTURE_INTERVAL_MS` (1–5000) for a documented personal workload.
+The benchmark refuses remote origins, excludes upload and provider time,
+and fails if P95 exceeds the runbook's 2-second local comparison target.
+It is not proof of hosted latency or actual provider cost.
+
+The `bg29-search-scale.d1.spec.ts` acceptance suite seeds 10,000 synthetic
+D1 items through the real FTS trigger. It checks phrase and mixed-filter
+queries, stable tied-time cursor traversal and available D1 row metrics.
+The `bg29-provider-outage.d1.spec.ts` suite checks original text/note
+continuity without calling optional providers. The existing quota,
+circuit-breaker, enrichment and recovery regression suites remain relevant.
+Before BG-30 is unlocked, record real CI numbers and close every required
+load, upload, worker interruption and backlog recovery check in the
+100-step checklist. Missing hosted or 100,000-item proof must remain open.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-29](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-29--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
