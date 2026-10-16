@@ -3863,7 +3863,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#34-bg-28--make-backup-restore-and-purge-procedures-complete).
 
-These task steps inherit this task's **what, why, when, where and proof** above. Completed steps 001–080 are supported by inherited OPE-228/BG-10 source and regression evidence, BG-28 isolated implementation, and the operator recovery procedure. Full isolated rehearsal closeout steps 081–100 remain unchecked pending exact-head CI and final gate review. Real independent account replication and production rollout belong to later separately authorized operational acceptance.
+These task steps inherit this task's **what, why, when, where and proof** above. Completed steps 001–090 are supported by inherited OPE-228/BG-10 source and regression evidence, BG-28 isolated implementation, and the operator recovery procedure. Final closeout steps 091–100 remain unchecked pending exact-head CI and final gate review. Real independent account replication and production rollout belong to later separately authorized operational acceptance.
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
@@ -3973,16 +3973,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-28 / 09 — Rehearsal documentation
 
-- [ ] `BG-28.081` Test corrupt backup rejection.
-- [ ] `BG-28.082` Test nonempty target rejection.
-- [ ] `BG-28.083` Test missing attachment report.
-- [ ] `BG-28.084` Test partial purge persistence.
-- [ ] `BG-28.085` Test old-backup anti-resurrection.
-- [ ] `BG-28.086` Record independent artifact location safely.
-- [ ] `BG-28.087` Record incident recovery ordering.
-- [ ] `BG-28.088` Record authorized production boundary.
-- [ ] `BG-28.089` Record measurable recovery acceptance.
-- [ ] `BG-28.090` Update operator examples with actual outcomes.
+- [x] `BG-28.081` Test corrupt backup rejection.
+- [x] `BG-28.082` Test nonempty target rejection.
+- [x] `BG-28.083` Test missing attachment report.
+- [x] `BG-28.084` Test partial purge persistence.
+- [x] `BG-28.085` Test old-backup anti-resurrection.
+- [x] `BG-28.086` Record independent artifact location safely.
+- [x] `BG-28.087` Record incident recovery ordering.
+- [x] `BG-28.088` Record authorized production boundary.
+- [x] `BG-28.089` Record measurable recovery acceptance.
+- [x] `BG-28.090` Update operator examples with actual outcomes.
 
 #### BG-28 / 10 — Verify and close this task
 
