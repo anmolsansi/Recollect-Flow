@@ -39,6 +39,8 @@ export type Env = Omit<Cloudflare.Env, ConfigurableAiVars> & {
 
   DIGEST_AI_ENABLED?: string;
   WEB_INBOX_BASE_URL?: string;
+  // BG-28: set explicitly to 'true' only after approving weekly JSON backups.
+  HOSTED_BACKUP_AUTOCREATE_ENABLED?: string;
 };
 
 export interface AppContext {
