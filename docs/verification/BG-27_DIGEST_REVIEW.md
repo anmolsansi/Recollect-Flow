@@ -58,7 +58,7 @@ extends these controls instead of inventing a second `/send` API.
   logged-out stage failed because the scripted Logout did not clear its
   session. The acceptance script now clears the **isolated test browser**
   cookies directly and navigates back to a protected item route. The last
-  fix is not yet counted as passed without exact-head CI.
+  fix was subsequently verified by final-head CI and merged-main CI.
 - The D1 test suite includes definite 429 retry timing, ambiguity, expired
   leases quarantined to `unknown`, cross-version duplicate prevention,
   current-state preview/no-send and both synthetic `sent` and `failed`
@@ -66,9 +66,27 @@ extends these controls instead of inventing a second `/send` API.
   tests are synthetic, not live Telegram traffic.
 - Linked task: [Linear OPE-342](https://linear.app/openclaw-neutron/issue/OPE-342/bg-27-digest-review-and-uncertain-telegram-delivery-recovery).
 
-**Remaining final gate:** Observe the new exact-head CI run including the
-logged-out browser stage, reconcile all 100 checklist entries with evidence,
-review the branch and decide whether to merge. Production-origin validation
-and an actual Telegram send are **not performed** and belong only to an
-explicitly authorized release trial. Do not report live delivery or production
-deployment as proven.
+## Final engineering acceptance and merge
+
+- BG-27 GitHub [issue #94](https://github.com/anmolsansi/Recollect-Flow/issues/94)
+  is closed, with all 50 paired units complete. The canonical BG-27 checklist
+  contains 100/100 checked steps with isolated proof and scope exceptions.
+- The final work-branch head was
+  `8ece4f074d8035034cb0d5454a007b86ce0ef73d`. Exact-head
+  [CI #38954383637](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38954383637)
+  passed, including the logged-out browser boundary.
+- [PR #95](https://github.com/anmolsansi/Recollect-Flow/pull/95) merged
+  43 task-branch microcommits into `main` as a normal merge commit:
+  `bde4a3b70f0cb419e24c6a2dc72b82e44fac2f7b`.
+- The exact merged-main
+  [CI #38955041759](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38955041759)
+  passed, closing the BG-27 isolated engineering acceptance.
+- [Linear OPE-342](https://linear.app/openclaw-neutron/issue/OPE-342/bg-27-digest-review-and-uncertain-telegram-delivery-recovery)
+  is Done. BG-28 may proceed under its own authorization and gates.
+
+**Release-trial boundary:** No production deploy, real Telegram send,
+live-provider destination inspection or production-origin deep-link trial was
+performed. BG-27.065's live destination inspection was explicitly N/A for this
+isolated gate. Synthetic confirmed, rejected and unknown outcomes are tests,
+not proof of live delivery. These external checks remain separately authorized
+release-trial work and are not inherited by BG-28.
