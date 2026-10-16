@@ -10,6 +10,7 @@ export interface BacklogGroup {
   status: 'pending' | 'processing' | 'retry_wait' | 'failed';
   count: number;
   oldest_created_at: string | null;
+  oldest_eligible_created_at: string | null;
   next_available_at: string | null;
   sample_error_code: string | null;
 }
@@ -69,6 +70,8 @@ export class OperationsSummaryService {
       )
       SELECT 'processing' AS kind, type, visible_status AS status,
              COUNT(*) AS count, MIN(created_at) AS oldest_created_at,
+             MIN(CASE WHEN visible_status = 'pending' THEN created_at END)
+               AS oldest_eligible_created_at,
              MIN(CASE WHEN visible_status = 'retry_wait' THEN available_at END)
                AS next_available_at,
              MIN(last_error_code) AS sample_error_code
@@ -90,6 +93,8 @@ export class OperationsSummaryService {
       )
       SELECT 'sync' AS kind, type, visible_status AS status,
              COUNT(*) AS count, MIN(created_at) AS oldest_created_at,
+             MIN(CASE WHEN visible_status = 'pending' THEN created_at END)
+               AS oldest_eligible_created_at,
              MIN(CASE WHEN visible_status = 'retry_wait' THEN available_at END)
                AS next_available_at,
              MIN(last_error_code) AS sample_error_code
@@ -160,6 +165,7 @@ export class OperationsSummaryService {
       status: row.status,
       count: row.count,
       oldest_created_at: row.oldest_created_at,
+      oldest_eligible_created_at: row.oldest_eligible_created_at,
       next_available_at: row.next_available_at,
       sample_error_code: safeCode(row.sample_error_code),
     }));
