@@ -38,6 +38,7 @@ async function fixture() {
         attachments: [
           {
             id: 'synthetic-attachment',
+        item_id: 'synthetic-item',
             object_key: objectKey,
             status: 'linked',
             size_bytes: bytes.byteLength,
@@ -119,4 +120,36 @@ test('path traversal references are rejected', async () => {
   input.envelope.items[0].attachments[0].object_key = '../escape.pdf';
   await writeFile(input.exportFile, JSON.stringify(input.envelope));
   await assert.rejects(verifyRecoveryBundle(input), /UNSAFE_OBJECT_KEY/);
+});
+
+test('owner boundary rejects attachments belonging to a different item', async () => {
+  const input = await fixture();
+  input.envelope.items[0].attachments[0].item_id = 'different-item';
+  await writeFile(input.exportFile, JSON.stringify(input.envelope));
+  await assert.rejects(
+    verifyRecoveryBundle(input),
+    /ATTACHMENT_INTEGRITY_METADATA_MISSING/,
+  );
+});
+
+test('pending originals need no independent byte copy', async () => {
+  const input = await fixture();
+  input.envelope.items[0].attachments[0].status = 'pending';
+  await writeFile(input.exportFile, JSON.stringify(input.envelope));
+  await rm(path.join(input.objectsDir, input.objectKey));
+  const audit = await verifyRecoveryBundle(input);
+  assert.equal(audit.verifiedObjectCount, 0);
+});
+
+test('duplicate R2 object keys across portable attachments are rejected', async () => {
+  const input = await fixture();
+  input.envelope.items[0].attachments.push({
+    ...input.envelope.items[0].attachments[0],
+    id: 'different-attachment',
+  });
+  await writeFile(input.exportFile, JSON.stringify(input.envelope));
+  await assert.rejects(
+    verifyRecoveryBundle(input),
+    /DUPLICATE_OBJECT_KEY/,
+  );
 });
