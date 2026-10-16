@@ -15,13 +15,13 @@ describe('BG-26 operational visibility', () => {
     expect(anonymous.status).toBe(403);
     const capture = await app.request(
       '/api/v1/operations/summary',
-      { headers: { Authorization: '***' } },
+      { headers: { Authorization: `Bearer ${env.CAPTURE_TOKEN}` } },
       env,
     );
     expect(capture.status).toBe(403);
     const response = await app.request(
       '/api/v1/operations/summary',
-      { headers: { Authorization: '***' } },
+      { headers: { Authorization: `Bearer ${env.ADMIN_TOKEN}` } },
       env,
     );
     expect(response.status).toBe(200);
