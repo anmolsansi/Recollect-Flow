@@ -38,7 +38,7 @@ async function fixture() {
         attachments: [
           {
             id: 'synthetic-attachment',
-        item_id: 'synthetic-item',
+            item_id: 'synthetic-item',
             object_key: objectKey,
             status: 'linked',
             size_bytes: bytes.byteLength,
