@@ -84,7 +84,9 @@ describe('BG-29 coupled optional-dependency outage and recovery', () => {
 
     const scheduled = await env.DB.prepare(
       "SELECT status FROM processing_jobs WHERE item_id = ?1 AND job_type = 'enrich'",
-    ).bind(id).first<{ status: string }>();
+    )
+      .bind(id)
+      .first<{ status: string }>();
     expect(scheduled?.status).toBe('pending');
     // The server persists available_at at acknowledgment time. The client
     // capture timestamp can precede that server timestamp by milliseconds.
