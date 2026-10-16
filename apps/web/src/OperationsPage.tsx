@@ -292,7 +292,10 @@ export function OperationsPage() {
                       <p>Next retry: {timestamp(g.next_available_at)}</p>
                     ) : null}
                     {g.sample_error_code ? (
-                      <p>Reason code: {g.sample_error_code} ({g.count} in this group)</p>
+                      <p>
+                        Reason code: {g.sample_error_code} ({g.count} in this
+                        group)
+                      </p>
                     ) : null}
                     <a
                       href={
