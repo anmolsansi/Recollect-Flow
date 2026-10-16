@@ -554,4 +554,23 @@ describe('OPE-226 digest integration', () => {
       lastErrorCode: 'TELEGRAM_TIMEOUT_AMBIGUOUS',
     });
   });
+
+  it('keeps one delivery identity for a period across regeneration', async () => {
+    await insertItem({ id: 'once-per-period', title: 'Daily review item' });
+    const initial = await service().generatePeriod(dailyPeriod);
+    const repository = new DigestRepository(env.DB);
+    const queued = await repository.queueTelegramDelivery(initial.run.id);
+    const regenerated = await service().regenerate(initial.run.id, false);
+
+    await expect(
+      repository.queueTelegramDelivery(regenerated.run.id),
+    ).rejects.toMatchObject({ code: 'DIGEST_PERIOD_DELIVERY_EXISTS' });
+    expect((await repository.getDelivery(queued.id))?.state).toBe('pending');
+    const count = await env.DB.prepare(
+      'SELECT COUNT(*) AS count FROM digest_deliveries',
+    ).first<{ count: number }>();
+    expect(count?.count).toBe(1);
+  });
+
+
 });
