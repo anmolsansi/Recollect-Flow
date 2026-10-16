@@ -2,7 +2,9 @@
  * BG-28 independent recovery-bundle audit. Run only on already downloaded,
  * operator-owned copies. This script does not access Cloudflare or mutate data.
  */
+import console from 'node:console';
 import { createHash } from 'node:crypto';
+import process from 'node:process';
 import { readFile, realpath, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
