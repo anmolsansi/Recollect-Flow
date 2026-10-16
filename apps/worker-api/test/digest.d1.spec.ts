@@ -477,7 +477,7 @@ describe('OPE-226 digest integration', () => {
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
 
-  it('recovers an expired Telegram delivery lease without duplicate finalization', async () => {
+  it('quarantines an expired Telegram delivery lease without duplicate send', async () => {
     await insertItem({ id: 'expired-lease', title: 'Expired lease item' });
     const generated = await service().generatePeriod(dailyPeriod, {
       queueDelivery: true,
@@ -501,11 +501,12 @@ describe('OPE-226 digest integration', () => {
       fetcher,
     });
 
-    expect(fetcher).toHaveBeenCalledOnce();
+    expect(fetcher).not.toHaveBeenCalled();
     expect(await repository.getDelivery(generated.delivery!.id)).toMatchObject({
-      state: 'sent',
-      attempts: 2,
-      telegramMessageId: '101',
+      state: 'unknown',
+      attempts: 1,
+      lastErrorCode: 'TELEGRAM_LEASE_EXPIRED_AMBIGUOUS',
+      telegramMessageId: null,
     });
   });
 
