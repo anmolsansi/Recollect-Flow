@@ -79,21 +79,21 @@ describe('BG-29 upload limit, size and interrupted transfer acceptance', () => {
     );
     expect(final.status).toBe(200);
     const stored = await env.DB.prepare(
-      'SELECT status, size_bytes, content_hash, r2_key FROM attachments WHERE id = ?1',
+      'SELECT status, size_bytes, content_hash, object_key FROM attachments WHERE id = ?1',
     )
       .bind(id)
       .first<{
         status: string;
         size_bytes: number;
         content_hash: string;
-        r2_key: string;
+        object_key: string;
       }>();
     expect(stored?.status).toBe('finalized');
     expect(stored?.size_bytes).toBe(MAX_BYTES);
     expect(stored?.content_hash).toBe(uploadResult.data.checksum);
-    const object = await env.ATTACHMENTS.head(stored!.r2_key);
+    const object = await env.ATTACHMENTS.head(stored!.object_key);
     expect(object?.size).toBe(MAX_BYTES);
-    await env.ATTACHMENTS.delete(stored!.r2_key);
+    await env.ATTACHMENTS.delete(stored!.object_key);
   }, 120_000);
 
   it('preserves pending-only state when the client cancels before putting bytes', async () => {
@@ -112,11 +112,11 @@ describe('BG-29 upload limit, size and interrupted transfer acceptance', () => {
     );
     expect(finalize.status).toBe(409);
     const pending = await env.DB.prepare(
-      'SELECT status, r2_key FROM attachments WHERE id = ?1',
+      'SELECT status, object_key FROM attachments WHERE id = ?1',
     )
       .bind(id)
-      .first<{ status: string; r2_key: string }>();
+      .first<{ status: string; object_key: string }>();
     expect(pending?.status).toBe('pending');
-    expect(await env.ATTACHMENTS.head(pending!.r2_key)).toBeNull();
+    expect(await env.ATTACHMENTS.head(pending!.object_key)).toBeNull();
   });
 });
