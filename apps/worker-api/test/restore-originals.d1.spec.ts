@@ -46,6 +46,22 @@ describe('BG-28 restore original-byte gate', () => {
       .run();
   });
 
+  it('rejects a populated target without changing its canonical item', async () => {
+    const exported = await new ExportService(env.DB).buildJson();
+    await env.ATTACHMENTS.put(OBJECT_KEY, '123456');
+    await expect(
+      new RestoreService(env.DB, env.ATTACHMENTS).restore(exported, {
+        dryRun: false,
+      }),
+    ).rejects.toMatchObject({ code: 'RESTORE_TARGET_NOT_EMPTY' });
+    const item = await env.DB.prepare(
+      'SELECT id FROM items WHERE id = ?1',
+    )
+      .bind(ITEM_ID)
+      .first<{ id: string }>();
+    expect(item?.id).toBe(ITEM_ID);
+  });
+
   it('shows missing originals in a dry run and refuses real apply without mutation', async () => {
     const exported = await new ExportService(env.DB).buildJson();
     await clearCanonical();
