@@ -1,3 +1,4 @@
+import { AppError } from '../shared/errors';
 import type { DigestType } from './digest-period';
 import type {
   DigestAuditEvent,
@@ -345,7 +346,21 @@ export class DigestRepository {
         `INSERT OR IGNORE INTO digest_deliveries (
            id, digest_run_id, destination, state, attempts, available_at,
            last_error_code, completed_at, created_at, updated_at
-         ) VALUES (?1, ?2, 'telegram', ?3, 0, ?4, ?5, ?6, ?4, ?4)`,
+         )
+         SELECT ?1, ?2, 'telegram', ?3, 0, ?4, ?5, ?6, ?4, ?4
+         FROM digest_runs target
+         WHERE target.id = ?2
+           AND NOT EXISTS (
+             SELECT 1 FROM digest_deliveries previous_delivery
+             JOIN digest_runs previous_run
+               ON previous_run.id = previous_delivery.digest_run_id
+             WHERE previous_run.digest_type = target.digest_type
+               AND previous_run.period_start = target.period_start
+               AND previous_run.period_end = target.period_end
+               AND previous_delivery.digest_run_id <> target.id
+               AND previous_delivery.destination = 'telegram'
+               AND previous_delivery.state <> 'skipped'
+           )`,
       )
       .bind(
         crypto.randomUUID(),
@@ -363,7 +378,9 @@ export class DigestRepository {
       )
       .bind(digestRunId)
       .first<DigestDeliveryRow>();
-    if (!row) throw new Error('Digest delivery could not be persisted');
+    if (!row) {
+      throw new AppError(409, 'DIGEST_PERIOD_DELIVERY_EXISTS', 'Another version of this period already has delivery history. Inspect and reconcile the existing delivery instead of sending a duplicate.');
+    }
     return deliveryFromRow(row);
   }
 
