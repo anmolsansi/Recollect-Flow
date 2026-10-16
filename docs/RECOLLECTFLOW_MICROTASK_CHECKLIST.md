@@ -3731,120 +3731,120 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-27 / 01 — Establish task context
 
-- [ ] `BG-27.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-27.002` **Dependency:** Verify BG-26's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-27.003` **Baseline:** Record the actual checkout or release candidate used for BG-27.
-- [ ] `BG-27.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-27.005` **Evidence:** Check whether existing evidence already satisfies any BG-27 step; reference it instead of manufacturing work.
-- [ ] `BG-27.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-27.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-27.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-27.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-27.010` **Tracking:** Open a BG-27 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-27.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-27.002` **Dependency:** Verify BG-26's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-27.003` **Baseline:** Record the actual checkout or release candidate used for BG-27.
+- [x] `BG-27.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-27.005` **Evidence:** Check whether existing evidence already satisfies any BG-27 step; reference it instead of manufacturing work.
+- [x] `BG-27.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-27.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-27.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-27.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-27.010` **Tracking:** Open a BG-27 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-27 / 02 — Route mapping
 
-- [ ] `BG-27.011` Locate generation route.
-- [ ] `BG-27.012` Locate digest inspection route.
-- [ ] `BG-27.013` Locate review route.
-- [ ] `BG-27.014` Locate regeneration route.
-- [ ] `BG-27.015` Locate delivery queue route.
-- [ ] `BG-27.016` Locate reconciliation route.
-- [ ] `BG-27.017` Read each request schema.
-- [ ] `BG-27.018` Read delivery state enum.
-- [ ] `BG-27.019` Read eligibility checks.
-- [ ] `BG-27.020` Avoid inventing send endpoint.
+- [x] `BG-27.011` Locate generation route.
+- [x] `BG-27.012` Locate digest inspection route.
+- [x] `BG-27.013` Locate review route.
+- [x] `BG-27.014` Locate regeneration route.
+- [x] `BG-27.015` Locate delivery queue route.
+- [x] `BG-27.016` Locate reconciliation route.
+- [x] `BG-27.017` Read each request schema.
+- [x] `BG-27.018` Read delivery state enum.
+- [x] `BG-27.019` Read eligibility checks.
+- [x] `BG-27.020` Avoid inventing send endpoint.
 
 #### BG-27 / 03 — Preview presentation
 
-- [ ] `BG-27.021` Show digest type.
-- [ ] `BG-27.022` Show period start.
-- [ ] `BG-27.023` Show period end.
-- [ ] `BG-27.024` Show Asia/Kolkata timezone.
-- [ ] `BG-27.025` Show eligible item count.
-- [ ] `BG-27.026` Show review status.
-- [ ] `BG-27.027` Show delivery status.
-- [ ] `BG-27.028` Show safe failure code.
-- [ ] `BG-27.029` Show exact item links.
-- [ ] `BG-27.030` Mark preview as not sent.
+- [x] `BG-27.021` Show digest type.
+- [x] `BG-27.022` Show period start.
+- [x] `BG-27.023` Show period end.
+- [x] `BG-27.024` Show Asia/Kolkata timezone.
+- [x] `BG-27.025` Show eligible item count.
+- [x] `BG-27.026` Show review status.
+- [x] `BG-27.027` Show delivery status.
+- [x] `BG-27.028` Show safe failure code.
+- [x] `BG-27.029` Show exact item links.
+- [x] `BG-27.030` Mark preview as not sent.
 
 #### BG-27 / 04 — Generation and review
 
-- [ ] `BG-27.031` Generate without queueing delivery.
-- [ ] `BG-27.032` Preserve deterministic selection.
-- [ ] `BG-27.033` Validate preview payload.
-- [ ] `BG-27.034` Render public labels.
-- [ ] `BG-27.035` Render restricted neutral labels.
-- [ ] `BG-27.036` Record review actor safely.
-- [ ] `BG-27.037` Require supported review action.
-- [ ] `BG-27.038` Queue only eligible reviewed state.
-- [ ] `BG-27.039` Avoid implicit external send.
-- [ ] `BG-27.040` Handle generation failure visibly.
+- [x] `BG-27.031` Generate without queueing delivery.
+- [x] `BG-27.032` Preserve deterministic selection.
+- [x] `BG-27.033` Validate preview payload.
+- [x] `BG-27.034` Render public labels.
+- [x] `BG-27.035` Render restricted neutral labels.
+- [x] `BG-27.036` Record review actor safely.
+- [x] `BG-27.037` Require supported review action.
+- [x] `BG-27.038` Queue only eligible reviewed state.
+- [x] `BG-27.039` Avoid implicit external send.
+- [x] `BG-27.040` Handle generation failure visibly.
 
 #### BG-27 / 05 — Delivery privacy
 
-- [ ] `BG-27.041` Recheck item deletion at send.
-- [ ] `BG-27.042` Recheck current privacy at send.
-- [ ] `BG-27.043` Remove newly ineligible content.
-- [ ] `BG-27.044` Preserve neutral restricted labels.
-- [ ] `BG-27.045` Suppress now-empty delivery.
-- [ ] `BG-27.046` Validate Web origin in links.
-- [ ] `BG-27.047` Validate exact item identifier.
-- [ ] `BG-27.048` Reject untrusted link construction.
+- [x] `BG-27.041` Recheck item deletion at send.
+- [x] `BG-27.042` Recheck current privacy at send.
+- [x] `BG-27.043` Remove newly ineligible content.
+- [x] `BG-27.044` Preserve neutral restricted labels.
+- [x] `BG-27.045` Suppress now-empty delivery.
+- [x] `BG-27.046` Validate Web origin in links.
+- [x] `BG-27.047` Validate exact item identifier.
+- [x] `BG-27.048` Reject untrusted link construction.
 - [ ] `BG-27.049` Test logged-out link opening.
-- [ ] `BG-27.050` Preserve item auth boundary.
+- [x] `BG-27.050` Preserve item auth boundary.
 
 #### BG-27 / 06 — Definite failures
 
-- [ ] `BG-27.051` Detect definite rate-limit rejection.
-- [ ] `BG-27.052` Respect next eligible delivery time.
-- [ ] `BG-27.053` Preserve retry count rules.
-- [ ] `BG-27.054` Show eligible retry control.
-- [ ] `BG-27.055` Detect definite terminal error.
-- [ ] `BG-27.056` Hide invalid generic Retry.
-- [ ] `BG-27.057` Keep message content out of logs.
-- [ ] `BG-27.058` Prevent duplicate queued attempts.
-- [ ] `BG-27.059` Verify retry-safe message identity.
-- [ ] `BG-27.060` Record final known outcome.
+- [x] `BG-27.051` Detect definite rate-limit rejection.
+- [x] `BG-27.052` Respect next eligible delivery time.
+- [x] `BG-27.053` Preserve retry count rules.
+- [x] `BG-27.054` Show eligible retry control.
+- [x] `BG-27.055` Detect definite terminal error.
+- [x] `BG-27.056` Hide invalid generic Retry.
+- [x] `BG-27.057` Keep message content out of logs.
+- [x] `BG-27.058` Prevent duplicate queued attempts.
+- [x] `BG-27.059` Verify retry-safe message identity.
+- [x] `BG-27.060` Record final known outcome.
 
 #### BG-27 / 07 — Unknown delivery
 
-- [ ] `BG-27.061` Detect ambiguous transport result.
-- [ ] `BG-27.062` Store unknown state.
-- [ ] `BG-27.063` Prevent automatic resend.
-- [ ] `BG-27.064` Show reconciliation requirement.
+- [x] `BG-27.061` Detect ambiguous transport result.
+- [x] `BG-27.062` Store unknown state.
+- [x] `BG-27.063` Prevent automatic resend.
+- [x] `BG-27.064` Show reconciliation requirement.
 - [ ] `BG-27.065` Inspect actual destination evidence.
-- [ ] `BG-27.066` Require message ID for sent conclusion.
-- [ ] `BG-27.067` Use supported failed conclusion.
-- [ ] `BG-27.068` Avoid guessing from immediate absence.
-- [ ] `BG-27.069` Audit reconciliation actor.
-- [ ] `BG-27.070` Verify one resolved delivery state.
+- [x] `BG-27.066` Require message ID for sent conclusion.
+- [x] `BG-27.067` Use supported failed conclusion.
+- [x] `BG-27.068` Avoid guessing from immediate absence.
+- [x] `BG-27.069` Audit reconciliation actor.
+- [x] `BG-27.070` Verify one resolved delivery state.
 
 #### BG-27 / 08 — Regeneration
 
-- [ ] `BG-27.071` Check current digest eligibility.
-- [ ] `BG-27.072` Check already-sent behavior.
-- [ ] `BG-27.073` Preserve period identity.
-- [ ] `BG-27.074` Recompute current item eligibility.
-- [ ] `BG-27.075` Preserve version/review rules.
-- [ ] `BG-27.076` Avoid mutating sent history silently.
-- [ ] `BG-27.077` Prevent duplicate same-period delivery.
-- [ ] `BG-27.078` Display regenerated preview state.
-- [ ] `BG-27.079` Require review when appropriate.
-- [ ] `BG-27.080` Verify empty-period distinction.
+- [x] `BG-27.071` Check current digest eligibility.
+- [x] `BG-27.072` Check already-sent behavior.
+- [x] `BG-27.073` Preserve period identity.
+- [x] `BG-27.074` Recompute current item eligibility.
+- [x] `BG-27.075` Preserve version/review rules.
+- [x] `BG-27.076` Avoid mutating sent history silently.
+- [x] `BG-27.077` Prevent duplicate same-period delivery.
+- [x] `BG-27.078` Display regenerated preview state.
+- [x] `BG-27.079` Require review when appropriate.
+- [x] `BG-27.080` Verify empty-period distinction.
 
 #### BG-27 / 09 — Acceptance fixtures
 
-- [ ] `BG-27.081` Test deterministic preview.
-- [ ] `BG-27.082` Test privacy change before send.
-- [ ] `BG-27.083` Test deletion before send.
-- [ ] `BG-27.084` Test definite 429 recovery.
-- [ ] `BG-27.085` Test ambiguous timeout.
-- [ ] `BG-27.086` Test reconciled sent result.
-- [ ] `BG-27.087` Test reconciled failed result.
-- [ ] `BG-27.088` Test exact deep links.
-- [ ] `BG-27.089` Test empty-period suppression.
-- [ ] `BG-27.090` Keep live send separately authorized.
+- [x] `BG-27.081` Test deterministic preview.
+- [x] `BG-27.082` Test privacy change before send.
+- [x] `BG-27.083` Test deletion before send.
+- [x] `BG-27.084` Test definite 429 recovery.
+- [x] `BG-27.085` Test ambiguous timeout.
+- [x] `BG-27.086` Test reconciled sent result.
+- [x] `BG-27.087` Test reconciled failed result.
+- [x] `BG-27.088` Test exact deep links.
+- [x] `BG-27.089` Test empty-period suppression.
+- [x] `BG-27.090` Keep live send separately authorized.
 
 #### BG-27 / 10 — Verify and close this task
 
