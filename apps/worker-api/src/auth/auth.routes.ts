@@ -72,6 +72,8 @@ export function authRoutes() {
   });
 
   router.delete('/admin/session', async (context) => {
+    // Logout changes browser cookie state and must not accept a foreign Origin.
+    requireLoginOrigin(context);
     deleteCookie(context, 'admin_session', { path: '/' });
     return context.json({
       data: { authenticated: false },
