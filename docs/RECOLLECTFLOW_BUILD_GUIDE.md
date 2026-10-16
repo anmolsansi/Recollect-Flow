@@ -2844,6 +2844,26 @@ The BG-23/24 predecessor is on merged `main`. BG-25 is in draft [PR #91](https:/
 
 **Current limitations:** A Cloudflare edge rate limiter is per location, not a global brute-force guarantee. The source-level tests do not demonstrate real edge convergence, hosted HTTPS cookie behavior, all unauthorized streaming costs or browser exploit resistance. Keep missing release proof as explicit blockers in the security matrix.
 
+### BG-25 owner signoff and merge acceptance (2026-10-16)
+
+The repository owner confirmed that the three previously open Cloudflare
+staging checks were working and explicitly authorized BG-25 completion and
+merge of [PR #91](https://github.com/anmolsansi/Recollect-Flow/pull/91).
+The [100-step checklist](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-25--100-executable-microtasks)
+is marked complete. BG-25.029 (native rate-limit reset), BG-25.031 (Secure
+cookies over HTTPS) and BG-25.083 (deployed API/private response headers)
+are operator-attested, **not independently reproduced by ChatGPT**.
+No staging hostname, raw response transcript or Cloudflare screenshots were
+provided with that attestation. This acceptance applies to BG-25 only, and
+does not authorize production deployment or close the wider OPE-247 scope.
+
+The [security record](verification/BG-25_SECURITY_HARDENING.md)
+preserves the earlier blocked state and the subsequent owner signoff.
+The BG-25 PR head before the signoff-only documentation commits passed
+[full CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38846686913).
+CI on the final documentation head must also pass before merge.
+BG-26 may proceed after the BG-25 PR is merged.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-25](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-25--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
