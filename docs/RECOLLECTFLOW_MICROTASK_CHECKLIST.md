@@ -4009,6 +4009,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 **BG-29 expanded evidence:** [green CI #38970501080](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38970501080) validated 100,000-row D1 search, near-limit PDF, malformed model data, 15-job recovery and the repository/browser suite. [CI #38970984338](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38970984338) passed the disposable D1 FTS rebuild step. See [measurement and blocker register](verification/BG-29_RESILIENCE_ACCEPTANCE.md). These are isolated tests, not hosted acceptance. BG-30 remains locked.
 
+**Focused acceptance checkpoint:** [passing isolated coupled-provider/Notion, upload interruption and stage-timing CI #38973261642](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38973261642) plus [green 100k/25MB/browser implementation CI #38970501080](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38970501080). All numeric scope and limitations are in [BG-29 evidence](verification/BG-29_RESILIENCE_ACCEPTANCE.md). BG-29.075 and BG-29.078 remain **unverified operational gates**, not N/A. A full exact-head CI must pass before any merge. BG-30 remains locked.
+
 #### BG-29 / 01 — Establish task context
 
 - [x] `BG-29.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
@@ -4037,16 +4039,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-29 / 03 — Dependency outage
 
-- [ ] `BG-29.021` Disable test AI path.
-- [ ] `BG-29.022` Save and retrieve raw capture.
-- [ ] `BG-29.023` Search original phrase.
-- [ ] `BG-29.024` Disable test Notion path.
-- [ ] `BG-29.025` Verify independent capture continuity.
-- [ ] `BG-29.026` Disable both optional paths.
-- [ ] `BG-29.027` Verify durable acknowledgment.
-- [ ] `BG-29.028` Restore test dependencies.
-- [ ] `BG-29.029` Observe bounded backlog recovery.
-- [ ] `BG-29.030` Record no lost acknowledged item.
+- [x] `BG-29.021` Disable test AI path.
+- [x] `BG-29.022` Save and retrieve raw capture.
+- [x] `BG-29.023` Search original phrase.
+- [x] `BG-29.024` Disable test Notion path.
+- [x] `BG-29.025` Verify independent capture continuity.
+- [x] `BG-29.026` Disable both optional paths.
+- [x] `BG-29.027` Verify durable acknowledgment.
+- [x] `BG-29.028` Restore test dependencies.
+- [x] `BG-29.029` Observe bounded backlog recovery.
+- [x] `BG-29.030` Record no lost acknowledged item.
 
 #### BG-29 / 04 — Model failure
 
@@ -4056,9 +4058,9 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-29.034` Check no corrupt derived write.
 - [x] `BG-29.035` Check original text remains.
 - [x] `BG-29.036` Check owner override remains.
-- [ ] `BG-29.037` Check provider calls stay bounded.
+- [x] `BG-29.037` Check provider calls stay bounded.
 - [x] `BG-29.038` Check safe error classification.
-- [ ] `BG-29.039` Check aggregate failure state.
+- [x] `BG-29.039` Check aggregate failure state.
 - [x] `BG-29.040` Check no raw provider leakage.
 
 #### BG-29 / 05 — Capacity race
@@ -4079,8 +4081,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-29.051` Define personal-load profile.
 - [x] `BG-29.052` Record fixture sizes.
 - [x] `BG-29.053` Measure acknowledgment latency.
-- [ ] `BG-29.054` Separate upload duration.
-- [ ] `BG-29.055` Separate optional processing duration.
+- [x] `BG-29.054` Separate upload duration.
+- [x] `BG-29.055` Separate optional processing duration.
 - [x] `BG-29.056` Calculate P50.
 - [x] `BG-29.057` Calculate P95.
 - [x] `BG-29.058` Compare runbook target.
@@ -4103,7 +4105,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-29 / 08 — Runtime pressure
 
 - [x] `BG-29.071` Test near-limit upload.
-- [ ] `BG-29.072` Test upload cancellation.
+- [x] `BG-29.072` Test upload cancellation.
 - [x] `BG-29.073` Test parser timeout.
 - [x] `BG-29.074` Test parser byte bound.
 - [ ] `BG-29.075` Measure Worker resource usage.
