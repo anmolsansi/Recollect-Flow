@@ -43,6 +43,33 @@ extends these controls instead of inventing a second `/send` API.
 - Exact-head CI, PR diff/security review and canonical 100-step checklist reconciliation.
 - Final merge and exact merged-main CI.
 
-**Status:** Work is committed on the BG-27 branch. No passing CI or live-browser
-evidence is claimed until observed. Do not mark this task complete based solely
-on implementation or unchecked checklist entries.
+## Verified evidence and boundaries
+
+- `npm run check` passed in PR #95 CI run
+  [38952178305](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38952178305)
+  before the browser acceptance phase, covering Prettier, lint, TypeScript,
+  D1/Node tests, contracts and Web tests/build on SHA
+  `75e855ba850a61c8fd00302b31438c271c3fba11`.
+  That run ultimately failed one browser test's session-navigation assumption.
+- The isolated local Chrome/Worker/D1 suite in run
+  [38952848999](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38952848999)
+  passed six BG-27 stages: empty state, no-send preview, review separation,
+  regeneration, unknown reconciliation UI and narrow mobile layout. The final
+  logged-out stage failed because the scripted Logout did not clear its
+  session. The acceptance script now clears the **isolated test browser**
+  cookies directly and navigates back to a protected item route. The last
+  fix is not yet counted as passed without exact-head CI.
+- The D1 test suite includes definite 429 retry timing, ambiguity, expired
+  leases quarantined to `unknown`, cross-version duplicate prevention,
+  current-state preview/no-send and both synthetic `sent` and `failed`
+  reconciliation, with server-side authorization. All provider responses in
+  tests are synthetic, not live Telegram traffic.
+- Linked task: [Linear OPE-342](https://linear.app/openclaw-neutron/issue/OPE-342/bg-27-digest-review-and-uncertain-telegram-delivery-recovery).
+
+**Remaining final gate:** Observe the new exact-head CI run including the
+logged-out browser stage, reconcile all 100 checklist entries with evidence,
+review the branch and decide whether to merge. Production-origin validation
+and an actual Telegram send are **not performed** and belong only to an
+explicitly authorized release trial. Do not report live delivery or production
+deployment as proven.
+
