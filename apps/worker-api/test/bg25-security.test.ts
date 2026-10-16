@@ -408,11 +408,8 @@ describe('BG-25 cross-route rejection and diagnostic confidentiality', () => {
       errors: error.mock.calls,
       responses: await Promise.all(responses.map((response) => response.text())),
     });
-    // X-Request-Id is intentionally a safe diagnostic identifier and can be
-    // provided by a caller. A user-supplied marker in that ID is not a secret
-    // redaction guarantee, so tests must not invent that guarantee.
-    expect(diagnostics).not.toContain('{"token":"' + marker);
-    expect(diagnostics).not.toContain('{"content":"' + marker);
+    expect(diagnostics).not.toContain(marker);
     expect(diagnostics).not.toContain('Bearer ' + marker);
+
   });
 });
