@@ -2832,6 +2832,38 @@ headers unrelated to the failing boundary.
 **Done when:** the security matrix in `SECURITY_PRIVACY_GOVERNANCE.md` has current
 pass evidence or named blockers. A scanner passing alone is not this acceptance.
 
+### BG-25 source implementation and verification (2026-10-15)
+
+The BG-23/24 predecessor is on merged `main`. BG-25 is in draft [PR #91](https://github.com/anmolsansi/Recollect-Flow/pull/91), tracked by [issue #90](https://github.com/anmolsansi/Recollect-Flow/issues/90). The detailed [threat and evidence record](verification/BG-25_SECURITY_HARDENING.md) is the source of truth for what is implemented versus proved. Do not interpret this section as hosted-origin or production acceptance.
+
+**What and why:** The Worker limits login attempts before parsing secrets, caps accepted upload/form/JSON bytes before handlers parse bodies, refuses foreign browser login origins, and avoids logging raw thrown exceptions and user-supplied path data. These changes protect private originals from common abuse and accidental diagnostic leaks without altering BG-24's bearer/session rotation contracts.
+
+**How and where:** `apps/worker-api/src/auth/login-abuse.ts` uses `LOGIN_RATE_LIMITER` configured by `wrangler.toml` with eight attempts per edge location in 60 seconds, keyed by a fixed-length digest of the Cloudflare connecting IP. `auth.routes.ts` checks an explicit browser Origin against the Worker or approved Web Inbox origin (including the local Vite proxy), and the limiter before credentials. `app.ts` uses patched Hono body admission to cap regular requests at 1 MiB, upload bytes at the configured attachment maximum, Shortcut form data at the attachment maximum plus 1 MiB, and restore JSON at the attachment maximum. `shared/errors.ts`, `app.ts`, the capture service, Shortcut service and extraction worker replace exception and raw-path logging with safe event codes and route patterns. Existing authentication, private R2 access and cache policies remain unchanged.
+
+**Use, verification and recovery:** Install the lockfile with `npm ci`. Run `npm run check`, `npm run auth:rotation:test` and the focused `bg25-security.test.ts`. The Wrangler rate-limit namespace must be checked for account uniqueness and tested on an isolated HTTPS Worker before promotion. A missing public-host limiter returns 503 instead of accepting unthrottled login. A short burst returns 429 with `Retry-After: 60`. Authentication secrets must not appear in URLs, responses, logs or limiter keys. Roll back the matching release artifact on unexpected authentication breakage rather than disabling CSRF or logging controls. Revoking a stolen session requires the BG-24 operator rotation procedure.
+
+**Current limitations:** A Cloudflare edge rate limiter is per location, not a global brute-force guarantee. The source-level tests do not demonstrate real edge convergence, hosted HTTPS cookie behavior, all unauthorized streaming costs or browser exploit resistance. Keep missing release proof as explicit blockers in the security matrix.
+
+### BG-25 owner signoff and merge acceptance (2026-10-16)
+
+The repository owner confirmed that the three previously open Cloudflare
+staging checks were working and explicitly authorized BG-25 completion and
+merge of [PR #91](https://github.com/anmolsansi/Recollect-Flow/pull/91).
+The [100-step checklist](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-25--100-executable-microtasks)
+is marked complete. BG-25.029 (native rate-limit reset), BG-25.031 (Secure
+cookies over HTTPS) and BG-25.083 (deployed API/private response headers)
+are operator-attested, **not independently reproduced by ChatGPT**.
+No staging hostname, raw response transcript or Cloudflare screenshots were
+provided with that attestation. This acceptance applies to BG-25 only, and
+does not authorize production deployment or close the wider OPE-247 scope.
+
+The [security record](verification/BG-25_SECURITY_HARDENING.md)
+preserves the earlier blocked state and the subsequent owner signoff.
+The BG-25 PR head before the signoff-only documentation commits passed
+[full CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38846686913).
+CI on the final documentation head must also pass before merge.
+BG-26 may proceed after the BG-25 PR is merged.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-25](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-25--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.

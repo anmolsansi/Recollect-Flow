@@ -8,6 +8,11 @@ type ConfigurableAiVars =
   | 'WEB_INBOX_BASE_URL';
 
 export type Env = Omit<Cloudflare.Env, ConfigurableAiVars> & {
+  // Generated Wrangler binding remains optional for existing local test fixtures.
+  // The auth handler fails closed if it is absent on a real host.
+  LOGIN_RATE_LIMITER?: {
+    limit(options: { key: string }): Promise<{ success: boolean }>;
+  };
   CAPTURE_TOKEN_NEXT?: string;
   CAPTURE_TOKEN_ID?: string;
   CAPTURE_TOKEN_ROTATION?: string;

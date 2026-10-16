@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { bodyLimit } from 'hono/body-limit';
 
 import type { CaptureRepository } from './captures/capture.repository';
 import { D1CaptureRepository } from './captures/capture.repository';
@@ -11,7 +12,11 @@ import { policyRoutes } from './policy/policy.routes';
 import type { PolicyRepository } from './policy/policy.repository';
 import type { AppContext, Env } from './env';
 import { errorResponse } from './shared/errors';
-import { shortcutRoutes } from './shortcut/shortcut.routes';
+import { requireAdminToken, requireCaptureWrite } from './shared/auth';
+import {
+  admitShortcutBeforeBody,
+  shortcutRoutes,
+} from './shortcut/shortcut.routes';
 import { itemRoutes } from './items/item.routes';
 import { searchRoutes } from './search/search.routes';
 import { authRoutes } from './auth/auth.routes';
@@ -23,12 +28,6 @@ import { integrityRoutes } from './recovery/integrity.routes';
 import { purgeRoutes } from './recovery/purge.routes';
 import { restoreRoutes } from './recovery/restore.routes';
 
-function requestId(value: string | undefined): string {
-  return value && /^[A-Za-z0-9._:-]{1,100}$/.test(value)
-    ? value
-    : crypto.randomUUID();
-}
-
 export function createApp(
   repositoryFactory?: (env: Env) => CaptureRepository,
   attachmentRepositoryFactory?: (env: Env) => AttachmentRepository,
@@ -37,7 +36,9 @@ export function createApp(
   const app = new Hono<AppContext>();
 
   app.use('*', async (context, next) => {
-    const id = requestId(context.req.header('X-Request-Id'));
+    // Caller-controlled request IDs can contain bearer tokens or private text.
+    // Generate a safe opaque ID rather than reflecting that header into logs.
+    const id = crypto.randomUUID();
     const startedAt = Date.now();
     context.set('requestId', id);
     try {
@@ -48,12 +49,68 @@ export function createApp(
           event: 'http_request_completed',
           request_id: id,
           method: context.req.method,
-          path: new URL(context.req.url).pathname,
+          route: context.req.routePath,
           status: context.res.status,
           duration_ms: Date.now() - startedAt,
         }),
       );
     }
+  });
+
+  // Request admission runs before JSON/multipart parsers or provider work.
+  // Hono >=4.12.16 also counts chunked/unknown-length streams correctly.
+  app.use('/api/*', async (context, next) => {
+    if (['GET', 'HEAD', 'OPTIONS'].includes(context.req.method)) {
+      await next();
+      return;
+    }
+    const pathname = new URL(context.req.url).pathname;
+    // Check expensive raw-byte and restore routes before pulling a body stream.
+    // Route middleware still rechecks auth, permissions and lifecycle state.
+    if (
+      context.req.method === 'PUT' &&
+      /^\/api\/v1\/uploads\/[^/]+\/content$/.test(pathname)
+    ) {
+      await requireCaptureWrite(context, async () => {});
+    }
+    if (
+      context.req.method === 'POST' &&
+      pathname === '/api/v1/shortcut/captures'
+    ) {
+      const rejection = await admitShortcutBeforeBody(context);
+      if (rejection) return rejection;
+    }
+    if (context.req.method === 'POST' && pathname === '/api/v1/restore') {
+      await requireAdminToken(context, async () => {});
+    }
+    const configuredAttachmentBytes = Number(context.env.MAX_ATTACHMENT_BYTES);
+    const attachmentBytes =
+      Number.isSafeInteger(configuredAttachmentBytes) &&
+      configuredAttachmentBytes > 0
+        ? Math.min(configuredAttachmentBytes, 50_000_000)
+        : 25_000_000;
+    const limit =
+      pathname.endsWith('/content') && pathname.startsWith('/api/v1/uploads/')
+        ? attachmentBytes
+        : pathname === '/api/v1/shortcut/captures'
+          ? attachmentBytes + 1_048_576
+          : pathname === '/api/v1/restore'
+            ? attachmentBytes
+            : 1_048_576;
+    return bodyLimit({
+      maxSize: limit,
+      onError: (c) =>
+        c.json(
+          {
+            error: {
+              code: 'PAYLOAD_TOO_LARGE',
+              message: 'Request body is too large.',
+            },
+            meta: { request_id: c.get('requestId') },
+          },
+          413,
+        ),
+    })(context, next);
   });
 
   app.get('/api/v1/health', (context) =>

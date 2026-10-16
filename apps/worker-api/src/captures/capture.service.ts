@@ -116,7 +116,7 @@ export class CaptureService {
             ...candidate,
             duplicateOf: racedDuplicate.id,
           });
-        } catch (duplicateError) {
+        } catch {
           const duplicateReplay = await this.repository.findByIdempotencyKey(
             input.idempotency_key,
           );
@@ -130,7 +130,7 @@ export class CaptureService {
           console.error(
             JSON.stringify({
               event: 'capture.duplicate_persistence_failed',
-              error: duplicateError,
+              error_code: 'DUPLICATE_PERSISTENCE_FAILED',
             }),
           );
           throw new AppError(
@@ -141,7 +141,10 @@ export class CaptureService {
         }
       } else {
         console.error(
-          JSON.stringify({ event: 'capture.persistence_failed', error }),
+          JSON.stringify({
+            event: 'capture.persistence_failed',
+            error_code: 'STORAGE_UNAVAILABLE',
+          }),
         );
         throw new AppError(
           503,
@@ -160,12 +163,12 @@ export class CaptureService {
             : input.source_type,
       });
       await this.repository.scheduleProcessing(saved, now, decision);
-    } catch (error) {
+    } catch {
       console.error(
         JSON.stringify({
           event: 'capture.scheduling_failed',
           capture_id: saved.id,
-          error,
+          error_code: 'SCHEDULING_FAILED',
         }),
       );
     }

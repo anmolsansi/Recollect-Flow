@@ -115,13 +115,13 @@ export async function processExtractionJobs(env: Env): Promise<void> {
           }),
         );
       }
-    } catch (error) {
+    } catch {
       console.error(
         JSON.stringify({
           event: 'extraction.job_failed',
           job_id: job.id,
           item_id: job.itemId,
-          error: error instanceof Error ? error.message : String(error),
+          error_code: 'INTERNAL_ERROR',
         }),
       );
       await jobService.failProcessingJob(

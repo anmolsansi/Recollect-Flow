@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import type { Context } from 'hono';
 
 import { D1AttachmentRepository } from '../attachments/attachment.repository';
 import type { AttachmentRepository } from '../attachments/attachment.repository';
@@ -65,6 +66,37 @@ function errorEnvelope(error: unknown, requestId: string) {
     message: 'The capture could not be completed. Retry with the same key.',
     request_id: requestId,
   };
+}
+
+/**
+ * The global byte-limit middleware invokes this before reading a potentially
+ * large multipart body. Keep the same HTTP-200 Shortcut error envelope that
+ * the existing iOS queue contract expects, including invalid rotation state.
+ */
+export async function admitShortcutBeforeBody(
+  context: Context<AppContext>,
+): Promise<Response | null> {
+  try {
+    if (
+      await matchesCaptureToken(
+        context.req.header('Authorization'),
+        context.env,
+      )
+    ) {
+      return null;
+    }
+    throw new AppError(
+      401,
+      'UNAUTHORIZED',
+      'Set a valid Recollect capture token in the Shortcut.',
+    );
+  } catch (error) {
+    return context.json(
+      errorEnvelope(error, context.get('requestId')),
+      200,
+      responseHeaders(),
+    );
+  }
 }
 
 export function shortcutRoutes(

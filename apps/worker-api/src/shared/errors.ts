@@ -2,7 +2,8 @@ import type { Context } from 'hono';
 
 export class AppError extends Error {
   constructor(
-    public readonly status: 400 | 401 | 403 | 404 | 409 | 413 | 422 | 500 | 503,
+    public readonly status:
+      400 | 401 | 403 | 404 | 409 | 413 | 422 | 429 | 500 | 503,
     public readonly code: string,
     message: string,
     public readonly fields?: Record<string, string>,
@@ -15,6 +16,7 @@ export function errorResponse(context: Context, error: unknown) {
   const requestId = context.get('requestId') as string;
 
   if (error instanceof AppError) {
+    if (error.status === 429) context.header('Retry-After', '60');
     return context.json(
       {
         error: {
@@ -28,7 +30,15 @@ export function errorResponse(context: Context, error: unknown) {
     );
   }
 
-  console.error(JSON.stringify({ request_id: requestId, error }));
+  // Upstream Error objects can carry credentials, private text or full URLs.
+  // Log only the stable code and request identifier, never the thrown value.
+  console.error(
+    JSON.stringify({
+      event: 'http_unhandled_error',
+      request_id: requestId,
+      code: 'INTERNAL_ERROR',
+    }),
+  );
   return context.json(
     {
       error: {

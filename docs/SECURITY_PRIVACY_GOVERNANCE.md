@@ -99,6 +99,35 @@ Complete export: versioned items JSONL/CSV, projects/topics, events/jobs, attach
 
 Do not bypass access control, account login, bot protection, platform terms, or content rights. Store user-provided references/files for personal knowledge use. Public productization requires legal review of platform terms, copyright, privacy, controller/processor duties, consent, retention, residency, subprocessors, breach response, and user-rights workflows.
 
+## BG-25 authentication and private-data security matrix
+
+The [BG-25 evidence record](verification/BG-25_SECURITY_HARDENING.md) distinguishes locally verified regressions from the owner's explicit staging attestation. Neither is a claim of independently observed Cloudflare behavior or authorization for production deployment.
+
+| Boundary                    | Enforcement / evidence                                                                                                | Release status                                                                 |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Browser login abuse         | Edge-native fixed-key limiter, 8 requests / 60 seconds; controlled synthetic test                                     | Source implementation, production edge behavior must be proven                 |
+| Browser session and CSRF    | Signed HttpOnly/SameSite cookie, explicit Origin for login and authenticated writes                                   | Existing BG-24 local tests, new exact-head and hosted HTTPS proof pending      |
+| Credential scope            | Capture, admin and local-worker authorization remain separate                                                         | Existing BG-24 route matrix reused; new regression suite pending               |
+| Request admission           | Hono 4.12.30 bounded JSON, multipart, raw upload and restore                                                          | Source implementation, unknown-length and real multipart proof pending         |
+| Exception and path logs     | Raw errors removed from HTTP, capture, Shortcut and extraction failure logs; route patterns replace raw request paths | Synthetic sentinel tests and exception-path review pending                     |
+| Private objects and exports | Existing authenticated R2 read, no-store API, opaque attachment IDs                                                   | Existing BG-06/BG-18 checks reused; new guessed-key/remote cache audit pending |
+| Web rendering               | React-escaped dynamic strings, no unsafe HTML insertion found                                                         | Source inspection, malicious-snippet browser test pending                      |
+
+**BG-25 accepted on owner attestation (2026-10-16):** The
+[BG-25 evidence record](verification/BG-25_SECURITY_HARDENING.md)
+preserves test coverage and the history of staging-only release gates.
+The repository owner confirmed that all three remaining Cloudflare checks
+(BG-25.029 rate reset, BG-25.031 HTTPS Secure cookie and BG-25.083 deployed
+private/API headers) are working and authorized marking BG-25 complete
+and merging PR #91. These are **operator-attested, not independently
+witnessed**: no staging address or raw artifacts were supplied for independent
+inspection. The canonical BG-25 checklist now records 100/100 complete, with
+the evidence tier identified on each of these three steps. This does not
+authorize production rollout or satisfy the rest of OPE-247. BG-26 can start
+only once the BG-25 PR has merged.
+
+No test or scanner run by itself closes the broader OPE-247 security release gate. Temporary browser logout does not revoke copies of an already-issued cookie. Signed-session incident response requires an authorized secret rotation.
+
 ## Security release gate
 
 Pass unauthorized access, token rotation, private-object access, traversal, oversized/malformed file, SSRF/redirect, prompt-injection, privacy-routing, log-secret scan, quota, deletion/invalidation, backup/restore, and Notion/provider outage tests. Any sensitive external leak, stale deleted answer, or silent billing path is release-blocking.

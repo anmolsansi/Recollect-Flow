@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createApp } from '../src/app';
 import type {
@@ -18,6 +18,7 @@ class MemoryCaptureRepository implements CaptureRepository {
 
   scheduled = 0;
   failCreate = false;
+  failCreateMessage = 'database unavailable';
   failSchedule = false;
 
   async findByIdempotencyKey(key: string) {
@@ -38,7 +39,7 @@ class MemoryCaptureRepository implements CaptureRepository {
   }
 
   async create(capture: NewCapture) {
-    if (this.failCreate) throw new Error('database unavailable');
+    if (this.failCreate) throw new Error(this.failCreateMessage);
 
     const itemId = capture.duplicateOf ?? capture.id;
     const stored: StoredCapture = {
@@ -314,11 +315,23 @@ describe('POST /api/v1/captures', () => {
   it('returns a retry-safe error when storage fails', async () => {
     const repository = new MemoryCaptureRepository();
     repository.failCreate = true;
-    const response = await post(
-      createApp(() => repository),
-      validCapture,
-    );
-    expect(response.status).toBe(503);
+    const secret = 'BG25_PRIVATE_CONTENT_NOT_FOR_LOGGING';
+    repository.failCreateMessage = secret;
+    const stderr = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      const response = await post(
+        createApp(() => repository),
+        {
+          ...validCapture,
+          shared_text: secret,
+        },
+      );
+      expect(response.status).toBe(503);
+      expect(await response.text()).not.toContain(secret);
+      expect(JSON.stringify(stderr.mock.calls)).not.toContain(secret);
+    } finally {
+      stderr.mockRestore();
+    }
   });
 
   it('keeps the raw capture when downstream scheduling fails', async () => {
