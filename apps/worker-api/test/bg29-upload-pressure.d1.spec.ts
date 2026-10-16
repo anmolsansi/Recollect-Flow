@@ -51,6 +51,7 @@ describe('BG-29 upload limit, size and interrupted transfer acceptance', () => {
     bytes.set(
       new TextEncoder().encode('%PDF-1.7\nBG29 synthetic binary limit fixture'),
     );
+    const startedUploadMs = Date.now();
     const upload = await app.request(
       `/api/v1/uploads/${id}/content`,
       {
@@ -64,7 +65,17 @@ describe('BG-29 upload limit, size and interrupted transfer acceptance', () => {
       },
       runtime,
     );
+    const measuredUploadMs = Date.now() - startedUploadMs;
     expect(upload.status).toBe(200);
+    console.log(JSON.stringify({
+      event: 'bg29_isolated_upload_timing',
+      bytes: MAX_BYTES,
+      upload_ms: measuredUploadMs,
+      environment: 'workerd-vitest-d1-r2',
+      includes_capture_ack: false,
+      includes_optional_processing: false,
+      caveat: 'Isolated workerd fixture, not physical-device or hosted Worker throughput',
+    }));
     const uploadResult = await upload.json<{ data: { checksum: string } }>();
     expect(uploadResult.data.checksum).toMatch(/^[a-f0-9]{64}$/);
 
