@@ -42,12 +42,7 @@ describe('BG-28 restore original-byte gate', () => {
        VALUES ('bg28-attachment', ?1, ?2, 'linked', 'synthetic.pdf',
                'application/pdf', 6, ?3, ?4, ?4, ?4)`,
     )
-      .bind(
-        ITEM_ID,
-        OBJECT_KEY,
-        '0'.repeat(64),
-        NOW,
-      )
+      .bind(ITEM_ID, OBJECT_KEY, '0'.repeat(64), NOW)
       .run();
   });
 
