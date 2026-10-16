@@ -11,6 +11,7 @@ import type {
 import {
   DigestSummaryResultSchema,
   DigestSummaryResultJsonSchema,
+  ExtractResultSchema,
 } from './ai.schema';
 
 import { WorkersAiAdapter } from './workers-ai.adapter';
@@ -363,9 +364,28 @@ export class AiProviderRegistry {
   ): Promise<AiEnrichmentResult<ExtractResult>> {
     const plan = this.getProviderPlan(routing);
     const prompt = `Analyze the following text and extract structured information according to the requested schema. Provide a title, summary, topics, people, companies, project suggestion, importance score (0-100), why it matters, and a suggested action.\n\n${text}`;
-    return this.runProviderPlan(plan, 'enrich', prompt, 2, (guarded) =>
-      this.getAdapter(guarded.provider).extractData(text, guarded),
-    );
+    return this.runProviderPlan(plan, 'enrich', prompt, 2, async (guarded) => {
+      const candidate = await this.getAdapter(guarded.provider).extractData(
+        text,
+        guarded,
+      );
+      // Validate every adapter, including mocks and future integrations,
+      // *before* capacity accounting reports success or D1 fields are changed.
+      // Never propagate the response body through errors, logs or job records.
+      const verified = ExtractResultSchema.safeParse(candidate.result);
+      if (!verified.success) {
+        throw Object.assign(
+          new Error('Enrichment provider returned invalid structured data.'),
+          {
+            provider: candidate.provider,
+            model: candidate.model,
+            latencyMs: candidate.latencyMs,
+            errorCode: 'AI_SCHEMA_INVALID',
+          },
+        );
+      }
+      return { ...candidate, result: verified.data };
+    });
   }
 
   async generateDigestSummary(prompt: string, privacyLevel: PrivacyLevel) {
