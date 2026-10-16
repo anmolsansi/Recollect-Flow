@@ -384,6 +384,32 @@ describe('BG-25 cross-route rejection and diagnostic confidentiality', () => {
     }
   });
 
+  it('preserves Shortcut queue authorization without reading invalid clients body', async () => {
+    let reads = 0;
+    const request = new Request('http://localhost/api/v1/shortcut/captures', {
+      method: 'POST',
+      headers: { 'Content-Type': 'multipart/form-data; boundary=test' },
+      body: new ReadableStream<Uint8Array>({
+        pull(controller) {
+          reads += 1;
+          controller.enqueue(new Uint8Array(32));
+          controller.close();
+        },
+      }),
+      duplex: 'half',
+    } as RequestInit & { duplex: 'half' });
+    const response = await createApp().fetch(request, base);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      ok: false,
+      saved: false,
+      outcome: 'auth_required',
+      shortcut_action: 'KEEP_STOP',
+      code: 'UNAUTHORIZED',
+    });
+    expect(reads).toBeLessThanOrEqual(1);
+  });
+
   it('omits synthetic private material in rejected headers and malformed JSON', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
