@@ -26,15 +26,29 @@ describe('BG-29 malformed AI output failure contract', () => {
   for (const [name, result] of [
     ['non-object response', '<script>secret response</script>'],
     ['missing mandatory fields', { title: 'synthetic' }],
-    ['incorrect importance', {
-      summary: 'synthetic', topics: [], people: [], companies: [],
-      importance: 101, whyItMatters: 'bounded',
-    }],
-    ['unexpected extra fields', {
-      summary: 'synthetic', topics: [], people: [], companies: [],
-      importance: 5, whyItMatters: 'bounded',
-      providerLeak: 'TOP_SECRET_FAKE_PAYLOAD',
-    }],
+    [
+      'incorrect importance',
+      {
+        summary: 'synthetic',
+        topics: [],
+        people: [],
+        companies: [],
+        importance: 101,
+        whyItMatters: 'bounded',
+      },
+    ],
+    [
+      'unexpected extra fields',
+      {
+        summary: 'synthetic',
+        topics: [],
+        people: [],
+        companies: [],
+        importance: 5,
+        whyItMatters: 'bounded',
+        providerLeak: 'TOP_SECRET_FAKE_PAYLOAD',
+      },
+    ],
   ] as const) {
     it(`rejects ${name} without copying untrusted fields to error metadata`, async () => {
       const rejection = registryWithInvalidResult(result).extractData(
@@ -45,7 +59,9 @@ describe('BG-29 malformed AI output failure contract', () => {
         errorCode: 'AI_SCHEMA_INVALID',
         provider: 'openrouter',
       });
-      await expect(rejection).rejects.not.toThrow(/TOP_SECRET_FAKE_PAYLOAD|script>/);
+      await expect(rejection).rejects.not.toThrow(
+        /TOP_SECRET_FAKE_PAYLOAD|script>/,
+      );
     });
   }
 
@@ -56,7 +72,10 @@ describe('BG-29 malformed AI output failure contract', () => {
       AI_PROVIDER_IMPLEMENTATIONS: '{"openrouter":"mock"}',
       MOCK_AI_ENABLED: 'true',
     } as Env);
-    const outcome = await registry.extractData('ordinary synthetic source', 'public');
+    const outcome = await registry.extractData(
+      'ordinary synthetic source',
+      'public',
+    );
     expect(outcome.result.summary).toBe('Mock summary');
     expect(outcome.result.importance).toBe(5);
   });
