@@ -20,8 +20,8 @@ jobs:
       - run: npm ci
       - name: Format only disposable CI workspace and report diff
         run: |
-          npx prettier --write apps/worker-api/src/app.ts apps/worker-api/src/auth/auth.routes.ts apps/worker-api/test/bg25-security.test.ts
-          git diff -- apps/worker-api/src/app.ts apps/worker-api/src/auth/auth.routes.ts apps/worker-api/test/bg25-security.test.ts
+          npx prettier --write apps/worker-api/src/app.ts apps/worker-api/src/auth/auth.routes.ts apps/worker-api/test/bg25-security.test.ts apps/worker-api/test/capture.test.ts
+          git diff -- apps/worker-api/src/app.ts apps/worker-api/src/auth/auth.routes.ts apps/worker-api/test/bg25-security.test.ts apps/worker-api/test/capture.test.ts
       - name: Run exact focused gate on formatted disposable CI workspace
         run: |
           npm run lint
