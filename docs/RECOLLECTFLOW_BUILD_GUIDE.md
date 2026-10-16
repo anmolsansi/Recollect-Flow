@@ -3163,8 +3163,8 @@ later proves an independent end-to-end recovery with those instructions.
    creation schedule/mechanism if periodic creation is a release requirement.
 5. Preserve immutable hosted backup retention for 30 days under ADR-031. State that
    owner-downloaded copies are outside remote deletion control.
-6. Document explicit `POST /restore?dry_run=true`. Omitting that query currently
-   means a real restore attempt; every example must make the mode visible.
+6. Document explicit `POST /restore?dry_run=true`. Omitting the query is now
+   rejected with HTTP 422; every example must make the mode visible.
 7. Require a clean intended target for real restore. Verify target identity,
    compatible migrations, counts, references, attachment bytes and purge receipts.
 8. Describe soft-delete -> purge-request with current version -> separate phrase
