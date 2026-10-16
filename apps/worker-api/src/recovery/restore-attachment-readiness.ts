@@ -32,7 +32,9 @@ export async function inspectRestoreAttachments(
         attachment.status === 'deleted' ||
         attachment.status === 'pending' ||
         attachment.status === 'orphaned'
-      ) continue;
+      ) {
+        continue;
+      }
       const itemId = entry.item.id;
       const attachmentId = attachment.id;
       const objectKey = attachment.object_key;
