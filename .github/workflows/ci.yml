@@ -15,11 +15,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # TEMP BG26 FINAL FORMAT DIAGNOSTIC - remove immediately
-      - run: |
-          npx prettier --write apps/worker-api/test/operations-query-plan.d1.spec.ts scripts/verify-browser-operations.mjs apps/worker-api/test/capacity-core-continuity.d1.spec.ts
-          node -e "const fs=require('node:fs'); for(const p of process.argv.slice(1)) console.log('BG26_FORMAT '+JSON.stringify({path:p,content:fs.readFileSync(p,'utf8')}))" apps/worker-api/test/operations-query-plan.d1.spec.ts scripts/verify-browser-operations.mjs apps/worker-api/test/capacity-core-continuity.d1.spec.ts
-          exit 1
       - run: npm run check
       - run: npm run release:package:test
       - run: npm run release:package
