@@ -3863,35 +3863,35 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#34-bg-28--make-backup-restore-and-purge-procedures-complete).
 
-These unchecked steps inherit this task's **what, why, when, where and proof** above.
+These task steps inherit this task's **what, why, when, where and proof** above. Completed steps 001–020 are supported by code inspection and current operator/export documentation; unverified environment-dependent work remains unchecked.
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-28 / 01 — Establish task context
 
-- [ ] `BG-28.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-28.002` **Dependency:** Verify BG-27's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-28.003` **Baseline:** Record the actual checkout or release candidate used for BG-28.
-- [ ] `BG-28.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-28.005` **Evidence:** Check whether existing evidence already satisfies any BG-28 step; reference it instead of manufacturing work.
-- [ ] `BG-28.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-28.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-28.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-28.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-28.010` **Tracking:** Open a BG-28 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-28.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-28.002` **Dependency:** Verify BG-27's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-28.003` **Baseline:** Record the actual checkout or release candidate used for BG-28.
+- [x] `BG-28.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-28.005` **Evidence:** Check whether existing evidence already satisfies any BG-28 step; reference it instead of manufacturing work.
+- [x] `BG-28.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-28.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-28.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-28.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-28.010` **Tracking:** Open a BG-28 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-28 / 02 — Export documentation
 
-- [ ] `BG-28.011` Read portable JSON envelope.
-- [ ] `BG-28.012` Record schema version.
-- [ ] `BG-28.013` Record item-count semantics.
-- [ ] `BG-28.014` Document CSV readability purpose.
-- [ ] `BG-28.015` Document JSON restore requirement.
-- [ ] `BG-28.016` Document attachment metadata contents.
-- [ ] `BG-28.017` Document absent embedded bytes.
-- [ ] `BG-28.018` Document credential exclusion.
-- [ ] `BG-28.019` Document owner-copy disclosure.
-- [ ] `BG-28.020` Verify examples match real payload.
+- [x] `BG-28.011` Read portable JSON envelope.
+- [x] `BG-28.012` Record schema version.
+- [x] `BG-28.013` Record item-count semantics.
+- [x] `BG-28.014` Document CSV readability purpose.
+- [x] `BG-28.015` Document JSON restore requirement.
+- [x] `BG-28.016` Document attachment metadata contents.
+- [x] `BG-28.017` Document absent embedded bytes.
+- [x] `BG-28.018` Document credential exclusion.
+- [x] `BG-28.019` Document owner-copy disclosure.
+- [x] `BG-28.020` Verify examples match real payload.
 
 #### BG-28 / 03 — Original-byte strategy
 
