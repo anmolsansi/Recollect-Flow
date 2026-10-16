@@ -77,11 +77,11 @@ describe('BG-28 restore original-byte gate', () => {
     await env.ATTACHMENTS.put(OBJECT_KEY, '12345');
     const service = new RestoreService(env.DB, env.ATTACHMENTS);
     const mismatch = await service.restore(exported, { dryRun: true });
-    expect(mismatch.attachmentReadiness.problems[0]?.reason).toBe(
+    expect(mismatch.attachmentReadiness?.problems[0]?.reason).toBe(
       'size_mismatch',
     );
     await env.ATTACHMENTS.put(OBJECT_KEY, '123456');
     const valid = await service.restore(exported, { dryRun: true });
-    expect(valid.attachmentReadiness.problems).toEqual([]);
+    expect(valid.attachmentReadiness?.problems).toEqual([]);
   });
 });
