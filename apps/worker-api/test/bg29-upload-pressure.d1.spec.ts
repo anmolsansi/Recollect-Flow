@@ -107,6 +107,47 @@ describe('BG-29 upload limit, size and interrupted transfer acceptance', () => {
     await env.ATTACHMENTS.delete(stored!.object_key);
   }, 120_000);
 
+  it('rejects a partially received stream after client transport interruption', async () => {
+    const created = await init(256, 'stream-interrupted');
+    expect(created.response.status).toBe(201);
+    const id = created.payload.data.attachment_id as string;
+    let emitted = false;
+    const partial = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        if (!emitted) {
+          controller.enqueue(new TextEncoder().encode('%PDF-1.7\nsynthetic partial'));
+          emitted = true;
+        } else {
+          controller.error(new Error('BG29_SYNTHETIC_NETWORK_CANCEL'));
+        }
+      },
+    });
+    const request = new Request(
+      `https://inbox.example.test/api/v1/uploads/${id}/content`,
+      {
+        method: 'PUT',
+        headers: {
+          ...auth, 'Content-Type': 'application/pdf', 'Content-Length': '256',
+        },
+        body: partial,
+        duplex: 'half',
+      } as RequestInit & { duplex: 'half' },
+    );
+    let refused = false;
+    try {
+      const response = await app.request(request, undefined, runtime);
+      refused = response.status !== 200;
+    } catch {
+      refused = true;
+    }
+    expect(refused).toBe(true);
+    const retained = await env.DB.prepare(
+      'SELECT status, object_key FROM attachments WHERE id = ?1',
+    ).bind(id).first<{ status: string; object_key: string }>();
+    expect(retained?.status).toBe('pending');
+    expect(await env.ATTACHMENTS.head(retained!.object_key)).toBeNull();
+  });
+
   it('preserves pending-only state when the client cancels before putting bytes', async () => {
     const started = await init(100, 'canceled-before-upload');
     expect(started.response.status).toBe(201);
