@@ -54,6 +54,7 @@ export async function processDigestDeliveries(
       continue;
     }
 
+    let providerAccepted = false;
     try {
       const rendered = await service.deliveryText(run);
       if (rendered.empty) {
@@ -76,6 +77,7 @@ export async function processDigestDeliveries(
 
       const startedAt = Date.now();
       const messageId = await client.sendMessage(rendered.message);
+      providerAccepted = true;
       const sentAt = now();
       const persisted = await repository.markDeliverySent(
         delivery.id,
@@ -124,8 +126,12 @@ export async function processDigestDeliveries(
       );
     } catch (error) {
       const failureTime = now();
-      const telegramError =
-        error instanceof TelegramDeliveryError
+      const telegramError = providerAccepted
+        ? new TelegramDeliveryError(
+            'TELEGRAM_SENT_PERSISTENCE_AMBIGUOUS',
+            'unknown',
+          )
+        : error instanceof TelegramDeliveryError
           ? error
           : new TelegramDeliveryError(
               'DIGEST_DELIVERY_INTERNAL_ERROR',

@@ -64,4 +64,54 @@ describe('deterministic digest rendering', () => {
     expect(rendered.text).not.toContain('*');
     expect(rendered.text).not.toContain('parse_mode');
   });
+
+  it('uses neutral preview link labels after privacy changes', () => {
+    const period = {
+      digestType: 'daily' as const,
+      timezone: 'Asia/Kolkata' as const,
+      start: '2026-08-01T18:30:00.000Z',
+      end: '2026-08-02T18:30:00.000Z',
+    };
+    const raw = {
+      schemaVersion: '1' as const,
+      selectorVersion: '2026-08-03.1' as const,
+      digestType: period.digestType,
+      periodStart: period.start,
+      periodEnd: period.end,
+      timezone: period.timezone,
+      eligibleItemIds: ['secret'],
+      topicGroups: [],
+      topItemIds: ['secret'],
+      suggestedActionItemIds: [],
+      failedProcessing: [],
+      highValueItemIds: [],
+      dormantProjects: [],
+      nearingArchiveItemIds: [],
+      contradictionStatus: 'not_evaluated_no_explicit_relation' as const,
+    };
+    const current = [
+      {
+        id: 'secret',
+        title: 'Sensitive account details',
+        privacyLevel: 'sensitive' as const,
+        topicsJson: '[]',
+        importance: null,
+        project: null,
+        suggestedAction: null,
+        lifecycleStatus: 'Inbox',
+        capturedAt: '2026-08-02T10:00:00.000Z',
+        updatedAt: '2026-08-02T10:00:00.000Z',
+        deletedAt: null,
+      },
+    ];
+    const rendered = renderDigest(raw, current, 'https://inbox.example.test/');
+    expect(rendered.items).toEqual([
+      {
+        id: 'secret',
+        label: 'Private item',
+        url: 'https://inbox.example.test/items/secret',
+      },
+    ]);
+    expect(rendered.text).not.toContain('Sensitive account details');
+  });
 });

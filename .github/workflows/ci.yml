@@ -32,6 +32,7 @@ jobs:
       - run: npm run browser:workflow:test
       - run: npm run browser:acquisition:test
       - run: npm run browser:operations:test
+      - run: npm run browser:digests:test
       - run: npm run browser:workflow:test
       - run: npm run browser:acquisition:test
       - uses: actions/upload-artifact@v4

@@ -51,10 +51,29 @@ export function digestRoutes() {
     });
   });
 
+  router.get('/digests', requireAdminToken, async (context) => {
+    const runs = await new DigestRepository(context.env.DB).listRecentRuns();
+    context.header('Cache-Control', 'private, no-store');
+    return context.json({
+      data: runs.map((run) => ({
+        id: run.id,
+        digest_type: run.digestType,
+        period_start: run.periodStart,
+        period_end: run.periodEnd,
+        timezone: run.timezone,
+        generation_version: run.generationVersion,
+        review_status: run.reviewStatus,
+        created_at: run.createdAt,
+      })),
+      meta: { request_id: requestId(context) },
+    });
+  });
+
   router.get('/digests/:id', requireAdminToken, async (context) => {
     const details = await new DigestService(context.env).getDetails(
       context.req.param('id'),
     );
+    context.header('Cache-Control', 'private, no-store');
     return context.json({
       data: details,
       meta: { request_id: requestId(context) },

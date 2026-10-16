@@ -159,4 +159,16 @@ describe('TelegramClient', () => {
       'terminal',
     );
   });
+
+  it('does not retry when the provider response body cannot be read', async () => {
+    const fetcher = vi.fn().mockResolvedValue({
+      text: () => Promise.reject(new TypeError('connection interrupted')),
+    });
+    const client = new TelegramClient('token', 'chat', { fetcher });
+    await expectTelegramError(
+      client.sendMessage('test'),
+      'TELEGRAM_RESPONSE_AMBIGUOUS',
+      'unknown',
+    );
+  });
 });

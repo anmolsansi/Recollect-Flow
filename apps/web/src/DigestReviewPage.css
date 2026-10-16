@@ -1,0 +1,96 @@
+.digest-review-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.digest-review-page h1,
+.digest-review-page h2,
+.digest-review-page h3 {
+  margin-bottom: 0.65rem;
+}
+
+.digest-muted {
+  color: var(--text-muted);
+}
+
+.digest-controls {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.digest-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.digest-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.digest-facts dt {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.digest-facts dd {
+  overflow-wrap: anywhere;
+}
+
+.digest-message {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin: 1rem 0;
+  max-height: 40rem;
+  overflow-y: auto;
+}
+
+.digest-links {
+  padding-left: 1.25rem;
+}
+
+.digest-links li {
+  margin: 0.4rem 0;
+}
+
+.digest-deliveries {
+  display: grid;
+  gap: 1rem;
+}
+
+.digest-reconcile {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.digest-confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
+.digest-confirm input {
+  margin-top: 0.3rem;
+}
+
+.digest-error {
+  color: var(--danger-color);
+}
+
+@media (max-width: 640px) {
+  .digest-review-page {
+    gap: 1rem;
+  }
+
+  .digest-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

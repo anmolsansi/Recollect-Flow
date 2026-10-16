@@ -477,7 +477,7 @@ describe('OPE-226 digest integration', () => {
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
 
-  it('recovers an expired Telegram delivery lease without duplicate finalization', async () => {
+  it('quarantines an expired Telegram delivery lease without duplicate send', async () => {
     await insertItem({ id: 'expired-lease', title: 'Expired lease item' });
     const generated = await service().generatePeriod(dailyPeriod, {
       queueDelivery: true,
@@ -501,11 +501,12 @@ describe('OPE-226 digest integration', () => {
       fetcher,
     });
 
-    expect(fetcher).toHaveBeenCalledOnce();
+    expect(fetcher).not.toHaveBeenCalled();
     expect(await repository.getDelivery(generated.delivery!.id)).toMatchObject({
-      state: 'sent',
-      attempts: 2,
-      telegramMessageId: '101',
+      state: 'unknown',
+      attempts: 1,
+      lastErrorCode: 'TELEGRAM_LEASE_EXPIRED_AMBIGUOUS',
+      telegramMessageId: null,
     });
   });
 
@@ -553,5 +554,84 @@ describe('OPE-226 digest integration', () => {
       attempts: 1,
       lastErrorCode: 'TELEGRAM_TIMEOUT_AMBIGUOUS',
     });
+  });
+
+  it('keeps one delivery identity for a period across regeneration', async () => {
+    await insertItem({ id: 'once-per-period', title: 'Daily review item' });
+    const initial = await service().generatePeriod(dailyPeriod);
+    const repository = new DigestRepository(env.DB);
+    const queued = await repository.queueTelegramDelivery(initial.run.id);
+    const regenerated = await service().regenerate(initial.run.id, false);
+
+    await expect(
+      repository.queueTelegramDelivery(regenerated.run.id),
+    ).rejects.toMatchObject({ code: 'DIGEST_PERIOD_DELIVERY_EXISTS' });
+    expect((await repository.getDelivery(queued.id))?.state).toBe('pending');
+    const count = await env.DB.prepare(
+      'SELECT COUNT(*) AS count FROM digest_deliveries',
+    ).first<{ count: number }>();
+    expect(count?.count).toBe(1);
+  });
+
+  it('never automatically resends an expired Telegram lease', async () => {
+    await insertItem({ id: 'lease-item', title: 'Daily review item' });
+    const generated = await service().generatePeriod(dailyPeriod);
+    const repository = new DigestRepository(env.DB);
+    const start = new Date('2026-08-03T02:00:00.000Z');
+    const pending = await repository.queueTelegramDelivery(
+      generated.run.id,
+      start,
+    );
+    const first = await repository.leaseTelegramDeliveries(
+      'first',
+      1,
+      10,
+      start,
+    );
+    expect(first.map((entry) => entry.id)).toEqual([pending.id]);
+
+    const later = new Date('2026-08-03T02:02:00.000Z');
+    const second = await repository.leaseTelegramDeliveries(
+      'second',
+      1,
+      10,
+      later,
+    );
+    expect(second).toEqual([]);
+    const uncertain = await repository.getDelivery(pending.id);
+    expect(uncertain?.state).toBe('unknown');
+    expect(uncertain?.lastErrorCode).toBe('TELEGRAM_LEASE_EXPIRED_AMBIGUOUS');
+    await expect(repository.retryFailedDelivery(pending.id)).resolves.toBe(
+      false,
+    );
+  });
+
+  it('reconciles proven non-delivery as failed before a reviewed retry', async () => {
+    await insertItem({ id: 'not-sent', title: 'Reconciliation fixture' });
+    const generated = await service().generatePeriod(dailyPeriod, {
+      queueDelivery: true,
+    });
+    const deliveryId = generated.delivery!.id;
+    const repository = new DigestRepository(env.DB);
+    await env.DB.prepare(
+      `UPDATE digest_deliveries SET state = 'unknown' WHERE id = ?1`,
+    )
+      .bind(deliveryId)
+      .run();
+
+    expect(await repository.retryFailedDelivery(deliveryId)).toBe(false);
+    expect(
+      await repository.reconcileUnknownDelivery(deliveryId, 'failed', null),
+    ).toBe(true);
+    expect(await repository.getDelivery(deliveryId)).toMatchObject({
+      state: 'failed',
+      telegramMessageId: null,
+      lastErrorCode: 'RECONCILED_FAILED',
+    });
+    expect(await repository.retryFailedDelivery(deliveryId)).toBe(true);
+    expect((await repository.getDelivery(deliveryId))?.state).toBe('pending');
+    expect(
+      await repository.reconcileUnknownDelivery(deliveryId, 'sent', 'invented'),
+    ).toBe(false);
   });
 });

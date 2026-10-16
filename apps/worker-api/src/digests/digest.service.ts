@@ -316,6 +316,7 @@ export class DigestService {
       this.repository.listDeliveries(id),
       this.repository.listAudit(id),
     ]);
-    return { run, deliveries, audit };
+    const preview = await this.renderCurrent(run);
+    return { run, deliveries, audit, preview };
   }
 }
