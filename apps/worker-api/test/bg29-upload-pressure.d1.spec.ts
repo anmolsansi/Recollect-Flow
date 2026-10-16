@@ -24,7 +24,13 @@ async function init(size: number, id: string) {
     },
     runtime,
   );
-  return { response, payload: await response.json() };
+  return {
+    response,
+    payload: (await response.json()) as {
+      data: { attachment_id: string };
+      error?: { code: string };
+    },
+  };
 }
 
 describe('BG-29 upload limit, size and interrupted transfer acceptance', () => {
