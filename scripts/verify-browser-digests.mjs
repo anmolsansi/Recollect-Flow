@@ -32,8 +32,9 @@ try {
     'digest review empty state',
   );
   assert.equal(
-    browser.responses.some((response) =>
-      response.path.endsWith('/deliver') && response.method === 'POST'
+    browser.responses.some(
+      (response) =>
+        response.path.endsWith('/deliver') && response.method === 'POST',
     ),
     false,
   );
@@ -65,7 +66,9 @@ try {
   assert.equal(detail.preview.currentEligibleCount, 0);
   assert.equal(detail.deliveries.length, 0);
   assert.ok(
-    (await evaluate(browser, 'document.body.innerText')).includes('Asia/Kolkata'),
+    (await evaluate(browser, 'document.body.innerText')).includes(
+      'Asia/Kolkata',
+    ),
   );
   report('BG27-preview-does-not-send');
 
@@ -98,7 +101,8 @@ try {
   );
   await waitFor(
     browser,
-    'document.querySelector("#digest-run")?.value !== ' + JSON.stringify(selected),
+    'document.querySelector("#digest-run")?.value !== ' +
+      JSON.stringify(selected),
     'new generation selected',
   );
   const replacement = await evaluate(
@@ -175,7 +179,10 @@ try {
     browser,
     '({ width: innerWidth, scroll: document.documentElement.scrollWidth })',
   );
-  assert.ok(viewport.scroll <= viewport.width + 8, 'Digest review layout overflow');
+  assert.ok(
+    viewport.scroll <= viewport.width + 8,
+    'Digest review layout overflow',
+  );
   report('BG27-mobile-layout');
 
   await evaluate(browser, 'window.fetch = window.__bg27Fetch');
