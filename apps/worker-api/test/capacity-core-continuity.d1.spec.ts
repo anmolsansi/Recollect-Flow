@@ -6,6 +6,7 @@ import { D1CaptureRepository } from '../src/captures/capture.repository';
 import { CaptureService } from '../src/captures/capture.service';
 import { getProviderCapacityPolicy } from '../src/jobs/ai/capacity.policy';
 import { AiCapacityRepository } from '../src/jobs/ai/capacity.repository';
+import { OperationsSummaryService } from '../src/jobs/operations-summary.service';
 import { executeSearch } from '../src/search/search.service';
 
 async function reset(): Promise<void> {
@@ -104,5 +105,15 @@ describe('OPE-227 AI-independent core continuity', () => {
        ORDER BY window_start DESC LIMIT 1`,
     ).first<{ request_consumed: number; request_limit: number }>();
     expect(quota?.request_consumed).toBe(quota?.request_limit);
+
+    // BG-26 must report waiting work while canonical capture/search still work.
+    const operations = await new OperationsSummaryService(env.DB).status(current);
+    expect(operations.backlog.groups).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          kind: 'processing', type: 'enrich', status: 'pending',
+        }),
+      ]),
+    );
   });
 });
