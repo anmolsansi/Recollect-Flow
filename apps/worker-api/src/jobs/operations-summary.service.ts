@@ -35,6 +35,11 @@ interface BackupRow {
   expires_at: string;
   failure_code: string | null;
 }
+interface PartialPurgeRow {
+  id: string;
+  updated_at: string;
+  last_error_code: string | null;
+}
 interface IntegrityRow {
   id: string;
   state: string;
@@ -107,6 +112,7 @@ export class OperationsSummaryService {
       processing,
       sync,
       partialPurges,
+      partialPurgeSamples,
       failedBackups,
       newestVerifiedBackup,
       newestIntegrity,
@@ -121,6 +127,11 @@ export class OperationsSummaryService {
           "SELECT COUNT(*) AS count FROM purge_workflows WHERE state = 'partial'",
         )
         .first<CountRow>(),
+      this.db
+        .prepare(
+          "SELECT id, updated_at, last_error_code FROM purge_workflows WHERE state = 'partial' ORDER BY updated_at DESC LIMIT 10",
+        )
+        .all<PartialPurgeRow>(),
       this.db
         .prepare(
           "SELECT COUNT(*) AS count FROM backup_artifacts WHERE state = 'failed'",
@@ -180,6 +191,11 @@ export class OperationsSummaryService {
       },
       recovery: {
         partial_purges: partialPurges?.count ?? 0,
+        partial_purge_samples: (partialPurgeSamples.results ?? []).map((row) => ({
+          id: row.id,
+          updated_at: row.updated_at,
+          last_error_code: safeCode(row.last_error_code),
+        })),
         failed_backups: failedBackups?.count ?? 0,
         latest_verified_backup: newestVerifiedBackup ?? null,
         latest_integrity: newestIntegrity
