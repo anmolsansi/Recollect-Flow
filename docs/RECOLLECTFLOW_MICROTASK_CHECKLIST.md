@@ -3489,12 +3489,12 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-25.026` Avoid permanent attacker-triggered lockout.
 - [x] `BG-25.027` Preserve owner repair procedure.
 - [x] `BG-25.028` Test repeated invalid login.
-- [x] `BG-25.029` Test limit reset. *(operator-attested 2026-10-16; no independent staging artifact provided)*
+- [x] `BG-25.029` Test limit reset. _(operator-attested 2026-10-16; no independent staging artifact provided)_
 - [x] `BG-25.030` Keep token values out of counters.
 
 #### BG-25 / 04 — Session security
 
-- [x] `BG-25.031` Verify Secure under HTTPS. *(operator-attested 2026-10-16; no independent staging artifact provided)*
+- [x] `BG-25.031` Verify Secure under HTTPS. _(operator-attested 2026-10-16; no independent staging artifact provided)_
 - [x] `BG-25.032` Verify HttpOnly behavior.
 - [x] `BG-25.033` Verify SameSite behavior.
 - [x] `BG-25.034` Verify session expiration.
@@ -3561,7 +3561,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 - [x] `BG-25.081` Run focused boundary regressions.
 - [x] `BG-25.082` Run complete auth matrix.
-- [x] `BG-25.083` Review deployed response headers. *(operator-attested 2026-10-16; no independent staging artifact provided)*
+- [x] `BG-25.083` Review deployed response headers. _(operator-attested 2026-10-16; no independent staging artifact provided)_
 - [x] `BG-25.084` Review export confidentiality.
 - [x] `BG-25.085` Check valid downloads still work.
 - [x] `BG-25.086` Review scanner findings separately.
