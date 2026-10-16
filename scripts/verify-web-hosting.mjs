@@ -39,7 +39,12 @@ try {
   );
   assert.equal((await script.text()).includes(runtime.adminToken), false);
 
-  for (const route of ['/capture', '/capture/file', '/operations', '/items/' + marker]) {
+  for (const route of [
+    '/capture',
+    '/capture/file',
+    '/operations',
+    '/items/' + marker,
+  ]) {
     const response = await inspect(route);
     assert.equal(response.status, 200, 'Deep link must serve shell: ' + route);
     assert.match(response.headers.get('content-type') ?? '', /text\/html/);
