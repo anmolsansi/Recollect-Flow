@@ -1,9 +1,44 @@
 # BG-25 security boundary hardening: implementation and evidence
 
-**State:** implementation in draft review, NOT accepted or authorized for production promotion.
+**State (2026-10-16):** BG-25 implementation accepted for merge on explicit owner attestation of the three previously blocked Cloudflare staging checks, with repository CI passed. This is not an independent Cloudflare audit or authorization for a production deployment. Earlier outstanding items below are preserved as historical records.
 **Source baseline:** merged `main` at `aa31b0ad562bef4f6b6f1cbe5b4d31124c1f821b` (BG-23/24 #88 accepted; merged-main CI [38777518792](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38777518792) passed).
 **Task:** [GitHub #90](https://github.com/anmolsansi/Recollect-Flow/issues/90). **Branch:** `feat/bg-25-auth-request-log-hardening`. **PR:** [#91](https://github.com/anmolsansi/Recollect-Flow/pull/91).
 **Safety:** Synthetic tokens/markers only. No remote secrets, production D1 or R2, Cloudflare deployment, or external provider/Telegram sends changed.
+
+## Owner attestation and BG-25 acceptance, October 16, 2026
+
+The repository owner explicitly confirmed that the **three previously blocked
+Cloudflare checks are working** and instructed that BG-25 be marked complete
+and PR #91 be merged. The owner confirmed the outcomes, not ChatGPT.
+This attestation is the acceptance evidence for the following checklist steps:
+
+- **BG-25.029:** Actual Cloudflare rate-limiter window reset. Operator
+  attested working. Exact time window logs and staging hostname were not
+  provided in the conversation for independent examination.
+- **BG-25.031:** Secure session cookies over real HTTPS. Operator attested
+  working. No captured Set-Cookie headers, browser traces or staging domain
+  were supplied for independent examination.
+- **BG-25.083:** Deployed private/API/export response headers. Operator
+  attested working. No captured response header transcript was supplied
+  for independent examination.
+
+The 97 repository-supported steps plus these three expressly
+operator-attested steps total **100/100 recorded checklist completions**,
+with the latter three using a different, clearly disclosed evidence tier.
+This is an owner signoff to complete and merge **BG-25**, not a claim that
+the assistant accessed Cloudflare, reviewed private logs, reproduced staging
+results, rotated credentials or deployed anything. The repository's
+[exact-head full CI run](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38846686913)
+passed on commit `1f59f3a624fcdae91888291f09fde4d0a1939af4`,
+before these documentation-only commits. Final CI must pass on the
+acceptance documentation head before merging.
+
+The historical sections below describe what was unverified on October 15
+and earlier on October 16. Their blocker descriptions are superseded for
+BG-25 completion **only by the user's explicit attestation**. Preserve
+their test matrices and safety caveats: local mocks are not evidence of
+Cloudflare's edge behavior, and broader OPE-247 operations/security tasks
+remain open. BG-26 is unlocked after the BG-25 merge, not before.
 
 ## Threat boundary inventory
 
@@ -49,7 +84,7 @@
 - If real-login rejection spikes, wait for the configured 60-second edge window and inspect matching safe request ID/status counts. A stolen signed cookie is NOT revoked merely by deleting the browser cookie. Follow `docs/TOKEN_ROTATION.md` to replace compromised signing credentials and force new login after an approved incident response.
 - Roll back the release artifact if actual login is unavailable due to missing rate-limit binding or if legitimate browser writes fail. Never remove origin enforcement or log redaction as a workaround. Non-production branch changes can be reverted as scoped commits without deleting D1/R2 records.
 
-## Open acceptance conditions
+## Earlier open acceptance conditions (historical; superseded by owner attestation)
 
 BG-25 must remain open until exact-head quality/CI, rate-reset behavior, unauthorized no-Content-Length request costs, representative private object/traversal/wrong-scope tests, preexisting download and export regressions, external HTTPS cookie/caching review, and the full canonical 100-step reconciliation are supported by recorded evidence. No scanner result alone establishes completion. BG-26 is not unlocked by a partial green test suite.
 
@@ -99,7 +134,7 @@ separate rate limiter is intentionally edge-local, not a global account lock.
 - The eleven previously reported dependency advisories are not silently
   treated as remediated or as BG-25-specific vulnerabilities.
 
-### Three unverified live-origin conditions
+### Three live-origin conditions previously unverified by the assistant
 
 1. **BG-25.029:** Observe the actual Cloudflare native limiter across an
    exhausted eight-attempt window, its reset and a new authorized attempt.
