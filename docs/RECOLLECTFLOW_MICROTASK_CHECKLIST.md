@@ -3434,18 +3434,22 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#31-bg-25--harden-authentication-session-requests-and-logs).
 
-**Source-step reconciliation (local and inherited CI only):** 97/100 steps have
-source inspections, implemented controls or focused/inherited regression evidence.
-Three remain **blocked** pending authorized Cloudflare staging: edge rate-limit
-window reset (BG-25.029), real HTTPS Secure-cookie behavior (BG-25.031), and
-actual deployed response headers (BG-25.083). The final three are not waived.
-The checklist status is an implementation evidence count, **not production
-release acceptance**. [Evidence matrix](verification/BG-25_SECURITY_HARDENING.md),
-[issue #90](https://github.com/anmolsansi/Recollect-Flow/issues/90),
-[draft PR #91](https://github.com/anmolsansi/Recollect-Flow/pull/91).
-BG-26 stays locked until the real-origin gate is passed.
+**Completion reconciliation (2026-10-16):** 100/100 BG-25 source steps are
+marked complete. Steps 001–028, 030, 032–082, and 084–100 are grounded in
+the implementation, local tests, inherited acceptance and the passing
+[full exact-head CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38846686913).
+For **BG-25.029**, **BG-25.031** and **BG-25.083**, the repository owner
+explicitly confirmed in the task discussion on 2026-10-16 that the Cloudflare
+staging checks work, and authorized BG-25 completion and merging PR #91.
+Those three are **operator-attested, not independently witnessed by ChatGPT**.
+No staging hostname, captured headers or raw Cloudflare log evidence was
+supplied here. Do not reinterpret the attestation as an independent audit or
+a production rollout approval. [Security evidence](verification/BG-25_SECURITY_HARDENING.md)
+records the verification distinction and follow-up controls. BG-25 can be
+closed and BG-26 may start after the accepted PR is merged. OPE-247 remains
+open for the broader security and operations acceptance scope.
 
-These unchecked steps inherit this task's **what, why, when, where and proof** above.
+These checklist steps inherit this task's **what, why, when, where and proof** above.
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
@@ -3485,12 +3489,12 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-25.026` Avoid permanent attacker-triggered lockout.
 - [x] `BG-25.027` Preserve owner repair procedure.
 - [x] `BG-25.028` Test repeated invalid login.
-- [ ] `BG-25.029` Test limit reset.
+- [x] `BG-25.029` Test limit reset. *(operator-attested 2026-10-16; no independent staging artifact provided)*
 - [x] `BG-25.030` Keep token values out of counters.
 
 #### BG-25 / 04 — Session security
 
-- [ ] `BG-25.031` Verify Secure under HTTPS.
+- [x] `BG-25.031` Verify Secure under HTTPS. *(operator-attested 2026-10-16; no independent staging artifact provided)*
 - [x] `BG-25.032` Verify HttpOnly behavior.
 - [x] `BG-25.033` Verify SameSite behavior.
 - [x] `BG-25.034` Verify session expiration.
@@ -3557,7 +3561,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 - [x] `BG-25.081` Run focused boundary regressions.
 - [x] `BG-25.082` Run complete auth matrix.
-- [ ] `BG-25.083` Review deployed response headers.
+- [x] `BG-25.083` Review deployed response headers. *(operator-attested 2026-10-16; no independent staging artifact provided)*
 - [x] `BG-25.084` Review export confidentiality.
 - [x] `BG-25.085` Check valid downloads still work.
 - [x] `BG-25.086` Review scanner findings separately.
