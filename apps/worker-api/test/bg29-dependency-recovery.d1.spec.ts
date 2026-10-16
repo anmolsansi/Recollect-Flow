@@ -14,9 +14,10 @@ const app = createApp();
 function outageEnv(): Env {
   return {
     ...(env as unknown as Record<string, unknown>),
-    MOCK_AI_ENABLED: 'true',
-    AI_PROVIDERS_ENABLED: '',
-    AI_PROVIDER_IMPLEMENTATIONS: '{}',
+    MOCK_AI_ENABLED: 'false',
+    AI_PROVIDERS_ENABLED: 'openrouter',
+    AI_PROVIDER_IMPLEMENTATIONS: '{"openrouter":"openrouter"}',
+    OPENROUTER_API_KEY: undefined,
     NOTION_ACCESS_TOKEN: '',
   } as Env;
 }
@@ -154,6 +155,7 @@ describe('BG-29 coupled optional-dependency outage and recovery', () => {
 
     const restored = {
       ...runtime,
+      MOCK_AI_ENABLED: 'true',
       AI_PROVIDERS_ENABLED: 'openrouter',
       AI_PROVIDER_IMPLEMENTATIONS: '{"openrouter":"mock"}',
     };
