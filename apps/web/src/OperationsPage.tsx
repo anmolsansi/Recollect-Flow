@@ -254,7 +254,7 @@ export function OperationsPage() {
                 {snapshot.operations.backlog.groups.map((g) => (
                   <article
                     className="card"
-                    key={g.kind + ':' + g.type + ':' + g.status}
+                    key={g.kind + ':' + g.type + ':' + g.status + ':' + (g.sample_error_code ?? 'none')}
                   >
                     <h3>
                       {g.kind === 'sync' ? 'Notion sync' : 'Processing'} ·{' '}
@@ -284,7 +284,7 @@ export function OperationsPage() {
                       <p>Next retry: {timestamp(g.next_available_at)}</p>
                     ) : null}
                     {g.sample_error_code ? (
-                      <p>Example safe error: {g.sample_error_code}</p>
+                      <p>Reason code: {g.sample_error_code} ({g.count} in this group)</p>
                     ) : null}
                     <a
                       href={
