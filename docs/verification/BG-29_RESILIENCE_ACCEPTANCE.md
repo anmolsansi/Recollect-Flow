@@ -137,12 +137,12 @@ work at minute 17 of every hour. Its Worker entrypoint calls
 source acquisition, extraction, enrichment and Notion sync using
 separate bounded leases. Inspection of current source yields:
 
-| Stage | Jobs admitted per scheduled attempt |
-| --- | ---: |
-| URL acquisition | 10 |
-| Attachment extraction | 10 |
-| AI enrichment | 10 |
-| Notion sync | 25 |
+| Stage                 | Jobs admitted per scheduled attempt |
+| --------------------- | ----------------------------------: |
+| URL acquisition       |                                  10 |
+| Attachment extraction |                                  10 |
+| AI enrichment         |                                  10 |
+| Notion sync           |                                  25 |
 
 Under a hypothetical healthy, instantaneous worker model,
 a backlog of 100 eligible items at a ten-item stage needs

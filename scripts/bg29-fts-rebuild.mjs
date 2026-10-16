@@ -42,25 +42,35 @@ try {
   // Every invocation is --local with a brand-new persistence directory.
   localWrangler(['migrations', 'apply', 'recollect-flow-prod'], dir);
   const itemId = 'bg29-local-fts-rebuild';
-  sql(`INSERT INTO items (
+  sql(
+    `INSERT INTO items (
     id, idempotency_key, source_type, source_app,
     privacy_level, processing_status, captured_at,
     created_at, updated_at, raw_text
   ) VALUES ('${itemId}', 'bg29-fts-rebuild-key', 'text', 'bg29',
     'sensitive', 'complete', '2026-10-01T00:00:00Z',
     '2026-10-01T00:00:00Z', '2026-10-01T00:00:00Z',
-    'bg29rebuildneedle synthetic original');`, dir);
+    'bg29rebuildneedle synthetic original');`,
+    dir,
+  );
 
   const corrupted = sql(
-    `DELETE FROM item_search_fts WHERE item_id = '${itemId}'`, dir,
+    `DELETE FROM item_search_fts WHERE item_id = '${itemId}'`,
+    dir,
   );
   assert.ok(Array.isArray(corrupted));
 
   const readEvidence = [];
   for (let attempt = 0; attempt < 2; attempt += 1) {
     const fileRaw = localWrangler(
-      ['execute', 'recollect-flow-prod', '--file',
-        'scripts/rebuild-item-search-index.sql', '--json'], dir,
+      [
+        'execute',
+        'recollect-flow-prod',
+        '--file',
+        'scripts/rebuild-item-search-index.sql',
+        '--json',
+      ],
+      dir,
     );
     const parsed = JSON.parse(fileRaw);
     const counts = [];
@@ -76,8 +86,11 @@ try {
     assert.equal(last.indexed_rows, 1);
     assert.equal(last.distinct_indexed_items, 1);
     for (const key of [
-      'missing_from_fts', 'orphaned_or_deleted_in_fts', 'duplicate_item_ids',
-    ]) assert.equal(last[key], 0, `FTS drift on ${key}`);
+      'missing_from_fts',
+      'orphaned_or_deleted_in_fts',
+      'duplicate_item_ids',
+    ])
+      assert.equal(last[key], 0, `FTS drift on ${key}`);
     const search = sql(
       `SELECT COUNT(*) AS total FROM item_search_fts WHERE item_search_fts MATCH 'bg29rebuildneedle'`,
       dir,
@@ -85,14 +98,16 @@ try {
     assert.equal(search.at(-1)?.total, 1);
     readEvidence.push(last);
   }
-  console.log(JSON.stringify({
-    event: 'bg29_fts_rebuild_twice',
-    environment: 'disposable-local-wrangler-d1',
-    rebuilds: readEvidence.length,
-    canonical: 1,
-    missing_or_duplicate_after_each: 0,
-    remote_mutation: false,
-  }));
+  console.log(
+    JSON.stringify({
+      event: 'bg29_fts_rebuild_twice',
+      environment: 'disposable-local-wrangler-d1',
+      rebuilds: readEvidence.length,
+      canonical: 1,
+      missing_or_duplicate_after_each: 0,
+      remote_mutation: false,
+    }),
+  );
 } finally {
   await rm(dir, { recursive: true, force: true });
 }
