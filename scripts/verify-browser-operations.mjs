@@ -40,7 +40,11 @@ try {
   assert.ok(text.includes('provider billing dashboard'));
   assert.ok(text.includes('Actual R2 bucket objects/bytes'));
   assert.ok(text.includes('Unavailable, no verified backup recorded'));
-  assert.equal(text.includes(adminToken), false, 'No admin token in dashboard text');
+  assert.equal(
+    text.includes(adminToken),
+    false,
+    'No admin token in dashboard text',
+  );
   const requests = browser.responses.filter((v) =>
     ['/api/v1/usage', '/api/v1/operations/summary'].includes(v.path),
   );
@@ -68,7 +72,12 @@ try {
 
   await browser.client.send(
     'Network.emulateNetworkConditions',
-    { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 },
+    {
+      offline: false,
+      latency: 0,
+      downloadThroughput: -1,
+      uploadThroughput: -1,
+    },
     browser.sessionId,
   );
   await clickButton(browser, 'Refresh');
@@ -88,7 +97,10 @@ try {
     browser,
     '({ width: innerWidth, scroll: document.documentElement.scrollWidth })',
   );
-  assert.ok(viewport.scroll <= viewport.width + 8, 'Operations layout overflow');
+  assert.ok(
+    viewport.scroll <= viewport.width + 8,
+    'Operations layout overflow',
+  );
   report('BG26-mobile-layout', { width: viewport.width });
 } catch (error) {
   console.error(
