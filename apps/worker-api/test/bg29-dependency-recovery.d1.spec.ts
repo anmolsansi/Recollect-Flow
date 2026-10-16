@@ -105,7 +105,7 @@ describe('BG-29 coupled optional-dependency outage and recovery', () => {
         claimed[0]!,
         'bg29-down-ai',
       ),
-    ).toBe(false);
+    ).toBe(true);
     const deferred = await env.DB.prepare(
       `SELECT status, last_error_code, available_at FROM processing_jobs
        WHERE item_id = ?1 AND job_type = 'enrich'`,
