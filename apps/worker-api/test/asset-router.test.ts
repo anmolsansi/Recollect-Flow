@@ -27,7 +27,7 @@ function assets(
 }
 
 describe('BG-21 public asset routing', () => {
-  it.each(['/', '/capture', '/capture/file', '/items/123', '/items/%3F'])(
+  it.each(['/', '/capture', '/capture/file', '/operations', '/items/123', '/items/%3F'])(
     'serves only the public shell for %s',
     async (pathname) => {
       const binding = assets();
