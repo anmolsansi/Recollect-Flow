@@ -36,11 +36,7 @@ describe('BG-28 verified weekly hosted-backup scheduler', () => {
 
   it('creates exactly one fully verified backup for a replayed weekly slot', async () => {
     const at = new Date('2026-10-19T02:15:00.000Z');
-    const first = await createWeeklyHostedBackup(
-      env.DB,
-      env.ATTACHMENTS,
-      at,
-    );
+    const first = await createWeeklyHostedBackup(env.DB, env.ATTACHMENTS, at);
     expect(first).toBe('complete');
     expect(
       await createWeeklyHostedBackup(env.DB, env.ATTACHMENTS, at),
