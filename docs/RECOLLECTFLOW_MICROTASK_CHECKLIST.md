@@ -3863,7 +3863,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#34-bg-28--make-backup-restore-and-purge-procedures-complete).
 
-These task steps inherit this task's **what, why, when, where and proof** above. Completed steps 001–020 are supported by code inspection and current operator/export documentation; unverified environment-dependent work remains unchecked.
+These task steps inherit this task's **what, why, when, where and proof** above. Completed steps 001–080 are supported by inherited OPE-228/BG-10 source and regression evidence, BG-28 isolated implementation, and the operator recovery procedure. Full isolated rehearsal closeout steps 081–100 remain unchecked pending exact-head CI and final gate review. Real independent account replication and production rollout belong to later separately authorized operational acceptance.
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
@@ -3895,81 +3895,81 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-28 / 03 — Original-byte strategy
 
-- [ ] `BG-28.021` Inventory attachment object references.
-- [ ] `BG-28.022` Define independent byte-copy procedure.
-- [ ] `BG-28.023` Create checksum manifest format.
-- [ ] `BG-28.024` Record source and target bucket identities.
-- [ ] `BG-28.025` Preserve ownership metadata.
-- [ ] `BG-28.026` Verify copied byte count.
-- [ ] `BG-28.027` Verify copied hashes.
-- [ ] `BG-28.028` Define missing-object reporting.
-- [ ] `BG-28.029` Separate same-bucket from disaster recovery.
-- [ ] `BG-28.030` Record original-byte retention policy.
+- [x] `BG-28.021` Inventory attachment object references.
+- [x] `BG-28.022` Define independent byte-copy procedure.
+- [x] `BG-28.023` Create checksum manifest format.
+- [x] `BG-28.024` Record source and target bucket identities.
+- [x] `BG-28.025` Preserve ownership metadata.
+- [x] `BG-28.026` Verify copied byte count.
+- [x] `BG-28.027` Verify copied hashes.
+- [x] `BG-28.028` Define missing-object reporting.
+- [x] `BG-28.029` Separate same-bucket from disaster recovery.
+- [x] `BG-28.030` Record original-byte retention policy.
 
 #### BG-28 / 04 — Backup creation
 
-- [ ] `BG-28.031` Inspect current creation endpoint.
-- [ ] `BG-28.032` Inspect scheduled cleanup caller.
-- [ ] `BG-28.033` Confirm cleanup does not create backups.
-- [ ] `BG-28.034` Select required creation cadence.
-- [ ] `BG-28.035` Select actual creation mechanism.
-- [ ] `BG-28.036` Bound creation concurrency.
-- [ ] `BG-28.037` Preserve unique object keys.
-- [ ] `BG-28.038` Verify read-back requirement.
-- [ ] `BG-28.039` Expose failed verification state.
-- [ ] `BG-28.040` Record successful verification timestamp.
+- [x] `BG-28.031` Inspect current creation endpoint.
+- [x] `BG-28.032` Inspect scheduled cleanup caller.
+- [x] `BG-28.033` Confirm cleanup does not create backups.
+- [x] `BG-28.034` Select required creation cadence.
+- [x] `BG-28.035` Select actual creation mechanism.
+- [x] `BG-28.036` Bound creation concurrency.
+- [x] `BG-28.037` Preserve unique object keys.
+- [x] `BG-28.038` Verify read-back requirement.
+- [x] `BG-28.039` Expose failed verification state.
+- [x] `BG-28.040` Record successful verification timestamp.
 
 #### BG-28 / 05 — Retention
 
-- [ ] `BG-28.041` Read 30-day retention decision.
-- [ ] `BG-28.042` Show backup expiry timestamp.
-- [ ] `BG-28.043` Keep verified backups immutable.
-- [ ] `BG-28.044` Remove only eligible expired artifacts.
-- [ ] `BG-28.045` Preserve unexpired backups.
-- [ ] `BG-28.046` Preserve canonical items during cleanup.
-- [ ] `BG-28.047` Record cleanup failure safely.
-- [ ] `BG-28.048` Disclose owner-controlled copies.
-- [ ] `BG-28.049` Avoid false remote erase claims.
-- [ ] `BG-28.050` Verify retention procedure example.
+- [x] `BG-28.041` Read 30-day retention decision.
+- [x] `BG-28.042` Show backup expiry timestamp.
+- [x] `BG-28.043` Keep verified backups immutable.
+- [x] `BG-28.044` Remove only eligible expired artifacts.
+- [x] `BG-28.045` Preserve unexpired backups.
+- [x] `BG-28.046` Preserve canonical items during cleanup.
+- [x] `BG-28.047` Record cleanup failure safely.
+- [x] `BG-28.048` Disclose owner-controlled copies.
+- [x] `BG-28.049` Avoid false remote erase claims.
+- [x] `BG-28.050` Verify retention procedure example.
 
 #### BG-28 / 06 — Restore procedure
 
-- [ ] `BG-28.051` Write explicit dry_run request.
-- [ ] `BG-28.052` Explain omitted mode behavior.
-- [ ] `BG-28.053` Verify target identity step.
-- [ ] `BG-28.054` Require clean target.
-- [ ] `BG-28.055` Validate compatible schema.
-- [ ] `BG-28.056` Validate counts and references.
-- [ ] `BG-28.057` Include original-byte restoration.
-- [ ] `BG-28.058` Include purge ledger merge.
-- [ ] `BG-28.059` Include FTS verification.
-- [ ] `BG-28.060` Define stop conditions before traffic switch.
+- [x] `BG-28.051` Write explicit dry_run request.
+- [x] `BG-28.052` Explain omitted mode behavior.
+- [x] `BG-28.053` Verify target identity step.
+- [x] `BG-28.054` Require clean target.
+- [x] `BG-28.055` Validate compatible schema.
+- [x] `BG-28.056` Validate counts and references.
+- [x] `BG-28.057` Include original-byte restoration.
+- [x] `BG-28.058` Include purge ledger merge.
+- [x] `BG-28.059` Include FTS verification.
+- [x] `BG-28.060` Define stop conditions before traffic switch.
 
 #### BG-28 / 07 — Purge procedure
 
-- [ ] `BG-28.061` Require existing soft deletion.
-- [ ] `BG-28.062` Fetch current edit version.
-- [ ] `BG-28.063` Request workflow-bound confirmation.
-- [ ] `BG-28.064` Display returned exact phrase.
-- [ ] `BG-28.065` Display confirmation expiry.
-- [ ] `BG-28.066` Confirm only intended workflow.
-- [ ] `BG-28.067` Inspect queued/processing state.
-- [ ] `BG-28.068` Inspect per-step results.
-- [ ] `BG-28.069` Distinguish partial from complete.
-- [ ] `BG-28.070` Preserve retryable lease recovery.
+- [x] `BG-28.061` Require existing soft deletion.
+- [x] `BG-28.062` Fetch current edit version.
+- [x] `BG-28.063` Request workflow-bound confirmation.
+- [x] `BG-28.064` Display returned exact phrase.
+- [x] `BG-28.065` Display confirmation expiry.
+- [x] `BG-28.066` Confirm only intended workflow.
+- [x] `BG-28.067` Inspect queued/processing state.
+- [x] `BG-28.068` Inspect per-step results.
+- [x] `BG-28.069` Distinguish partial from complete.
+- [x] `BG-28.070` Preserve retryable lease recovery.
 
 #### BG-28 / 08 — Cross-system safety
 
-- [ ] `BG-28.071` Stop before canonical deletion on R2 failure.
-- [ ] `BG-28.072` Stop on required Notion failure.
-- [ ] `BG-28.073` Preserve non-content D1 receipt.
-- [ ] `BG-28.074` Preserve private R2 receipt.
-- [ ] `BG-28.075` Include new URL evidence cleanup.
-- [ ] `BG-28.076` Include URL evidence export.
-- [ ] `BG-28.077` Include URL evidence restore.
-- [ ] `BG-28.078` Check duplicate references after purge.
-- [ ] `BG-28.079` Check missing projection never authorizes deletion.
-- [ ] `BG-28.080` Explain historical backup retention.
+- [x] `BG-28.071` Stop before canonical deletion on R2 failure.
+- [x] `BG-28.072` Stop on required Notion failure.
+- [x] `BG-28.073` Preserve non-content D1 receipt.
+- [x] `BG-28.074` Preserve private R2 receipt.
+- [x] `BG-28.075` Include new URL evidence cleanup.
+- [x] `BG-28.076` Include URL evidence export.
+- [x] `BG-28.077` Include URL evidence restore.
+- [x] `BG-28.078` Check duplicate references after purge.
+- [x] `BG-28.079` Check missing projection never authorizes deletion.
+- [x] `BG-28.080` Explain historical backup retention.
 
 #### BG-28 / 09 — Rehearsal documentation
 
