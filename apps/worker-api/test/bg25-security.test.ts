@@ -340,7 +340,10 @@ describe('BG-25 cross-route rejection and diagnostic confidentiality', () => {
     expect(valid.status).toBe(200);
     const logout = await app.request(
       'https://inbox.example.test/api/v1/admin/session',
-      { method: 'DELETE', headers: { Cookie: cookie, Origin: 'https://inbox.example.test' } },
+      {
+        method: 'DELETE',
+        headers: { Cookie: cookie, Origin: 'https://inbox.example.test' },
+      },
       base,
     );
     expect(logout.status).toBe(200);
@@ -350,7 +353,11 @@ describe('BG-25 cross-route rejection and diagnostic confidentiality', () => {
   it('does not pull an unauthorized upload or restore body stream', async () => {
     const app = createApp();
     for (const [method, route, expected] of [
-      ['PUT', '/api/v1/uploads/11111111-1111-4111-8111-111111111111/content', 401],
+      [
+        'PUT',
+        '/api/v1/uploads/11111111-1111-4111-8111-111111111111/content',
+        401,
+      ],
       ['POST', '/api/v1/restore?dry_run=true', 403],
     ] as const) {
       let reads = 0;
@@ -381,35 +388,44 @@ describe('BG-25 cross-route rejection and diagnostic confidentiality', () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     const attempts = [
-      createApp().request('/api/v1/captures?' + marker, {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer ' + marker,
-          'Content-Type': 'application/json',
-          'X-Request-Id': marker,
+      createApp().request(
+        '/api/v1/captures?' + marker,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + marker,
+            'Content-Type': 'application/json',
+            'X-Request-Id': marker,
+          },
+          body: '{"content":"' + marker + '",',
         },
-        body: '{"content":"' + marker + '",',
-      }, base),
-      createApp().request('https://inbox.example.test/api/v1/admin/session?' + marker, {
-        method: 'POST',
-        headers: {
-          Origin: 'https://inbox.example.test',
-          'Content-Type': 'application/json',
-          'X-Request-Id': 'rejected-id-' + marker,
+        base,
+      ),
+      createApp().request(
+        'https://inbox.example.test/api/v1/admin/session?' + marker,
+        {
+          method: 'POST',
+          headers: {
+            Origin: 'https://inbox.example.test',
+            'Content-Type': 'application/json',
+            'X-Request-Id': 'rejected-id-' + marker,
+          },
+          body: '{"token":"' + marker + '"',
         },
-        body: '{"token":"' + marker + '"',
-      }, base),
+        base,
+      ),
     ];
     const responses = await Promise.all(attempts);
-    expect(responses[0].status).toBe(401);
-    expect(responses[1].status).toBe(422);
+    expect(responses[0]!.status).toBe(401);
+    expect(responses[1]!.status).toBe(422);
     const diagnostics = JSON.stringify({
       logs: log.mock.calls,
       errors: error.mock.calls,
-      responses: await Promise.all(responses.map((response) => response.text())),
+      responses: await Promise.all(
+        responses.map((response) => response.text()),
+      ),
     });
     expect(diagnostics).not.toContain(marker);
     expect(diagnostics).not.toContain('Bearer ' + marker);
-
   });
 });
