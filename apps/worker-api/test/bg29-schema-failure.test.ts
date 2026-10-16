@@ -65,6 +65,31 @@ describe('BG-29 malformed AI output failure contract', () => {
     });
   }
 
+  it('calls an invalid provider once rather than retrying an unapproved repair', async () => {
+    const registry = new AiProviderRegistry({
+      AI_PROVIDER_DEFAULT: 'openrouter',
+      AI_PROVIDERS_ENABLED: 'openrouter',
+      AI_PROVIDER_IMPLEMENTATIONS: '{"openrouter":"mock"}',
+      MOCK_AI_ENABLED: 'true',
+    } as Env);
+    const adapter = new MockAiAdapter('openrouter');
+    const original = adapter.extractData.bind(adapter);
+    let calls = 0;
+    adapter.extractData = async (text, config) => {
+      calls += 1;
+      const result = await original(text, config);
+      return {
+        ...result,
+        result: { invalid: 'synthetic' } as unknown as ExtractResult,
+      };
+    };
+    registry.register(adapter);
+    await expect(
+      registry.extractData('synthetic failing provider', 'public'),
+    ).rejects.toMatchObject({ errorCode: 'AI_SCHEMA_INVALID' });
+    expect(calls).toBe(1);
+  });
+
   it('preserves already-valid mock adapter behavior', async () => {
     const registry = new AiProviderRegistry({
       AI_PROVIDER_DEFAULT: 'openrouter',
