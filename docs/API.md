@@ -71,6 +71,8 @@ Runs or resumes an already confirmed `queued|processing|partial` purge. It canno
 
 `POST /api/v1/restore?dry_run=true|false`
 
+`dry_run` is mandatory. An omitted or invalid mode returns 422 `VALIDATION_ERROR`, not an implicit real restore. A dry run returns `attachmentReadiness: { checked, problems }` with missing/size-mismatch references. A real apply refuses those conditions with `RESTORE_ATTACHMENTS_UNAVAILABLE`.
+
 Accepts the versioned JSON portable export. Restore applies the newest D1/export/private-R2 purge receipt ledger before planning item insertion. Non-dry-run restore requires an empty canonical target and verifies foreign keys, active-item FTS coverage, item counts, and anti-resurrection guarantees before reporting success.
 
 ### Recovery integrity scan
