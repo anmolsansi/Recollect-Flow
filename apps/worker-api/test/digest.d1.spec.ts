@@ -614,7 +614,7 @@ describe('OPE-226 digest integration', () => {
     const deliveryId = generated.delivery!.id;
     const repository = new DigestRepository(env.DB);
     await env.DB.prepare(
-      "UPDATE digest_deliveries SET state = 'unknown' WHERE id = ?1",
+      `UPDATE digest_deliveries SET state = 'unknown' WHERE id = ?1`,
     )
       .bind(deliveryId)
       .run();
@@ -634,5 +634,4 @@ describe('OPE-226 digest integration', () => {
       await repository.reconcileUnknownDelivery(deliveryId, 'sent', 'invented'),
     ).toBe(false);
   });
-
 });
