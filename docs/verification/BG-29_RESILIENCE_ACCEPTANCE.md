@@ -42,11 +42,11 @@ For provider routing, `ALLOWED_DATA_MATRIX` permits Public across eligible provi
 
 These are **published account-level constraints**, not evidence that a particular account was checked or that production spent no money:
 
-| Source | Published constraint | Engineering implication |
-| --- | --- | --- |
-| [Cloudflare Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/) | Free allocation of 10,000 neurons/day, reset at 00:00 UTC; usage above this requires a paid plan and can be billed | Preserve hard no-cost admission; check deployed plan, model eligibility and dashboard before launch |
-| [OpenRouter pricing](https://openrouter.ai/pricing) | Free models 20 requests/min, 50/day on a free account; free-model daily allowance rises to 1,000 with at least $10 purchased credits | Existing configured free-pool request bounds remain conservative, but verify account tier and model details |
-| [Cloudflare D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/) | Workers Free tier 5,000,000 rows read/day, 100,000 rows written/day and 5 GB total storage | Rows read/written belong in scale evidence and actual dashboard verification; 10,000 inserts are disposable D1 testing only |
+| Source                                                                                          | Published constraint                                                                                                                 | Engineering implication                                                                                                     |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| [Cloudflare Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/) | Free allocation of 10,000 neurons/day, reset at 00:00 UTC; usage above this requires a paid plan and can be billed                   | Preserve hard no-cost admission; check deployed plan, model eligibility and dashboard before launch                         |
+| [OpenRouter pricing](https://openrouter.ai/pricing)                                             | Free models 20 requests/min, 50/day on a free account; free-model daily allowance rises to 1,000 with at least $10 purchased credits | Existing configured free-pool request bounds remain conservative, but verify account tier and model details                 |
+| [Cloudflare D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/)                 | Workers Free tier 5,000,000 rows read/day, 100,000 rows written/day and 5 GB total storage                                           | Rows read/written belong in scale evidence and actual dashboard verification; 10,000 inserts are disposable D1 testing only |
 
 Publication pages are moving targets. Source review does not verify actual free-tier account state, billing, Worker memory, 100k-item scale or hosted production latency. No production policy/configuration was changed.
 
