@@ -3434,7 +3434,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#31-bg-25--harden-authentication-session-requests-and-logs).
 
-**Source-step reconciliation (isolated CI/local only):** 69/100 steps have source inspection, implementation, focused or inherited regression evidence; the remaining 31 remain open. See [BG-25 security evidence](verification/BG-25_SECURITY_HARDENING.md) and [draft PR #91](https://github.com/anmolsansi/Recollect-Flow/pull/91). No real Cloudflare rate-reset, deployed HTTPS, unauthorized-streaming cost, fresh private-object adversarial validation or final release acceptance is claimed. BG-26 remains locked. Individual checked items do not imply production acceptance.
+**Source-step reconciliation (local and inherited CI only):** 97/100 steps have
+source inspections, implemented controls or focused/inherited regression evidence.
+Three remain **blocked** pending authorized Cloudflare staging: edge rate-limit
+window reset (BG-25.029), real HTTPS Secure-cookie behavior (BG-25.031), and
+actual deployed response headers (BG-25.083). The final three are not waived.
+The checklist status is an implementation evidence count, **not production
+release acceptance**. [Evidence matrix](verification/BG-25_SECURITY_HARDENING.md),
+[issue #90](https://github.com/anmolsansi/Recollect-Flow/issues/90),
+[draft PR #91](https://github.com/anmolsansi/Recollect-Flow/pull/91).
+BG-26 stays locked until the real-origin gate is passed.
 
 These unchecked steps inherit this task's **what, why, when, where and proof** above.
 Follow the numbered order; the group headings organize related work.
@@ -3494,8 +3503,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-25 / 05 — Origin and CSRF
 
-- [ ] `BG-25.041` Inventory every cookie write route.
-- [ ] `BG-25.042` Apply agreed origin protection.
+- [x] `BG-25.041` Inventory every cookie write route.
+- [x] `BG-25.042` Apply agreed origin protection.
 - [x] `BG-25.043` Test unexpected Origin.
 - [x] `BG-25.044` Test null Origin.
 - [x] `BG-25.045` Test missing Origin policy.
@@ -3516,41 +3525,41 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-25.057` Test oversized JSON.
 - [x] `BG-25.058` Test oversized multipart.
 - [x] `BG-25.059` Test chunked oversized bytes.
-- [ ] `BG-25.060` Verify no expensive unauthorized parsing.
+- [x] `BG-25.060` Verify no expensive unauthorized parsing.
 
 #### BG-25 / 07 — Log redaction
 
-- [ ] `BG-25.061` Place synthetic secret in header.
-- [ ] `BG-25.062` Place marker in malformed JSON.
+- [x] `BG-25.061` Place synthetic secret in header.
+- [x] `BG-25.062` Place marker in malformed JSON.
 - [x] `BG-25.063` Place marker in URL query.
 - [x] `BG-25.064` Place marker in upstream error.
-- [ ] `BG-25.065` Trigger each error path.
+- [x] `BG-25.065` Trigger each error path.
 - [x] `BG-25.066` Inspect structured application logs.
 - [x] `BG-25.067` Inspect public error responses.
 - [x] `BG-25.068` Assert token marker absent.
-- [ ] `BG-25.069` Assert private source marker absent.
+- [x] `BG-25.069` Assert private source marker absent.
 - [x] `BG-25.070` Record safe retained diagnostics.
 
 #### BG-25 / 08 — Rendering and files
 
-- [ ] `BG-25.071` Escape acquired source snippets.
-- [ ] `BG-25.072` Escape user-supplied filename.
-- [ ] `BG-25.073` Escape provider error text.
+- [x] `BG-25.071` Escape acquired source snippets.
+- [x] `BG-25.072` Escape user-supplied filename.
+- [x] `BG-25.073` Escape provider error text.
 - [x] `BG-25.074` Avoid unsafe HTML insertion.
-- [ ] `BG-25.075` Reject object-key traversal attempts.
-- [ ] `BG-25.076` Reject guessed private access.
-- [ ] `BG-25.077` Reject wrong-scope file access.
-- [ ] `BG-25.078` Reject stale upload authority.
-- [ ] `BG-25.079` Verify signature validation remains.
-- [ ] `BG-25.080` Verify cache does not expose bytes.
+- [x] `BG-25.075` Reject object-key traversal attempts.
+- [x] `BG-25.076` Reject guessed private access.
+- [x] `BG-25.077` Reject wrong-scope file access.
+- [x] `BG-25.078` Reject stale upload authority.
+- [x] `BG-25.079` Verify signature validation remains.
+- [x] `BG-25.080` Verify cache does not expose bytes.
 
 #### BG-25 / 09 — Security closure
 
 - [x] `BG-25.081` Run focused boundary regressions.
 - [x] `BG-25.082` Run complete auth matrix.
 - [ ] `BG-25.083` Review deployed response headers.
-- [ ] `BG-25.084` Review export confidentiality.
-- [ ] `BG-25.085` Check valid downloads still work.
+- [x] `BG-25.084` Review export confidentiality.
+- [x] `BG-25.085` Check valid downloads still work.
 - [x] `BG-25.086` Review scanner findings separately.
 - [x] `BG-25.087` Document actual vulnerabilities fixed.
 - [x] `BG-25.088` Document unresolved threat boundaries.
@@ -3559,16 +3568,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-25 / 10 — Verify and close this task
 
-- [ ] `BG-25.091` **Review:** Compare the completed checklist with BG-25's stated outcome; identify uncovered behavior.
-- [ ] `BG-25.092` **Verification:** Run or inspect the focused proof required by BG-25; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-25.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-25.094` **Integrity:** Check that BG-25 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-25.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-25.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-25.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-25.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-25.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-25.100` **Gate:** Check the parent completion boundary and record whether BG-26 is unlocked.
+- [x] `BG-25.091` **Review:** Compare the completed checklist with BG-25's stated outcome; identify uncovered behavior.
+- [x] `BG-25.092` **Verification:** Run or inspect the focused proof required by BG-25; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-25.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-25.094` **Integrity:** Check that BG-25 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-25.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-25.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-25.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-25.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-25.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-25.100` **Gate:** Check the parent completion boundary and record whether BG-26 is unlocked.
 
 ## BG-26 — 100 executable microtasks
 
