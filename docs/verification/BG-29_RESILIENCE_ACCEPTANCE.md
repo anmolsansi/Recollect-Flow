@@ -178,6 +178,31 @@ authorized staging/operator evidence. Browser interrupted-upload
 and parser timeout/memory behavior must be separately evaluated,
 not inferred from a canceled-before-PUT fixture.
 
+## Verified implementation and exact-scope CI
+
+The [complete passing CI #38970501080](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38970501080)
+at `709776caa72ff77f05314ea4357aa0bfa4f58f5b` covers
+the 100,000-item D1/FTS suite, 25 MB PDF path, AI schema-invalid
+rejection, owner-override failure isolation, existing provider quota
+and recovery suites, Wrangler packaging and browser acceptance.
+The 100,000-item synthetic query in that run took **28 ms** wall
+time (25 ms reported by search D1), with 5,263 matching rows
+returned by the separate FTS count query. These are local measurements,
+not hosted D1 billable rows or production Worker performance.
+
+The 25,000,000-byte upload was reserved, stored, checksummed,
+finalized, and checked in the temporary R2 bucket. An over-limit
+reservation failed with HTTP 413. A canceled-before-PUT reservation
+could not be finalized and created no R2 original. This still does
+not replace a midstream-cancellation or physical-device test.
+
+The actual FTS rebuild script was exercised twice in
+[CI #38970984338](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38970984338)
+against a new disposable local Wrangler D1, with corruption,
+idempotent rebuild and phrase-search assertions. Its focused step
+passed. Final CI and browser acceptance on that revision must also
+be reviewed; passing one step alone is not full-head approval.
+
 ## Final decision
 
 BG-30 remains locked until every required BG-29 scenario is verifiably passed, relevant defects are resolved, CI is green at the accepted head, and the source checklist/issue/Linear record are reconciled. An implemented harness alone is insufficient.
