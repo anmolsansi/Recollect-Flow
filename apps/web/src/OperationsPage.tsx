@@ -272,8 +272,12 @@ export function OperationsPage() {
                       )}
                     </p>
                     <p>
-                      Oldest eligible queued: {g.oldest_eligible_created_at
-                        ? age(g.oldest_eligible_created_at, snapshot.operations.generated_at)
+                      Oldest eligible queued:{' '}
+                      {g.oldest_eligible_created_at
+                        ? age(
+                            g.oldest_eligible_created_at,
+                            snapshot.operations.generated_at,
+                          )
                         : 'None in this group'}
                     </p>
                     {g.next_available_at ? (
@@ -309,14 +313,22 @@ export function OperationsPage() {
                   Partial purge workflows:{' '}
                   {snapshot.operations.recovery.partial_purges}
                 </p>
-                {snapshot.operations.recovery.partial_purge_samples.map((purge) => (
-                  <p key={purge.id}>
-                    <a href={'/api/v1/purges/' + encodeURIComponent(purge.id)} target="_blank" rel="noreferrer">
-                      Inspect purge {purge.id}
-                    </a>
-                    {purge.last_error_code ? ' · ' + purge.last_error_code : ''}
-                  </p>
-                ))}
+                {snapshot.operations.recovery.partial_purge_samples.map(
+                  (purge) => (
+                    <p key={purge.id}>
+                      <a
+                        href={'/api/v1/purges/' + encodeURIComponent(purge.id)}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Inspect purge {purge.id}
+                      </a>
+                      {purge.last_error_code
+                        ? ' · ' + purge.last_error_code
+                        : ''}
+                    </p>
+                  ),
+                )}
                 <p>
                   Failed hosted backups:{' '}
                   {snapshot.operations.recovery.failed_backups}
