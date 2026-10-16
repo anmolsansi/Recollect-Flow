@@ -38,9 +38,9 @@ describe('BG-28 verified weekly hosted-backup scheduler', () => {
     const at = new Date('2026-10-19T02:15:00.000Z');
     const first = await createWeeklyHostedBackup(env.DB, env.ATTACHMENTS, at);
     expect(first).toBe('complete');
-    expect(
-      await createWeeklyHostedBackup(env.DB, env.ATTACHMENTS, at),
-    ).toBe('already_claimed');
+    expect(await createWeeklyHostedBackup(env.DB, env.ATTACHMENTS, at)).toBe(
+      'already_claimed',
+    );
 
     const artifacts = await env.DB.prepare(
       'SELECT state, sha256, size_bytes, verified_at FROM backup_artifacts',
@@ -75,9 +75,9 @@ describe('BG-28 verified weekly hosted-backup scheduler', () => {
       state: 'failed',
       failure_code: 'SYNTHETIC_BUCKET_ERROR',
     });
-    expect(
-      await createWeeklyHostedBackup(env.DB, env.ATTACHMENTS, at),
-    ).toBe('already_claimed');
+    expect(await createWeeklyHostedBackup(env.DB, env.ATTACHMENTS, at)).toBe(
+      'already_claimed',
+    );
     const complete = await env.DB.prepare(
       "SELECT COUNT(*) AS total FROM backup_artifacts WHERE state = 'complete'",
     ).first<{ total: number }>();
