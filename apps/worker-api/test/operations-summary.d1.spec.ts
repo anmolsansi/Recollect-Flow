@@ -69,6 +69,11 @@ describe('BG-26 operational visibility', () => {
       .bind(at)
       .run();
     await env.DB.prepare(
+      "INSERT INTO sync_attempts (id, item_id, destination, status, available_at, last_error_code, created_at, updated_at) VALUES ('bg26-sync-2', 'bg26-item', 'notion', 'failed', ?1, 'SYNC_AUTH_EXPIRED', ?1, ?1)",
+    )
+      .bind(at)
+      .run();
+    await env.DB.prepare(
       "INSERT INTO purge_workflows (id, item_id, state, confirmation_digest, confirmation_expires_at, requested_edit_version, created_at, updated_at) VALUES ('bg26-purge', 'bg26-item', 'partial', 'digest', ?1, 0, ?1, ?1)",
     )
       .bind(at)
@@ -109,6 +114,16 @@ describe('BG-26 operational visibility', () => {
           status: 'failed',
           sample_error_code: 'PROVIDER_UNAVAILABLE',
         }),
+      ]),
+    );
+    expect(
+      summary.backlog.groups.filter(
+        (group) => group.kind === 'sync' && group.status === 'failed',
+      ),
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ count: 1, sample_error_code: 'PROVIDER_UNAVAILABLE' }),
+        expect.objectContaining({ count: 1, sample_error_code: 'SYNC_AUTH_EXPIRED' }),
       ]),
     );
     expect(summary.recovery.partial_purges).toBe(1);
