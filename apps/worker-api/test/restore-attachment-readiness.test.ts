@@ -71,6 +71,15 @@ describe('BG-28 isolated attachment restore preflight', () => {
     ).toEqual({ checked: 0, problems: [] });
   });
 
+  it('does not treat pending uploads as durable originals', async () => {
+    expect(
+      await inspectRestoreAttachments(
+        plan([{ ...original, status: 'pending' }]),
+        bucket({}),
+      ),
+    ).toEqual({ checked: 0, problems: [] });
+  });
+
   it('rejects malformed attachment metadata before any apply', async () => {
     await expect(
       inspectRestoreAttachments(
