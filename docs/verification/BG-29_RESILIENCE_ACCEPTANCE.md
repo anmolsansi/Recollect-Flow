@@ -70,17 +70,17 @@ Worker benchmark used 20 synthetic Sensitive text/note captures,
 concurrency 2, one-second spacing between pairs, and no warmup.
 All 20 acknowledgments succeeded, with no duplicate replay.
 
-| Metric | Observed | Scope |
-| --- | ---: | --- |
-| Capture P50 | 13.25 ms | Acknowledgment only |
-| Capture P95 | 24.47 ms | Acknowledgment only |
-| Min/max | 8.43 / 36.04 ms | Same 20 samples |
-| Total interval | 9,190.47 ms | Includes batch spacing |
-| Verify one saved raw phrase | 5.37 ms | Admin lexical search |
-| FTS phrase query | 17 ms | 10,000-row isolated D1 |
-| D1 search service DB timing | 15 ms | Same phrase |
-| Indexed matches | 769 | `bg29needle` every 13th row |
-| FTS count-query rows read | 769 | Count query only, not search API |
+| Metric                      |        Observed | Scope                            |
+| --------------------------- | --------------: | -------------------------------- |
+| Capture P50                 |        13.25 ms | Acknowledgment only              |
+| Capture P95                 |        24.47 ms | Acknowledgment only              |
+| Min/max                     | 8.43 / 36.04 ms | Same 20 samples                  |
+| Total interval              |     9,190.47 ms | Includes batch spacing           |
+| Verify one saved raw phrase |         5.37 ms | Admin lexical search             |
+| FTS phrase query            |           17 ms | 10,000-row isolated D1           |
+| D1 search service DB timing |           15 ms | Same phrase                      |
+| Indexed matches             |             769 | `bg29needle` every 13th row      |
+| FTS count-query rows read   |             769 | Count query only, not search API |
 
 The 10,000-row fixture alternates text/note, rotates four privacy
 levels, sets `work` on each third item and gives every item one tied
