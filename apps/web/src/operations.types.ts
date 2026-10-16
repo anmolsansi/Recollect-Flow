@@ -32,7 +32,9 @@ export interface UsageSnapshot {
   }>;
   deferred_jobs: Array<{ reason: string; count: number }>;
   last_successful_provider_calls: Array<{
-    provider: string; operation: string; at: string;
+    provider: string;
+    operation: string;
+    at: string;
   }>;
 }
 export interface BacklogGroup {
@@ -51,12 +53,18 @@ export interface OperationsSummary {
     partial_purges: number;
     failed_backups: number;
     latest_verified_backup: null | {
-      id: string; sha256: string | null; size_bytes: number | null;
-      verified_at: string | null; expires_at: string;
+      id: string;
+      sha256: string | null;
+      size_bytes: number | null;
+      verified_at: string | null;
+      expires_at: string;
     };
     latest_integrity: null | {
-      id: string; state: string; finding_count: number;
-      started_at: string; completed_at: string | null;
+      id: string;
+      state: string;
+      finding_count: number;
+      started_at: string;
+      completed_at: string | null;
       last_error_code: string | null;
     };
     ambiguous_digests: number;
