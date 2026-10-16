@@ -96,6 +96,88 @@ resource limits, hosted billing or real provider cost. Newer commits
 must be tested on their own exact head before any source checklist
 completion is attributed to those changes.
 
+## October 16 expanded local scale and resilience checkpoint
+
+[CI #38970278063](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38970278063)
+ran the new D1/FTS 100,000-record suite successfully, while the
+overall run failed on separately reported test-fixture errors.
+The source fixture alternates text/note, four privacy levels,
+work/home projects, and identical timestamps to exercise keyset ties.
+It indexed **100,000 canonical items** through real D1 triggers,
+found **5,263 matching documents**, returned 25 correct filtered
+results, and verified four consecutive pages without duplicates.
+Observed combined query wall time was **38 ms**; the search service
+reported **35 ms** DB time. The separate FTS count query recorded
+**5,263 rows read**, not the complete search API query's rows read.
+No hosted or live-account measurements are implied.
+
+The 25,000,000-byte PDF upload path was exercised in the same
+isolated run. The fixture received the expected 413 rejection
+for 25,000,001 bytes, then a 201 reservation, 200 upload, and
+200 finalize for exactly 25,000,000 bytes. Two later checks used
+the wrong test-only D1 column name and failed; the following
+fix uses the authoritative `object_key`. Do not claim full
+file-bound acceptance until the corrected exact-head suite passes.
+The canceled-before-PUT case covers an abandoned reservation only,
+not a midstream cancellation or browser interruption.
+
+The shared `AiProviderRegistry` now validates every extracted
+structured result before capacity accounting and canonical writes.
+Dedicated unit tests reject missing fields, wrong types/ranges,
+non-objects, and unexpected fields, without echoing raw model
+output. The D1 failure/override integration fixture had an
+incorrect expected job-service return value in its first run;
+the test now checks the actual durable pending transition.
+The required full latest-head regression run is separate proof.
+
+### Current hourly background service limits
+
+The repository's existing `wrangler.toml` invokes background
+work at minute 17 of every hour. Its Worker entrypoint calls
+source acquisition, extraction, enrichment and Notion sync using
+separate bounded leases. Inspection of current source yields:
+
+| Stage | Jobs admitted per scheduled attempt |
+| --- | ---: |
+| URL acquisition | 10 |
+| Attachment extraction | 10 |
+| AI enrichment | 10 |
+| Notion sync | 25 |
+
+Under a hypothetical healthy, instantaneous worker model,
+a backlog of 100 eligible items at a ten-item stage needs
+**at least 10 hourly sweeps** to drain that stage. Three dependent
+ten-item stages may add up to one scheduler interval per transition,
+depending on processing order. This is only a capacity floor:
+provider retries, AI hard stops, full upload/processing durations,
+worker limits and downstream jobs can increase real drain times.
+The previous 15-job fixture used an accelerated logical clock;
+it was **not** measured hosted throughput or actual cron lag.
+No cadence or concurrency change is authorized without new
+measurement and lease/zero-cost review.
+
+### FTS drift recovery acceptance
+
+The new `npm run bg29:fts:smoke` script uses a fresh temporary
+`--local --persist-to` D1 database with migrations, deliberately
+removes an indexed row, runs the repository's actual
+`scripts/rebuild-item-search-index.sql` twice, and checks the
+returned missing/orphan/duplicate counters plus phrase search.
+It never executes `--remote` and deletes only its own disposable
+fixture. Its CI result remains pending until an exact-head run
+finishes.
+
+### Unresolved acceptance distinction
+
+An explicit completed scenario with measured isolated data is
+different from a deferred operational acceptance gate.
+Hosted Worker CPU/memory, real D1 billed rows, real provider
+plan and zero-cost status, live Notion outage/recreation and
+the multi-stage hourly backlog drain still require appropriate
+authorized staging/operator evidence. Browser interrupted-upload
+and parser timeout/memory behavior must be separately evaluated,
+not inferred from a canceled-before-PUT fixture.
+
 ## Final decision
 
 BG-30 remains locked until every required BG-29 scenario is verifiably passed, relevant defects are resolved, CI is green at the accepted head, and the source checklist/issue/Linear record are reconciled. An implemented harness alone is insufficient.
