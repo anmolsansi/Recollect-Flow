@@ -77,7 +77,12 @@ export async function admitShortcutBeforeBody(
   context: Context<AppContext>,
 ): Promise<Response | null> {
   try {
-    if (await matchesCaptureToken(context.req.header('Authorization'), context.env)) {
+    if (
+      await matchesCaptureToken(
+        context.req.header('Authorization'),
+        context.env,
+      )
+    ) {
       return null;
     }
     throw new AppError(
