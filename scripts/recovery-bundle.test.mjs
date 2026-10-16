@@ -148,8 +148,5 @@ test('duplicate R2 object keys across portable attachments are rejected', async 
     id: 'different-attachment',
   });
   await writeFile(input.exportFile, JSON.stringify(input.envelope));
-  await assert.rejects(
-    verifyRecoveryBundle(input),
-    /DUPLICATE_OBJECT_KEY/,
-  );
+  await assert.rejects(verifyRecoveryBundle(input), /DUPLICATE_OBJECT_KEY/);
 });
