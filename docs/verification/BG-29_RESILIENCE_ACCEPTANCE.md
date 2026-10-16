@@ -203,6 +203,61 @@ idempotent rebuild and phrase-search assertions. Its focused step
 passed. Final CI and browser acceptance on that revision must also
 be reviewed; passing one step alone is not full-head approval.
 
+## October 16 focused outage and stage-timing acceptance
+
+[Focused CI #38973261642](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38973261642)
+passed the isolated D1 coupled AI/Notion outage test, strict model
+schema tests and upload-pressure fixtures. It intentionally disabled
+the real AI adapter without the test-mode mock fallback and used
+synthetic Notion HTTP 503 responses. The acknowledged original
+remained retrievable and searchable throughout. After logical retry
+eligibility, the **same** AI job completed with a locally restored
+mock adapter, and the deferred Notion projection recovered with
+two deterministic fixture requests. The final item was complete,
+its original remained intact, and no processing jobs were outstanding.
+This verifies local recovery state, **not** a live Notion account outage.
+
+The same focused workerd run measured **436 ms** for a
+25,000,000-byte synthetic PDF upload, excluding capture acknowledgment
+and optional AI work. After recovery, one mock AI enrichment job
+took **10 ms**, excluding upload and capture acknowledgment.
+These single-case isolated measurements cannot establish hosted
+provider latency, device upload speed, production CPU/memory or
+sustainable real-world throughput. Per-run timing may change.
+
+The interrupted-stream fixture injected a transport error after
+partial PDF bytes arrived. The request was not acknowledged as a
+successful upload. D1 retained a pending attachment and R2 had no
+original object. This is server-side partial-stream resilience
+evidence, not a real mobile network disconnect and not a complete
+browser retry demonstration.
+
+The malformed AI adapter tests confirm schema-invalid responses are
+rejected without leaking raw provider payloads, and the bounded-call
+test proves exactly **one** adapter call in that scenario. The
+operational backlog summary remains visible during the coupled
+outage. Focused CI is not a substitute for final exact-head full CI.
+
+### Remaining blockers to full BG-29 signoff
+
+- **Worker runtime resource evidence:** obtain CPU time and memory
+  under the actual bundled Worker at the configured near-limit file
+  workload, preferably authorized non-production Cloudflare preview.
+  An isolated D1 test and bundle size do not prove Worker memory/CPU
+  limits or paid/free account behavior.
+- **Measured multi-stage backlog drain:** run the real hourly
+  scheduler against a representative isolated/authorized staging
+  backlog, collect oldest eligible age, stage delays and time to zero
+  for acquisition → extraction → enrichment → Notion. The 15-job
+  logical lease test proves ownership/recovery but not full pipeline
+  service time or provider-dependent drain.
+- **External cost account gate:** verify live provider and Cloudflare
+  quotas/billing within authorized staging before launch. Published
+  provider limits are not an account-specific charge guarantee.
+
+These remain explicit outstanding work and cannot be marked passed
+by the previous local or mocked measurements.
+
 ## Final decision
 
 BG-30 remains locked until every required BG-29 scenario is verifiably passed, relevant defects are resolved, CI is green at the accepted head, and the source checklist/issue/Linear record are reconciled. An implemented harness alone is insufficient.
