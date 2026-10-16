@@ -82,6 +82,13 @@ describe('BG-29 coupled optional-dependency outage and recovery', () => {
       ),
     ).toContain(id);
 
+    const scheduled = await env.DB.prepare(
+      "SELECT status FROM processing_jobs WHERE item_id = ?1 AND job_type = 'enrich'",
+    ).bind(id).first<{ status: string }>();
+    expect(scheduled?.status).toBe('pending');
+    // The server persists available_at at acknowledgment time. The client
+    // capture timestamp can precede that server timestamp by milliseconds.
+    const outageAt = new Date(Date.now() + 2000);
     const jobs = new JobService(env.DB);
     const claimed = await jobs.leaseProcessingJobs(
       'enrich',
@@ -120,7 +127,7 @@ describe('BG-29 coupled optional-dependency outage and recovery', () => {
       ),
     );
     await processNotionSyncJobs(env.DB, 'fixture-token', 'fixture-db', {
-      now: () => at,
+      now: () => outageAt,
       fetcher: notionFailure,
       batchSize: 1,
     });
@@ -133,7 +140,7 @@ describe('BG-29 coupled optional-dependency outage and recovery', () => {
       .first<{ status: string; last_error_code: string }>();
     expect(deferredNotion?.status).toBe('pending');
     expect(deferredNotion?.last_error_code).not.toBeNull();
-    const during = await new OperationsSummaryService(env.DB).status(at);
+    const during = await new OperationsSummaryService(env.DB).status(outageAt);
     expect(during.backlog.groups.length).toBeGreaterThan(0);
     expect(
       (
@@ -150,7 +157,7 @@ describe('BG-29 coupled optional-dependency outage and recovery', () => {
     };
     // Advance logical eligibility after the retry delay, not a production
     // clock or quota reset. The same durable job is recovered.
-    const afterRetry = new Date(at.getTime() + 26 * 60 * 60_000);
+    const afterRetry = new Date(outageAt.getTime() + 26 * 60 * 60_000);
     const recovered = await jobs.leaseProcessingJobs(
       'enrich',
       'bg29-restored-ai',
