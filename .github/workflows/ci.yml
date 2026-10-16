@@ -20,6 +20,7 @@ jobs:
       - run: npm run release:package
       - run: npx wrangler deploy --dry-run --outdir /tmp/bg21-worker
       - run: npm run db:migrate:local
+      - run: npm run bg29:latency:bench
       - run: google-chrome --version
       - run: npm run browser:hosting:test
       - run: node scripts/verify-browser-file-upload.mjs --bundled
