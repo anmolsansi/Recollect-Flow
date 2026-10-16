@@ -54,9 +54,8 @@ describe('BG-28 restore original-byte gate', () => {
         dryRun: false,
       }),
     ).rejects.toMatchObject({ code: 'RESTORE_TARGET_NOT_EMPTY' });
-    const item = await env.DB.prepare(
-      'SELECT id FROM items WHERE id = ?1',
-    )
+    const item = await env.DB
+      .prepare('SELECT id FROM items WHERE id = ?1')
       .bind(ITEM_ID)
       .first<{ id: string }>();
     expect(item?.id).toBe(ITEM_ID);
