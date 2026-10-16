@@ -171,6 +171,7 @@ describe('BG-29 coupled optional-dependency outage and recovery', () => {
     );
     expect(recovered).toHaveLength(1);
     expect(recovered[0]!.id).toBe(claimed[0]!.id);
+    const optionalProcessingStartedMs = Date.now();
     expect(
       await new EnrichService(restored, env.DB).processEnrichmentJob(
         recovered[0]!,
@@ -178,6 +179,16 @@ describe('BG-29 coupled optional-dependency outage and recovery', () => {
       ),
     ).toBe(true);
 
+    const measuredOptionalProcessingMs = Date.now() - optionalProcessingStartedMs;
+    console.log(JSON.stringify({
+      event: 'bg29_isolated_optional_job_timing',
+      stage: 'enrich',
+      job_count: 1,
+      optional_processing_ms: measuredOptionalProcessingMs,
+      environment: 'workerd-vitest-d1-mock-ai',
+      includes_upload_or_acknowledgment: false,
+      caveat: 'Local mocked provider execution, not hosted AI response latency',
+    }));
     const notionRecovered = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(
