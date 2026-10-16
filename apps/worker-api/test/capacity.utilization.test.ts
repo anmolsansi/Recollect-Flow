@@ -57,6 +57,8 @@ describe('OPE-227 capacity utilization', () => {
         dimension: 'requests',
         limit: 100,
         used: 10,
+        consumed: 10,
+        reserved: 0,
         remaining: 90,
         ratio: 0.1,
       },
