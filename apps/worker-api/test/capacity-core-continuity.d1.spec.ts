@@ -6,6 +6,8 @@ import { D1CaptureRepository } from '../src/captures/capture.repository';
 import { CaptureService } from '../src/captures/capture.service';
 import { getProviderCapacityPolicy } from '../src/jobs/ai/capacity.policy';
 import { AiCapacityRepository } from '../src/jobs/ai/capacity.repository';
+import { AiCapacityService } from '../src/jobs/ai/capacity.service';
+import { JobService } from '../src/jobs/job.service';
 import { OperationsSummaryService } from '../src/jobs/operations-summary.service';
 import { executeSearch } from '../src/search/search.service';
 
@@ -119,5 +121,26 @@ describe('OPE-227 AI-independent core continuity', () => {
         }),
       ]),
     );
+
+    // The hard-stop fixture is isolated. Past the policy window, the same
+    // canonical capture becomes lease-eligible again without losing its text.
+    const resumeAt = new Date(current.getTime() + 26 * 60 * 60 * 1000);
+    const admitted = await new AiCapacityService(runtimeEnv, env.DB).admit(
+      'openrouter',
+      'enrich',
+      'openrouter/free',
+      'BG26 isolated capacity reset evidence',
+      1,
+      resumeAt,
+    );
+    expect(admitted).toBeDefined();
+    const resumed = await new JobService(env.DB).leaseProcessingJobs(
+      'enrich',
+      'bg26-synthetic-resume-worker',
+      5,
+      10,
+      resumeAt,
+    );
+    expect(resumed.map((job) => job.itemId)).toContain(captureId);
   });
 });
