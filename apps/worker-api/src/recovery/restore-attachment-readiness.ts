@@ -26,7 +26,13 @@ export async function inspectRestoreAttachments(
 
   for (const entry of plan.items) {
     for (const attachment of entry.attachments) {
-      if (attachment.status === 'deleted') continue;
+      // A pending upload never promised original bytes. Only uploaded,
+      // finalized or linked references need a surviving R2 object.
+      if (
+        attachment.status === 'deleted' ||
+        attachment.status === 'pending' ||
+        attachment.status === 'orphaned'
+      ) continue;
       const itemId = entry.item.id;
       const attachmentId = attachment.id;
       const objectKey = attachment.object_key;
