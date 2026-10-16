@@ -3112,6 +3112,11 @@ Follow the [100 microtasks for BG-27](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-27
 
 ## 34. BG-28 — Make backup, restore and purge procedures complete
 
+The concrete operator workflow is in [BG-28 recovery procedure](RECOVERY_OPERATOR_PROCEDURE.md), with source/test evidence in [BG-28 verification](verification/BG-28_BACKUP_RESTORE_PURGE.md). The implementation now requires an explicit `dry_run=true|false` on the restore endpoint. Dry runs return an attachment-object preflight, and real apply refuses absent/undersized originals. Independently downloaded originals can be audited by size and SHA-256 with `scripts/recovery-bundle.mjs` and its six synthetic Node regressions. These are local code and isolated verification capabilities, not proof that any production object has been independently replicated.
+
+**Backup scheduling boundary:** the currently deployed background job only cleans expired hosted backups. Creation is via the admin-only endpoint, not an already-running weekly scheduler. The release's weekly creation objective needs a real recurring operator schedule or an explicitly authorized automation with recorded successful completions. Do not claim this is active because this guide describes a possible cadence.
+
+
 **What and why.** Recovery is only useful if an operator can execute it under
 pressure and verify that both retained and deliberately deleted data behave correctly.
 
