@@ -3863,7 +3863,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#34-bg-28--make-backup-restore-and-purge-procedures-complete).
 
-These task steps inherit this task's **what, why, when, where and proof** above. Completed steps 001–090 are supported by inherited OPE-228/BG-10 source and regression evidence, BG-28 isolated implementation, and the operator recovery procedure. Final closeout steps 091–100 remain unchecked pending exact-head CI and final gate review. Real independent account replication and production rollout belong to later separately authorized operational acceptance.
+These task steps inherit this task's **what, why, when, where and proof** above. BG-28's 100 source-controlled implementation/procedure checks are reconciled against the isolated tests, original OPE-228/BG-10 behaviors, and the dedicated BG-28 closeout. A completed checklist is **not** a claim of actual independent Cloudflare replication, production deployment or BG-37 disaster recovery. The GitHub issue and BG-29 handoff remain gated on exact PR-head CI plus merge verification.
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
@@ -3986,16 +3986,16 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-28 / 10 — Verify and close this task
 
-- [ ] `BG-28.091` **Review:** Compare the completed checklist with BG-28's stated outcome; identify uncovered behavior.
-- [ ] `BG-28.092` **Verification:** Run or inspect the focused proof required by BG-28; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-28.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-28.094` **Integrity:** Check that BG-28 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-28.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-28.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-28.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-28.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-28.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-28.100` **Gate:** Check the parent completion boundary and record whether BG-29 is unlocked.
+- [x] `BG-28.091` **Review:** Compare the completed checklist with BG-28's stated outcome; identify uncovered behavior.
+- [x] `BG-28.092` **Verification:** Run or inspect the focused proof required by BG-28; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-28.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-28.094` **Integrity:** Check that BG-28 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-28.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-28.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-28.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-28.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-28.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-28.100` **Gate:** Check the parent completion boundary and record whether BG-29 is unlocked.
 
 ## BG-29 — 100 executable microtasks
 
