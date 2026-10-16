@@ -14,9 +14,11 @@ export interface BacklogGroup {
   sample_error_code: string | null;
 }
 
-interface BacklogRow extends BacklogGroup {}
+type BacklogRow = BacklogGroup;
 
-interface CountRow { count: number }
+interface CountRow {
+  count: number;
+}
 interface AttachmentRow {
   objects: number;
   bytes: number | null;
@@ -97,47 +99,88 @@ export class OperationsSummaryService {
       LIMIT 101
     `;
     const [
-      processing, sync, partialPurges, failedBackups, newestVerifiedBackup,
-      newestIntegrity, unknownDigests, missingNotion, attachments,
+      processing,
+      sync,
+      partialPurges,
+      failedBackups,
+      newestVerifiedBackup,
+      newestIntegrity,
+      unknownDigests,
+      missingNotion,
+      attachments,
     ] = await Promise.all([
       this.db.prepare(processingSql).bind(at).all<BacklogRow>(),
       this.db.prepare(syncSql).bind(at).all<BacklogRow>(),
-      this.db.prepare("SELECT COUNT(*) AS count FROM purge_workflows WHERE state = 'partial'").first<CountRow>(),
-      this.db.prepare("SELECT COUNT(*) AS count FROM backup_artifacts WHERE state = 'failed'").first<CountRow>(),
-      this.db.prepare("SELECT id, state, sha256, size_bytes, verified_at, expires_at, failure_code FROM backup_artifacts WHERE state = 'complete' AND verified_at IS NOT NULL ORDER BY verified_at DESC LIMIT 1").first<BackupRow>(),
-      this.db.prepare("SELECT id, state, finding_count, started_at, completed_at, last_error_code FROM integrity_runs ORDER BY started_at DESC LIMIT 1").first<IntegrityRow>(),
-      this.db.prepare("SELECT COUNT(*) AS count FROM digest_deliveries WHERE state = 'unknown'").first<CountRow>(),
-      this.db.prepare("SELECT COUNT(*) AS count FROM items WHERE deleted_at IS NULL AND notion_missing_at IS NOT NULL").first<CountRow>(),
-      this.db.prepare("SELECT COUNT(*) AS objects, COALESCE(SUM(size_bytes), 0) AS bytes, COALESCE(SUM(CASE WHEN status = 'orphaned' THEN 1 ELSE 0 END), 0) AS orphaned_objects, COALESCE(SUM(CASE WHEN status = 'orphaned' THEN size_bytes ELSE 0 END), 0) AS orphaned_bytes FROM attachments WHERE status IN ('uploaded', 'finalized', 'linked', 'orphaned')").first<AttachmentRow>(),
+      this.db
+        .prepare(
+          "SELECT COUNT(*) AS count FROM purge_workflows WHERE state = 'partial'",
+        )
+        .first<CountRow>(),
+      this.db
+        .prepare(
+          "SELECT COUNT(*) AS count FROM backup_artifacts WHERE state = 'failed'",
+        )
+        .first<CountRow>(),
+      this.db
+        .prepare(
+          "SELECT id, state, sha256, size_bytes, verified_at, expires_at, failure_code FROM backup_artifacts WHERE state = 'complete' AND verified_at IS NOT NULL ORDER BY verified_at DESC LIMIT 1",
+        )
+        .first<BackupRow>(),
+      this.db
+        .prepare(
+          'SELECT id, state, finding_count, started_at, completed_at, last_error_code FROM integrity_runs ORDER BY started_at DESC LIMIT 1',
+        )
+        .first<IntegrityRow>(),
+      this.db
+        .prepare(
+          "SELECT COUNT(*) AS count FROM digest_deliveries WHERE state = 'unknown'",
+        )
+        .first<CountRow>(),
+      this.db
+        .prepare(
+          'SELECT COUNT(*) AS count FROM items WHERE deleted_at IS NULL AND notion_missing_at IS NOT NULL',
+        )
+        .first<CountRow>(),
+      this.db
+        .prepare(
+          "SELECT COUNT(*) AS objects, COALESCE(SUM(size_bytes), 0) AS bytes, COALESCE(SUM(CASE WHEN status = 'orphaned' THEN 1 ELSE 0 END), 0) AS orphaned_objects, COALESCE(SUM(CASE WHEN status = 'orphaned' THEN size_bytes ELSE 0 END), 0) AS orphaned_bytes FROM attachments WHERE status IN ('uploaded', 'finalized', 'linked', 'orphaned')",
+        )
+        .first<AttachmentRow>(),
     ]);
 
     const processingRows = processing.results ?? [];
     const syncRows = sync.results ?? [];
     const truncated = processingRows.length > 100 || syncRows.length > 100;
-    const groups = [...processingRows.slice(0, 100), ...syncRows.slice(0, 100)]
-      .map((row) => ({
-        kind: row.kind,
-        type: row.type,
-        status: row.status,
-        count: row.count,
-        oldest_created_at: row.oldest_created_at,
-        next_available_at: row.next_available_at,
-        sample_error_code: safeCode(row.sample_error_code),
-      }));
+    const groups = [
+      ...processingRows.slice(0, 100),
+      ...syncRows.slice(0, 100),
+    ].map((row) => ({
+      kind: row.kind,
+      type: row.type,
+      status: row.status,
+      count: row.count,
+      oldest_created_at: row.oldest_created_at,
+      next_available_at: row.next_available_at,
+      sample_error_code: safeCode(row.sample_error_code),
+    }));
 
     return {
       generated_at: at,
       backlog: {
         groups,
         truncated,
-        scope: 'current non-deleted D1 item jobs, historical generations excluded',
+        scope:
+          'current non-deleted D1 item jobs, historical generations excluded',
       },
       recovery: {
         partial_purges: partialPurges?.count ?? 0,
         failed_backups: failedBackups?.count ?? 0,
         latest_verified_backup: newestVerifiedBackup ?? null,
         latest_integrity: newestIntegrity
-          ? { ...newestIntegrity, last_error_code: safeCode(newestIntegrity.last_error_code) }
+          ? {
+              ...newestIntegrity,
+              last_error_code: safeCode(newestIntegrity.last_error_code),
+            }
           : null,
         ambiguous_digests: unknownDigests?.count ?? 0,
         missing_notion_projections: missingNotion?.count ?? 0,
