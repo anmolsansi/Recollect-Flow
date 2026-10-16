@@ -186,8 +186,7 @@ try {
   report('BG27-mobile-layout');
 
   await evaluate(browser, 'window.fetch = window.__bg27Fetch');
-  await navigate(browser, runtime.webOrigin + '/');
-  await clickButton(browser, 'Logout');
+  await browser.client.send('Network.clearBrowserCookies', {}, browser.sessionId);
   await navigate(browser, runtime.webOrigin + '/items/' + replacement);
   await waitFor(
     browser,
