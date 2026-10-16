@@ -113,6 +113,16 @@ The [BG-25 working evidence](verification/BG-25_SECURITY_HARDENING.md) identifie
 | Private objects and exports | Existing authenticated R2 read, no-store API, opaque attachment IDs                                                   | Existing BG-06/BG-18 checks reused; new guessed-key/remote cache audit pending |
 | Web rendering               | React-escaped dynamic strings, no unsafe HTML insertion found                                                         | Source inspection, malicious-snippet browser test pending                      |
 
+**BG-25 October 16 reconciliation:** The security boundary changes and
+representative local regressions are recorded in
+[BG-25 evidence](verification/BG-25_SECURITY_HARDENING.md). The canonical
+checklist is 97/100 with BG-25.029 (native limiter reset), BG-25.031
+(actual HTTPS session cookies) and BG-25.083 (deployed response headers)
+still blocked on authenticated isolated Cloudflare staging. Browser access to
+the account was unavailable. These are release blockers, not waived passes.
+Production credential or data changes were not authorized or made. BG-26 is
+not unlocked.
+
 No test or scanner run by itself closes the broader OPE-247 security release gate. Temporary browser logout does not revoke copies of an already-issued cookie. Signed-session incident response requires an authorized secret rotation.
 
 ## Security release gate
