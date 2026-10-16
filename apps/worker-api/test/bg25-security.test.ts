@@ -304,3 +304,115 @@ describe('BG-25 bounded bodies and safe diagnostics', () => {
     expect(JSON.stringify(log.mock.calls)).not.toContain(marker);
   });
 });
+
+describe('BG-25 cross-route rejection and diagnostic confidentiality', () => {
+  it('rejects foreign and null Origin across cookie mutations before state changes', async () => {
+    const app = createApp();
+    const loginResponse = await login(base, { token: base.ADMIN_TOKEN });
+    expect(loginResponse.status).toBe(200);
+    const cookie = loginResponse.headers.get('set-cookie')!.split(';')[0]!;
+    const mutations = [
+      ['POST', '/api/v1/captures'],
+      ['POST', '/api/v1/uploads/init'],
+      ['POST', '/api/v1/digests/generate'],
+      ['POST', '/api/v1/restore?dry_run=true'],
+      ['DELETE', '/api/v1/admin/session'],
+    ] as const;
+    for (const [method, route] of mutations) {
+      for (const origin of ['https://untrusted.example.test', 'null']) {
+        const response = await app.request(
+          'https://inbox.example.test' + route,
+          { method, headers: { Cookie: cookie, Origin: origin } },
+          base,
+        );
+        expect(response.status, method + ' ' + route + ' ' + origin).toBe(403);
+        expect(await response.json()).toMatchObject({
+          error: { code: 'ORIGIN_FORBIDDEN' },
+        });
+        expect(response.headers.get('set-cookie')).toBeNull();
+      }
+    }
+    const valid = await app.request(
+      'https://inbox.example.test/api/v1/admin/session',
+      { headers: { Cookie: cookie } },
+      base,
+    );
+    expect(valid.status).toBe(200);
+    const logout = await app.request(
+      'https://inbox.example.test/api/v1/admin/session',
+      { method: 'DELETE', headers: { Cookie: cookie, Origin: 'https://inbox.example.test' } },
+      base,
+    );
+    expect(logout.status).toBe(200);
+    expect(logout.headers.get('set-cookie')).toContain('Max-Age=0');
+  });
+
+  it('does not pull an unauthorized upload or restore body stream', async () => {
+    const app = createApp();
+    for (const [method, route, expected] of [
+      ['PUT', '/api/v1/uploads/11111111-1111-4111-8111-111111111111/content', 401],
+      ['POST', '/api/v1/restore?dry_run=true', 403],
+    ] as const) {
+      let reads = 0;
+      const stream = new ReadableStream<Uint8Array>({
+        pull(controller) {
+          reads += 1;
+          controller.enqueue(new Uint8Array(100));
+          controller.close();
+        },
+      });
+      const request = new Request('http://localhost' + route, {
+        method,
+        body: stream,
+        duplex: 'half',
+      } as RequestInit & { duplex: 'half' });
+      const response = await app.fetch(request, {
+        ...base,
+        MAX_ATTACHMENT_BYTES: '1000',
+      });
+      expect(response.status, route).toBe(expected);
+      // The Web streams implementation may eagerly call pull() once when
+      // constructing Request; no code should actively consume request.body.
+      expect(reads).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('omits synthetic private material in rejected headers and malformed JSON', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const attempts = [
+      createApp().request('/api/v1/captures?' + marker, {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + marker,
+          'Content-Type': 'application/json',
+          'X-Request-Id': marker,
+        },
+        body: '{"content":"' + marker + '",',
+      }, base),
+      createApp().request('https://inbox.example.test/api/v1/admin/session?' + marker, {
+        method: 'POST',
+        headers: {
+          Origin: 'https://inbox.example.test',
+          'Content-Type': 'application/json',
+          'X-Request-Id': 'rejected-id-' + marker,
+        },
+        body: '{"token":"' + marker + '"',
+      }, base),
+    ];
+    const responses = await Promise.all(attempts);
+    expect(responses[0].status).toBe(401);
+    expect(responses[1].status).toBe(422);
+    const diagnostics = JSON.stringify({
+      logs: log.mock.calls,
+      errors: error.mock.calls,
+      responses: await Promise.all(responses.map((response) => response.text())),
+    });
+    // X-Request-Id is intentionally a safe diagnostic identifier and can be
+    // provided by a caller. A user-supplied marker in that ID is not a secret
+    // redaction guarantee, so tests must not invent that guarantee.
+    expect(diagnostics).not.toContain('{"token":"' + marker);
+    expect(diagnostics).not.toContain('{"content":"' + marker);
+    expect(diagnostics).not.toContain('Bearer ' + marker);
+  });
+});
