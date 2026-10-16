@@ -1,0 +1,39 @@
+name: BG-27 scoped format
+
+on:
+  push:
+    branches:
+      - feat/bg-27-digest-review-reconciliation
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bg27-format-final
+  cancel-in-progress: true
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bg-27-digest-review-reconciliation
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write scripts/verify-browser-digests.mjs
+      - name: Commit scoped browser test formatting
+        run: |
+          if git diff --quiet; then
+            echo 'No formatting changes required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add scripts/verify-browser-digests.mjs
+          git commit -m 'style(digests): normalize browser acceptance script [49/50] (#94)'
+          git push origin HEAD:feat/bg-27-digest-review-reconciliation
