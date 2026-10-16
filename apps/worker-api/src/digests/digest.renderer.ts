@@ -146,6 +146,7 @@ export interface RenderedDigest {
   text: string;
   empty: boolean;
   currentEligibleCount: number;
+  items: Array<{ id: string; label: string; url: string }>;
 }
 
 export function renderDigest(
@@ -306,6 +307,13 @@ export function renderDigest(
     text: boundDigestMessage(lines),
     empty,
     currentEligibleCount: currentEligible.length,
+    items: currentEligible.slice(0, 50).map((item) => ({
+      id: item.id,
+      label: item.privacyLevel === 'public'
+        ? safeLabel(item.title, 'Saved item')
+        : 'Private item',
+      url: itemLink(baseUrl, item.id),
+    })),
   };
 }
 
