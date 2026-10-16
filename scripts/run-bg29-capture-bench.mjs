@@ -26,10 +26,15 @@ try {
     concurrency,
     batchIntervalMs,
   });
-  console.log(JSON.stringify({ ...report, run_at: new Date().toISOString() }, null, 2));
+  console.log(
+    JSON.stringify({ ...report, run_at: new Date().toISOString() }, null, 2),
+  );
   if (!report.meets_local_target) process.exitCode = 1;
 } catch (error) {
-  console.error('BG-29 isolated benchmark failed:', error instanceof Error ? error.message : String(error));
+  console.error(
+    'BG-29 isolated benchmark failed:',
+    error instanceof Error ? error.message : String(error),
+  );
   process.exitCode = 1;
 } finally {
   await runtime?.close();

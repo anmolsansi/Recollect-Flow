@@ -9,11 +9,16 @@ export function percentileNearestRank(samples, fraction) {
   if (!Array.isArray(samples) || samples.length === 0) {
     throw new Error('At least one measured sample is required');
   }
-  if (!(fraction > 0 && fraction <= 1) || samples.some((n) => !Number.isFinite(n) || n < 0)) {
+  if (
+    !(fraction > 0 && fraction <= 1) ||
+    samples.some((n) => !Number.isFinite(n) || n < 0)
+  ) {
     throw new Error('Samples and percentile must be finite and nonnegative');
   }
   const sorted = [...samples].sort((a, b) => a - b);
-  return Math.round(sorted[Math.ceil(fraction * sorted.length) - 1] * 100) / 100;
+  return (
+    Math.round(sorted[Math.ceil(fraction * sorted.length) - 1] * 100) / 100
+  );
 }
 
 export function requireLocalOrigin(value) {
@@ -21,9 +26,15 @@ export function requireLocalOrigin(value) {
   if (
     url.protocol !== 'http:' ||
     !['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) ||
-    url.username || url.password || url.search || url.hash || url.pathname !== '/'
+    url.username ||
+    url.password ||
+    url.search ||
+    url.hash ||
+    url.pathname !== '/'
   ) {
-    throw new Error('BG-29 benchmark accepts only a local HTTP origin without credentials or paths');
+    throw new Error(
+      'BG-29 benchmark accepts only a local HTTP origin without credentials or paths',
+    );
   }
   return url.origin;
 }
@@ -50,7 +61,12 @@ export async function runCaptureBench({
   positiveInteger(count, 200, 'count');
   positiveInteger(concurrency, 5, 'concurrency');
   positiveInteger(batchIntervalMs, 5000, 'batchIntervalMs');
-  if (typeof captureToken !== 'string' || !captureToken || typeof adminToken !== 'string' || !adminToken) {
+  if (
+    typeof captureToken !== 'string' ||
+    !captureToken ||
+    typeof adminToken !== 'string' ||
+    !adminToken
+  ) {
     throw new Error('Synthetic capture and search tokens are required');
   }
 
@@ -73,7 +89,10 @@ export async function runCaptureBench({
     const start = now();
     const response = await fetchImpl(`${base}/api/v1/captures`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${captureToken}`, 'Content-Type': 'application/json' },
+      headers: {
+        Authorization: `Bearer ${captureToken}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(15000),
     });
@@ -82,8 +101,14 @@ export async function runCaptureBench({
       throw new Error(`Capture ${index} failed with HTTP ${response.status}`);
     }
     const result = await response.json();
-    if (result?.data?.status !== 'saved' || !result?.data?.capture_id || result?.data?.replayed) {
-      throw new Error(`Capture ${index} lacked a durable new-item acknowledgment`);
+    if (
+      result?.data?.status !== 'saved' ||
+      !result?.data?.capture_id ||
+      result?.data?.replayed
+    ) {
+      throw new Error(
+        `Capture ${index} lacked a durable new-item acknowledgment`,
+      );
     }
     sampleMs.push(elapsed);
     if (index === 0) sampleSearch = { marker, id: result.data.capture_id };
@@ -92,7 +117,10 @@ export async function runCaptureBench({
   // Deliberately bounded arrival pattern; capture durations exclude search/launch.
   for (let index = 0; index < count; index += concurrency) {
     await Promise.all(
-      Array.from({ length: Math.min(concurrency, count - index) }, (_, offset) => capture(index + offset)),
+      Array.from(
+        { length: Math.min(concurrency, count - index) },
+        (_, offset) => capture(index + offset),
+      ),
     );
     if (index + concurrency < count) await sleep(batchIntervalMs);
   }
@@ -100,14 +128,21 @@ export async function runCaptureBench({
   const searchStart = now();
   const searchResponse = await fetchImpl(
     `${base}/api/v1/search?q=${encodeURIComponent(sampleSearch.marker)}&limit=10`,
-    { headers: { Authorization: `Bearer ${adminToken}` }, signal: AbortSignal.timeout(15000) },
+    {
+      headers: { Authorization: `Bearer ${adminToken}` },
+      signal: AbortSignal.timeout(15000),
+    },
   );
   if (searchResponse.status !== 200) {
-    throw new Error(`Search verification failed with HTTP ${searchResponse.status}`);
+    throw new Error(
+      `Search verification failed with HTTP ${searchResponse.status}`,
+    );
   }
   const searched = await searchResponse.json();
   if (!searched?.data?.some((item) => item.id === sampleSearch.id)) {
-    throw new Error('Search did not retrieve the acknowledged synthetic capture');
+    throw new Error(
+      'Search did not retrieve the acknowledged synthetic capture',
+    );
   }
   const searchMs = now() - searchStart;
   const p50 = percentileNearestRank(sampleMs, 0.5);
@@ -121,7 +156,12 @@ export async function runCaptureBench({
     warmup_count: 0,
     failures: 0,
     duration_ms: Math.round((now() - runStart) * 100) / 100,
-    capture_ack_ms: { p50, p95, min: percentileNearestRank(sampleMs, 1 / count), max: percentileNearestRank(sampleMs, 1) },
+    capture_ack_ms: {
+      p50,
+      p95,
+      min: percentileNearestRank(sampleMs, 1 / count),
+      max: percentileNearestRank(sampleMs, 1),
+    },
     search_verification_ms: Math.round(searchMs * 100) / 100,
     target_p95_ms: 2000,
     meets_local_target: p95 <= 2000,

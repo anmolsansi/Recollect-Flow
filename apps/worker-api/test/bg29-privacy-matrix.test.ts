@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import { captureSchema } from '../src/captures/capture.schema';
-import { ALLOWED_DATA_MATRIX, PolicyService } from '../src/policy/policy.service';
+import {
+  ALLOWED_DATA_MATRIX,
+  PolicyService,
+} from '../src/policy/policy.service';
 
 const levels = ['unknown', 'public', 'personal', 'sensitive'] as const;
 const sources = ['url', 'text', 'note', 'image', 'file'] as const;
@@ -53,7 +56,9 @@ describe('BG-29 privacy and input scenario matrix', () => {
       { source_type: 'note', shared_text: '   ' },
       { source_type: 'text', shared_text: '' },
     ]) {
-      expect(captureSchema.safeParse({ ...base, ...invalid }).success).toBe(false);
+      expect(captureSchema.safeParse({ ...base, ...invalid }).success).toBe(
+        false,
+      );
     }
   });
 
@@ -61,7 +66,9 @@ describe('BG-29 privacy and input scenario matrix', () => {
     const policy = new PolicyService();
     for (const source of sources) {
       for (const level of ['unknown', 'sensitive'] as const) {
-        expect(ALLOWED_DATA_MATRIX[level].openrouter).not.toContain(modality[source]);
+        expect(ALLOWED_DATA_MATRIX[level].openrouter).not.toContain(
+          modality[source],
+        );
         const decision = policy.route({
           privacyLevel: level,
           modality: modality[source],

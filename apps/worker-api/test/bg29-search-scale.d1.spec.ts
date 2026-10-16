@@ -56,9 +56,13 @@ describe('BG-29 isolated 10,000-item D1/FTS search acceptance', () => {
     const elapsed = Date.now() - started;
     expect(phrase.data).toHaveLength(25);
     expect(phrase.meta.next_cursor).toBeTruthy();
-    expect(phrase.data.every((item) => item.snippet.segments.some(
-      (segment) => segment.text.toLowerCase().includes('bg29needle'),
-    ))).toBe(true);
+    expect(
+      phrase.data.every((item) =>
+        item.snippet.segments.some((segment) =>
+          segment.text.toLowerCase().includes('bg29needle'),
+        ),
+      ),
+    ).toBe(true);
 
     const filtered = await executeSearch(env.DB, {
       q: 'bg29needle',
@@ -68,11 +72,14 @@ describe('BG-29 isolated 10,000-item D1/FTS search acceptance', () => {
       limit: 25,
     });
     expect(filtered.data.length).toBeGreaterThan(0);
-    expect(filtered.data.every((item) =>
-      item.source_type === 'text' &&
-      item.privacy_level === 'public' &&
-      item.project === 'work',
-    )).toBe(true);
+    expect(
+      filtered.data.every(
+        (item) =>
+          item.source_type === 'text' &&
+          item.privacy_level === 'public' &&
+          item.project === 'work',
+      ),
+    ).toBe(true);
 
     // D1 rows_read belongs to this explicit FTS query only, not to the
     // executeSearch call (whose API currently returns only duration_ms).
@@ -82,17 +89,20 @@ describe('BG-29 isolated 10,000-item D1/FTS search acceptance', () => {
       .bind('"bg29needle"')
       .all<{ total: number }>();
     expect(fts.results[0]?.total).toBe(Math.floor(CORPUS / 13));
-    console.log(JSON.stringify({
-      event: 'bg29_isolated_search_scale',
-      environment: 'workerd-vitest-d1',
-      item_count: CORPUS,
-      indexed_match_count: fts.results[0]?.total,
-      phrase_query_ms: elapsed,
-      phrase_service_db_ms: phrase.meta.duration_ms,
-      fts_count_rows_read: fts.meta?.rows_read ?? null,
-      fts_count_rows_written: fts.meta?.rows_written ?? null,
-      caveat: 'FTS count metrics exclude executeSearch query; not hosted D1 billing or 100k scale',
-    }));
+    console.log(
+      JSON.stringify({
+        event: 'bg29_isolated_search_scale',
+        environment: 'workerd-vitest-d1',
+        item_count: CORPUS,
+        indexed_match_count: fts.results[0]?.total,
+        phrase_query_ms: elapsed,
+        phrase_service_db_ms: phrase.meta.duration_ms,
+        fts_count_rows_read: fts.meta?.rows_read ?? null,
+        fts_count_rows_written: fts.meta?.rows_written ?? null,
+        caveat:
+          'FTS count metrics exclude executeSearch query; not hosted D1 billing or 100k scale',
+      }),
+    );
   }, 120_000);
 
   it('traverses stable tied-time pagination without repeats', async () => {

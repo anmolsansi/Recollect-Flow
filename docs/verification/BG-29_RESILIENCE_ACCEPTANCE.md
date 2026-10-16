@@ -9,19 +9,19 @@
 
 Build Guide §35, the 100 canonical BG-29 microtasks, [Testing and Acceptance](../TESTING_AND_ACCEPTANCE.md), [Operations Runbook](../OPERATIONS_RUNBOOK.md), and the current schemas define acceptance. Capture P95 target is **2,000 ms or less excluding uploads** under documented personal load. Capture acknowledgment, upload, enrichment, Notion sync and backlog drain are **different measurements**; none substitutes for another.
 
-BG-28 was merged on the baseline. The inherited `capacity.d1.spec.ts`, `circuit-breaker.d1.spec.ts`, `capacity-core-continuity.d1.spec.ts`, `manual-retry-capacity.d1.spec.ts`, `source-fetcher.d1.spec.ts` and search/recovery tests already cover narrow guards. They are valuable *prior* coverage, not a BG-29 load-run result.
+BG-28 was merged on the baseline. The inherited `capacity.d1.spec.ts`, `circuit-breaker.d1.spec.ts`, `capacity-core-continuity.d1.spec.ts`, `manual-retry-capacity.d1.spec.ts`, `source-fetcher.d1.spec.ts` and search/recovery tests already cover narrow guards. They are valuable _prior_ coverage, not a BG-29 load-run result.
 
 ## Input/privacy fixture matrix
 
 Each input must use synthetic content with a unique marker, stable idempotency key, and known expected raw text or original byte SHA-256. The four columns are **privacy classes**, not hosted-provider approval. The server's `PolicyService` is authoritative for actual routing.
 
-| Input | Unknown | Public | Personal | Sensitive | Special precondition |
-| --- | --- | --- | --- | --- | --- |
-| URL | Capture + private source | Capture + private source | Capture + private source | Capture + private source | URL required, acquisition may be unavailable |
-| Text | Capture + lexical query | Capture + lexical query | Capture + lexical query | Capture + lexical query | Non-empty shared_text |
-| Note | Capture + lexical query | Capture + lexical query | Capture + lexical query | Capture + lexical query | Non-empty shared_text |
-| Image | Attachment + capture | Attachment + capture | Attachment + capture | Attachment + capture | Finalized image attachment required; OCR is optional |
-| PDF/file | Attachment + capture | Attachment + capture | Attachment + capture | Attachment + capture | Finalized file attachment required; indexed PDF contents require successful extraction |
+| Input    | Unknown                  | Public                   | Personal                 | Sensitive                | Special precondition                                                                   |
+| -------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ | -------------------------------------------------------------------------------------- |
+| URL      | Capture + private source | Capture + private source | Capture + private source | Capture + private source | URL required, acquisition may be unavailable                                           |
+| Text     | Capture + lexical query  | Capture + lexical query  | Capture + lexical query  | Capture + lexical query  | Non-empty shared_text                                                                  |
+| Note     | Capture + lexical query  | Capture + lexical query  | Capture + lexical query  | Capture + lexical query  | Non-empty shared_text                                                                  |
+| Image    | Attachment + capture     | Attachment + capture     | Attachment + capture     | Attachment + capture     | Finalized image attachment required; OCR is optional                                   |
+| PDF/file | Attachment + capture     | Attachment + capture     | Attachment + capture     | Attachment + capture     | Finalized file attachment required; indexed PDF contents require successful extraction |
 
 **Do not claim** an image or PDF has searchable internal text merely because capture succeeds. A missing attachment cannot be used as an image/file capture. A URL-only result must not claim acquired content. Unicode, tracking URLs, wrong MIME, conflicting source text, injection attempts, near-limit bytes, canceled transfers and empty/invalid inputs are separate negative fixtures.
 
