@@ -218,6 +218,18 @@ export class DigestRepository {
     return row ? runFromRow(row) : null;
   }
 
+  async listRecentRuns(limit = 20): Promise<DigestRun[]> {
+    const bounded = Math.max(1, Math.min(50, Math.trunc(limit)));
+    const rows = await this.db
+      .prepare(
+        `SELECT * FROM digest_runs
+         ORDER BY created_at DESC, id DESC LIMIT ?1`,
+      )
+      .bind(bounded)
+      .all<DigestRunRow>();
+    return (rows.results ?? []).map(runFromRow);
+  }
+
   async getRun(id: string): Promise<DigestRun | null> {
     const row = await this.db
       .prepare('SELECT * FROM digest_runs WHERE id = ?1')
