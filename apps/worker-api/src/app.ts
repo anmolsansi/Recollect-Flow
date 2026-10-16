@@ -12,6 +12,7 @@ import { policyRoutes } from './policy/policy.routes';
 import type { PolicyRepository } from './policy/policy.repository';
 import type { AppContext, Env } from './env';
 import { errorResponse } from './shared/errors';
+import { requireAdminToken, requireCaptureWrite } from './shared/auth';
 import { shortcutRoutes } from './shortcut/shortcut.routes';
 import { itemRoutes } from './items/item.routes';
 import { searchRoutes } from './search/search.routes';
@@ -65,6 +66,17 @@ export function createApp(
       return;
     }
     const pathname = new URL(context.req.url).pathname;
+    // Check expensive raw-byte and restore routes before pulling a body stream.
+    // Route middleware still rechecks auth, permissions and lifecycle state.
+    if (
+      context.req.method === 'PUT' &&
+      /^\/api\/v1\/uploads\/[^/]+\/content$/.test(pathname)
+    ) {
+      await requireCaptureWrite(context, async () => {});
+    }
+    if (context.req.method === 'POST' && pathname === '/api/v1/restore') {
+      await requireAdminToken(context, async () => {});
+    }
     const configuredAttachmentBytes = Number(context.env.MAX_ATTACHMENT_BYTES);
     const attachmentBytes =
       Number.isSafeInteger(configuredAttachmentBytes) &&
