@@ -17,8 +17,8 @@ jobs:
       - run: npm ci
       - name: Format only newly added BG29 implementation files
         run: |
-          npx prettier --write apps/worker-api/src/jobs/ai/ai-provider.registry.ts apps/worker-api/test/bg29-schema-failure.test.ts apps/worker-api/test/bg29-search-large.d1.spec.ts apps/worker-api/test/bg29-upload-pressure.d1.spec.ts
-          git add apps/worker-api/src/jobs/ai/ai-provider.registry.ts apps/worker-api/test/bg29-schema-failure.test.ts apps/worker-api/test/bg29-search-large.d1.spec.ts apps/worker-api/test/bg29-upload-pressure.d1.spec.ts
+          npx prettier --write apps/worker-api/src/jobs/ai/ai-provider.registry.ts apps/worker-api/test/bg29-schema-failure.test.ts apps/worker-api/test/bg29-search-large.d1.spec.ts apps/worker-api/test/bg29-upload-pressure.d1.spec.ts apps/worker-api/test/enrich.d1.spec.ts
+          git add apps/worker-api/src/jobs/ai/ai-provider.registry.ts apps/worker-api/test/bg29-schema-failure.test.ts apps/worker-api/test/bg29-search-large.d1.spec.ts apps/worker-api/test/bg29-upload-pressure.d1.spec.ts apps/worker-api/test/enrich.d1.spec.ts
           if ! git diff --cached --quiet; then
             git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'style(bg29): format large-search, upload and provider validation fixtures (#99)'
             git push origin HEAD:refs/heads/feat/bg-29-resilience-capacity-performance
