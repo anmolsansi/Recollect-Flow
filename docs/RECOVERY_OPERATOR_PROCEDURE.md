@@ -4,7 +4,7 @@ This procedure supports the [BG-28 build-guide gate](RECOLLECTFLOW_BUILD_GUIDE.m
 
 ## 1. Identify and freeze the incident
 
-Record the UTC timestamp, owner/operator, exact Worker revision, source account, source D1 database ID, source R2 bucket name and target account/database/bucket IDs. Confirm the target cannot serve production traffic. Stop further capture, scheduled processing and destructive commands on the *affected* environment through an approved operational mechanism. Preserve D1 Time Travel bookmark, non-content purge receipts, last known-good release, and request/backup IDs. Do not experiment on the only remaining copy.
+Record the UTC timestamp, owner/operator, exact Worker revision, source account, source D1 database ID, source R2 bucket name and target account/database/bucket IDs. Confirm the target cannot serve production traffic. Stop further capture, scheduled processing and destructive commands on the _affected_ environment through an approved operational mechanism. Preserve D1 Time Travel bookmark, non-content purge receipts, last known-good release, and request/backup IDs. Do not experiment on the only remaining copy.
 
 Do not record admin tokens, original attachment contents, private notes or raw provider responses in tickets.
 
@@ -38,7 +38,7 @@ The tool is local-only, never calls Cloudflare and never deletes objects. It che
 
 The admin-only `POST /api/v1/backups` creates a unique private `backups/v1/<backup-id>.json`. `GET /api/v1/backups` returns each backup's ID, `objectKey`, `schemaVersion`, `state`, SHA-256, `sizeBytes`, `createdAt`, `verifiedAt`, `expiresAt` and `failureCode`. Only `complete` with verified readback hash/byte count counts as successful. `GET /api/v1/backups/<id>/download` validates again before download.
 
-**Current scheduling truth:** the hourly background cron runs *expiry cleanup*, not backup creation. The existing weekly-export objective therefore needs an owner-run recurring operator action. Until an authorized weekly automation or recurring operator calendar task exists and its results are logged, do **not** claim a weekly automatic backup. Proposed interim cadence: the operator performs `POST /api/v1/backups` at least weekly, checks the returned `complete`/hash/time/expiry, downloads a copy, and verifies independent originals/receipt mirror as described above. Record failures and follow up before the next interval. Never retry a failed creation by deleting live item data.
+**Current scheduling truth:** the hourly background cron runs _expiry cleanup_, not backup creation. The existing weekly-export objective therefore needs an owner-run recurring operator action. Until an authorized weekly automation or recurring operator calendar task exists and its results are logged, do **not** claim a weekly automatic backup. Proposed interim cadence: the operator performs `POST /api/v1/backups` at least weekly, checks the returned `complete`/hash/time/expiry, downloads a copy, and verifies independent originals/receipt mirror as described above. Record failures and follow up before the next interval. Never retry a failed creation by deleting live item data.
 
 [ADR-031](DECISIONS.md) retains immutable verified hosted JSON artifacts for **30 days** from creation. Cleanup deletes only expired completed backup objects and leaves non-content audit metadata. Independently downloaded copies are outside this remote retention/deletion control. Record backup creation schedule evidence, remote retention timestamps and offline-copy retention policy separately.
 
