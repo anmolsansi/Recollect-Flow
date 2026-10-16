@@ -254,7 +254,15 @@ export function OperationsPage() {
                 {snapshot.operations.backlog.groups.map((g) => (
                   <article
                     className="card"
-                    key={g.kind + ':' + g.type + ':' + g.status + ':' + (g.sample_error_code ?? 'none')}
+                    key={
+                      g.kind +
+                      ':' +
+                      g.type +
+                      ':' +
+                      g.status +
+                      ':' +
+                      (g.sample_error_code ?? 'none')
+                    }
                   >
                     <h3>
                       {g.kind === 'sync' ? 'Notion sync' : 'Processing'} ·{' '}
