@@ -18,7 +18,9 @@ describe('BG-26 D1 aggregate query observability', () => {
     } as unknown as D1Database;
     const now = new Date('2026-10-16T12:00:00.000Z');
     await new OperationsSummaryService(db).status(now);
-    const backlogSql = captured.filter((sql) => sql.includes('WITH current_jobs AS'));
+    const backlogSql = captured.filter((sql) =>
+      sql.includes('WITH current_jobs AS'),
+    );
     expect(backlogSql).toHaveLength(2);
 
     for (const [index, sql] of backlogSql.entries()) {
@@ -26,9 +28,7 @@ describe('BG-26 D1 aggregate query observability', () => {
         .bind(now.toISOString())
         .all<{ detail: string }>();
       expect(plan.results.length).toBeGreaterThan(0);
-      const measured = await env.DB.prepare(sql)
-        .bind(now.toISOString())
-        .all();
+      const measured = await env.DB.prepare(sql).bind(now.toISOString()).all();
       const rowsRead = measured.meta?.rows_read;
       expect(typeof rowsRead).toBe('number');
       expect(rowsRead).toBeGreaterThanOrEqual(0);
@@ -39,7 +39,8 @@ describe('BG-26 D1 aggregate query observability', () => {
           rows_read: rowsRead,
           row_groups_returned: measured.results.length,
           plan: plan.results.map((row) => row.detail),
-          source: 'isolated Miniflare D1 fixture, NOT remote Cloudflare account usage',
+          source:
+            'isolated Miniflare D1 fixture, NOT remote Cloudflare account usage',
         }),
       );
     }
