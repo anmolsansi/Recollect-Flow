@@ -33,6 +33,7 @@ import { sourceStatusMessage, visibleSourceCoverage } from './source-recovery';
 import { CaptureForm } from './CaptureForm';
 import { FileCaptureForm } from './FileCaptureForm';
 import { OperationsPage } from './OperationsPage';
+import { DigestReviewPage } from './DigestReviewPage';
 import { formatLocalReviewAt, parseLocalReviewAt } from './follow-up-date';
 import { forgetCaptureRecovery } from './capture-recovery';
 import './index.css';
@@ -1183,6 +1184,7 @@ function Layout() {
           <h2>Recollect Flow</h2>
         </Link>
         <Link to="/operations">Operations</Link>
+        <Link to="/digests">Digests</Link>
       </nav>
       <Routes>
         <Route path="/" element={<Inbox />} />
@@ -1190,6 +1192,7 @@ function Layout() {
         <Route path="/capture/file" element={<FileCaptureForm />} />
         <Route path="/items/:id" element={<ItemDetail />} />
         <Route path="/operations" element={<OperationsPage />} />
+        <Route path="/digests" element={<DigestReviewPage />} />
       </Routes>
     </div>
   );
