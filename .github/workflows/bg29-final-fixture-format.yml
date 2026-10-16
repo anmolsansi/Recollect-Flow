@@ -1,0 +1,25 @@
+name: BG29 scoped final fixture formatter
+on:
+  push:
+    branches: [feat/bg-29-resilience-capacity-performance]
+permissions:
+  contents: write
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format bounded call and recovery test fixtures
+        run: |
+          npx prettier --write apps/worker-api/test/bg29-schema-failure.test.ts apps/worker-api/test/bg29-dependency-recovery.d1.spec.ts
+          git add apps/worker-api/test/bg29-schema-failure.test.ts apps/worker-api/test/bg29-dependency-recovery.d1.spec.ts
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'style(bg29): format malformed-AI and outage recovery regression tests (#99)'
+            git push origin HEAD:refs/heads/feat/bg-29-resilience-capacity-performance
+          fi
