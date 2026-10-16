@@ -43,6 +43,7 @@ export interface BacklogGroup {
   status: 'pending' | 'processing' | 'retry_wait' | 'failed';
   count: number;
   oldest_created_at: string | null;
+  oldest_eligible_created_at: string | null;
   next_available_at: string | null;
   sample_error_code: string | null;
 }
