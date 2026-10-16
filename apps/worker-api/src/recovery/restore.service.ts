@@ -101,7 +101,10 @@ export class RestoreService {
         ...(options.receiptOverlay ?? []),
       ]);
       validateRestorePlan(plan);
-      const attachmentReadiness = await inspectRestoreAttachments(plan, this.bucket);
+      const attachmentReadiness = await inspectRestoreAttachments(
+        plan,
+        this.bucket,
+      );
       await runRepository.update(run.id, 'validating', {
         skippedPurgedCount: plan.skippedPurgedItemIds.length,
       });
