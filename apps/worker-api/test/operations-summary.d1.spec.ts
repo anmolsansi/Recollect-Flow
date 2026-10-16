@@ -56,6 +56,9 @@ describe('BG-26 operational visibility', () => {
       .bind(at)
       .run();
     await env.DB.prepare(
+      "UPDATE items SET raw_text = 'BG26_PRIVATE_MARKER' WHERE id = 'bg26-item'",
+    ).run();
+    await env.DB.prepare(
       "INSERT INTO processing_jobs (id, item_id, job_type, status, available_at, last_error_code, created_at, updated_at) VALUES ('bg26-job', 'bg26-item', 'enrich', 'pending', ?1, 'QUOTA_PAUSED', ?2, ?2)",
     )
       .bind(later, at)
@@ -115,6 +118,7 @@ describe('BG-26 operational visibility', () => {
     expect(summary.recovery.failed_backups).toBe(1);
     expect(summary.recovery.ambiguous_digests).toBe(1);
     expect(JSON.stringify(summary)).not.toContain('canonical_payload_json');
+    expect(JSON.stringify(summary)).not.toContain('BG26_PRIVATE_MARKER');
   });
 
   it('returns an error rather than stale-success JSON when an aggregate query fails', async () => {
