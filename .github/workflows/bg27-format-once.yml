@@ -1,0 +1,40 @@
+name: BG-27 format once
+
+on:
+  push:
+    branches:
+      - feat/bg-27-digest-review-reconciliation
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bg27-format-once
+  cancel-in-progress: true
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bg-27-digest-review-reconciliation
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write apps/web/src/digest.types.ts apps/web/src/DigestReviewPage.tsx apps/worker-api/src/digests/digest.renderer.ts apps/worker-api/src/digests/digest.worker.ts apps/worker-api/src/digests/telegram.client.ts apps/worker-api/test/digest-renderer.test.ts apps/worker-api/test/digest-routes.d1.spec.ts apps/worker-api/test/digest.d1.spec.ts apps/worker-api/test/telegram.client.test.ts docs/OPERATIONAL_CONTROLS.md
+      - name: Commit scoped Prettier changes
+        run: |
+          if git diff --quiet; then
+            echo 'No formatting changes required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/web/src/digest.types.ts apps/web/src/DigestReviewPage.tsx apps/worker-api/src/digests/digest.renderer.ts apps/worker-api/src/digests/digest.worker.ts apps/worker-api/src/digests/telegram.client.ts apps/worker-api/test/digest-renderer.test.ts apps/worker-api/test/digest-routes.d1.spec.ts apps/worker-api/test/digest.d1.spec.ts apps/worker-api/test/telegram.client.test.ts docs/OPERATIONAL_CONTROLS.md
+          git commit -m 'style(digests): normalize scoped BG-27 files [24/50] (#94)'
+          git push origin HEAD:feat/bg-27-digest-review-reconciliation
