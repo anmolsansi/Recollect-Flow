@@ -379,7 +379,11 @@ export class DigestRepository {
       .bind(digestRunId)
       .first<DigestDeliveryRow>();
     if (!row) {
-      throw new AppError(409, 'DIGEST_PERIOD_DELIVERY_EXISTS', 'Another version of this period already has delivery history. Inspect and reconcile the existing delivery instead of sending a duplicate.');
+      throw new AppError(
+        409,
+        'DIGEST_PERIOD_DELIVERY_EXISTS',
+        'Another version of this period already has delivery history. Inspect and reconcile the existing delivery instead of sending a duplicate.',
+      );
     }
     return deliveryFromRow(row);
   }
