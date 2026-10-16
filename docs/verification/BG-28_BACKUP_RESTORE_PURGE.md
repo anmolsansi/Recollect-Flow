@@ -37,7 +37,6 @@
 4. No destructive purge of production data or cloud Time Travel restore was attempted. Existing isolated tests are the only relevant deletion evidence.
 5. End-to-end source bucket listing/receipt mirror freshness, backup copy protection and operator-access verification remain environment-specific. Never report an absent external permission check as successful.
 
-
 ## Isolated synthetic acceptance mapping
 
 - Corrupt hosted JSON: `backup-recovery.d1.spec.ts` rechecks read-back SHA-256/size and refuses tampered hosted objects without changing canonical items.
