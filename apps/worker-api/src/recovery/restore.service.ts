@@ -1,5 +1,6 @@
 import { AppError } from '../shared/errors';
 import { loadPurgeReceiptLedger } from './purge-receipt-ledger';
+import { inspectRestoreAttachments } from './restore-attachment-readiness';
 import { PurgeRepository } from './purge.repository';
 import { buildRestorePlan } from './restore-plan';
 import { RestoreReceiptRepository } from './restore-receipt.repository';
@@ -100,6 +101,7 @@ export class RestoreService {
         ...(options.receiptOverlay ?? []),
       ]);
       validateRestorePlan(plan);
+      const attachmentReadiness = await inspectRestoreAttachments(plan, this.bucket);
       await runRepository.update(run.id, 'validating', {
         skippedPurgedCount: plan.skippedPurgedItemIds.length,
       });
@@ -114,7 +116,16 @@ export class RestoreService {
           run: await runRepository.find(run.id),
           plannedItemCount: plan.items.length,
           skippedPurgedItemIds: plan.skippedPurgedItemIds,
+          attachmentReadiness,
         };
+      }
+
+      if (attachmentReadiness.problems.length > 0) {
+        throw new AppError(
+          409,
+          'RESTORE_ATTACHMENTS_UNAVAILABLE',
+          'Restore requires original attachment objects with matching byte sizes in the selected target bucket.',
+        );
       }
 
       const repository = new RestoreRepository(this.db);
