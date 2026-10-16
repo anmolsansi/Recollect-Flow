@@ -73,6 +73,7 @@ export function digestRoutes() {
     const details = await new DigestService(context.env).getDetails(
       context.req.param('id'),
     );
+    context.header('Cache-Control', 'private, no-store');
     return context.json({
       data: details,
       meta: { request_id: requestId(context) },
