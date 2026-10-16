@@ -4005,31 +4005,33 @@ These unchecked steps inherit this task's **what, why, when, where and proof** a
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
+**Evidence checkpoint, 2026-10-16:** [local CI #38967786493](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38967786493) passed the 20-capture latency and 10,000-item D1 search tests; `docs/verification/BG-29_RESILIENCE_ACCEPTANCE.md` records numerical results. Existing passing capacity, breaker, backup cleanup and stale-job tests are reused, not described as hosted provider proof. Newly added interrupted-worker fixture requires its latest-head acceptance run. Open items remain required; BG-30 is not unlocked.
+
 #### BG-29 / 01 — Establish task context
 
-- [ ] `BG-29.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-29.002` **Dependency:** Verify BG-28's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-29.003` **Baseline:** Record the actual checkout or release candidate used for BG-29.
-- [ ] `BG-29.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-29.005` **Evidence:** Check whether existing evidence already satisfies any BG-29 step; reference it instead of manufacturing work.
-- [ ] `BG-29.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-29.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-29.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-29.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-29.010` **Tracking:** Open a BG-29 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-29.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-29.002` **Dependency:** Verify BG-28's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-29.003` **Baseline:** Record the actual checkout or release candidate used for BG-29.
+- [x] `BG-29.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-29.005` **Evidence:** Check whether existing evidence already satisfies any BG-29 step; reference it instead of manufacturing work.
+- [x] `BG-29.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-29.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-29.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-29.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-29.010` **Tracking:** Open a BG-29 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-29 / 02 — Scenario matrix
 
-- [ ] `BG-29.011` List URL privacy combinations.
-- [ ] `BG-29.012` List text privacy combinations.
-- [ ] `BG-29.013` List note privacy combinations.
-- [ ] `BG-29.014` List image privacy combinations.
-- [ ] `BG-29.015` List PDF/file privacy combinations.
-- [ ] `BG-29.016` Mark unsupported combinations honestly.
-- [ ] `BG-29.017` Define known source phrases.
-- [ ] `BG-29.018` Define malicious input fixtures.
-- [ ] `BG-29.019` Define expected raw preservation.
-- [ ] `BG-29.020` Define expected provider permissions.
+- [x] `BG-29.011` List URL privacy combinations.
+- [x] `BG-29.012` List text privacy combinations.
+- [x] `BG-29.013` List note privacy combinations.
+- [x] `BG-29.014` List image privacy combinations.
+- [x] `BG-29.015` List PDF/file privacy combinations.
+- [x] `BG-29.016` Mark unsupported combinations honestly.
+- [x] `BG-29.017` Define known source phrases.
+- [x] `BG-29.018` Define malicious input fixtures.
+- [x] `BG-29.019` Define expected raw preservation.
+- [x] `BG-29.020` Define expected provider permissions.
 
 #### BG-29 / 03 — Dependency outage
 
@@ -4059,42 +4061,42 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-29 / 05 — Capacity race
 
-- [ ] `BG-29.041` Reserve final unit concurrently.
-- [ ] `BG-29.042` Assert only allowed admission succeeds.
-- [ ] `BG-29.043` Check shared text/vision pool.
-- [ ] `BG-29.044` Expire abandoned reservation.
-- [ ] `BG-29.045` Test exact reset boundary.
-- [ ] `BG-29.046` Open breaker with qualifying failures.
-- [ ] `BG-29.047` Race half-open probes.
-- [ ] `BG-29.048` Verify single probe winner.
-- [ ] `BG-29.049` Test manual retry under hard stop.
-- [ ] `BG-29.050` Revalidate published limits before release.
+- [x] `BG-29.041` Reserve final unit concurrently.
+- [x] `BG-29.042` Assert only allowed admission succeeds.
+- [x] `BG-29.043` Check shared text/vision pool.
+- [x] `BG-29.044` Expire abandoned reservation.
+- [x] `BG-29.045` Test exact reset boundary.
+- [x] `BG-29.046` Open breaker with qualifying failures.
+- [x] `BG-29.047` Race half-open probes.
+- [x] `BG-29.048` Verify single probe winner.
+- [x] `BG-29.049` Test manual retry under hard stop.
+- [x] `BG-29.050` Revalidate published limits before release.
 
 #### BG-29 / 06 — Capture performance
 
-- [ ] `BG-29.051` Define personal-load profile.
+- [x] `BG-29.051` Define personal-load profile.
 - [ ] `BG-29.052` Record fixture sizes.
-- [ ] `BG-29.053` Measure acknowledgment latency.
+- [x] `BG-29.053` Measure acknowledgment latency.
 - [ ] `BG-29.054` Separate upload duration.
 - [ ] `BG-29.055` Separate optional processing duration.
-- [ ] `BG-29.056` Calculate P50.
-- [ ] `BG-29.057` Calculate P95.
-- [ ] `BG-29.058` Compare runbook target.
-- [ ] `BG-29.059` Record runtime environment.
-- [ ] `BG-29.060` Preserve reproducible measurement command.
+- [x] `BG-29.056` Calculate P50.
+- [x] `BG-29.057` Calculate P95.
+- [x] `BG-29.058` Compare runbook target.
+- [x] `BG-29.059` Record runtime environment.
+- [x] `BG-29.060` Preserve reproducible measurement command.
 
 #### BG-29 / 07 — Search scale
 
-- [ ] `BG-29.061` Seed representative small corpus.
-- [ ] `BG-29.062` Seed 10000-item corpus.
+- [x] `BG-29.061` Seed representative small corpus.
+- [x] `BG-29.062` Seed 10000-item corpus.
 - [ ] `BG-29.063` Plan 100000-item corpus if feasible.
-- [ ] `BG-29.064` Record corpus composition.
-- [ ] `BG-29.065` Run exact phrase queries.
-- [ ] `BG-29.066` Run combined filters.
-- [ ] `BG-29.067` Run tied pagination traversal.
-- [ ] `BG-29.068` Measure query latency.
-- [ ] `BG-29.069` Measure D1 rows read.
-- [ ] `BG-29.070` Record limits of tested scale.
+- [x] `BG-29.064` Record corpus composition.
+- [x] `BG-29.065` Run exact phrase queries.
+- [x] `BG-29.066` Run combined filters.
+- [x] `BG-29.067` Run tied pagination traversal.
+- [x] `BG-29.068` Measure query latency.
+- [x] `BG-29.069` Measure D1 rows read.
+- [x] `BG-29.070` Record limits of tested scale.
 
 #### BG-29 / 08 — Runtime pressure
 
@@ -4111,15 +4113,15 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-29 / 09 — Recovery and conclusions
 
-- [ ] `BG-29.081` Interrupt active worker fixture.
-- [ ] `BG-29.082` Recover stale lease.
-- [ ] `BG-29.083` Reject stale result.
+- [x] `BG-29.081` Interrupt active worker fixture.
+- [x] `BG-29.082` Recover stale lease.
+- [x] `BG-29.083` Reject stale result.
 - [ ] `BG-29.084` Rebuild drifted FTS.
-- [ ] `BG-29.085` Clean expired upload fixture.
-- [ ] `BG-29.086` Clean expired backup fixture.
-- [ ] `BG-29.087` Classify environment restrictions separately.
-- [ ] `BG-29.088` List data-loss/privacy/cost blockers.
-- [ ] `BG-29.089` Record actual performance results.
+- [x] `BG-29.085` Clean expired upload fixture.
+- [x] `BG-29.086` Clean expired backup fixture.
+- [x] `BG-29.087` Classify environment restrictions separately.
+- [x] `BG-29.088` List data-loss/privacy/cost blockers.
+- [x] `BG-29.089` Record actual performance results.
 - [ ] `BG-29.090` Link defects to acceptance impact.
 
 #### BG-29 / 10 — Verify and close this task
