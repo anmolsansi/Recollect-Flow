@@ -605,4 +605,34 @@ describe('OPE-226 digest integration', () => {
       false,
     );
   });
+
+  it('reconciles proven non-delivery as failed before a reviewed retry', async () => {
+    await insertItem({ id: 'not-sent', title: 'Reconciliation fixture' });
+    const generated = await service().generatePeriod(dailyPeriod, {
+      queueDelivery: true,
+    });
+    const deliveryId = generated.delivery!.id;
+    const repository = new DigestRepository(env.DB);
+    await env.DB.prepare(
+      "UPDATE digest_deliveries SET state = 'unknown' WHERE id = ?1",
+    )
+      .bind(deliveryId)
+      .run();
+
+    expect(await repository.retryFailedDelivery(deliveryId)).toBe(false);
+    expect(
+      await repository.reconcileUnknownDelivery(deliveryId, 'failed', null),
+    ).toBe(true);
+    expect(await repository.getDelivery(deliveryId)).toMatchObject({
+      state: 'failed',
+      telegramMessageId: null,
+      lastErrorCode: 'RECONCILED_FAILED',
+    });
+    expect(await repository.retryFailedDelivery(deliveryId)).toBe(true);
+    expect((await repository.getDelivery(deliveryId))?.state).toBe('pending');
+    expect(
+      await repository.reconcileUnknownDelivery(deliveryId, 'sent', 'invented'),
+    ).toBe(false);
+  });
+
 });
