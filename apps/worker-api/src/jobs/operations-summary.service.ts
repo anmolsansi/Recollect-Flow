@@ -191,11 +191,13 @@ export class OperationsSummaryService {
       },
       recovery: {
         partial_purges: partialPurges?.count ?? 0,
-        partial_purge_samples: (partialPurgeSamples.results ?? []).map((row) => ({
-          id: row.id,
-          updated_at: row.updated_at,
-          last_error_code: safeCode(row.last_error_code),
-        })),
+        partial_purge_samples: (partialPurgeSamples.results ?? []).map(
+          (row) => ({
+            id: row.id,
+            updated_at: row.updated_at,
+            last_error_code: safeCode(row.last_error_code),
+          }),
+        ),
         failed_backups: failedBackups?.count ?? 0,
         latest_verified_backup: newestVerifiedBackup ?? null,
         latest_integrity: newestIntegrity
