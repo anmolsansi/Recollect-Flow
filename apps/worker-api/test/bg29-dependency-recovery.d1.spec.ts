@@ -97,7 +97,7 @@ describe('BG-29 coupled optional-dependency outage and recovery', () => {
       'bg29-down-ai',
       5,
       10,
-      at,
+      outageAt,
     );
     expect(claimed).toHaveLength(1);
     expect(
