@@ -61,6 +61,41 @@ The BG-29 scripts and D1 test fixtures must use only disposable resources. Log n
 3. **Long-running proof:** Multi-stage hourly-cron time to drain and interrupted Worker recovery require their own measured environment and timestamps.
 4. **Release policy:** Any resulting capacity/cadence change needs separate evidence and review, not an unapproved production adjustment.
 
+## Measured isolated CI checkpoint
+
+[Run #38967786493](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38967786493)
+passed at source head `af84b6e965efea4c221e201cd81ee6624941b5a4`.
+The full quality, D1, package and browser suite passed. Its local
+Worker benchmark used 20 synthetic Sensitive text/note captures,
+concurrency 2, one-second spacing between pairs, and no warmup.
+All 20 acknowledgments succeeded, with no duplicate replay.
+
+| Metric | Observed | Scope |
+| --- | ---: | --- |
+| Capture P50 | 13.25 ms | Acknowledgment only |
+| Capture P95 | 24.47 ms | Acknowledgment only |
+| Min/max | 8.43 / 36.04 ms | Same 20 samples |
+| Total interval | 9,190.47 ms | Includes batch spacing |
+| Verify one saved raw phrase | 5.37 ms | Admin lexical search |
+| FTS phrase query | 17 ms | 10,000-row isolated D1 |
+| D1 search service DB timing | 15 ms | Same phrase |
+| Indexed matches | 769 | `bg29needle` every 13th row |
+| FTS count-query rows read | 769 | Count query only, not search API |
+
+The 10,000-row fixture alternates text/note, rotates four privacy
+levels, sets `work` on each third item and gives every item one tied
+timestamp to exercise stable pagination. The 10,000-item tests,
+privacy matrix and raw-continuity tests passed with the previous head.
+
+**Verdict:** The **isolated** P95 capture target passed, and the
+10,000-item lexical search checks passed. The measured search-count
+row metric is not total API rows read. This does **not** establish
+100,000-item throughput, uploaded-byte timing, provider completion,
+hourly backlog drain, physical device experience, production Worker
+resource limits, hosted billing or real provider cost. Newer commits
+must be tested on their own exact head before any source checklist
+completion is attributed to those changes.
+
 ## Final decision
 
 BG-30 remains locked until every required BG-29 scenario is verifiably passed, relevant defects are resolved, CI is green at the accepted head, and the source checklist/issue/Linear record are reconciled. An implemented harness alone is insufficient.
