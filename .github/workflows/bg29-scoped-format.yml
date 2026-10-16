@@ -1,0 +1,25 @@
+name: BG29 scoped formatter
+on:
+  push:
+    branches: [feat/bg-29-resilience-capacity-performance]
+permissions:
+  contents: write
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format only scoped BG-29 files
+        run: |
+          npx prettier --write scripts/bg29-capture-bench.mjs scripts/bg29-capture-bench.test.mjs scripts/run-bg29-capture-bench.mjs apps/worker-api/test/bg29-search-scale.d1.spec.ts apps/worker-api/test/bg29-provider-outage.d1.spec.ts apps/worker-api/test/bg29-privacy-matrix.test.ts apps/worker-api/test/bg29-backlog-drain.d1.spec.ts docs/verification/BG-29_RESILIENCE_ACCEPTANCE.md docs/RECOLLECTFLOW_BUILD_GUIDE.md
+          git add scripts/bg29-capture-bench.mjs scripts/bg29-capture-bench.test.mjs scripts/run-bg29-capture-bench.mjs apps/worker-api/test/bg29-search-scale.d1.spec.ts apps/worker-api/test/bg29-provider-outage.d1.spec.ts apps/worker-api/test/bg29-privacy-matrix.test.ts apps/worker-api/test/bg29-backlog-drain.d1.spec.ts docs/verification/BG-29_RESILIENCE_ACCEPTANCE.md docs/RECOLLECTFLOW_BUILD_GUIDE.md
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'style(bg29): format new recovery and cost evidence [40/50] (#99)'
+            git push origin HEAD:refs/heads/feat/bg-29-resilience-capacity-performance
+          fi
