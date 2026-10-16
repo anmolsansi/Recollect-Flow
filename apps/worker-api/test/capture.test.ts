@@ -319,10 +319,13 @@ describe('POST /api/v1/captures', () => {
     repository.failCreateMessage = secret;
     const stderr = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
-      const response = await post(createApp(() => repository), {
-        ...validCapture,
-        shared_text: secret,
-      });
+      const response = await post(
+        createApp(() => repository),
+        {
+          ...validCapture,
+          shared_text: secret,
+        },
+      );
       expect(response.status).toBe(503);
       expect(await response.text()).not.toContain(secret);
       expect(JSON.stringify(stderr.mock.calls)).not.toContain(secret);
