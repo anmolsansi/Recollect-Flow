@@ -55,7 +55,7 @@ try {
   // warning states and never treats a hard stop as an available manual retry.
   await evaluate(
     browser,
-    \`(() => {
+    `(() => {
       window.__bg26OriginalFetch = window.fetch;
       window.__bg26Level = 'warning_70';
       window.fetch = function (input, options) {
@@ -94,7 +94,7 @@ try {
         }));
       };
       return true;
-    })()\`,
+    })()`,
   );
   for (const [level, expected] of [
     ['warning_70', '70% warning'],
