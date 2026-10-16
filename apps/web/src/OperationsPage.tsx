@@ -292,6 +292,8 @@ export function OperationsPage() {
                         g.kind +
                         '&status=' +
                         g.status +
+                        '&type=' +
+                        encodeURIComponent(g.type) +
                         '&limit=50'
                       }
                       target="_blank"
