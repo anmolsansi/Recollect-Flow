@@ -228,35 +228,51 @@ describe('EnrichService (D1 Integration)', () => {
       `INSERT INTO item_field_overrides
        (id, item_id, field_name, override_value, created_at, updated_at)
        VALUES (?1, ?2, 'title', 'Owner Locked Title', ?3, ?3)`,
-    ).bind('bg29-owner-override', itemId, now).run();
+    )
+      .bind('bg29-owner-override', itemId, now)
+      .run();
 
-    expect(await enrichService.processEnrichmentJob(
-      { id: jobId, itemId } as unknown as JobRecord, 'owner-1',
-    )).toBe(false);
+    expect(
+      await enrichService.processEnrichmentJob(
+        { id: jobId, itemId } as unknown as JobRecord,
+        'owner-1',
+      ),
+    ).toBe(false);
 
     const item = await env.DB.prepare(
       'SELECT title, raw_text, summary, topics_json FROM items WHERE id = ?1',
-    ).bind(itemId).first<{
-      title: string;
-      raw_text: string;
-      summary: string | null;
-      topics_json: string;
-    }>();
+    )
+      .bind(itemId)
+      .first<{
+        title: string;
+        raw_text: string;
+        summary: string | null;
+        topics_json: string;
+      }>();
     expect(item).toEqual({
-      title: 'Owner Locked Title', raw_text: raw, summary: null, topics_json: '[]',
+      title: 'Owner Locked Title',
+      raw_text: raw,
+      summary: null,
+      topics_json: '[]',
     });
     const job = await env.DB.prepare(
       'SELECT status, last_error_code FROM processing_jobs WHERE id = ?1',
-    ).bind(jobId).first<{ status: string; last_error_code: string }>();
+    )
+      .bind(jobId)
+      .first<{ status: string; last_error_code: string }>();
     expect(job?.status).toBe('pending');
     expect(job?.last_error_code).toBe('JSON_PARSE_ERROR');
     const usage = await env.DB.prepare(
       'SELECT status, error_code FROM provider_usage WHERE item_id = ?1',
-    ).bind(itemId).first<{ status: string; error_code: string }>();
+    )
+      .bind(itemId)
+      .first<{ status: string; error_code: string }>();
     expect(usage).toEqual({ status: 'failed', error_code: 'JSON_PARSE_ERROR' });
     const audit = await env.DB.prepare(
       'SELECT details_json FROM audit_events WHERE item_id = ?1',
-    ).bind(itemId).all<{ details_json: string }>();
+    )
+      .bind(itemId)
+      .all<{ details_json: string }>();
     expect(JSON.stringify({ usage, job, audit })).not.toContain(marker);
   });
 
