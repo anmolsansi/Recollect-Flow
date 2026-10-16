@@ -3593,133 +3593,133 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-26 / 01 — Establish task context
 
-- [ ] `BG-26.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-26.002` **Dependency:** Verify BG-25's required completion evidence; preserve any unresolved prerequisite as a blocker.
-- [ ] `BG-26.003` **Baseline:** Record the actual checkout or release candidate used for BG-26.
-- [ ] `BG-26.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-26.005` **Evidence:** Check whether existing evidence already satisfies any BG-26 step; reference it instead of manufacturing work.
-- [ ] `BG-26.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-26.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-26.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-26.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-26.010` **Tracking:** Open a BG-26 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-26.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-26.002` **Dependency:** Verify BG-25's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [x] `BG-26.003` **Baseline:** Record the actual checkout or release candidate used for BG-26.
+- [x] `BG-26.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-26.005` **Evidence:** Check whether existing evidence already satisfies any BG-26 step; reference it instead of manufacturing work.
+- [x] `BG-26.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-26.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-26.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-26.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-26.010` **Tracking:** Open a BG-26 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-26 / 02 — Usage data
 
-- [ ] `BG-26.011` Read current usage response.
-- [ ] `BG-26.012` Identify policy version field.
-- [ ] `BG-26.013` Identify active window boundaries.
-- [ ] `BG-26.014` Identify consumed counters.
-- [ ] `BG-26.015` Identify reserved counters.
-- [ ] `BG-26.016` Identify remaining headroom.
-- [ ] `BG-26.017` Identify breaker state fields.
-- [ ] `BG-26.018` Identify deferred-job counters.
-- [ ] `BG-26.019` Identify last success fields.
-- [ ] `BG-26.020` Define unavailable-data representation.
+- [x] `BG-26.011` Read current usage response.
+- [x] `BG-26.012` Identify policy version field.
+- [x] `BG-26.013` Identify active window boundaries.
+- [x] `BG-26.014` Identify consumed counters.
+- [x] `BG-26.015` Identify reserved counters.
+- [x] `BG-26.016` Identify remaining headroom.
+- [x] `BG-26.017` Identify breaker state fields.
+- [x] `BG-26.018` Identify deferred-job counters.
+- [x] `BG-26.019` Identify last success fields.
+- [x] `BG-26.020` Define unavailable-data representation.
 
 #### BG-26 / 03 — Usage presentation
 
-- [ ] `BG-26.021` Label units accurately.
-- [ ] `BG-26.022` Distinguish estimated from account usage.
-- [ ] `BG-26.023` Show 70-percent warning.
-- [ ] `BG-26.024` Show 90-percent warning.
-- [ ] `BG-26.025` Show hard-stop state.
-- [ ] `BG-26.026` Show next reset time.
-- [ ] `BG-26.027` Show unavailable dimension honestly.
-- [ ] `BG-26.028` Avoid unlimited inference.
-- [ ] `BG-26.029` Explain reserved versus consumed.
-- [ ] `BG-26.030` Avoid suggesting quota bypass.
+- [x] `BG-26.021` Label units accurately.
+- [x] `BG-26.022` Distinguish estimated from account usage.
+- [x] `BG-26.023` Show 70-percent warning.
+- [x] `BG-26.024` Show 90-percent warning.
+- [x] `BG-26.025` Show hard-stop state.
+- [x] `BG-26.026` Show next reset time.
+- [x] `BG-26.027` Show unavailable dimension honestly.
+- [x] `BG-26.028` Avoid unlimited inference.
+- [x] `BG-26.029` Explain reserved versus consumed.
+- [x] `BG-26.030` Avoid suggesting quota bypass.
 
 #### BG-26 / 04 — Backlog query
 
-- [ ] `BG-26.031` Inspect existing job list scope.
-- [ ] `BG-26.032` Define bounded aggregate query.
-- [ ] `BG-26.033` Group by job type.
-- [ ] `BG-26.034` Group by visible state.
-- [ ] `BG-26.035` Calculate oldest eligible age.
-- [ ] `BG-26.036` Include next available time.
-- [ ] `BG-26.037` Include safe error code counts.
-- [ ] `BG-26.038` Separate Notion from processing.
-- [ ] `BG-26.039` Inspect query plan.
-- [ ] `BG-26.040` Measure D1 rows read.
+- [x] `BG-26.031` Inspect existing job list scope.
+- [x] `BG-26.032` Define bounded aggregate query.
+- [x] `BG-26.033` Group by job type.
+- [x] `BG-26.034` Group by visible state.
+- [x] `BG-26.035` Calculate oldest eligible age.
+- [x] `BG-26.036` Include next available time.
+- [x] `BG-26.037` Include safe error code counts.
+- [x] `BG-26.038` Separate Notion from processing.
+- [x] `BG-26.039` Inspect query plan.
+- [x] `BG-26.040` Measure D1 rows read.
 
 #### BG-26 / 05 — Backlog UI
 
-- [ ] `BG-26.041` Show pending work count.
-- [ ] `BG-26.042` Show processing work count.
-- [ ] `BG-26.043` Show retry-wait count.
-- [ ] `BG-26.044` Show terminal failures.
-- [ ] `BG-26.045` Show oldest backlog age.
-- [ ] `BG-26.046` Show next eligible retry.
-- [ ] `BG-26.047` Show safe failure reason.
-- [ ] `BG-26.048` Link supported inspection control.
-- [ ] `BG-26.049` Hide ineligible retry action.
-- [ ] `BG-26.050` Keep raw content off dashboard.
+- [x] `BG-26.041` Show pending work count.
+- [x] `BG-26.042` Show processing work count.
+- [x] `BG-26.043` Show retry-wait count.
+- [x] `BG-26.044` Show terminal failures.
+- [x] `BG-26.045` Show oldest backlog age.
+- [x] `BG-26.046` Show next eligible retry.
+- [x] `BG-26.047` Show safe failure reason.
+- [x] `BG-26.048` Link supported inspection control.
+- [x] `BG-26.049` Hide ineligible retry action.
+- [x] `BG-26.050` Keep raw content off dashboard.
 
 #### BG-26 / 06 — Recovery signals
 
-- [ ] `BG-26.051` Show partial purge count.
-- [ ] `BG-26.052` Show failed backup state.
-- [ ] `BG-26.053` Show latest verified backup.
-- [ ] `BG-26.054` Show last integrity result.
-- [ ] `BG-26.055` Show ambiguous digest count.
-- [ ] `BG-26.056` Show missing Notion projections.
-- [ ] `BG-26.057` Link per-step purge inspection.
-- [ ] `BG-26.058` Link digest reconciliation guidance.
-- [ ] `BG-26.059` Link backup verification details.
-- [ ] `BG-26.060` Distinguish warnings from completed recovery.
+- [x] `BG-26.051` Show partial purge count.
+- [x] `BG-26.052` Show failed backup state.
+- [x] `BG-26.053` Show latest verified backup.
+- [x] `BG-26.054` Show last integrity result.
+- [x] `BG-26.055` Show ambiguous digest count.
+- [x] `BG-26.056` Show missing Notion projections.
+- [x] `BG-26.057` Link per-step purge inspection.
+- [x] `BG-26.058` Link digest reconciliation guidance.
+- [x] `BG-26.059` Link backup verification details.
+- [x] `BG-26.060` Distinguish warnings from completed recovery.
 
 #### BG-26 / 07 — Storage indicators
 
-- [ ] `BG-26.061` Identify R2 usage source.
-- [ ] `BG-26.062` Show stored byte count.
-- [ ] `BG-26.063` Show object count where available.
-- [ ] `BG-26.064` Show orphan pressure.
-- [ ] `BG-26.065` Identify D1 capacity source.
-- [ ] `BG-26.066` Show rows-read/write measures if available.
-- [ ] `BG-26.067` Label provider-dashboard-only measures.
-- [ ] `BG-26.068` Record measurement timestamp.
-- [ ] `BG-26.069` Avoid fabricated zero values.
-- [ ] `BG-26.070` Explain measurement scope.
+- [x] `BG-26.061` Identify R2 usage source.
+- [x] `BG-26.062` Show stored byte count.
+- [x] `BG-26.063` Show object count where available.
+- [x] `BG-26.064` Show orphan pressure.
+- [x] `BG-26.065` Identify D1 capacity source.
+- [x] `BG-26.066` Show rows-read/write measures if available.
+- [x] `BG-26.067` Label provider-dashboard-only measures.
+- [x] `BG-26.068` Record measurement timestamp.
+- [x] `BG-26.069` Avoid fabricated zero values.
+- [x] `BG-26.070` Explain measurement scope.
 
 #### BG-26 / 08 — Refresh behavior
 
-- [ ] `BG-26.071` Show initial loading state.
-- [ ] `BG-26.072` Show fetch error state.
-- [ ] `BG-26.073` Preserve last successful reading.
-- [ ] `BG-26.074` Mark stale reading visibly.
-- [ ] `BG-26.075` Bound refresh interval.
-- [ ] `BG-26.076` Cancel superseded requests.
-- [ ] `BG-26.077` Avoid per-item full downloads.
-- [ ] `BG-26.078` Stop polling on logout.
-- [ ] `BG-26.079` Announce important status changes accessibly.
-- [ ] `BG-26.080` Verify narrow-screen layout.
+- [x] `BG-26.071` Show initial loading state.
+- [x] `BG-26.072` Show fetch error state.
+- [x] `BG-26.073` Preserve last successful reading.
+- [x] `BG-26.074` Mark stale reading visibly.
+- [x] `BG-26.075` Bound refresh interval.
+- [x] `BG-26.076` Cancel superseded requests.
+- [x] `BG-26.077` Avoid per-item full downloads.
+- [x] `BG-26.078` Stop polling on logout.
+- [x] `BG-26.079` Announce important status changes accessibly.
+- [x] `BG-26.080` Verify narrow-screen layout.
 
 #### BG-26 / 09 — Continuity proof
 
-- [ ] `BG-26.081` Force approved test quota stop.
-- [ ] `BG-26.082` Save synthetic capture.
-- [ ] `BG-26.083` Retrieve raw item.
-- [ ] `BG-26.084` Search exact phrase.
-- [ ] `BG-26.085` Inspect pending optional job.
-- [ ] `BG-26.086` Inspect dashboard hard-stop message.
-- [ ] `BG-26.087` Release/reset quota fixture.
-- [ ] `BG-26.088` Observe eligible work resume.
-- [ ] `BG-26.089` Verify no credential in response.
-- [ ] `BG-26.090` Record operational visibility acceptance.
+- [x] `BG-26.081` Force approved test quota stop.
+- [x] `BG-26.082` Save synthetic capture.
+- [x] `BG-26.083` Retrieve raw item.
+- [x] `BG-26.084` Search exact phrase.
+- [x] `BG-26.085` Inspect pending optional job.
+- [x] `BG-26.086` Inspect dashboard hard-stop message.
+- [x] `BG-26.087` Release/reset quota fixture.
+- [x] `BG-26.088` Observe eligible work resume.
+- [x] `BG-26.089` Verify no credential in response.
+- [x] `BG-26.090` Record operational visibility acceptance.
 
 #### BG-26 / 10 — Verify and close this task
 
-- [ ] `BG-26.091` **Review:** Compare the completed checklist with BG-26's stated outcome; identify uncovered behavior.
-- [ ] `BG-26.092` **Verification:** Run or inspect the focused proof required by BG-26; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-26.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-26.094` **Integrity:** Check that BG-26 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-26.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-26.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-26.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-26.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-26.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
-- [ ] `BG-26.100` **Gate:** Check the parent completion boundary and record whether BG-27 is unlocked.
+- [x] `BG-26.091` **Review:** Compare the completed checklist with BG-26's stated outcome; identify uncovered behavior.
+- [x] `BG-26.092` **Verification:** Run or inspect the focused proof required by BG-26; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-26.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-26.094` **Integrity:** Check that BG-26 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-26.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-26.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-26.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-26.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-26.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-26.100` **Gate:** Check the parent completion boundary and record whether BG-27 is unlocked.
 
 ## BG-27 — 100 executable microtasks
 
