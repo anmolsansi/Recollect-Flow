@@ -21,7 +21,11 @@
 - `capacity.utilization.test.ts`: 70%, 90%, hard-stop, reservation math and unavailable dimensions.
 - `operations-summary.d1.spec.ts`: admin-only response, non-admin denial, no-store, empty/unknown readings, grouped retries, safe error codes, partial purges, failed backup, unknown digest and query failure.
 - `capacity-core-continuity.d1.spec.ts`: synthetic capture, original retrieval, lexical search and visible backlog under hard AI quota stop.
-- Full build/CI and browser suites: consult [PR #93 checks](https://github.com/anmolsansi/Recollect-Flow/pull/93/checks) and the exact head revision. Do not use an older passing run to claim a newer commit was verified.
+- GitHub Actions [run 38940550599](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38940550599) passed on commit `93255149667f4a569424098607997425b784595e`. This includes full `npm run check`, packaging, Worker deploy dry-run, local migration, and all existing browser gates plus the BG-26 operations-browser suite. It is a historical passing head, not proof for subsequent commits.
+- Isolated Chrome verified live authenticated state, 70%/90%/hard warning presentation, open breaker, stale last-good snapshot during a simulated network outage, resumed refresh and 375px mobile width. No live third-party provider actions.
+- `operations-query-plan.d1.spec.ts` used `EXPLAIN QUERY PLAN` and measured **4 D1 rows read** for each processing/sync aggregate on an isolated minimal fixture (0 returned groups). Processing used `idx_processing_jobs_lease`; sync used `idx_sync_attempts_ready`; both joined items by primary key and used a temporary B-tree for grouping. **These numbers are not representative-load benchmarks or provider-account counters.**
+- `capacity-core-continuity.d1.spec.ts` passed a hard AI quota fixture: capture/original/lexical search remained operational, deferred enrichment was visible, and a later quota window admitted and leased work.
+- `operations-summary.d1.spec.ts` verifies distinct error-code groups without emitting private source text; the public browser route and API require appropriate authentication. [PR #93 checks](https://github.com/anmolsansi/Recollect-Flow/pull/93/checks) is the authoritative exact-head acceptance source.
 
 ## Provenance and limitations
 
@@ -29,11 +33,10 @@ The quota measurements are application-side policy windows, not a provider billi
 
 This work makes no remote Cloudflare mutation, no production deploy, no external digest send and no data migration. Full performance/rows-read acceptance and provider dashboard comparisons require a separately authorized Cloudflare staging or operator session. Production-readiness must not be inferred from mocked D1 tests alone.
 
-## Review notes and unresolved acceptance
+## Operational boundaries and follow-ups
 
-- Validate actual D1 query plans and rows-read for representative workload sizes. Group-count bounding limits returned rows but does not itself guarantee low D1 rows-read at scale.
-- Browser-check the operations page loading, stale, hard-stop, error, long-record and narrow-screen states against a representative isolated staging fixture. Existing broad browser suites do not automatically prove all new page states.
-- Verify R2 bucket inventory and D1 account capacity separately in Cloudflare dashboards if this release requires authoritative provider-account figures.
-- No production deployment, remote D1 writes, R2 deletion or automatic messaging is authorized as part of BG-26.
-
-Track any incomplete canonical checklist steps in [GitHub issue #92](https://github.com/anmolsansi/Recollect-Flow/issues/92). BG-27 must remain gated until BG-26 completion evidence meets the canonical acceptance boundary.
+- The isolated D1 query-plan proof is small-fixture evidence, not a performance warranty for populated production D1. Representative workload rows-read, latency and provider billing are separate preproduction operational checks. The BG-26 API deliberately caps returned groups at 100 per job kind with a truncation flag.
+- Provider-account R2 totals and D1 storage/rows-read/write totals are **not available** from the application binding. The UI explicitly labels them unavailable, not zero. Real account dashboard verification is an operator task when Cloudflare access is authorized. The implementation does not depend on inventing those metrics.
+- Browser states are verified in isolated Chrome. Production HTTPS response behavior, Cloudflare quota dashboards and real provider failures are not independently witnessed here, and no remote production mutation was requested.
+- No production deployment, remote D1 writes, R2 deletion, unauthorized provider spending or automatic messaging occurred. Final acceptance is for branch implementation and local isolated proof, not for a deployed release.
+- The canonical checklist and [issue #92](https://github.com/anmolsansi/Recollect-Flow/issues/92) must point to the exact-head passing CI. No BG-27 implementation, live digest delivery or resource-consuming deployment is included in BG-26.
