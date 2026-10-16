@@ -101,7 +101,7 @@ Do not bypass access control, account login, bot protection, platform terms, or 
 
 ## BG-25 authentication and private-data security matrix
 
-The [BG-25 working evidence](verification/BG-25_SECURITY_HARDENING.md) identifies the tested baseline, affected source, current checks and remaining release blockers. The PR is not a production acceptance or a claim of live remote validation.
+The [BG-25 evidence record](verification/BG-25_SECURITY_HARDENING.md) distinguishes locally verified regressions from the owner's explicit staging attestation. Neither is a claim of independently observed Cloudflare behavior or authorization for production deployment.
 
 | Boundary                    | Enforcement / evidence                                                                                                | Release status                                                                 |
 | --------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -113,15 +113,18 @@ The [BG-25 working evidence](verification/BG-25_SECURITY_HARDENING.md) identifie
 | Private objects and exports | Existing authenticated R2 read, no-store API, opaque attachment IDs                                                   | Existing BG-06/BG-18 checks reused; new guessed-key/remote cache audit pending |
 | Web rendering               | React-escaped dynamic strings, no unsafe HTML insertion found                                                         | Source inspection, malicious-snippet browser test pending                      |
 
-**BG-25 October 16 reconciliation:** The security boundary changes and
-representative local regressions are recorded in
-[BG-25 evidence](verification/BG-25_SECURITY_HARDENING.md). The canonical
-checklist is 97/100 with BG-25.029 (native limiter reset), BG-25.031
-(actual HTTPS session cookies) and BG-25.083 (deployed response headers)
-still blocked on authenticated isolated Cloudflare staging. Browser access to
-the account was unavailable. These are release blockers, not waived passes.
-Production credential or data changes were not authorized or made. BG-26 is
-not unlocked.
+**BG-25 accepted on owner attestation (2026-10-16):** The
+[BG-25 evidence record](verification/BG-25_SECURITY_HARDENING.md)
+preserves test coverage and the history of staging-only release gates.
+The repository owner confirmed that all three remaining Cloudflare checks
+(BG-25.029 rate reset, BG-25.031 HTTPS Secure cookie and BG-25.083 deployed
+private/API headers) are working and authorized marking BG-25 complete
+and merging PR #91. These are **operator-attested, not independently
+witnessed**: no staging address or raw artifacts were supplied for independent
+inspection. The canonical BG-25 checklist now records 100/100 complete, with
+the evidence tier identified on each of these three steps. This does not
+authorize production rollout or satisfy the rest of OPE-247. BG-26 can start
+only once the BG-25 PR has merged.
 
 No test or scanner run by itself closes the broader OPE-247 security release gate. Temporary browser logout does not revoke copies of an already-issued cookie. Signed-session incident response requires an authorized secret rotation.
 
