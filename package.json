@@ -34,6 +34,7 @@
     "browser:workflow:test": "node scripts/verify-browser-workflow.mjs",
     "browser:acquisition:test": "node scripts/verify-browser-acquisition.mjs",
     "browser:operations:test": "node scripts/verify-browser-operations.mjs",
+    "browser:digests:test": "node scripts/verify-browser-digests.mjs",
     "release:package": "node scripts/web-release.mjs clean && npm run web:build && node scripts/web-release.mjs finalize",
     "release:package:test": "node --test scripts/web-release.test.mjs",
     "browser:hosting:test": "node scripts/verify-web-hosting.mjs",
