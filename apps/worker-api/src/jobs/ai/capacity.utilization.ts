@@ -7,6 +7,8 @@ export interface CapacityDimensionUsage {
   dimension: 'requests' | 'input_units' | 'output_units' | 'provider_units';
   limit: number;
   used: number;
+  consumed: number;
+  reserved: number;
   remaining: number;
   ratio: number;
 }
@@ -23,6 +25,8 @@ function usage(
     dimension,
     limit,
     used,
+    consumed,
+    reserved,
     remaining: Math.max(0, limit - used),
     ratio: limit > 0 ? used / limit : 1,
   };

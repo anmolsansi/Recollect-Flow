@@ -2928,6 +2928,62 @@ without inspecting raw JSON or mistaking stale data for current health.
 **Proof:** active usage, no activity, expired windows, provider unavailable,
 reservation expiry, hard stop and query failure produce distinguishable states.
 
+### BG-26 operational visibility implementation
+
+The authenticated Web application has an `/operations` screen linked from the
+main navigation. It fetches two independently admin-protected endpoints:
+`GET /api/v1/usage` (existing policy-managed quota and provider state) and
+`GET /api/v1/operations/summary` (new, read-only D1 aggregate signals).
+Anonymous and capture-only bearer callers must not access either endpoint.
+The summary response is explicitly `Cache-Control: private, no-store`; no
+source text, private prompts, object keys or credentials are selected.
+
+The usage endpoint exposes the consumed and still-reserved components of each
+published dimension. Remaining headroom and policy thresholds are computed
+server-side. Active-window absence does **not** prove zero historical usage or
+unlimited free provider access. Window/provider units are displayed separately
+and are application-side counts/estimates, not the provider's billing ledger.
+A hard stop means wait for the applicable reset/probe, not force a retry.
+
+The summary groups current non-deleted item processing jobs separately from
+Notion sync jobs. Pending jobs whose `available_at` is in the future appear as
+`retry_wait` in the read model; that is not a persisted job status. Historical
+processing generations are excluded. Each job-kind query returns at most 100
+groups and one overflow sentinel, and sets `truncated` rather than presenting
+a partial result as a global total. The UI links to the already-supported
+admin `GET /jobs` inspection endpoint with a maximum of 50 records per link,
+not an unsupported global Retry action.
+
+The recovery signals count partial purge workflows, failed hosted backups,
+unknown digest deliveries and missing Notion projections. Latest verified
+backup and latest integrity result are distinguished from unavailable results.
+Inspect actual purge workflow steps with `GET /api/v1/purges/:id`; do not
+assume a partial purge finished. Unknown digest delivery requires reconciliation
+rather than a blind resend. Existing `GET /api/v1/backups` and integrity
+inspection routes remain the operator entry points.
+
+Attachment object count/bytes/orphan pressure are from **D1 metadata**, not
+an R2 provider inventory. D1 billing storage and rows-read/write counts and
+R2 provider account totals are intentionally `null` until independently
+measured using a supported source. They must not be displayed as zero.
+`generated_at` and storage measurement scope are returned explicitly.
+
+On entry, the screen fetches both endpoints and refreshes every 60 seconds.
+An explicit Refresh cancels the superseded request. Navigation away (including
+logout that unmounts the authenticated screen) cancels polling. On a failed
+refresh, the last successful snapshot remains visible **with a stale warning**
+and last success timestamp; without a prior snapshot, a retryable error view
+appears. The page is responsive and announces refresh status accessibly.
+
+Run targeted validation with `npx vitest run --config vitest.d1.config.ts
+apps/worker-api/test/operations-summary.d1.spec.ts`, then `npm run check`.
+The existing `capacity-core-continuity.d1.spec.ts` verifies that synthetic
+capturing, stored original and search still work during hard AI quota stop.
+An isolated D1 workload/query-plan review and a real responsive/browser
+acceptance remain distinct proof gates; provider dashboards are required for
+real account usage. BG-26 does not authorize remote schema migration, deletion,
+provider spending or production rollout.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-26](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-26--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
