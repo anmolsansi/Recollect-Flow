@@ -44,7 +44,7 @@ POST /api/v1/backups
 GET  /api/v1/backups
 ```
 
-The Worker writes each artifact once under `backups/v1/<backup-id>.json` in the private R2 bucket, records a SHA-256 digest, reads the object back, and marks the D1 backup row `complete` only after the content hash and byte size match. Application cleanup does not remove a completed hosted backup before its 30-day OPE-228 retention boundary. The hourly background job removes expired hosted backup objects and keeps non-content backup audit metadata. **It does not create backups.** The at-least-weekly operator cadence and external schedule activation are tracked separately in the BG-28 recovery procedure.
+The Worker writes each artifact once under `backups/v1/<backup-id>.json` in the private R2 bucket, records a SHA-256 digest, reads the object back, and marks the D1 backup row `complete` only after the content hash and byte size match. Application cleanup does not remove a completed hosted backup before its 30-day OPE-228 retention boundary. The hourly background job removes expired hosted backup objects and keeps non-content backup audit metadata. **It does not create backups.** BG-28 adds an opt-in Monday 02:15 UTC JSON creator gated by `HOSTED_BACKUP_AUTOCREATE_ENABLED=true`, the new `0025` migration and explicit operator approval. It is disabled by default. Original R2 bytes and purge receipts still require separate independent replication; inspect `scheduled_backup_periods` in D1 and the verified artifact record after authorized activation.
 
 A backup failure is not a canonical-data recovery action. Do not delete or rewrite D1, item attachment objects, or Notion pages in response to backup creation/verification failure.
 
