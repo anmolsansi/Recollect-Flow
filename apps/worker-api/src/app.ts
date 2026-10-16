@@ -13,7 +13,10 @@ import type { PolicyRepository } from './policy/policy.repository';
 import type { AppContext, Env } from './env';
 import { errorResponse } from './shared/errors';
 import { requireAdminToken, requireCaptureWrite } from './shared/auth';
-import { admitShortcutBeforeBody, shortcutRoutes } from './shortcut/shortcut.routes';
+import {
+  admitShortcutBeforeBody,
+  shortcutRoutes,
+} from './shortcut/shortcut.routes';
 import { itemRoutes } from './items/item.routes';
 import { searchRoutes } from './search/search.routes';
 import { authRoutes } from './auth/auth.routes';
