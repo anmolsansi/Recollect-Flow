@@ -15,6 +15,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # TEMP BG26 FORMAT DIAGNOSTIC - remove before merge
+      - run: |
+          npx prettier --write apps/web/src/OperationsPage.tsx apps/web/src/operations.types.ts apps/worker-api/src/jobs/operations-summary.service.ts apps/worker-api/test/operations-summary.d1.spec.ts apps/worker-api/test/asset-router.test.ts scripts/verify-web-hosting.mjs scripts/verify-browser-operations.mjs docs/verification/BG-26_OPERATIONS_VISIBILITY.md
+          node -e "const fs=require('node:fs'); for(const p of process.argv.slice(1)) console.log('BG26_FORMAT '+JSON.stringify({path:p,content:fs.readFileSync(p,'utf8')}))" apps/web/src/OperationsPage.tsx apps/web/src/operations.types.ts apps/worker-api/src/jobs/operations-summary.service.ts apps/worker-api/test/operations-summary.d1.spec.ts apps/worker-api/test/asset-router.test.ts scripts/verify-web-hosting.mjs scripts/verify-browser-operations.mjs docs/verification/BG-26_OPERATIONS_VISIBILITY.md
       - run: npm run check
       - run: npm run release:package:test
       - run: npm run release:package
