@@ -3116,7 +3116,6 @@ The concrete operator workflow is in [BG-28 recovery procedure](RECOVERY_OPERATO
 
 **Backup scheduling boundary:** the currently deployed background job only cleans expired hosted backups. Creation is via the admin-only endpoint, not an already-running weekly scheduler. The release's weekly creation objective needs a real recurring operator schedule or an explicitly authorized automation with recorded successful completions. Do not claim this is active because this guide describes a possible cadence.
 
-
 **What and why.** Recovery is only useful if an operator can execute it under
 pressure and verify that both retained and deliberately deleted data behave correctly.
 
