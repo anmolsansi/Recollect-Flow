@@ -72,4 +72,3 @@ review the branch and decide whether to merge. Production-origin validation
 and an actual Telegram send are **not performed** and belong only to an
 explicitly authorized release trial. Do not report live delivery or production
 deployment as proven.
-
