@@ -19,11 +19,17 @@ function safeObjectPath(root, objectKey) {
       objectKey.length > 0 &&
       !objectKey.startsWith('/') &&
       !objectKey.includes('\\') &&
-      objectKey.split('/').every((part) => part && part !== '.' && part !== '..'),
+      objectKey
+        .split('/')
+        .every((part) => part && part !== '.' && part !== '..'),
     'UNSAFE_OBJECT_KEY',
   );
   const location = path.resolve(root, ...objectKey.split('/'));
-  assert(path.relative(root, location) && !path.relative(root, location).startsWith('..'), 'UNSAFE_OBJECT_KEY');
+  assert(
+    path.relative(root, location) &&
+      !path.relative(root, location).startsWith('..'),
+    'UNSAFE_OBJECT_KEY',
+  );
   return location;
 }
 
@@ -42,12 +48,17 @@ function newestPurgeReceipts(receipts) {
       'PURGE_LEDGER_INVALID',
     );
     const prior = result.get(receipt.itemId);
-    if (!prior || prior.purgedAt < receipt.purgedAt) result.set(receipt.itemId, receipt);
+    if (!prior || prior.purgedAt < receipt.purgedAt)
+      result.set(receipt.itemId, receipt);
   }
   return result;
 }
 
-export async function verifyRecoveryBundle({ exportFile, objectsDir, receiptsFile }) {
+export async function verifyRecoveryBundle({
+  exportFile,
+  objectsDir,
+  receiptsFile,
+}) {
   const envelope = JSON.parse(await readFile(exportFile, 'utf8'));
   assert(envelope.format === FORMAT, 'EXPORT_FORMAT_INVALID');
   assert(typeof envelope.schemaVersion === 'string', 'EXPORT_VERSION_MISSING');
@@ -61,7 +72,9 @@ export async function verifyRecoveryBundle({ exportFile, objectsDir, receiptsFil
 
   // The separate ledger must come from the independent saved receipt objects,
   // never from the same historical export being tested.
-  const external = newestPurgeReceipts(JSON.parse(await readFile(receiptsFile, 'utf8')));
+  const external = newestPurgeReceipts(
+    JSON.parse(await readFile(receiptsFile, 'utf8')),
+  );
   const archived = newestPurgeReceipts(envelope.purgeReceipts);
   for (const id of archived.keys()) {
     assert(external.has(id), 'PURGE_LEDGER_INCOMPLETE');
@@ -73,7 +86,10 @@ export async function verifyRecoveryBundle({ exportFile, objectsDir, receiptsFil
   const seenItemIds = new Set();
   for (const entry of envelope.items) {
     const itemId = entry?.item?.id;
-    assert(typeof itemId === 'string' && itemId && !seenItemIds.has(itemId), 'EXPORT_ITEM_ID_INVALID');
+    assert(
+      typeof itemId === 'string' && itemId && !seenItemIds.has(itemId),
+      'EXPORT_ITEM_ID_INVALID',
+    );
     seenItemIds.add(itemId);
     if (external.has(itemId)) {
       skippedPurged += 1;
@@ -96,12 +112,20 @@ export async function verifyRecoveryBundle({ exportFile, objectsDir, receiptsFil
       // A copied object must be an ordinary file inside the selected root.
       const canonical = await realpath(location);
       const rel = path.relative(root, canonical);
-      assert(rel && !rel.startsWith('..') && !path.isAbsolute(rel), 'UNSAFE_OBJECT_PATH');
+      assert(
+        rel && !rel.startsWith('..') && !path.isAbsolute(rel),
+        'UNSAFE_OBJECT_PATH',
+      );
       const info = await stat(canonical);
       assert(info.isFile(), 'OBJECT_NOT_FILE');
       assert(info.size === size, 'ATTACHMENT_SIZE_MISMATCH');
-      const digest = createHash('sha256').update(await readFile(canonical)).digest('hex');
-      assert(digest.toLowerCase() === expectedHash.toLowerCase(), 'ATTACHMENT_HASH_MISMATCH');
+      const digest = createHash('sha256')
+        .update(await readFile(canonical))
+        .digest('hex');
+      assert(
+        digest.toLowerCase() === expectedHash.toLowerCase(),
+        'ATTACHMENT_HASH_MISMATCH',
+      );
       manifest.push({
         itemId,
         attachmentId: attachment.id,
@@ -119,14 +143,20 @@ export async function verifyRecoveryBundle({ exportFile, objectsDir, receiptsFil
     skippedPurgedItemCount: skippedPurged,
     independentPurgeReceiptCount: external.size,
     verifiedObjectCount: manifest.length,
-    verifiedByteCount: manifest.reduce((sum, object) => sum + object.sizeBytes, 0),
+    verifiedByteCount: manifest.reduce(
+      (sum, object) => sum + object.sizeBytes,
+      0,
+    ),
     objects: manifest,
   };
 }
 
-const invoked = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+const invoked =
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invoked) {
-  const [exportFile, objectsDir, receiptsFile, manifestFile] = process.argv.slice(2);
+  const [exportFile, objectsDir, receiptsFile, manifestFile] =
+    process.argv.slice(2);
   if (!exportFile || !objectsDir || !receiptsFile || !manifestFile) {
     console.error(
       'Usage: node scripts/recovery-bundle.mjs <export.json> <independent-objects-dir> <independent-purge-receipts.json> <manifest.json>',
@@ -152,7 +182,9 @@ if (invoked) {
         }),
       );
     } catch (error) {
-      console.error(error instanceof Error ? error.message : 'RECOVERY_BUNDLE_FAILED');
+      console.error(
+        error instanceof Error ? error.message : 'RECOVERY_BUNDLE_FAILED',
+      );
       process.exitCode = 1;
     }
   }
