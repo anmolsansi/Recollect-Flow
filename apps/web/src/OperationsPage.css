@@ -1,21 +1,73 @@
-.operations-page { display: grid; gap: 1.75rem; }
-.operations-page section { display: grid; gap: 1rem; }
-.operations-page .card { overflow-wrap: anywhere; }
-.operations-page .card ul { padding-left: 1.25rem; display: grid; gap: .35rem; }
-.operations-page h2 { margin-bottom: .15rem; }
-.operations-page h3 { font-size: 1.05rem; margin-bottom: .6rem; }
-.operations-page p { margin-bottom: .5rem; }
-.operations-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: start; flex-wrap: wrap; }
-.operations-heading .btn { flex-shrink: 0; }
-.operations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 1rem; }
-.operations-muted { color: var(--text-muted); font-size: .9rem; }
-.operations-warning { color: #bb6900; font-weight: 600; }
-.operations-danger { color: var(--danger-color); }
-.operations-status { min-height: 1.5rem; }
-.operations-stale { border-left: 3px solid #bb6900; padding-left: .75rem; }
-.operations-page a { text-decoration: underline; }
+.operations-page {
+  display: grid;
+  gap: 1.75rem;
+}
+.operations-page section {
+  display: grid;
+  gap: 1rem;
+}
+.operations-page .card {
+  overflow-wrap: anywhere;
+}
+.operations-page .card ul {
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.35rem;
+}
+.operations-page h2 {
+  margin-bottom: 0.15rem;
+}
+.operations-page h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.6rem;
+}
+.operations-page p {
+  margin-bottom: 0.5rem;
+}
+.operations-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+  flex-wrap: wrap;
+}
+.operations-heading .btn {
+  flex-shrink: 0;
+}
+.operations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 1rem;
+}
+.operations-muted {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.operations-warning {
+  color: #bb6900;
+  font-weight: 600;
+}
+.operations-danger {
+  color: var(--danger-color);
+}
+.operations-status {
+  min-height: 1.5rem;
+}
+.operations-stale {
+  border-left: 3px solid #bb6900;
+  padding-left: 0.75rem;
+}
+.operations-page a {
+  text-decoration: underline;
+}
 @media (max-width: 640px) {
-  .operations-page { gap: 1.25rem; }
-  .operations-grid { grid-template-columns: minmax(0, 1fr); }
-  .operations-heading { align-items: stretch; }
+  .operations-page {
+    gap: 1.25rem;
+  }
+  .operations-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .operations-heading {
+    align-items: stretch;
+  }
 }
