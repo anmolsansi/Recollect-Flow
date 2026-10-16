@@ -29,7 +29,7 @@ describe('BG-28 restore original-byte gate', () => {
       `INSERT INTO items
         (id, idempotency_key, source_type, source_app, privacy_level,
          processing_status, captured_at, created_at, updated_at)
-       VALUES (?1, 'bg28-original-key', 'pdf', 'test', 'public',
+       VALUES (?1, 'bg28-original-key', 'file', 'test', 'public',
                'complete', ?2, ?2, ?2)`,
     )
       .bind(ITEM_ID, NOW)
