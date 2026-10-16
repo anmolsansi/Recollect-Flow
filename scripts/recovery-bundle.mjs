@@ -86,6 +86,7 @@ export async function verifyRecoveryBundle({
   const manifest = [];
   let skippedPurged = 0;
   const seenItemIds = new Set();
+  const seenObjectKeys = new Set();
   for (const entry of envelope.items) {
     const itemId = entry?.item?.id;
     assert(
@@ -99,17 +100,27 @@ export async function verifyRecoveryBundle({
     }
     assert(Array.isArray(entry.attachments), 'EXPORT_ATTACHMENTS_INVALID');
     for (const attachment of entry.attachments) {
-      if (attachment.status === 'deleted') continue;
+      // A pending/orphaned upload is not a promised original-byte artifact.
+      if (
+        attachment.status === 'deleted' ||
+        attachment.status === 'pending' ||
+        attachment.status === 'orphaned'
+      ) {
+        continue;
+      }
       const key = attachment.object_key;
       const expectedHash = attachment.content_hash;
       const size = attachment.size_bytes;
       assert(
-        typeof attachment.id === 'string' &&
+        attachment.item_id === itemId &&
+          typeof attachment.id === 'string' &&
           /^[a-f0-9]{64}$/i.test(expectedHash) &&
           Number.isSafeInteger(size) &&
           size >= 0,
         'ATTACHMENT_INTEGRITY_METADATA_MISSING',
       );
+      assert(!seenObjectKeys.has(key), 'DUPLICATE_OBJECT_KEY');
+      seenObjectKeys.add(key);
       const location = safeObjectPath(root, key);
       // A copied object must be an ordinary file inside the selected root.
       const canonical = await realpath(location);
