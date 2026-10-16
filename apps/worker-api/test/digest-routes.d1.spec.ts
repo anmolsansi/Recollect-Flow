@@ -224,4 +224,51 @@ describe('digest administrative routes', () => {
       telegram_message_id: 'manual-123',
     });
   });
+
+  it('lists recent digest runs and previews current content without delivery', async () => {
+    const app = createApp();
+    const generatedResponse = await app.request(
+      '/api/v1/digests/generate',
+      {
+        method: 'POST',
+        headers: adminHeaders(),
+        body: JSON.stringify({
+          digest_type: 'daily',
+          scheduled_at: '2026-08-03T02:00:00.000Z',
+        }),
+      },
+      env,
+    );
+    const generated = (await generatedResponse.json()) as {
+      data: { run: { id: string } };
+    };
+    const unauthenticated = await app.request('/api/v1/digests', {}, env);
+    expect(unauthenticated.status).toBe(403);
+    const list = await app.request(
+      '/api/v1/digests',
+      { headers: adminHeaders() },
+      env,
+    );
+    expect(list.status).toBe(200);
+    expect(list.headers.get('Cache-Control')).toContain('no-store');
+    const listed = (await list.json()) as { data: Array<{ id: string }> };
+    expect(listed.data[0]?.id).toBe(generated.data.run.id);
+    const detailResponse = await app.request(
+      `/api/v1/digests/${generated.data.run.id}`,
+      { headers: adminHeaders() },
+      env,
+    );
+    const detail = (await detailResponse.json()) as {
+      data: { preview: { text: string; currentEligibleCount: number } };
+    };
+    expect(detailResponse.headers.get('Cache-Control')).toContain('no-store');
+    expect(detail.data.preview.text).toContain('Daily digest');
+    expect(detail.data.preview.currentEligibleCount).toBe(1);
+    const count = await env.DB.prepare(
+      'SELECT COUNT(*) AS count FROM digest_deliveries',
+    ).first<{ count: number }>();
+    expect(count?.count).toBe(0);
+  });
+
+
 });
