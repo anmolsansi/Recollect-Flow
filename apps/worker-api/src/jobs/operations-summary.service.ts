@@ -81,8 +81,10 @@ export class OperationsSummaryService {
                AS next_available_at,
              MIN(last_error_code) AS sample_error_code
       FROM current_jobs
-      GROUP BY type, visible_status
-      ORDER BY type, visible_status
+      GROUP BY type, visible_status,
+               CASE WHEN visible_status IN ('failed', 'retry_wait')
+                    THEN last_error_code ELSE NULL END
+      ORDER BY type, visible_status, sample_error_code
       LIMIT 101
     `;
     const syncSql = String.raw`
@@ -104,8 +106,10 @@ export class OperationsSummaryService {
                AS next_available_at,
              MIN(last_error_code) AS sample_error_code
       FROM current_jobs
-      GROUP BY type, visible_status
-      ORDER BY type, visible_status
+      GROUP BY type, visible_status,
+               CASE WHEN visible_status IN ('failed', 'retry_wait')
+                    THEN last_error_code ELSE NULL END
+      ORDER BY type, visible_status, sample_error_code
       LIMIT 101
     `;
     const [
