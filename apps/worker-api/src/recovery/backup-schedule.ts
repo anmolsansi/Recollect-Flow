@@ -31,7 +31,11 @@ export async function createWeeklyHostedBackup(
   if (claimed.meta.changes !== 1) return 'already_claimed';
 
   try {
-    const backup = await new BackupService(db, bucket, () => at).createHostedBackup();
+    const backup = await new BackupService(
+      db,
+      bucket,
+      () => at,
+    ).createHostedBackup();
     if (backup.state !== 'complete') throw new Error('BACKUP_NOT_VERIFIED');
     await db
       .prepare(
