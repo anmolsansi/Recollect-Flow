@@ -1,4 +1,4 @@
-/* global fetch, AbortSignal, setTimeout, performance */
+/* global fetch, AbortSignal, setTimeout, performance, URL */
 /**
  * BG-29 synthetic capture-acknowledgment benchmark.
  * localhost only. No uploads, external providers, production or personal data.
