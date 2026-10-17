@@ -39,8 +39,8 @@ test('D1 probe retains bounded original count and emits a D1-only record', async
       };
     },
   };
-  const originalConsoleLog = console.log;
-  console.log = () => {};
+  const originalConsoleLog = globalThis.console.log;
+  globalThis.console.log = () => {};
   try {
     const result = await runD1CronProbe(
       db,
@@ -54,6 +54,6 @@ test('D1 probe retains bounded original count and emits a D1-only record', async
     assert.match(result.limitations, /Notion projection/);
     assert.ok(calls.every((c) => !/R2|openrouter|notion/i.test(c.sql ?? '')));
   } finally {
-    console.log = originalConsoleLog;
+    globalThis.console.log = originalConsoleLog;
   }
 });
