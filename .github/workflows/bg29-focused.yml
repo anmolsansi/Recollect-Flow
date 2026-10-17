@@ -5,6 +5,7 @@ on:
       - 'apps/worker-api/test/bg29-dependency-recovery.d1.spec.ts'
       - 'apps/worker-api/test/bg29-schema-failure.test.ts'
       - 'apps/worker-api/test/bg29-upload-pressure.d1.spec.ts'
+      - 'apps/worker-api/test/bg29-multistage-drain.d1.spec.ts'
       - 'apps/worker-api/src/jobs/ai/ai-provider.registry.ts'
       - '.github/workflows/bg29-focused.yml'
 permissions:
@@ -22,3 +23,4 @@ jobs:
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-dependency-recovery.d1.spec.ts
       - run: npx vitest run --config vitest.node.config.ts apps/worker-api/test/bg29-schema-failure.test.ts
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-upload-pressure.d1.spec.ts
+      - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-multistage-drain.d1.spec.ts
