@@ -266,7 +266,12 @@ describe('BG-29 actual D1 queue handoffs under synthetic hourly cadence', () => 
         `SELECT COUNT(*) AS count FROM items
          WHERE notion_page_id IS NOT NULL`,
       ).first<{ count: number }>();
-      if (completed?.count === URL_ITEMS + FILE_ITEMS && lastSyncHour < 0) {
+      if (
+        completed?.count === URL_ITEMS + FILE_ITEMS &&
+        ready?.count === 0 &&
+        pendingSync?.count === 0 &&
+        lastSyncHour < 0
+      ) {
         lastSyncHour = tick;
       }
       completedPerTick.push({
