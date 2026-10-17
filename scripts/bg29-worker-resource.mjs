@@ -20,20 +20,33 @@ async function inspectorSocket() {
       const candidate = new WebSocket(url);
       try {
         await new Promise((resolve, reject) => {
-          const deadline = setTimeout(() => reject(new Error('handshake timeout')), 1000);
-          candidate.addEventListener('open', () => {
-            clearTimeout(deadline);
-            resolve();
-          }, { once: true });
-          candidate.addEventListener('error', (event) => {
-            clearTimeout(deadline);
-            reject(new Error(event.message || 'connection refused'));
-          }, { once: true });
+          const deadline = setTimeout(
+            () => reject(new Error('handshake timeout')),
+            1000,
+          );
+          candidate.addEventListener(
+            'open',
+            () => {
+              clearTimeout(deadline);
+              resolve();
+            },
+            { once: true },
+          );
+          candidate.addEventListener(
+            'error',
+            (event) => {
+              clearTimeout(deadline);
+              reject(new Error(event.message || 'connection refused'));
+            },
+            { once: true },
+          );
         });
         ws = candidate;
         break;
       } catch (error) {
-        diagnostics.push(`${url}: ${error instanceof Error ? error.message : 'unknown'}`);
+        diagnostics.push(
+          `${url}: ${error instanceof Error ? error.message : 'unknown'}`,
+        );
         candidate.close();
       }
     }
@@ -108,14 +121,16 @@ function profileSummary(profile) {
   for (let index = 0; index < samples.length; index += 1) {
     const delta = deltas[index] ?? 0;
     totalMicroseconds += delta;
-    if ((nodes.get(samples[index])?.callFrame?.functionName ?? '') !== '(idle)') {
+    if (
+      (nodes.get(samples[index])?.callFrame?.functionName ?? '') !== '(idle)'
+    ) {
       activeMicroseconds += delta;
     }
   }
   return {
     cpu_samples: samples.length,
-    sampled_window_ms: Math.round(totalMicroseconds / 1000 * 100) / 100,
-    sampled_non_idle_ms: Math.round(activeMicroseconds / 1000 * 100) / 100,
+    sampled_window_ms: Math.round((totalMicroseconds / 1000) * 100) / 100,
+    sampled_non_idle_ms: Math.round((activeMicroseconds / 1000) * 100) / 100,
     // Local inspector sampled activity, not Cloudflare billed CPU time.
   };
 }

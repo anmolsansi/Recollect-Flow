@@ -72,6 +72,7 @@ https://developers.cloudflare.com/workers/observability/metrics-and-analytics/
 ## BG-29.078 measurement
 
 Seed a 24–48-item **staging-only** backlog containing:
+
 - URLs undergoing bounded acquisition -> enrichment
 - Files undergoing attachment extraction -> enrichment
 - Notion projection attempts scheduled independently, including
