@@ -131,6 +131,7 @@ export async function createLocalAcceptanceRuntime({
   localWorkerToken,
   enableScheduled = false,
   fixtureWorker = false,
+  inspectorPort = null,
 }) {
   const tempDir = await mkdtemp(join(tmpdir(), 'recollect-bg07-'));
   const persistDir = join(tempDir, 'wrangler-state');
@@ -174,6 +175,7 @@ export async function createLocalAcceptanceRuntime({
       ...(fixtureConfigPath ? ['--config', fixtureConfigPath] : []),
       '--local',
       ...(enableScheduled ? ['--test-scheduled'] : []),
+      ...(inspectorPort ? ['--inspector-port', String(inspectorPort)] : []),
       '--port',
       String(apiPort),
       '--persist-to',

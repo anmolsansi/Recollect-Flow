@@ -3252,6 +3252,55 @@ reproduction steps, and feed real billing verification into BG-39.
 **Done when:** security/data-loss/cost blockers are resolved and measured behavior
 meets the agreed V1 targets. A numerical result needs fixture size, load and environment.
 
+### Isolated performance implementation and acceptance evidence
+
+BG-29 uses the [scenario contract and evidence register](verification/BG-29_RESILIENCE_ACCEPTANCE.md)
+to distinguish implemented checks from actual measurements. The synthetic
+20-case input/privacy matrix is verified separately from optional provider
+permissions. No image or PDF extraction is assumed when raw storage succeeds.
+
+Run `npm run bg29:latency:test` for the Node sampler checks. Run
+`npm run bg29:latency:bench` to launch disposable local Wrangler D1/R2 and
+Web processes, submit bounded synthetic text/note captures, record
+acknowledgment P50/P95, then prove a saved raw marker is searchable. Adjust
+`BG29_CAPTURE_COUNT` (1–200), `BG29_CAPTURE_CONCURRENCY` (1–5) and
+`BG29_CAPTURE_INTERVAL_MS` (1–5000) for a documented personal workload.
+The benchmark refuses remote origins, excludes upload and provider time,
+and fails if P95 exceeds the runbook's 2-second local comparison target.
+It is not proof of hosted latency or actual provider cost.
+
+To investigate BG-29.075, run `node --test
+scripts/bg29-inspector-connection.test.mjs` for the local inspector
+handshake regression, then opt into `npm run bg29:resource:profile`.
+The profiler launches an isolated local Wrangler Worker with disposable
+D1/R2 state, uses a loopback-only DevTools socket with the Origin header
+required by Wrangler, uploads a synthetic 25 MB PDF, and attempts to
+sample the Worker's V8 heap and CPU activity. The measurement is valid
+only when the command actually emits a numerical
+`bg29_local_workerd_isolate_resource_profile` event. An unavailable
+inspector, a passed handshake test, or a process-wide Node RSS number
+does not constitute Worker resource evidence. Local V8 samples cannot
+replace account-specific Cloudflare-hosted memory/CPU and billing checks.
+
+BG-29.078 requires actual scheduled-worker observations for the hourly
+multi-stage queue. The accelerated D1 test can check leases, handoffs,
+oldest queued age and simulated hours but cannot validate elapsed
+hourly Cron drain time. Keep both operational steps open until their
+specific acceptance evidence is captured. The
+[staging-only verification plan](verification/BG-29_STAGING_ONLY_PLAN.md)
+requires separate approval before any hosted resource creation,
+scheduled deployment or potential expense.
+
+The `bg29-search-scale.d1.spec.ts` acceptance suite seeds 10,000 synthetic
+D1 items through the real FTS trigger. It checks phrase and mixed-filter
+queries, stable tied-time cursor traversal and available D1 row metrics.
+The `bg29-provider-outage.d1.spec.ts` suite checks original text/note
+continuity without calling optional providers. The existing quota,
+circuit-breaker, enrichment and recovery regression suites remain relevant.
+Before BG-30 is unlocked, record real CI numbers and close every required
+load, upload, worker interruption and backlog recovery check in the
+100-step checklist. Missing hosted or 100,000-item proof must remain open.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-29](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-29--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
