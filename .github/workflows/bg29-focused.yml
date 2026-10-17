@@ -27,4 +27,7 @@ jobs:
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-upload-pressure.d1.spec.ts
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-multistage-drain.d1.spec.ts
       - run: npm run release:package
-      - run: npm run bg29:resource:profile
+      - name: Optional local V8/CPU profiler diagnostic (BG-29.075)
+        run: npm run bg29:resource:profile
+        continue-on-error: true
+        timeout-minutes: 4
