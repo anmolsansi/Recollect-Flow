@@ -61,15 +61,23 @@ export function assessZeroCostTemplate(config) {
 
   for (const identifier of PRODUCTION_IDENTIFIERS) {
     if (config.includes(identifier))
-      errors.push('Production resource identifier must never appear in staging');
+      errors.push(
+        'Production resource identifier must never appear in staging',
+      );
   }
   if (/^\s*\[triggers\]\s*$/m.test(config) || /^\s*crons\s*=/m.test(config))
-    errors.push('Cron triggers require later explicit isolated account verification');
+    errors.push(
+      'Cron triggers require later explicit isolated account verification',
+    );
   if (/^\s*(routes?|route)\s*=/m.test(config))
     errors.push('Production or public routes are not permitted');
   if (/^\s*\[ai\]\s*$/m.test(config))
     errors.push('Real AI binding is not permitted');
-  if (/^\s*(NOTION_ACCESS_TOKEN|TELEGRAM_BOT_TOKEN|OPENROUTER_API_KEY|CLOUDFLARE_API_TOKEN)\s*=/m.test(config))
+  if (
+    /^\s*(NOTION_ACCESS_TOKEN|TELEGRAM_BOT_TOKEN|OPENROUTER_API_KEY|CLOUDFLARE_API_TOKEN)\s*=/m.test(
+      config,
+    )
+  )
     errors.push('Never embed live tokens or credentials in staging config');
 
   return {
@@ -85,14 +93,15 @@ export function assessZeroCostTemplate(config) {
 }
 
 async function main() {
-  const path = resolve(
-    'wrangler.bg29-staging.example.toml',
-  );
+  const path = resolve('wrangler.bg29-staging.example.toml');
   const result = assessZeroCostTemplate(await readFile(path, 'utf8'));
   process.stdout.write(JSON.stringify(result, null, 2) + '\n');
   if (!result.local_template_safe) process.exitCode = 1;
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (
+  process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
   await main();
 }
