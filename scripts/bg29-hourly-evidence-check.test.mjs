@@ -52,6 +52,17 @@ test('a structurally valid D1-only ledger can never close full BG-29', () => {
   assert.equal(result.d1_only_cannot_complete_full_pipeline, true);
 });
 
+test('accepts actual Cron timestamps with nonzero seconds', () => {
+  const input = fixture();
+  input.sweeps[0].scheduled_at = '2026-10-16T04:17:37.889Z';
+  input.sweeps[0].observed_at = '2026-10-16T04:17:39.242Z';
+  input.sweeps[1].scheduled_at = '2026-10-16T05:17:37.889Z';
+  input.sweeps[1].observed_at = '2026-10-16T05:17:39.330Z';
+  const result = assessBg29HourlyEvidence(input, options);
+  assert.equal(result.structurally_valid, true, result.errors.join('; '));
+  assert.equal(result.bg29_078_verified, false);
+});
+
 test('rejects simulated fast-forwarded hours', () => {
   const input = fixture();
   input.sweeps[1].observed_at = '2026-10-16T04:17:45.000Z';
