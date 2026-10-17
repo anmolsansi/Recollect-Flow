@@ -62,12 +62,12 @@ The account was inspected in the user's signed-in browser. This is
 artifact. Do not store the account's email, payment details, or tokens
 in source control.
 
-| Resource | Account-observed state | Cost implication |
-| --- | --- | --- |
-| Workers | Free active; zero of 100,000 requests today; no projects | Free per-request limits apply; 10 ms Cron CPU cap |
-| D1 | Zero of ten databases, zero rows read/written, zero of 5 GB | Hard free query and storage limits; no hosted D1 test yet |
-| R2 | Paid subscription active; displayed 0.02 GB-month Standard storage and 5 Class B operations | Both displayed billable usages zero; Class A and complete cross-product usage not established |
-| Billing | Displayed $0.00 current and $0.00 projected cycle spend | Historical/projection observation, **not** a hard cap on additional R2 charges |
+| Resource | Account-observed state                                                                      | Cost implication                                                                              |
+| -------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Workers  | Free active; zero of 100,000 requests today; no projects                                    | Free per-request limits apply; 10 ms Cron CPU cap                                             |
+| D1       | Zero of ten databases, zero rows read/written, zero of 5 GB                                 | Hard free query and storage limits; no hosted D1 test yet                                     |
+| R2       | Paid subscription active; displayed 0.02 GB-month Standard storage and 5 Class B operations | Both displayed billable usages zero; Class A and complete cross-product usage not established |
+| Billing  | Displayed $0.00 current and $0.00 projected cycle spend                                     | Historical/projection observation, **not** a hard cap on additional R2 charges                |
 
 **Updated action decision:** Workers + D1 capacity appears sufficient for a
 bounded, no-R2 staging subset, but this is **not full BG-29.078
