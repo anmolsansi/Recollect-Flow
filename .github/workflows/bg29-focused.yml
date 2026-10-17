@@ -27,6 +27,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: BG29 temporary local formatting diagnostics
+        run: |
+          npx prettier --write docs/verification/BG-29_STAGING_ONLY_PLAN.md scripts/bg29-zero-cost-preflight.mjs
+          git diff -- docs/verification/BG-29_STAGING_ONLY_PLAN.md scripts/bg29-zero-cost-preflight.mjs
       - run: node --test scripts/bg29-inspector-connection.test.mjs
       - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
       - run: node scripts/bg29-zero-cost-preflight.mjs
