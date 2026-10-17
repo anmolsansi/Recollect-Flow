@@ -43,7 +43,7 @@
     "bg29:latency:test": "node --test scripts/bg29-capture-bench.test.mjs",
     "bg29:latency:bench": "node scripts/run-bg29-capture-bench.mjs",
     "bg29:fts:smoke": "node scripts/bg29-fts-rebuild.mjs",
-    "bg29:resource:profile": "node scripts/bg29-worker-resource.mjs"
+    "bg29:resource:profile": "npm run web:build && node scripts/bg29-worker-resource.mjs"
   },
   "dependencies": {
     "hono": "^4.8.10",
