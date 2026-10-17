@@ -12,9 +12,12 @@ async function inspectorSocket() {
   const urls = [];
   for (const path of ['/json/list', '/json']) {
     try {
-      const response = await fetch(`http://localhost:${INSPECTOR_PORT}${path}`, {
-        signal: AbortSignal.timeout(1500),
-      });
+      const response = await fetch(
+        `http://localhost:${INSPECTOR_PORT}${path}`,
+        {
+          signal: AbortSignal.timeout(1500),
+        },
+      );
       const targets = await response.json();
       for (const target of Array.isArray(targets) ? targets : [targets]) {
         const raw = target?.webSocketDebuggerUrl;
@@ -28,7 +31,9 @@ async function inspectorSocket() {
           urls.push(raw);
         }
       }
-    } catch { /* Use loopback-only fallbacks. */ }
+    } catch {
+      /* Use loopback-only fallbacks. */
+    }
   }
   urls.push(
     `ws://localhost:${INSPECTOR_PORT}/ws`,
