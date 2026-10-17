@@ -4011,6 +4011,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 **Focused acceptance checkpoint:** [passing isolated coupled-provider/Notion, upload interruption and stage-timing CI #38973261642](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38973261642) plus [green 100k/25MB/browser implementation CI #38970501080](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38970501080). All numeric scope and limitations are in [BG-29 evidence](verification/BG-29_RESILIENCE_ACCEPTANCE.md). BG-29.075 and BG-29.078 remain **unverified operational gates**, not N/A. A full exact-head CI must pass before any merge. BG-30 remains locked.
 
+**October 17 local Worker profile:** [focused CI #39013728568](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39013728568) passed the loopback inspector handshake and captured seven V8 heap samples (maximum observed 7,383,656 bytes) and 20 CPU samples (312.56 ms non-idle sampled activity) while processing a synthetic 25 MB upload. BG-29.075 is measured **locally only**; see the [resource evidence and limits](verification/BG-29_RESILIENCE_ACCEPTANCE.md). No production or hosted isolate/CPU-budget claim. The source checklist is **99/100**; BG-29.078 real elapsed hourly Cron backlog timing remains open, with BG-30 locked.
+
 #### BG-29 / 01 — Establish task context
 
 - [x] `BG-29.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
@@ -4108,7 +4110,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-29.072` Test upload cancellation.
 - [x] `BG-29.073` Test parser timeout.
 - [x] `BG-29.074` Test parser byte bound.
-- [ ] `BG-29.075` Measure Worker resource usage.
+- [x] `BG-29.075` Measure Worker resource usage.
 - [x] `BG-29.076` Inspect hourly cron batch behavior.
 - [x] `BG-29.077` Calculate expected drain capacity.
 - [ ] `BG-29.078` Measure multi-stage backlog delay.
