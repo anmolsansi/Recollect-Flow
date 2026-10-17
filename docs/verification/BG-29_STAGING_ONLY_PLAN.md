@@ -55,6 +55,41 @@ Official pricing and billing references:
 - https://developers.cloudflare.com/r2/get-started/
 - https://developers.cloudflare.com/billing/manage/budget-alerts/
 
+## Read-only Cloudflare account inspection (October 17, 2026)
+
+The account was inspected in the user's signed-in browser. This is
+**read-only operational context**, not an immutable hosted execution
+artifact. Do not store the account's email, payment details, or tokens
+in source control.
+
+| Resource | Account-observed state | Cost implication |
+| --- | --- | --- |
+| Workers | Free active; zero of 100,000 requests today; no projects | Free per-request limits apply; 10 ms Cron CPU cap |
+| D1 | Zero of ten databases, zero rows read/written, zero of 5 GB | Hard free query and storage limits; no hosted D1 test yet |
+| R2 | Paid subscription active; displayed 0.02 GB-month Standard storage and 5 Class B operations | Both displayed billable usages zero; Class A and complete cross-product usage not established |
+| Billing | Displayed $0.00 current and $0.00 projected cycle spend | Historical/projection observation, **not** a hard cap on additional R2 charges |
+
+**Updated action decision:** Workers + D1 capacity appears sufficient for a
+bounded, no-R2 staging subset, but this is **not full BG-29.078
+acceptance**. Remote resource management is unavailable through the
+connected read-only browser; no staging resources have been created.
+The previously specified R2-dependent file extraction and original
+attachment verification would require the already active usage-billed
+R2 service, which cannot be asserted to have a $0 maximum charge.
+The user's $0 condition therefore keeps full hosted R2 acceptance
+**NO-GO**. Never mark BG-29 complete from only a D1 subset.
+
+`node --test scripts/bg29-hourly-evidence-check.test.mjs` checks the
+minimum evidence contract. `node scripts/bg29-hourly-evidence-check.mjs
+<evidence.json>` checks externally obtained UTC Cron sweep records,
+original counts, pending/retry/processing/failed queues, mock Notion
+attempts, zero additional cost, and at least 55 minutes of actual
+elapsed time. Even a valid JSON ledger is **not self-authenticating**:
+verify original Cloudflare event logs, account/Worker version and final
+billing independently. The checker deliberately never sets
+`bg29_078_verified` to true. No such hosted real-hour event logs have
+been collected so far.
+
 ## Authorization and scope gates
 
 1. Obtain explicit approval for **one** isolated Cloudflare staging Worker,
