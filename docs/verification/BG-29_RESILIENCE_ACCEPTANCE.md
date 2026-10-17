@@ -258,6 +258,65 @@ outage. Focused CI is not a substitute for final exact-head full CI.
 These remain explicit outstanding work and cannot be marked passed
 by the previous local or mocked measurements.
 
+## October 17 isolated queue drain and resource profiling checkpoint
+
+**Exact source and configuration:** `bg29-multistage-drain.d1.spec.ts`
+uses real `JobService` lease/transition paths, production
+`SourceAcquisitionService` and `EnrichService`, real D1 migrations
+and local test bindings, mocked external source/AI/Notion responses,
+and a logical 60-minute scheduling interval. The user authorized
+local-only measurements, **not** hosted deployment.
+
+[Focused CI #39009820971](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39009820971)
+passed the *queue test step* but failed a separate local inspector step.
+The queue run measured:
+
+| Property | Recorded value |
+| --- | ---: |
+| Synthetic originals, all retained | 24 |
+| URL acquisition track / file extraction track | 12 / 12 |
+| Acquisition/extraction/enrichment lease batch | 10 |
+| Notion sync-attempt batch | 25 |
+| Logical hourly sweeps to clear all queues | 4 |
+| Logical elapsed arrival-to-clear | 3 hours |
+| Real isolated test execution wall time | 24.179 seconds |
+| Acquisition stage processing wall time | 69 ms |
+| Extraction stage processing wall time | 31 ms |
+| Enrichment stage processing wall time | 160 ms |
+| Notion sync stage processing wall time | 23,834 ms |
+| Remaining pending/processing or failed jobs | 0 |
+
+Notion had additional projection synchronization attempts as data was
+enriched; Notion is independently scheduled and not necessarily
+last in a strict four-step pipeline. `24` originals remained
+after simulated queue clearance. Observed pending totals were
+24, 14, 4 and 0 at the end of successive sweeps.
+These are **accelerated logical-clock intervals**, not three
+hours of elapsed wall time or a real hosted Cron drain.
+The external network and expensive providers were never called.
+BG-29.078 still requires actual scheduled-worker timing or an
+explicitly accepted staging substitute.
+
+**BG-29.075 local V8/CPU profiling attempt:** The safe
+`npm run bg29:resource:profile` harness starts the real
+bundled Worker through `wrangler dev --local`, initializes
+fresh local D1/R2 and attempts to obtain V8 heap usage and
+CPU samples via the workerd inspector during a 25 MB upload.
+This test is **not** an account resource measurement.
+Early CI attempts failed because the static release bundle
+was missing, then because the inspector websocket endpoint
+could not be established. The harness was modified to use
+loopback DevTools discovery, but until its exact-head CI
+emits actual numerical V8 heap and CPU samples,
+BG-29.075 remains **not verified**.
+
+**Staging-only preparation:** See
+[BG-29_STAGING_ONLY_PLAN.md](BG-29_STAGING_ONLY_PLAN.md) and
+`wrangler.bg29-staging.example.toml`. Both are preparation
+artifacts only. Their staging placeholder is intentionally
+not deployable; no Cloudflare production changes, provider
+charges or real scheduled events have been authorized.
+
 ## Final decision
 
 BG-30 remains locked until every required BG-29 scenario is verifiably passed, relevant defects are resolved, CI is green at the accepted head, and the source checklist/issue/Linear record are reconciled. An implemented harness alone is insufficient.
