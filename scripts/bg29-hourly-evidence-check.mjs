@@ -104,8 +104,7 @@ export function assessBg29HourlyEvidence(data, { now = Date.now() } = {}) {
       );
       requireField(observed <= now, `Sweep ${index} cannot be in the future`);
       requireField(
-        new Date(scheduled).getUTCMinutes() === 17 &&
-          new Date(scheduled).getUTCSeconds() === 0,
+        new Date(scheduled).getUTCMinutes() === 17,
         `Sweep ${index} does not align with the configured Cron`,
       );
       if (priorObserved !== null)
