@@ -9,10 +9,31 @@ const ORIGIN = `http://127.0.0.1:${API_PORT}`;
 const BYTES = 25_000_000;
 
 async function inspectorSocket() {
-  const urls = [
+  const urls = [];
+  for (const path of ['/json/list', '/json']) {
+    try {
+      const response = await fetch(`http://localhost:${INSPECTOR_PORT}${path}`, {
+        signal: AbortSignal.timeout(1500),
+      });
+      const targets = await response.json();
+      for (const target of Array.isArray(targets) ? targets : [targets]) {
+        const raw = target?.webSocketDebuggerUrl;
+        if (typeof raw !== 'string') continue;
+        const endpoint = new URL(raw);
+        if (
+          endpoint.protocol === 'ws:' &&
+          ['localhost', '127.0.0.1', '[::1]'].includes(endpoint.hostname) &&
+          endpoint.port === String(INSPECTOR_PORT)
+        ) {
+          urls.push(raw);
+        }
+      }
+    } catch { /* Use loopback-only fallbacks. */ }
+  }
+  urls.push(
     `ws://localhost:${INSPECTOR_PORT}/ws`,
     `ws://127.0.0.1:${INSPECTOR_PORT}/ws`,
-  ];
+  );
   let ws = null;
   const diagnostics = [];
   for (let attempt = 0; attempt < 12 && !ws; attempt += 1) {
