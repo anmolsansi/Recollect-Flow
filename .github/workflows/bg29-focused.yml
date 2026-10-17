@@ -7,6 +7,17 @@ on:
       - 'apps/worker-api/test/bg29-upload-pressure.d1.spec.ts'
       - 'apps/worker-api/test/bg29-multistage-drain.d1.spec.ts'
       - 'scripts/bg29-worker-resource.mjs'
+      - 'scripts/bg29-zero-cost-preflight.mjs'
+      - 'scripts/bg29-zero-cost-preflight.test.mjs'
+      - 'scripts/bg29-hourly-evidence-check.mjs'
+      - 'scripts/bg29-hourly-evidence-check.test.mjs'
+      - 'scripts/bg29-d1-cron-probe-worker.mjs'
+      - 'scripts/bg29-d1-cron-probe.test.mjs'
+      - 'scripts/bg29-d1-probe-config.test.mjs'
+      - 'wrangler.bg29-d1-probe.toml'
+      - 'wrangler.bg29-d1-probe-cron.toml'
+      - 'docs/verification/BG-29_D1_ONLY_DEPLOY_GUIDE.md'
+      - 'wrangler.bg29-staging.example.toml'
       - 'scripts/bg29-inspector-connection.mjs'
       - 'scripts/bg29-inspector-connection.test.mjs'
       - 'scripts/browser-acceptance-runtime.mjs'
@@ -25,6 +36,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: node --test scripts/bg29-inspector-connection.test.mjs
+      - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
+      - run: node scripts/bg29-zero-cost-preflight.mjs
+      - run: node --test scripts/bg29-hourly-evidence-check.test.mjs
+      - run: node --test scripts/bg29-d1-cron-probe.test.mjs scripts/bg29-d1-probe-config.test.mjs
+      - run: npx wrangler deploy --config wrangler.bg29-d1-probe.toml --dry-run
+      - run: npx wrangler deploy --config wrangler.bg29-d1-probe-cron.toml --dry-run
       - name: BG29 isolated Worker CPU/heap profile (diagnostic only)
         continue-on-error: true
         timeout-minutes: 5
