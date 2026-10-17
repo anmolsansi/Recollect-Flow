@@ -20,22 +20,25 @@ async function inspectorSocket() {
       );
       const targets = await response.json();
       const discovered = Array.isArray(targets) ? targets : [targets];
-      console.log(JSON.stringify({
-        event: 'bg29_local_inspector_discovery',
-        path,
-        target_count: discovered.length,
-        target_shapes: discovered.map((target) =>
-          target && typeof target === 'object'
-            ? Object.keys(target).slice(0, 12)
-            : [typeof target]),
-        ws_paths: discovered.map((target) => {
-          try {
-            return new URL(target.webSocketDebuggerUrl).pathname;
-          } catch {
-            return null;
-          }
+      console.log(
+        JSON.stringify({
+          event: 'bg29_local_inspector_discovery',
+          path,
+          target_count: discovered.length,
+          target_shapes: discovered.map((target) =>
+            target && typeof target === 'object'
+              ? Object.keys(target).slice(0, 12)
+              : [typeof target],
+          ),
+          ws_paths: discovered.map((target) => {
+            try {
+              return new URL(target.webSocketDebuggerUrl).pathname;
+            } catch {
+              return null;
+            }
+          }),
         }),
-      }));
+      );
       for (const target of discovered) {
         const raw = target?.webSocketDebuggerUrl;
         if (typeof raw !== 'string') continue;
