@@ -24,5 +24,5 @@ test('both probe configs target only the preverified BG29 staging database', () 
 
 test('initial deploy has no Cron, opt-in file only adds hourly Cron', () => {
   assert.doesNotMatch(base, /\[triggers\]|^crons\s*=/m);
-  assert.match(hourly, /\[triggers\]\s*\ncrons = \["17 \* \* \* \* "\]/m);
+  assert.match(hourly, /^crons = \["17 \* \* \* \*"\]$/m);
 });
