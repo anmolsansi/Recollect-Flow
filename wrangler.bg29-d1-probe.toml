@@ -16,3 +16,7 @@ migrations_dir = "migrations"
 [observability]
 enabled = true
 head_sampling_rate = 1
+
+# Explicitly remove any previously installed hourly Cron when redeploying.
+[triggers]
+crons = []
