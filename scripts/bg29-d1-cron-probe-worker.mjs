@@ -8,7 +8,11 @@ export function isAllowedCron(cron) {
   return cron === CRON;
 }
 
-export async function runD1CronProbe(db, scheduledAt, observedAt = new Date().toISOString()) {
+export async function runD1CronProbe(
+  db,
+  scheduledAt,
+  observedAt = new Date().toISOString(),
+) {
   // Tables are separate from application data, and the deterministic 24-item
   // fixture is inserted only once. No network, R2, AI or notification calls.
   await db.exec(
