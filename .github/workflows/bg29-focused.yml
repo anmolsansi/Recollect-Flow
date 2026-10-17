@@ -7,6 +7,8 @@ on:
       - 'apps/worker-api/test/bg29-upload-pressure.d1.spec.ts'
       - 'apps/worker-api/test/bg29-multistage-drain.d1.spec.ts'
       - 'scripts/bg29-worker-resource.mjs'
+      - 'scripts/bg29-inspector-connection.mjs'
+      - 'scripts/bg29-inspector-connection.test.mjs'
       - 'scripts/browser-acceptance-runtime.mjs'
       - 'apps/worker-api/src/jobs/ai/ai-provider.registry.ts'
       - '.github/workflows/bg29-focused.yml'
@@ -22,6 +24,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: node --test scripts/bg29-inspector-connection.test.mjs
+      - name: BG29 isolated Worker CPU/heap profile (diagnostic only)
+        continue-on-error: true
+        timeout-minutes: 5
+        run: npm run bg29:resource:profile
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-dependency-recovery.d1.spec.ts
       - run: npx vitest run --config vitest.node.config.ts apps/worker-api/test/bg29-schema-failure.test.ts
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-upload-pressure.d1.spec.ts
