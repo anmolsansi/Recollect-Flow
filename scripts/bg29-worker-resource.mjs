@@ -14,9 +14,26 @@ async function inspectorSocket() {
     ws = new WebSocket(INSPECTOR);
     try {
       await new Promise((resolve, reject) => {
-        const deadline = setTimeout(() => reject(new Error('CDP connection timeout')), 1500);
-        ws.addEventListener('open', () => { clearTimeout(deadline); resolve(); }, { once: true });
-        ws.addEventListener('error', () => { clearTimeout(deadline); reject(new Error('Local inspector refused connection')); }, { once: true });
+        const deadline = setTimeout(
+          () => reject(new Error('CDP connection timeout')),
+          1500,
+        );
+        ws.addEventListener(
+          'open',
+          () => {
+            clearTimeout(deadline);
+            resolve();
+          },
+          { once: true },
+        );
+        ws.addEventListener(
+          'error',
+          () => {
+            clearTimeout(deadline);
+            reject(new Error('Local inspector refused connection'));
+          },
+          { once: true },
+        );
       });
       break;
     } catch {
@@ -25,18 +42,28 @@ async function inspectorSocket() {
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
   }
-  if (!ws) throw new Error('Local workerd inspector did not open on the configured loopback port');
+  if (!ws)
+    throw new Error(
+      'Local workerd inspector did not open on the configured loopback port',
+    );
   const pending = new Map();
   let nextId = 0;
   ws.addEventListener('message', (event) => {
     let message;
-    try { message = JSON.parse(event.data); } catch { return; }
+    try {
+      message = JSON.parse(event.data);
+    } catch {
+      return;
+    }
     if (message.id === undefined) return;
     const request = pending.get(message.id);
     if (!request) return;
     pending.delete(message.id);
     clearTimeout(request.timer);
-    if (message.error) request.reject(new Error(`CDP ${request.method}: ${message.error.message}`));
+    if (message.error)
+      request.reject(
+        new Error(`CDP ${request.method}: ${message.error.message}`),
+      );
     else request.resolve(message.result);
   });
   return {
@@ -52,12 +79,15 @@ async function inspectorSocket() {
       ws.send(JSON.stringify({ id, method, params }));
       return result;
     },
-    close() { ws.close(); },
+    close() {
+      ws.close();
+    },
   };
 }
 
 function assertHttp(response, status, action) {
-  if (response.status !== status) throw new Error(`${action}: HTTP ${response.status}, expected ${status}`);
+  if (response.status !== status)
+    throw new Error(`${action}: HTTP ${response.status}, expected ${status}`);
 }
 
 function profileSummary(profile) {
@@ -69,14 +99,18 @@ function profileSummary(profile) {
   for (let index = 0; index < samples.length; index += 1) {
     const delta = deltas[index] ?? 0;
     totalMicroseconds += delta;
-    if (!/^\\(idle\\)$/i.test(nodes.get(samples[index])?.callFrame?.functionName ?? '')) {
+    if (
+      !/^\\(idle\\)$/i.test(
+        nodes.get(samples[index])?.callFrame?.functionName ?? '',
+      )
+    ) {
       activeMicroseconds += delta;
     }
   }
   return {
     cpu_samples: samples.length,
-    sampled_window_ms: Math.round(totalMicroseconds / 1000 * 100) / 100,
-    sampled_non_idle_ms: Math.round(activeMicroseconds / 1000 * 100) / 100,
+    sampled_window_ms: Math.round((totalMicroseconds / 1000) * 100) / 100,
+    sampled_non_idle_ms: Math.round((activeMicroseconds / 1000) * 100) / 100,
     // This is local inspector sampled activity, not Cloudflare billed CPU time.
   };
 }
@@ -94,28 +128,37 @@ try {
     adminToken: localToken,
     localWorkerToken: localToken,
   });
-  if (!runtime.apiOrigin.startsWith(ORIGIN)) throw new Error('Unexpected nonlocal Worker origin');
+  if (!runtime.apiOrigin.startsWith(ORIGIN))
+    throw new Error('Unexpected nonlocal Worker origin');
 
   inspector = await inspectorSocket();
   await inspector.send('Runtime.enable');
   await inspector.send('Profiler.enable');
   const before = await inspector.send('Runtime.getHeapUsage');
-  if (!Number.isFinite(before.usedSize)) throw new Error('Inspector did not report isolated V8 heap usage');
+  if (!Number.isFinite(before.usedSize))
+    throw new Error('Inspector did not report isolated V8 heap usage');
 
   const heapSamples = [before.usedSize];
   const sample = async () => {
     try {
       const heap = await inspector.send('Runtime.getHeapUsage');
       if (Number.isFinite(heap.usedSize)) heapSamples.push(heap.usedSize);
-    } catch { /* A missing sample is not evidence of low heap pressure. */ }
+    } catch {
+      /* A missing sample is not evidence of low heap pressure. */
+    }
   };
   const clockStarted = performance.now();
   await inspector.send('Profiler.start');
-  const timer = setInterval(() => { void sample(); }, 75);
+  const timer = setInterval(() => {
+    void sample();
+  }, 75);
 
   const init = await fetch(`${ORIGIN}/api/v1/uploads/init`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({
       filename: 'bg29-resource-synthetic.pdf',
       mime_type: 'application/pdf',
@@ -127,29 +170,44 @@ try {
   assertHttp(init, 201, 'Reservation');
   const reservation = await init.json();
   const attachmentId = reservation?.data?.attachment_id;
-  if (typeof attachmentId !== 'string' || !attachmentId) throw new Error('Missing attachment ID');
+  if (typeof attachmentId !== 'string' || !attachmentId)
+    throw new Error('Missing attachment ID');
   const bytes = new Uint8Array(BYTES);
-  bytes.set(new TextEncoder().encode('%PDF-1.7\nSynthetic isolated resource profiling file'));
+  bytes.set(
+    new TextEncoder().encode(
+      '%PDF-1.7\nSynthetic isolated resource profiling file',
+    ),
+  );
   const uploadStart = performance.now();
-  const response = await fetch(`${ORIGIN}/api/v1/uploads/${encodeURIComponent(attachmentId)}/content`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/pdf',
-      'Content-Length': String(BYTES),
+  const response = await fetch(
+    `${ORIGIN}/api/v1/uploads/${encodeURIComponent(attachmentId)}/content`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/pdf',
+        'Content-Length': String(BYTES),
+      },
+      body: bytes,
+      signal: AbortSignal.timeout(60_000),
     },
-    body: bytes,
-    signal: AbortSignal.timeout(60_000),
-  });
-  const uploadWallMs = Math.round((performance.now() - uploadStart) * 100) / 100;
+  );
+  const uploadWallMs =
+    Math.round((performance.now() - uploadStart) * 100) / 100;
   assertHttp(response, 200, '25MB upload');
   const acknowledged = await response.json();
-  const finalize = await fetch(`${ORIGIN}/api/v1/uploads/${encodeURIComponent(attachmentId)}/finalize`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ checksum: acknowledged?.data?.checksum }),
-    signal: AbortSignal.timeout(30_000),
-  });
+  const finalize = await fetch(
+    `${ORIGIN}/api/v1/uploads/${encodeURIComponent(attachmentId)}/finalize`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ checksum: acknowledged?.data?.checksum }),
+      signal: AbortSignal.timeout(30_000),
+    },
+  );
   assertHttp(finalize, 200, 'Finalization');
 
   await sample();
@@ -158,7 +216,8 @@ try {
   const after = await inspector.send('Runtime.getHeapUsage');
   heapSamples.push(after.usedSize);
   const cpu = profileSummary(stopped.profile ?? {});
-  if (cpu.cpu_samples < 1) throw new Error('Local CPU profiler returned no samples');
+  if (cpu.cpu_samples < 1)
+    throw new Error('Local CPU profiler returned no samples');
   const result = {
     event: 'bg29_local_workerd_isolate_resource_profile',
     environment: 'wrangler-dev-local-workerd-isolate-inspector',
@@ -166,7 +225,8 @@ try {
     external_provider_calls: 0,
     near_limit_upload_bytes: BYTES,
     upload_wall_ms: uploadWallMs,
-    measured_window_wall_ms: Math.round((performance.now() - clockStarted) * 100) / 100,
+    measured_window_wall_ms:
+      Math.round((performance.now() - clockStarted) * 100) / 100,
     v8_heap_before_bytes: before.usedSize,
     v8_heap_after_bytes: after.usedSize,
     v8_heap_peak_observed_bytes: Math.max(...heapSamples),
@@ -179,7 +239,10 @@ try {
   };
   console.log(JSON.stringify(result, null, 2));
 } catch (error) {
-  console.error('BG29 LOCAL RESOURCE PROFILE NOT VERIFIED:', error instanceof Error ? error.message : String(error));
+  console.error(
+    'BG29 LOCAL RESOURCE PROFILE NOT VERIFIED:',
+    error instanceof Error ? error.message : String(error),
+  );
   process.exitCode = 1;
 } finally {
   inspector?.close();
