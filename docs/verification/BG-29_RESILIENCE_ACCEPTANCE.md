@@ -317,18 +317,18 @@ Wrangler 4.116.0/workerd and a 25,000,000-byte PDF. The sampled
 measurement window covered upload, checksum/finalization and
 the surrounding requests. It was not a production request:
 
-| Local inspector measurement | Observed result |
-| --- | ---: |
-| Synthetic upload wall time | 280.59 ms |
-| Measured wall window | 405.59 ms |
-| V8 used heap before | 7,020,976 bytes |
-| V8 used heap after | 7,383,656 bytes |
+| Local inspector measurement  | Observed result |
+| ---------------------------- | --------------: |
+| Synthetic upload wall time   |       280.59 ms |
+| Measured wall window         |       405.59 ms |
+| V8 used heap before          | 7,020,976 bytes |
+| V8 used heap after           | 7,383,656 bytes |
 | Highest sampled V8 used heap | 7,383,656 bytes |
-| Heap snapshots/samples | 7 |
-| CPU profile samples | 20 |
-| CPU sampled time window | 388.65 ms |
-| Sampled non-idle activity | 312.56 ms |
-| External provider requests | 0 |
+| Heap snapshots/samples       |               7 |
+| CPU profile samples          |              20 |
+| CPU sampled time window      |       388.65 ms |
+| Sampled non-idle activity    |       312.56 ms |
+| External provider requests   |               0 |
 
 **BG-29.075 local profiling measurement is now evidenced.**
 These are V8 `Runtime.getHeapUsage` samples and inspector profiler
