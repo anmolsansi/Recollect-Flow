@@ -22,7 +22,9 @@ test('both probe configs target only the preverified BG29 staging database', () 
   }
 });
 
-test('initial deploy has no Cron, opt-in file only adds hourly Cron', () => {
-  assert.doesNotMatch(base, /\[triggers\]|^crons\s*=/m);
+test('rollback config explicitly disables Cron and opt-in config is hourly', () => {
+  assert.match(base, /^\[triggers\]$/m);
+  assert.match(base, /^crons = \[\]$/m);
+  assert.match(hourly, /^\[triggers\]$/m);
   assert.match(hourly, /^crons = \["17 \* \* \* \*"\]$/m);
 });
