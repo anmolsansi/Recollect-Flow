@@ -84,18 +84,18 @@ export async function runD1CronProbe(
     limitations:
       'D1-only synthetic heartbeat. Does not run real URL acquisition, R2 file extraction, AI enrichment, or Notion projection. Not BG-29.078 acceptance.',
   };
-  console.log(JSON.stringify(record));
+  globalThis.console.log(JSON.stringify(record));
   return record;
 }
 
 export default {
   async fetch() {
-    return new Response('Not Found', { status: 404 });
+    return new globalThis.Response('Not Found', { status: 404 });
   },
 
   async scheduled(controller, env, ctx) {
     if (!isAllowedCron(controller.cron)) {
-      console.warn('bg29_d1_probe_unexpected_cron');
+      globalThis.console.warn('bg29_d1_probe_unexpected_cron');
       return;
     }
     if (!env.DB) throw new Error('BG29 staging D1 binding missing');
