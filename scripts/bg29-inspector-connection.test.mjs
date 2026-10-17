@@ -1,3 +1,4 @@
+/* global setTimeout, clearTimeout */
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
