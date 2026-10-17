@@ -6,47 +6,55 @@ import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
 const API_PORT = 8793;
 const INSPECTOR_PORT = 9237;
 const ORIGIN = `http://127.0.0.1:${API_PORT}`;
-const INSPECTOR = `ws://127.0.0.1:${INSPECTOR_PORT}/ws`;
 const BYTES = 25_000_000;
 
 async function inspectorSocket() {
-  let ws;
-  for (let attempt = 0; attempt < 45; attempt += 1) {
-    ws = new WebSocket(INSPECTOR);
-    try {
-      await new Promise((resolve, reject) => {
-        const deadline = setTimeout(
-          () => reject(new Error('CDP connection timeout')),
-          1500,
-        );
-        ws.addEventListener(
-          'open',
-          () => {
+  const urls = [
+    `ws://localhost:${INSPECTOR_PORT}/ws`,
+    `ws://127.0.0.1:${INSPECTOR_PORT}/ws`,
+  ];
+  let ws = null;
+  const diagnostics = [];
+  for (let attempt = 0; attempt < 12 && !ws; attempt += 1) {
+    for (const url of urls) {
+      const candidate = new WebSocket(url);
+      try {
+        await new Promise((resolve, reject) => {
+          const deadline = setTimeout(() => reject(new Error('handshake timeout')), 1000);
+          candidate.addEventListener('open', () => {
             clearTimeout(deadline);
             resolve();
-          },
-          { once: true },
-        );
-        ws.addEventListener(
-          'error',
-          () => {
+          }, { once: true });
+          candidate.addEventListener('error', (event) => {
             clearTimeout(deadline);
-            reject(new Error('Local inspector refused connection'));
-          },
-          { once: true },
-        );
-      });
-      break;
-    } catch {
-      ws.close();
-      ws = null;
-      await new Promise((resolve) => setTimeout(resolve, 250));
+            reject(new Error(event.message || 'connection refused'));
+          }, { once: true });
+        });
+        ws = candidate;
+        break;
+      } catch (error) {
+        diagnostics.push(`${url}: ${error instanceof Error ? error.message : 'unknown'}`);
+        candidate.close();
+      }
     }
+    if (!ws) await new Promise((resolve) => setTimeout(resolve, 300));
   }
-  if (!ws)
+  if (!ws) {
+    for (const endpoint of ['/json', '/json/list', '/']) {
+      try {
+        const response = await fetch(
+          `http://localhost:${INSPECTOR_PORT}${endpoint}`,
+          { signal: AbortSignal.timeout(1500) },
+        );
+        diagnostics.push(`${endpoint}: HTTP ${response.status}`);
+      } catch {
+        diagnostics.push(`${endpoint}: unreachable`);
+      }
+    }
     throw new Error(
-      'Local workerd inspector did not open on the configured loopback port',
+      `Local workerd inspector unavailable: ${[...new Set(diagnostics)].join('; ')}`,
     );
+  }
   const pending = new Map();
   let nextId = 0;
   ws.addEventListener('message', (event) => {
@@ -100,19 +108,15 @@ function profileSummary(profile) {
   for (let index = 0; index < samples.length; index += 1) {
     const delta = deltas[index] ?? 0;
     totalMicroseconds += delta;
-    if (
-      !/^\\(idle\\)$/i.test(
-        nodes.get(samples[index])?.callFrame?.functionName ?? '',
-      )
-    ) {
+    if ((nodes.get(samples[index])?.callFrame?.functionName ?? '') !== '(idle)') {
       activeMicroseconds += delta;
     }
   }
   return {
     cpu_samples: samples.length,
-    sampled_window_ms: Math.round((totalMicroseconds / 1000) * 100) / 100,
-    sampled_non_idle_ms: Math.round((activeMicroseconds / 1000) * 100) / 100,
-    // This is local inspector sampled activity, not Cloudflare billed CPU time.
+    sampled_window_ms: Math.round(totalMicroseconds / 1000 * 100) / 100,
+    sampled_non_idle_ms: Math.round(activeMicroseconds / 1000 * 100) / 100,
+    // Local inspector sampled activity, not Cloudflare billed CPU time.
   };
 }
 
