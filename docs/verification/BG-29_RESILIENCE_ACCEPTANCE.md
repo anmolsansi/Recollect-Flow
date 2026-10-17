@@ -381,3 +381,56 @@ exists yet, so canonical **99/100**, paired **49/50** and the BG-30
 prerequisite remain blocked. See the [staging cost and evidence
 runbook](BG-29_STAGING_ONLY_PLAN.md) for account observations and
 no-deployment restrictions.
+
+
+## October 17 observed real hourly D1-only Cron evidence
+
+**Source/provenance:** Owner-pasted Cloudflare Wrangler `d1 execute --remote`
+query output for account's isolated staging D1 database
+`b5cbeccc-92fb-4bbc-9597-f0174b84e57d`, plus live `wrangler tail`
+output for isolated Worker `recollect-flow-bg29-d1-cron-probe`.
+These are owner-provided terminal records, **not** an independently
+fetched immutable Cloudflare run artifact or account billing record.
+The operator's terminal also confirmed all 22 application migrations
+applied, and the Cron schedule `17 * * * *` was deployed on version
+`78a0f048-c000-4428-a091-4795d5410020`.
+
+| Sweep | Scheduled (UTC) | Observed (UTC) | Originals | Completed | Pending |
+| ---: | --- | --- | ---: | ---: | ---: |
+| 1 | 2026-10-17T15:17:37.889Z | 2026-10-17T15:17:39.242Z | 24 | 8 | 16 |
+| 2 | 2026-10-17T16:17:37.889Z | 2026-10-17T16:17:39.330Z | 24 | 16 | 8 |
+| 3 | 2026-10-17T17:17:37.889Z | 2026-10-17T17:17:39.269Z | 24 | 24 | 0 |
+| 4 | 2026-10-17T18:17:37.889Z | 2026-10-17T18:17:39.387Z | 24 | 24 | 0 |
+| 5 | 2026-10-17T19:17:37.889Z | 2026-10-17T19:17:39.197Z | 24 | 24 | 0 |
+| 6 | 2026-10-17T20:17:37.889Z | 2026-10-17T20:17:38.800Z | 24 | 24 | 0 |
+
+**Seventh successful invocation:** live `wrangler tail` displayed
+`"17 * * * *" ... Ok` and a structured
+`bg29_d1_only_hourly_probe` event with scheduled
+`2026-10-17T21:17:37.889Z`, observed
+`2026-10-17T21:17:38.881Z`, 24 originals,
+24 completed and 0 pending.
+
+**Measured result:** 24 D1-only synthetic records cleared by the
+third actual hourly sweep, two hours after the first observed sweep.
+The owner-provided row count stayed at 24 across all six queried
+sweeps and one later streamed event; the pending count was 16 → 8 → 0
+and remained 0. The schedule demonstrably fires over elapsed
+wall-clock hours; this is **not** an accelerated-clock simulation.
+
+**Crucial limits:** This Worker is a bounded D1-only heartbeat and does
+**not** execute the production URL acquisition, R2 attachment extraction,
+mock AI enrichment or mock Notion projection paths. Its `originals`
+counter does not independently prove original user-content integrity
+across those production queues. No per-invocation CPU/memory metrics,
+full staged cross-stage timing, immutable hosted log artifact or
+post-test account billing verification were submitted. Do **not**
+run the acceptance validator against this partial fixture as if it
+proved a full multi-stage hosted pipeline.
+
+**Next safe action:** Stop additional hourly probe sweeps by
+deploying corrected `wrangler.bg29-d1-probe.toml` with explicit
+`[triggers]\ncrons = []`, after confirming the exact target Worker.
+Do not delete the staging database or its sweep ledger. Verify the
+trigger has disappeared. No upgrade, R2 usage or production change
+is authorized. **BG-29.078 remains unchecked (99/100), BG-30 locked.**
