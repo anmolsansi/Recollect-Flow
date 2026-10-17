@@ -351,7 +351,6 @@ charges or real scheduled events have been authorized.
 
 BG-30 remains locked until every required BG-29 scenario is verifiably passed, relevant defects are resolved, CI is green at the accepted head, and the source checklist/issue/Linear record are reconciled. An implemented harness alone is insufficient.
 
-
 ## October 17 strict $0 hosted-acceptance checkpoint
 
 The user's connected Cloudflare account has Workers Free with zero requests
