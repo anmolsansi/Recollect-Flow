@@ -17,8 +17,8 @@ jobs:
       - run: npm ci
       - name: Scope formatting to staging prep and profiler
         run: |
-          npx prettier --write docs/verification/BG-29_STAGING_ONLY_PLAN.md scripts/bg29-worker-resource.mjs
-          git add docs/verification/BG-29_STAGING_ONLY_PLAN.md scripts/bg29-worker-resource.mjs
+          npx prettier --write docs/verification/BG-29_STAGING_ONLY_PLAN.md scripts/bg29-worker-resource.mjs docs/verification/BG-29_RESILIENCE_ACCEPTANCE.md
+          git add docs/verification/BG-29_STAGING_ONLY_PLAN.md scripts/bg29-worker-resource.mjs docs/verification/BG-29_RESILIENCE_ACCEPTANCE.md
           if ! git diff --cached --quiet; then
             git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'style(bg29): format staging runbook and local V8 profiling harness (#99)'
             git push origin HEAD:refs/heads/feat/bg-29-resilience-capacity-performance
