@@ -82,7 +82,10 @@ npx wrangler deploy --config wrangler.bg29-d1-probe.toml --dry-run
 npx wrangler deploy --config wrangler.bg29-d1-probe.toml
 ```
 
-The Worker exposes HTTP 404 only and has **no Cron** in this config.
+The Worker exposes HTTP 404 only. Its no-Cron configuration explicitly
+sets `[triggers]` / `crons = []`, which also disables an existing Cron
+on later redeployment (merely omitting `[triggers]` does **not** disable
+an existing trigger).
 Confirm it appears by the exact name
 `recollect-flow-bg29-d1-cron-probe` in Cloudflare Workers & Pages.
 Do not select or modify `recollect-flow` or any other Worker.
@@ -101,7 +104,28 @@ to `17 * * * *` UTC. It runs a no-network synthetic 24-record D1
 heartbeat, processes up to 8 records per hour, retains originals and
 writes observed UTC sweep times to `bg29_d1_probe_sweeps`. It has a
 10 ms per-trigger CPU ceiling on Workers Free; if execution fails, do
-not upgrade.
+not upgrade. Newly added scheduled triggers may take up to 15 minutes
+to propagate. The schedule fires at minute 17 of every **UTC** hour;
+deploying does not execute it immediately. The probe tables
+`bg29_d1_probe_jobs` and `bg29_d1_probe_sweeps` are created by the
+**first successful scheduled invocation**, not by the 22 application
+migrations. Until then, querying `bg29_d1_probe_sweeps` returns
+`no such table`; that alone is not evidence of a broken migration.
+
+Inspect the deployed Worker's scheduled event outcome and error logs,
+or tail **only this staging Worker**:
+
+```bash
+npx wrangler tail recollect-flow-bg29-d1-cron-probe \\
+  --config wrangler.bg29-d1-probe-cron.toml --format pretty
+```
+
+A `bg29_d1_only_hourly_probe` JSON log with 24 originals and
+successful hourly event outcome confirms that the handler ran. If
+no scheduled invocation appears after the next full hourly opportunity
+and propagation period, inspect the Worker's **Settings > Triggers**
+and **Observability** before making any changes. Do not re-run migrations
+just to create the probe table.
 
 After _actual_ elapsed scheduled executions (not manual fast-forward),
 inspect the Cloudflare Worker logs and run:
@@ -122,7 +146,10 @@ Billing; no R2 activity should originate from this Worker.
 ## Stop / disable the trigger
 
 To stop future Cron executions **without deleting the database**,
-deploy the no-Cron config against the same probe Worker:
+use the no-Cron config with explicit `[triggers]` / `crons = []`
+and deploy it to the same probe Worker. **The initial version of this
+file lacked the explicit empty array and could leave the Cron active;
+fetch the corrected version before using this stop command.**
 
 ```bash
 npx wrangler deploy --config wrangler.bg29-d1-probe.toml
