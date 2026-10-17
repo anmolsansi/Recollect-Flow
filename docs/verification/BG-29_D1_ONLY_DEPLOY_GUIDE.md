@@ -103,7 +103,7 @@ writes observed UTC sweep times to `bg29_d1_probe_sweeps`. It has a
 10 ms per-trigger CPU ceiling on Workers Free; if execution fails, do
 not upgrade.
 
-After *actual* elapsed scheduled executions (not manual fast-forward),
+After _actual_ elapsed scheduled executions (not manual fast-forward),
 inspect the Cloudflare Worker logs and run:
 
 ```bash
