@@ -42,7 +42,7 @@ conditions have been verified with read-only account access.
   Do not substitute manual guesses for the actual account bill.
 
 Run `node scripts/bg29-zero-cost-preflight.mjs` to validate that
-the supplied staging *template* is isolated, uses mock providers,
+the supplied staging _template_ is isolated, uses mock providers,
 has no Cron enabled and cannot deploy because its D1 ID is a
 placeholder. This preflight does **not** check Cloudflare account
 billing and deliberately never authorizes a deploy.
