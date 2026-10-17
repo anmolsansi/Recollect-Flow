@@ -140,7 +140,7 @@ describe('BG-29 upload limit, size and interrupted transfer acceptance', () => {
         duplex: 'half',
       } as RequestInit & { duplex: 'half' },
     );
-    let refused = false;
+    let refused: boolean;
     try {
       const response = await app.request(request, undefined, runtime);
       refused = response.status !== 200;
