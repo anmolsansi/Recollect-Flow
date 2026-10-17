@@ -7,6 +7,9 @@ on:
       - 'apps/worker-api/test/bg29-upload-pressure.d1.spec.ts'
       - 'apps/worker-api/test/bg29-multistage-drain.d1.spec.ts'
       - 'scripts/bg29-worker-resource.mjs'
+      - 'scripts/bg29-zero-cost-preflight.mjs'
+      - 'scripts/bg29-zero-cost-preflight.test.mjs'
+      - 'wrangler.bg29-staging.example.toml'
       - 'scripts/bg29-inspector-connection.mjs'
       - 'scripts/bg29-inspector-connection.test.mjs'
       - 'scripts/browser-acceptance-runtime.mjs'
@@ -25,6 +28,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: node --test scripts/bg29-inspector-connection.test.mjs
+      - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
+      - run: node scripts/bg29-zero-cost-preflight.mjs
       - name: BG29 isolated Worker CPU/heap profile (diagnostic only)
         continue-on-error: true
         timeout-minutes: 5
