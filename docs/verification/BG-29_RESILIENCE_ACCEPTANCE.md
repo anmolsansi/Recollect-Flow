@@ -350,3 +350,35 @@ charges or real scheduled events have been authorized.
 ## Final decision
 
 BG-30 remains locked until every required BG-29 scenario is verifiably passed, relevant defects are resolved, CI is green at the accepted head, and the source checklist/issue/Linear record are reconciled. An implemented harness alone is insufficient.
+
+
+## October 17 strict $0 hosted-acceptance checkpoint
+
+The user's connected Cloudflare account has Workers Free with zero requests
+and no projects; D1 has no databases, rows used or storage. Read-only
+billing showed current/projected charges of $0.00 and only R2 Standard
+storage/Class B rows with no charge; R2 is an active **Paid**
+usage-based service and Class A usage was not visible in the selected
+report. These observations show account headroom, not a guarantee of
+future $0 spending. No remote Worker, D1 database, R2 bucket, Cron or
+migration was created or changed.
+
+Full BG-29.078 still demands **real elapsed hourly scheduled Worker**
+observations for URL acquisition, file extraction, mock AI enrichment
+and independent mock Notion projection, with persistent originals,
+queues, retry, measured drain and cost evidence. Its 24-item synthetic
+D1 test is an accelerated logical-clock fixture only. An isolated
+Workers Free + D1 Free **no-R2 subset** could test real Cron timing,
+but cannot prove the hosted R2/file pipeline. The Workers Free
+10 ms per-Cron CPU ceiling is another unverified execution risk.
+
+A new `scripts/bg29-hourly-evidence-check.mjs` validates externally
+attributed hourly sweep records. It rejects logical-hour fixtures,
+missing external source or event IDs, over-budget records, pending
+queues, missing originals and insufficient actual elapsed time; its
+result always requires independent Cloudflare log authentication
+and cannot itself set full acceptance to true. No hosted evidence
+exists yet, so canonical **99/100**, paired **49/50** and the BG-30
+prerequisite remain blocked. See the [staging cost and evidence
+runbook](BG-29_STAGING_ONLY_PLAN.md) for account observations and
+no-deployment restrictions.
