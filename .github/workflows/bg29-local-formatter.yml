@@ -17,8 +17,8 @@ jobs:
       - run: npm ci
       - name: Format new measured acceptance fixtures
         run: |
-          npx prettier --write apps/worker-api/test/bg29-multistage-drain.d1.spec.ts
-          git add apps/worker-api/test/bg29-multistage-drain.d1.spec.ts
+          npx prettier --write apps/worker-api/test/bg29-multistage-drain.d1.spec.ts scripts/bg29-worker-resource.mjs
+          git add apps/worker-api/test/bg29-multistage-drain.d1.spec.ts scripts/bg29-worker-resource.mjs
           if ! git diff --cached --quiet; then
             git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'style(bg29): format multi-stage queue acceptance fixture (#99)'
             git push origin HEAD:refs/heads/feat/bg-29-resilience-capacity-performance
