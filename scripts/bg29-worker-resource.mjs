@@ -1,4 +1,4 @@
-/* global process, console, fetch, AbortSignal, WebSocket, setTimeout, clearTimeout, setInterval, clearInterval, performance */
+/* global process, console, fetch, AbortSignal, setTimeout, clearTimeout, setInterval, clearInterval, performance */
 import { TextEncoder } from 'node:util';
 import { URL } from 'node:url';
 import { randomUUID } from 'node:crypto';
