@@ -268,23 +268,23 @@ and a logical 60-minute scheduling interval. The user authorized
 local-only measurements, **not** hosted deployment.
 
 [Focused CI #39009820971](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39009820971)
-passed the *queue test step* but failed a separate local inspector step.
+passed the _queue test step_ but failed a separate local inspector step.
 The queue run measured:
 
-| Property | Recorded value |
-| --- | ---: |
-| Synthetic originals, all retained | 24 |
-| URL acquisition track / file extraction track | 12 / 12 |
-| Acquisition/extraction/enrichment lease batch | 10 |
-| Notion sync-attempt batch | 25 |
-| Logical hourly sweeps to clear all queues | 4 |
-| Logical elapsed arrival-to-clear | 3 hours |
-| Real isolated test execution wall time | 24.179 seconds |
-| Acquisition stage processing wall time | 69 ms |
-| Extraction stage processing wall time | 31 ms |
-| Enrichment stage processing wall time | 160 ms |
-| Notion sync stage processing wall time | 23,834 ms |
-| Remaining pending/processing or failed jobs | 0 |
+| Property                                      | Recorded value |
+| --------------------------------------------- | -------------: |
+| Synthetic originals, all retained             |             24 |
+| URL acquisition track / file extraction track |        12 / 12 |
+| Acquisition/extraction/enrichment lease batch |             10 |
+| Notion sync-attempt batch                     |             25 |
+| Logical hourly sweeps to clear all queues     |              4 |
+| Logical elapsed arrival-to-clear              |        3 hours |
+| Real isolated test execution wall time        | 24.179 seconds |
+| Acquisition stage processing wall time        |          69 ms |
+| Extraction stage processing wall time         |          31 ms |
+| Enrichment stage processing wall time         |         160 ms |
+| Notion sync stage processing wall time        |      23,834 ms |
+| Remaining pending/processing or failed jobs   |              0 |
 
 Notion had additional projection synchronization attempts as data was
 enriched; Notion is independently scheduled and not necessarily
