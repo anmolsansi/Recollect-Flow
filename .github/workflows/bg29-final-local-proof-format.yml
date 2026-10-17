@@ -1,0 +1,25 @@
+name: BG29 final local proof formatter
+on:
+  push:
+    branches: [feat/bg-29-resilience-capacity-performance]
+permissions:
+  contents: write
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Scope formatting to staging prep and profiler
+        run: |
+          npx prettier --write docs/verification/BG-29_STAGING_ONLY_PLAN.md scripts/bg29-worker-resource.mjs
+          git add docs/verification/BG-29_STAGING_ONLY_PLAN.md scripts/bg29-worker-resource.mjs
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'style(bg29): format staging runbook and local V8 profiling harness (#99)'
+            git push origin HEAD:refs/heads/feat/bg-29-resilience-capacity-performance
+          fi
