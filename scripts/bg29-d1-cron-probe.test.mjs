@@ -27,7 +27,11 @@ test('D1 probe retains bounded original count and emits a D1-only record', async
       return {
         bind(...args) {
           calls.push({ kind: 'bind', args });
-          return { async run() { return { success: true }; } };
+          return {
+            async run() {
+              return { success: true };
+            },
+          };
         },
         async first() {
           return { originals: 24, completed: 8, pending: 16 };
