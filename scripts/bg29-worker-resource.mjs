@@ -1,4 +1,5 @@
-/* global process, console, fetch, AbortSignal, WebSocket, setTimeout, setInterval, clearInterval, performance */
+/* global process, console, fetch, AbortSignal, WebSocket, setTimeout, clearTimeout, setInterval, clearInterval, performance */
+import { TextEncoder } from 'node:util';
 import { randomUUID } from 'node:crypto';
 import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
 
