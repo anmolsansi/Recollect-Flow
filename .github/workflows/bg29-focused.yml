@@ -9,6 +9,8 @@ on:
       - 'scripts/bg29-worker-resource.mjs'
       - 'scripts/bg29-zero-cost-preflight.mjs'
       - 'scripts/bg29-zero-cost-preflight.test.mjs'
+      - 'scripts/bg29-hourly-evidence-check.mjs'
+      - 'scripts/bg29-hourly-evidence-check.test.mjs'
       - 'wrangler.bg29-staging.example.toml'
       - 'scripts/bg29-inspector-connection.mjs'
       - 'scripts/bg29-inspector-connection.test.mjs'
@@ -30,6 +32,7 @@ jobs:
       - run: node --test scripts/bg29-inspector-connection.test.mjs
       - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
       - run: node scripts/bg29-zero-cost-preflight.mjs
+      - run: node --test scripts/bg29-hourly-evidence-check.test.mjs
       - name: BG29 isolated Worker CPU/heap profile (diagnostic only)
         continue-on-error: true
         timeout-minutes: 5
