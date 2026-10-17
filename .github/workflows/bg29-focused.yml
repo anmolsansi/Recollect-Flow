@@ -29,10 +29,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: BG29 temporary formatting diagnostic
-        run: |
-          npx prettier --write scripts/bg29-hourly-evidence-check.mjs scripts/bg29-hourly-evidence-check.test.mjs docs/verification/BG-29_STAGING_ONLY_PLAN.md docs/verification/BG-29_RESILIENCE_ACCEPTANCE.md
-          git diff -- scripts/bg29-hourly-evidence-check.mjs scripts/bg29-hourly-evidence-check.test.mjs docs/verification/BG-29_STAGING_ONLY_PLAN.md docs/verification/BG-29_RESILIENCE_ACCEPTANCE.md
       - run: node --test scripts/bg29-inspector-connection.test.mjs
       - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
       - run: node scripts/bg29-zero-cost-preflight.mjs
