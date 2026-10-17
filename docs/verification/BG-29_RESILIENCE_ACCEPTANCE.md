@@ -303,12 +303,42 @@ bundled Worker through `wrangler dev --local`, initializes
 fresh local D1/R2 and attempts to obtain V8 heap usage and
 CPU samples via the workerd inspector during a 25 MB upload.
 This test is **not** an account resource measurement.
-Early CI attempts failed because the static release bundle
-was missing, then because the inspector websocket endpoint
-could not be established. The harness was modified to use
-loopback DevTools discovery, but until its exact-head CI
-emits actual numerical V8 heap and CPU samples,
-BG-29.075 remains **not verified**.
+Early CI attempts failed because the static release bundle was
+missing, then because the inspector websocket endpoint could not
+be established. The runner now builds web assets before profiling,
+and the local Node WebSocket supplies the loopback Origin that
+Wrangler requires. The two-case handshake regression test passed.
+
+[Focused CI #39013728568](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39013728568)
+on source `7cd158cc108489bce1f1d8ea23c35159c4227188`
+**passed** the profiler and issued a real
+`bg29_local_workerd_isolate_resource_profile` event using local
+Wrangler 4.116.0/workerd and a 25,000,000-byte PDF. The sampled
+measurement window covered upload, checksum/finalization and
+the surrounding requests. It was not a production request:
+
+| Local inspector measurement | Observed result |
+| --- | ---: |
+| Synthetic upload wall time | 280.59 ms |
+| Measured wall window | 405.59 ms |
+| V8 used heap before | 7,020,976 bytes |
+| V8 used heap after | 7,383,656 bytes |
+| Highest sampled V8 used heap | 7,383,656 bytes |
+| Heap snapshots/samples | 7 |
+| CPU profile samples | 20 |
+| CPU sampled time window | 388.65 ms |
+| Sampled non-idle activity | 312.56 ms |
+| External provider requests | 0 |
+
+**BG-29.075 local profiling measurement is now evidenced.**
+These are V8 `Runtime.getHeapUsage` samples and inspector profiler
+activity, **not** total isolate memory, a guaranteed peak,
+Cloudflare billed CPU per invocation or hosted/free-account quota
+compliance. A sampled heap number alone cannot be compared as the
+complete 128 MB isolate limit. There is no production or hosted
+performance acceptance claim. The final release gate remains blocked
+by BG-29.078 real elapsed hourly scheduled-worker backlog timing
+and separate hosted resource/cost acceptance where required.
 
 **Staging-only preparation:** See
 [BG-29_STAGING_ONLY_PLAN.md](BG-29_STAGING_ONLY_PLAN.md) and
