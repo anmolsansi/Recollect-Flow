@@ -382,7 +382,6 @@ prerequisite remain blocked. See the [staging cost and evidence
 runbook](BG-29_STAGING_ONLY_PLAN.md) for account observations and
 no-deployment restrictions.
 
-
 ## October 17 observed real hourly D1-only Cron evidence
 
 **Source/provenance:** Owner-pasted Cloudflare Wrangler `d1 execute --remote`
