@@ -212,7 +212,7 @@ describe('BG-29 actual D1 queue handoffs under synthetic hourly cadence', () => 
         // Simulated downstream stage starts after enrichment; in the actual
         // capture flow Notion may be independently scheduled at capture time.
         await env.DB.prepare(
-          `INSERT INTO sync_attempts (
+          `INSERT OR IGNORE INTO sync_attempts (
             id, item_id, destination, status, attempts, available_at,
             created_at, updated_at
           ) VALUES (?1, ?2, 'notion', 'pending', 0, ?3, ?3, ?3)`,
