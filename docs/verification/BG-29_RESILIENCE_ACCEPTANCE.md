@@ -433,3 +433,14 @@ deploying corrected `wrangler.bg29-d1-probe.toml` with explicit
 Do not delete the staging database or its sweep ledger. Verify the
 trigger has disappeared. No upgrade, R2 usage or production change
 is authorized. **BG-29.078 remains unchecked (99/100), BG-30 locked.**
+
+## October 17 staging probe shutdown and billing signoff
+
+The owner confirmed completion of both final operational checks:
+
+- **Schedule disabled:** The isolated Worker `recollect-flow-bg29-d1-cron-probe` has no remaining Cron trigger in Cloudflare's Worker trigger settings. Previously, the owner ran the corrected `wrangler.bg29-d1-probe.toml` with explicit `[triggers]` and `crons = []`; the resulting Worker version was `01dcaf2c-6648-4949-8e61-cb315efe629d`.
+- **No additional billable charges:** The owner reviewed the Cloudflare Billable Usage view after the test, including R2, and confirmed no added charges. This is an owner-reported billing review, not an independently exported invoice or a guarantee concerning future R2 usage.
+
+The completed test was restricted to Workers Free and the dedicated D1 staging database. The real hourly D1-only queue drained 24 synthetic entries by its third elapsed-hour sweep, with original count stable at 24. Retain the staging D1 sweep ledger and recorded logs as evidence; there is no need to re-enable or rerun this diagnostic. Production resources were not targeted in the owner-provided Wrangler deployment commands.
+
+**Acceptance boundary:** A D1-only scheduled heartbeat does **not** exercise URL acquisition, R2-backed file extraction, AI enrichment, or Notion projection. Those actual hosted multi-stage observations and their financial controls remain unresolved. Therefore BG-29.078 is **still unchecked**; canonical BG-29 remains **99/100**, GitHub pair verification **49/50**, OPE-344 In Progress and BG-30 locked. Do not mark BG-29 complete solely from this operational signoff.
