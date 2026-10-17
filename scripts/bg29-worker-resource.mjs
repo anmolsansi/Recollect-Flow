@@ -3,6 +3,7 @@ import { TextEncoder } from 'node:util';
 import { URL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
+import { createLoopbackInspectorSocket } from './bg29-inspector-connection.mjs';
 
 const API_PORT = 8793;
 const INSPECTOR_PORT = 9237;
@@ -64,7 +65,7 @@ async function inspectorSocket() {
   const diagnostics = [];
   for (let attempt = 0; attempt < 12 && !ws; attempt += 1) {
     for (const url of urls) {
-      const candidate = new WebSocket(url);
+      const candidate = createLoopbackInspectorSocket(url);
       try {
         await new Promise((resolve, reject) => {
           const deadline = setTimeout(
