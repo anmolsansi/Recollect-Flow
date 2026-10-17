@@ -55,16 +55,25 @@ test('a structurally valid D1-only ledger can never close full BG-29', () => {
 test('rejects simulated fast-forwarded hours', () => {
   const input = fixture();
   input.sweeps[1].observed_at = '2026-10-16T04:17:45.000Z';
-  assert.equal(assessBg29HourlyEvidence(input, options).structurally_valid, false);
+  assert.equal(
+    assessBg29HourlyEvidence(input, options).structurally_valid,
+    false,
+  );
 });
 
 test('rejects incorrectly scheduled or future cron events', () => {
   const input = fixture();
   input.sweeps[1].scheduled_at = '2026-10-16T06:17:00.000Z';
-  assert.equal(assessBg29HourlyEvidence(input, options).structurally_valid, false);
+  assert.equal(
+    assessBg29HourlyEvidence(input, options).structurally_valid,
+    false,
+  );
   input.sweeps[1].scheduled_at = '2026-10-18T05:17:00.000Z';
   input.sweeps[1].observed_at = '2026-10-18T05:17:40.000Z';
-  assert.equal(assessBg29HourlyEvidence(input, options).structurally_valid, false);
+  assert.equal(
+    assessBg29HourlyEvidence(input, options).structurally_valid,
+    false,
+  );
 });
 
 test('rejects lost originals and remaining work', () => {
@@ -86,11 +95,14 @@ test('rejects paid usage and live external provider calls', () => {
 });
 
 test('rejects non-Cloudflare logical-hour fixtures', () => {
-  const result = assessBg29HourlyEvidence({
-    kind: 'bg29_multi_stage_local_drain',
-    logical_elapsed_to_clear_hours: 3,
-    sweeps: [{ tick: 0 }, { tick: 1 }],
-  }, options);
+  const result = assessBg29HourlyEvidence(
+    {
+      kind: 'bg29_multi_stage_local_drain',
+      logical_elapsed_to_clear_hours: 3,
+      sweeps: [{ tick: 0 }, { tick: 1 }],
+    },
+    options,
+  );
   assert.equal(result.structurally_valid, false);
   assert.equal(result.bg29_078_verified, false);
 });
