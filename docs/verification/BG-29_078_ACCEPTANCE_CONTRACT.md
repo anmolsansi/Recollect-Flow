@@ -91,122 +91,122 @@ Mark these `PASS` only after examining the specified evidence.
 keeps BG-29.078 open. `N/A` does not qualify.
 
 - [ ] **AC-01 — Isolated target.** Worker name, version and 40-character
-  source Git SHA are recorded. D1 and R2 bindings resolve **only** to
-  dedicated staging objects; no production D1 ID, bucket, secrets,
-  route, custom domain or worker trigger has changed.
-  **Evidence:** diff of both Wrangler configs, account/Worker identity,
-  deploy manifest and resource IDs.
+      source Git SHA are recorded. D1 and R2 bindings resolve **only** to
+      dedicated staging objects; no production D1 ID, bucket, secrets,
+      route, custom domain or worker trigger has changed.
+      **Evidence:** diff of both Wrangler configs, account/Worker identity,
+      deploy manifest and resource IDs.
 - [ ] **AC-02 — Financial go/no-go before any R2 access.** Owner reviews
-  current plan and **account-wide** R2 Standard storage and Class A/B
-  consumption, remaining allowances, billing status, shared traffic
-  and a bounded worst-case operation estimate. If strict $0 risk
+      current plan and **account-wide** R2 Standard storage and Class A/B
+      consumption, remaining allowances, billing status, shared traffic
+      and a bounded worst-case operation estimate. If strict $0 risk
   cannot be assured (R2 free tier is **not** a hard billing cap),
   record **NO-GO**; no R2 deployment, write or scheduled run.
   Any relaxation of the absolute $0 requirement requires separate
-  explicit approval **before** exposure. An informational budget
-  alert cannot satisfy this condition.
-  **Evidence:** dated usage snapshot, documented worst-case estimate,
-  explicit owner authorization if needed, and a zero-spend gate result.
+      explicit approval **before** exposure. An informational budget
+      alert cannot satisfy this condition.
+      **Evidence:** dated usage snapshot, documented worst-case estimate,
+      explicit owner authorization if needed, and a zero-spend gate result.
 - [ ] **AC-03 — Correct fixture inventory.** Exactly 12 URL and 12 PDF
-  originals, with 24 unique IDs and input hashes, are seeded once in
-  staging. Original counts are 24 throughout the run.
-  **Evidence:** manifest plus D1 count and identity query at start,
-  each sweep and end.
+      originals, with 24 unique IDs and input hashes, are seeded once in
+      staging. Original counts are 24 throughout the run.
+      **Evidence:** manifest plus D1 count and identity query at start,
+      each sweep and end.
 - [ ] **AC-04 — R2 originals genuinely readable.** All 12 staging
-  PDF objects exist as valid bytes, are read via hosted R2 binding,
-  and match initial size/SHA-256; there are zero missing, corrupt,
-  wrong-bucket or silently replaced source objects.
-  **Evidence:** per-file manifest, R2 read/extraction trace and
-  beginning/end hash reconciliation.
+      PDF objects exist as valid bytes, are read via hosted R2 binding,
+      and match initial size/SHA-256; there are zero missing, corrupt,
+      wrong-bucket or silently replaced source objects.
+      **Evidence:** per-file manifest, R2 read/extraction trace and
+      beginning/end hash reconciliation.
 - [ ] **AC-05 — Real URL acquisition.** All 12 `acquire_url` jobs
-  execute the real acquisition and parsing service using approved
-  deterministic responses; all expected text/evidence records are
-  persisted. One injected retryable failure recovers.
-  **Evidence:** per-job attempts, status transitions, acquisition
-  evidence IDs, content hashes and sanitized parser results.
+      execute the real acquisition and parsing service using approved
+      deterministic responses; all expected text/evidence records are
+      persisted. One injected retryable failure recovers.
+      **Evidence:** per-job attempts, status transitions, acquisition
+      evidence IDs, content hashes and sanitized parser results.
 - [ ] **AC-06 — Real PDF extraction.** All 12 `extract` jobs use
-  `ExtractionService` to read R2, checksum and parse actual PDF
-  bytes, persisting nonempty extraction records. No direct
-  `submitExtractionResults` fixture bypass counts as proof.
-  **Evidence:** extractor/version, R2 read, extracted text sentinel,
-  `extraction_records` IDs and completion timestamps.
+      `ExtractionService` to read R2, checksum and parse actual PDF
+      bytes, persisting nonempty extraction records. No direct
+      `submitExtractionResults` fixture bypass counts as proof.
+      **Evidence:** extractor/version, R2 read, extracted text sentinel,
+      `extraction_records` IDs and completion timestamps.
 - [ ] **AC-07 — Mocked but real enrichment logic.** Each of the
-  24 originals produces the intended enrichment job and derived
-  result via `EnrichService` with deterministic mock AI; none
-  are silently skipped or marked complete without a result.
-  **Evidence:** processing job transitions, result rows,
-  mock-provider identity and no real AI invocations.
+      24 originals produces the intended enrichment job and derived
+      result via `EnrichService` with deterministic mock AI; none
+      are silently skipped or marked complete without a result.
+      **Evidence:** processing job transitions, result rows,
+      mock-provider identity and no real AI invocations.
 - [ ] **AC-08 — Independent mock Notion projection.** All 24 items
-  reach a completed mock Notion projection with correct final
-  projection version/hash. At least one post-enrichment mock
-  update is observed, even if another sync happened earlier.
-  Retryable mocked 429 respects retry-after; duplicate pages and
-  duplicate sync attempts are not produced.
-  **Evidence:** `sync_attempts`, projection rows, mock HTTP request
-  ledger, attempt count and update trace.
+      reach a completed mock Notion projection with correct final
+      projection version/hash. At least one post-enrichment mock
+      update is observed, even if another sync happened earlier.
+      Retryable mocked 429 respects retry-after; duplicate pages and
+      duplicate sync attempts are not produced.
+      **Evidence:** `sync_attempts`, projection rows, mock HTTP request
+      ledger, attempt count and update trace.
 - [ ] **AC-09 — Actual hourly scheduler.** Two or more (and no more
-  than ten) consecutive relevant `17 * * * *` UTC Cloudflare
-  scheduled event invocations are authenticated; first and final
-  sweep use real clock time with at least 55 minutes between
-  consecutive observed sweeps. Scheduled timestamps may have
-  nonzero seconds. At least one inter-sweep stage handoff is
-  demonstrated. Direct manual/test invocations do not count.
-  **Evidence:** Cloudflare event IDs, scheduled and observed UTC
-  times, Worker version, event outcome and independent log URL.
+      than ten) consecutive relevant `17 * * * *` UTC Cloudflare
+      scheduled event invocations are authenticated; first and final
+      sweep use real clock time with at least 55 minutes between
+      consecutive observed sweeps. Scheduled timestamps may have
+      nonzero seconds. At least one inter-sweep stage handoff is
+      demonstrated. Direct manual/test invocations do not count.
+      **Evidence:** Cloudflare event IDs, scheduled and observed UTC
+      times, Worker version, event outcome and independent log URL.
 - [ ] **AC-10 — Backlog/time budget.** All 24 items reach their
-  applicable final stage and **all** processing/sync queues become
-  empty by the **tenth consecutive eligible hourly sweep**. Record
-  first eligible sweep timestamp, last completion timestamp, total
-  end-to-end arrival-to-clear duration (seconds/hours), oldest
-  eligible queued age at each sweep, throughput per stage and
-  duration of every handoff. A run still pending at sweep 10 fails.
-  **Evidence:** per-sweep job-type/status matrix and timestamp
-  calculations, not only a final count.
+      applicable final stage and **all** processing/sync queues become
+      empty by the **tenth consecutive eligible hourly sweep**. Record
+      first eligible sweep timestamp, last completion timestamp, total
+      end-to-end arrival-to-clear duration (seconds/hours), oldest
+      eligible queued age at each sweep, throughput per stage and
+      duration of every handoff. A run still pending at sweep 10 fails.
+      **Evidence:** per-sweep job-type/status matrix and timestamp
+      calculations, not only a final count.
 - [ ] **AC-11 — Bounded failure recovery.** The injected URL failure,
-  Notion 429 and stale lease are each observed as real job
-  transitions; all subsequently recover within the existing
-  job-type attempts/lease policies (no overriding retry ceilings
-  or fast-forwarded recovery). Record exact attempts and elapsed
-  retry delay. No double completion, phantom job or stale result.
-  **Evidence:** lease owners/expiry, retry-after records,
-  state-transition audit and recovered completion IDs.
+      Notion 429 and stale lease are each observed as real job
+      transitions; all subsequently recover within the existing
+      job-type attempts/lease policies (no overriding retry ceilings
+      or fast-forwarded recovery). Record exact attempts and elapsed
+      retry delay. No double completion, phantom job or stale result.
+      **Evidence:** lease owners/expiry, retry-after records,
+      state-transition audit and recovered completion IDs.
 - [ ] **AC-12 — Terminal queue integrity.** Final per-job-type
-  counts satisfy pending=0, processing=0, retry-eligible=0 and
-  terminal failed=0 for acquisition, extraction, enrichment and
-  Notion sync. All 24 originals survive, are not soft-deleted
-  and maintain original SHA-256/input identity; every expected
-  derived/projection row is traceable to exactly one original.
-  **Evidence:** D1 consistency queries and original manifest
-  reconciliation. Historical transient failures may be retained
-  in audit logs, not as terminal failed jobs.
+      counts satisfy pending=0, processing=0, retry-eligible=0 and
+      terminal failed=0 for acquisition, extraction, enrichment and
+      Notion sync. All 24 originals survive, are not soft-deleted
+      and maintain original SHA-256/input identity; every expected
+      derived/projection row is traceable to exactly one original.
+      **Evidence:** D1 consistency queries and original manifest
+      reconciliation. Historical transient failures may be retained
+      in audit logs, not as terminal failed jobs.
 - [ ] **AC-13 — Provider/network isolation.** Zero live outbound
-  requests to Notion, OpenRouter, Telegram, production webhooks or
-  uncontrolled websites; zero real provider tokens, paid AI calls
-  or live notifications. Allowed Cloudflare D1/R2 binding operations
-  are accounted for separately.
-  **Evidence:** deny-by-default transport test, outbound-call
-  counters, mock response traces and binding/config inspection.
+      requests to Notion, OpenRouter, Telegram, production webhooks or
+      uncontrolled websites; zero real provider tokens, paid AI calls
+      or live notifications. Allowed Cloudflare D1/R2 binding operations
+      are accounted for separately.
+      **Evidence:** deny-by-default transport test, outbound-call
+      counters, mock response traces and binding/config inspection.
 - [ ] **AC-14 — Hosted resource viability.** Each scheduled
-  invocation completes without crash, Worker error, CPU budget
-  breach, memory limit, unbounded D1 operation, repeated timeout
-  or unexpected paid-tier requirement. Record available hosted
-  CPU/memory/quota measurements and any unavailable metrics as
-  explicit limitations. The Workers Free Cron CPU budget is
-  10 ms; an exhausted budget is a **FAIL**, not a reason to
-  silently upgrade.
-  **Evidence:** Cloudflare invocation outcome, CPU/memory metrics
-  when exposed, quotas, rate and error logs.
+      invocation completes without crash, Worker error, CPU budget
+      breach, memory limit, unbounded D1 operation, repeated timeout
+      or unexpected paid-tier requirement. Record available hosted
+      CPU/memory/quota measurements and any unavailable metrics as
+      explicit limitations. The Workers Free Cron CPU budget is
+      10 ms; an exhausted budget is a **FAIL**, not a reason to
+      silently upgrade.
+      **Evidence:** Cloudflare invocation outcome, CPU/memory metrics
+      when exposed, quotas, rate and error logs.
 - [ ] **AC-15 — Credible evidence bundle.** Include fixture
-  manifest/hashes, source SHA, staging Worker version, D1/R2 IDs,
-  authentic Cron event IDs/log links, every sweep's queue/age
-  observations, stage timestamps, retry and lease traces, final
-  integrity query and limitations. Run
-  `scripts/bg29-hourly-evidence-check.mjs` against the canonical
-  export once its schema supports the full staged evidence.
-  Its existing `bg29_078_verified: false` guard is intentional:
-  a structurally valid JSON file alone **never** authorizes signoff.
-  **Evidence:** immutable run/CI artifacts plus independent
-  reviewer cross-check of original Cloudflare logs.
+      manifest/hashes, source SHA, staging Worker version, D1/R2 IDs,
+      authentic Cron event IDs/log links, every sweep's queue/age
+      observations, stage timestamps, retry and lease traces, final
+      integrity query and limitations. Run
+      `scripts/bg29-hourly-evidence-check.mjs` against the canonical
+      export once its schema supports the full staged evidence.
+      Its existing `bg29_078_verified: false` guard is intentional:
+      a structurally valid JSON file alone **never** authorizes signoff.
+      **Evidence:** immutable run/CI artifacts plus independent
+      reviewer cross-check of original Cloudflare logs.
 - [ ] **AC-16 — Shutdown and final $0 reconciliation.** Disable
   staging Cron using explicit `[triggers]` / `crons = []`,
   confirm its removal, retain D1 evidence and safely remove
@@ -214,19 +214,19 @@ keeps BG-29.078 open. `N/A` does not qualify.
   account billing after the run, including R2 Standard Class A/B,
   storage and any other potentially used product, and confirms
   **additional charge = $0**. Budget notifications are not
-  evidence of a hard cap; if billing is delayed, mark BLOCKED
-  until acceptable reconciliation evidence exists.
-  **Evidence:** Worker trigger screenshot/readout, before/after
-  billing snapshot and signed operational outcome.
+      evidence of a hard cap; if billing is delayed, mark BLOCKED
+      until acceptable reconciliation evidence exists.
+      **Evidence:** Worker trigger screenshot/readout, before/after
+      billing snapshot and signed operational outcome.
 - [ ] **AC-17 — Exact-head closure review.** Full CI and focused
-  verification pass at the exact implementation/release SHA.
-  A reviewer compares every numbered criterion with its
-  independently attributable artifact, documents any deviation
-  or accepted scope change, and verifies production is untouched.
-  Only then check `BG-29.078`, change BG-29 from 99/100 to
-  100/100, close GitHub #99 and Linear OPE-344, and unlock BG-30.
-  **Evidence:** CI run URLs, reviewer signoff, changed checklist
-  and issue/Linear reconciliation.
+      verification pass at the exact implementation/release SHA.
+      A reviewer compares every numbered criterion with its
+      independently attributable artifact, documents any deviation
+      or accepted scope change, and verifies production is untouched.
+      Only then check `BG-29.078`, change BG-29 from 99/100 to
+      100/100, close GitHub #99 and Linear OPE-344, and unlock BG-30.
+      **Evidence:** CI run URLs, reviewer signoff, changed checklist
+      and issue/Linear reconciliation.
 
 ## 4. Mandatory stop conditions
 
