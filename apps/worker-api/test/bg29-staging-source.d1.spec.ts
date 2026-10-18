@@ -59,9 +59,11 @@ describe('BG-29.078 MC-02 real D1 URL acquisition worker, offline transport', ()
   });
 
   it('processes 12 real parser outputs, survives one retry and persists original identities', async () => {
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('UNEXPECTED_NETWORK_EGRESS');
-    });
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('UNEXPECTED_NETWORK_EGRESS');
+      });
     try {
       for (const [index, url] of BG29_STAGING_URLS.entries()) {
         await seed(index + 1, url);
@@ -133,9 +135,11 @@ describe('BG-29.078 MC-02 real D1 URL acquisition worker, offline transport', ()
 
   it('denies an unapproved URL in the actual D1 worker with no network calls', async () => {
     await seed(13, 'https://example.com/not-an-approved-bg29-fixture');
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('UNEXPECTED_NETWORK_EGRESS');
-    });
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('UNEXPECTED_NETWORK_EGRESS');
+      });
     try {
       await processSourceAcquisitionJobs(env as Env, {
         fetcher: createBg29StagingSourceFetcher(),
