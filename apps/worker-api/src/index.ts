@@ -1,5 +1,4 @@
 import { createApp } from './app';
-import type { Env } from './env';
 import { servePublicAsset, type StaticAssets } from './assets/asset-router';
 import { D1AttachmentRepository } from './attachments/attachment.repository';
 import { cleanupExpiredAttachments } from './attachments/attachment.service';
