@@ -126,7 +126,17 @@ describe('BG-29.078 Step 4 staging integration is offline-only', () => {
         notion_page_id: string;
       }>();
       expect(row?.source_url).toBe('https://example.com/bg29-078/source-01');
-      expect(row?.raw_text).toContain('BG29_STAGING_URL_SENTINEL_01');
+      // URL acquisition preserves the item's original raw_text. It stores
+      // the fetched source in url_acquisitions rather than overwriting it.
+      expect(row?.raw_text).toBeNull();
+      const acquired = await env.DB.prepare(
+        `SELECT acquired_text, status FROM url_acquisitions
+         WHERE item_id = 'bg29-078-url-01'`,
+      ).first<{ acquired_text: string; status: string }>();
+      expect(acquired?.status).toBe('acquired_text');
+      expect(acquired?.acquired_text).toContain(
+        'BG29_STAGING_URL_SENTINEL_01',
+      );
       expect(row?.summary).toBe('Mock summary');
       expect(row?.notion_page_id).toBe('bg29-mock-page-bg29-078-url-01');
 
