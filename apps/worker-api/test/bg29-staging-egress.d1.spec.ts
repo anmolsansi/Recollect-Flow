@@ -134,9 +134,7 @@ describe('BG-29.078 Step 4 staging integration is offline-only', () => {
          WHERE item_id = 'bg29-078-url-01'`,
       ).first<{ acquired_text: string; status: string }>();
       expect(acquired?.status).toBe('acquired_text');
-      expect(acquired?.acquired_text).toContain(
-        'BG29_STAGING_URL_SENTINEL_01',
-      );
+      expect(acquired?.acquired_text).toContain('BG29_STAGING_URL_SENTINEL_01');
       expect(row?.summary).toBe('Mock summary');
       expect(row?.notion_page_id).toBe('bg29-mock-page-bg29-078-url-01');
 
