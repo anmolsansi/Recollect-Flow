@@ -53,9 +53,11 @@ describe('BG-29.078 MC-03 real D1 Notion sync worker with offline mock HTTP', ()
     await seed(first);
     await seed(second);
 
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('LIVE_NOTION_NETWORK_ATTEMPT');
-    });
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('LIVE_NOTION_NETWORK_ATTEMPT');
+      });
     try {
       const mock = createBg29StagingNotionHarness({ rateLimitOnceFor: first });
       let now = new Date(T0.getTime() + 1_000);
@@ -65,13 +67,15 @@ describe('BG-29.078 MC-03 real D1 Notion sync worker with offline mock HTTP', ()
       const firstAttempt = await env.DB.prepare(
         `SELECT status, attempts, last_error_code, retry_after_at, available_at
          FROM sync_attempts WHERE item_id = ?1 ORDER BY created_at LIMIT 1`,
-      ).bind(first).first<{
-        status: string;
-        attempts: number;
-        last_error_code: string;
-        retry_after_at: string;
-        available_at: string;
-      }>();
+      )
+        .bind(first)
+        .first<{
+          status: string;
+          attempts: number;
+          last_error_code: string;
+          retry_after_at: string;
+          available_at: string;
+        }>();
       expect(firstAttempt).toMatchObject({
         status: 'pending',
         attempts: 1,
@@ -95,11 +99,15 @@ describe('BG-29.078 MC-03 real D1 Notion sync worker with offline mock HTTP', ()
 
       const originalBefore = await env.DB.prepare(
         `SELECT id, raw_text FROM items WHERE id IN (?1, ?2) ORDER BY id`,
-      ).bind(first, second).all<{ id: string; raw_text: string }>();
+      )
+        .bind(first, second)
+        .all<{ id: string; raw_text: string }>();
       expect(originalBefore.results).toHaveLength(2);
-      expect(originalBefore.results.every(
-        (item) => item.raw_text === 'immutable original synthetic body',
-      )).toBe(true);
+      expect(
+        originalBefore.results.every(
+          (item) => item.raw_text === 'immutable original synthetic body',
+        ),
+      ).toBe(true);
 
       // The actual D1 update triggers a fresh independently queued Notion
       // projection; worker sends PATCH of machine fields, not a fake success.
@@ -107,21 +115,25 @@ describe('BG-29.078 MC-03 real D1 Notion sync worker with offline mock HTTP', ()
       await env.DB.prepare(
         `UPDATE items SET summary = 'post-enrichment synthetic summary',
          updated_at = ?1 WHERE id IN (?2, ?3)`,
-      ).bind(now.toISOString(), first, second).run();
+      )
+        .bind(now.toISOString(), first, second)
+        .run();
 
       await mock.run(env.DB, options);
       const projections = await env.DB.prepare(
         `SELECT id, notion_page_id, projection_version, projection_hash,
                 notion_last_synced_at, raw_text
          FROM items WHERE id IN (?1, ?2) ORDER BY id`,
-      ).bind(first, second).all<{
-        id: string;
-        notion_page_id: string;
-        projection_version: number;
-        projection_hash: string;
-        notion_last_synced_at: string;
-        raw_text: string;
-      }>();
+      )
+        .bind(first, second)
+        .all<{
+          id: string;
+          notion_page_id: string;
+          projection_version: number;
+          projection_hash: string;
+          notion_last_synced_at: string;
+          raw_text: string;
+        }>();
       expect(projections.results).toHaveLength(2);
       for (const row of projections.results) {
         expect(row.notion_page_id).toBe(`bg29-mock-page-${row.id}`);
@@ -130,16 +142,22 @@ describe('BG-29.078 MC-03 real D1 Notion sync worker with offline mock HTTP', ()
         expect(row.notion_last_synced_at).toBe(now.toISOString());
         expect(row.raw_text).toBe('immutable original synthetic body');
       }
-      expect(mock.pages().map((page) => [page.createCount, page.updateCount])).toEqual([
+      expect(
+        mock.pages().map((page) => [page.createCount, page.updateCount]),
+      ).toEqual([
         [1, 1],
         [1, 1],
       ]);
-      expect(mock.requests().filter((r) => r.method === 'PATCH')).toHaveLength(2);
+      expect(mock.requests().filter((r) => r.method === 'PATCH')).toHaveLength(
+        2,
+      );
 
       const queue = await env.DB.prepare(
         `SELECT status, COUNT(*) AS count FROM sync_attempts
          WHERE item_id IN (?1, ?2) GROUP BY status`,
-      ).bind(first, second).all<{ status: string; count: number }>();
+      )
+        .bind(first, second)
+        .all<{ status: string; count: number }>();
       expect(queue.results).toEqual([{ status: 'complete', count: 4 }]);
       expect(network).not.toHaveBeenCalled();
     } finally {
@@ -153,17 +171,23 @@ describe('BG-29.078 MC-03 real D1 Notion sync worker with offline mock HTTP', ()
     await env.DB.prepare(
       `UPDATE items SET notion_page_id = 'real-user-page-id'
        WHERE id = ?1`,
-    ).bind(id).run();
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('LIVE_NOTION_NETWORK_ATTEMPT');
-    });
+    )
+      .bind(id)
+      .run();
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('LIVE_NOTION_NETWORK_ATTEMPT');
+      });
     try {
       const mock = createBg29StagingNotionHarness();
       await mock.run(env.DB, { now: () => new Date(T0.getTime() + 1_000) });
       const attempt = await env.DB.prepare(
         `SELECT status, attempts, last_error_code FROM sync_attempts
          WHERE item_id = ?1`,
-      ).bind(id).first<{ status: string; attempts: number; last_error_code: string }>();
+      )
+        .bind(id)
+        .first<{ status: string; attempts: number; last_error_code: string }>();
       expect(attempt).toMatchObject({
         status: 'pending',
         attempts: 1,
