@@ -1,12 +1,10 @@
 import { createApp } from './app';
-import type { Env } from './env';
 import { servePublicAsset, type StaticAssets } from './assets/asset-router';
 import { D1AttachmentRepository } from './attachments/attachment.repository';
 import { cleanupExpiredAttachments } from './attachments/attachment.service';
-import {
-  scheduledWorkForCron,
-  type ScheduledWork,
-} from './digests/digest-schedule';
+import { createScheduledHandler } from './scheduled-handler';
+
+export { scheduledWork } from './scheduled-handler';
 import { processScheduledDigest } from './digests/digest.worker';
 import { cleanupExpiredCapacityReservations } from './jobs/ai/capacity.worker';
 import { processEnrichJobs } from './jobs/enrich.worker';
@@ -19,66 +17,33 @@ import { processNotionSyncJobs } from './sync/sync.worker';
 
 const app = createApp();
 
-export function scheduledWork(cron: string): ScheduledWork {
-  return scheduledWorkForCron(cron);
-}
-
-export async function handleScheduled(
-  controller: ScheduledController,
-  env: Cloudflare.Env,
-  context: ExecutionContext,
-): Promise<void> {
-  const work = scheduledWorkForCron(controller.cron);
-  if (work === 'background') {
-    context.waitUntil(
-      cleanupExpiredAttachments(
-        new D1AttachmentRepository(env.DB),
-        env.ATTACHMENTS,
-      ),
-    );
-    context.waitUntil(cleanupExpiredCapacityReservations(env));
-    context.waitUntil(cleanupExpiredHostedBackups(env.DB, env.ATTACHMENTS));
-    context.waitUntil(processPurgeWorkflows(env));
-    context.waitUntil(processExtractionJobs(env));
-    context.waitUntil(processSourceAcquisitionJobs(env));
-    context.waitUntil(processEnrichJobs(env));
-    context.waitUntil(
-      processNotionSyncJobs(
-        env.DB,
-        env.NOTION_ACCESS_TOKEN,
-        env.NOTION_DATABASE_ID,
-      ),
-    );
-    return;
-  }
-  if (work === 'daily' || work === 'weekly') {
-    context.waitUntil(
-      processScheduledDigest(env, work, new Date(controller.scheduledTime)),
-    );
-    // Explicit opt-in only. The default Cron must not silently create backups
-    // (nor claim that a JSON-only backup contains original attachment bytes).
-    if (
-      work === 'weekly' &&
-      (env as Env).HOSTED_BACKUP_AUTOCREATE_ENABLED === 'true'
-    ) {
-      context.waitUntil(
-        createWeeklyHostedBackup(
-          env.DB,
-          env.ATTACHMENTS,
-          new Date(controller.scheduledTime),
-        ),
-      );
-    }
-    return;
-  }
-  console.warn(
-    JSON.stringify({
-      event: 'scheduled_cron_unrecognized',
-      cron: controller.cron,
-      scheduled_time: controller.scheduledTime,
-    }),
-  );
-}
+/**
+ * The public Worker entry point is permanently wired to the existing
+ * production services. Staging creates a separate scheduler instance via
+ * createScheduledHandler; it never patches this instance or global services.
+ */
+export const handleScheduled = createScheduledHandler({
+  cleanupAttachments: (env) =>
+    cleanupExpiredAttachments(
+      new D1AttachmentRepository(env.DB),
+      env.ATTACHMENTS,
+    ),
+  cleanupCapacity: (env) => cleanupExpiredCapacityReservations(env),
+  cleanupBackups: (env) => cleanupExpiredHostedBackups(env.DB, env.ATTACHMENTS),
+  purgeWorkflows: (env) => processPurgeWorkflows(env),
+  extractFiles: (env) => processExtractionJobs(env),
+  acquireUrls: (env) => processSourceAcquisitionJobs(env),
+  enrichItems: (env) => processEnrichJobs(env),
+  syncNotion: (env) =>
+    processNotionSyncJobs(
+      env.DB,
+      env.NOTION_ACCESS_TOKEN,
+      env.NOTION_DATABASE_ID,
+    ),
+  digest: (env, kind, at) => processScheduledDigest(env, kind, at),
+  weeklyBackup: (env, at) =>
+    createWeeklyHostedBackup(env.DB, env.ATTACHMENTS, at),
+});
 
 /**
  * Route the API before any static fallback, regardless of Accept or navigation
