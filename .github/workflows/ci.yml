@@ -15,10 +15,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Temporary BG-29 contract formatting diagnostic
-        run: |
-          npx prettier --write docs/verification/BG-29_078_ACCEPTANCE_CONTRACT.md
-          git diff -- docs/verification/BG-29_078_ACCEPTANCE_CONTRACT.md
       - run: npm run check
       - run: npm run release:package:test
       - run: npm run release:package
