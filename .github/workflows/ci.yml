@@ -15,6 +15,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Temporary MC04 formatting diagnostic
+        run: |
+          npx prettier --write apps/worker-api/src/jobs/ai/bg29-staging-enrichment.ts apps/worker-api/test/bg29-staging-enrichment.test.ts apps/worker-api/test/bg29-staging-enrichment.d1.spec.ts
+          git diff -- apps/worker-api/src/jobs/ai/bg29-staging-enrichment.ts apps/worker-api/test/bg29-staging-enrichment.test.ts apps/worker-api/test/bg29-staging-enrichment.d1.spec.ts
       - run: npm run check
       - run: npm run release:package:test
       - run: npm run release:package
