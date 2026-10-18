@@ -1,12 +1,24 @@
 import type { Env } from '../../env';
 import { JobService } from '../job.service';
-import { SourceAcquisitionService } from './source-acquisition.service';
+import {
+  SourceAcquisitionService,
+  type SourceAcquisitionServiceOptions,
+} from './source-acquisition.service';
 
-export async function processSourceAcquisitionJobs(env: Env): Promise<void> {
+export async function processSourceAcquisitionJobs(
+  env: Env,
+  options: SourceAcquisitionServiceOptions = {},
+): Promise<void> {
   const jobs = new JobService(env.DB);
-  const service = new SourceAcquisitionService(env.DB);
+  const service = new SourceAcquisitionService(env.DB, options);
   const ownerId = crypto.randomUUID();
-  const leased = await jobs.leaseProcessingJobs('acquire_url', ownerId, 5, 10);
+  const leased = await jobs.leaseProcessingJobs(
+    'acquire_url',
+    ownerId,
+    5,
+    10,
+    options.now?.(),
+  );
 
   for (const job of leased) {
     try {
