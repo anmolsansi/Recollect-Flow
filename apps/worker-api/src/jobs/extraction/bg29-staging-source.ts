@@ -69,16 +69,14 @@ export function createBg29StagingSourceFetcher(
     }
 
     const fixtureNumber = BG29_STAGING_URLS.indexOf(url) + 1;
-    const document = `<!doctype html><html lang="en"><head>
-      <title>BG29 synthetic source ${fixtureNumber}</title>
-      <meta name="description" content="Offline deterministic acquisition fixture ${fixtureNumber}">
-      </head><body><main><h1>BG29 acquisition fixture ${fixtureNumber}</h1>
-      <p>BG29_STAGING_URL_SENTINEL_${String(fixtureNumber).padStart(2, '0')}
-      This source text must be parsed and saved by the real acquisition
-      service rather than injected as an extraction result.</p></main></body></html>`;
+    const document = `BG29 synthetic source ${fixtureNumber}
+BG29_STAGING_URL_SENTINEL_${String(fixtureNumber).padStart(2, '0')}
+Offline deterministic acquisition fixture ${fixtureNumber}.
+This text is parsed by the real SourceFetcher and persisted by the
+real SourceAcquisitionService, not injected as a completed result.`;
     return new Response(document, {
       status: 200,
-      headers: { 'content-type': 'text/html; charset=utf-8' },
+      headers: { 'content-type': 'text/plain; charset=utf-8' },
     });
   };
 
