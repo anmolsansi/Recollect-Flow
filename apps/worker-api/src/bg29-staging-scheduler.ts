@@ -135,7 +135,7 @@ export function createBg29StagingScheduler(environment: Cloudflare.Env) {
   });
 
   return Object.freeze({
-    scheduled: (
+    scheduled: async (
       controller: ScheduledController,
       env: Cloudflare.Env,
       ctx: ExecutionContext,
