@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { BACKGROUND_CRON, DAILY_DIGEST_CRON, WEEKLY_DIGEST_CRON } from '../src/digests/digest-schedule';
+import {
+  BACKGROUND_CRON,
+  DAILY_DIGEST_CRON,
+  WEEKLY_DIGEST_CRON,
+} from '../src/digests/digest-schedule';
 import {
   createScheduledHandler,
   type ScheduledHandlerDependencies,
@@ -96,12 +100,20 @@ describe('BG-29 MC-01 scheduler dependency injection', () => {
       throw new Error('mutable injection must not run');
     });
     const firstCtx = executionContext();
-    await staging(controller(BACKGROUND_CRON), {} as Cloudflare.Env, firstCtx.context);
+    await staging(
+      controller(BACKGROUND_CRON),
+      {} as Cloudflare.Env,
+      firstCtx.context,
+    );
     expect(originallyInjected).toHaveBeenCalledOnce();
     expect(first.dependencies.acquireUrls).not.toHaveBeenCalled();
     expect(second.invoked).toEqual([]);
     const secondCtx = executionContext();
-    await unrelated(controller(BACKGROUND_CRON), {} as Cloudflare.Env, secondCtx.context);
+    await unrelated(
+      controller(BACKGROUND_CRON),
+      {} as Cloudflare.Env,
+      secondCtx.context,
+    );
     expect(second.invoked).toHaveLength(8);
     for (const done of [...first.release, ...second.release]) done();
     await Promise.all([...firstCtx.promises, ...secondCtx.promises]);
@@ -160,7 +172,9 @@ describe('BG-29 MC-01 scheduler dependency injection', () => {
       expect(invoked).toEqual([]);
       expect(dependencies.digest).not.toHaveBeenCalled();
       expect(dependencies.weeklyBackup).not.toHaveBeenCalled();
-      expect(warn).toHaveBeenCalledWith(expect.stringContaining('scheduled_cron_unrecognized'));
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('scheduled_cron_unrecognized'),
+      );
     } finally {
       warn.mockRestore();
     }
