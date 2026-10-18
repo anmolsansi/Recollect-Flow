@@ -1,7 +1,4 @@
-import {
-  processNotionSyncJobs,
-  type NotionWorkerOptions,
-} from './sync.worker';
+import { processNotionSyncJobs, type NotionWorkerOptions } from './sync.worker';
 
 /**
  * Offline-only transport. The real NotionSyncService still constructs normal
@@ -12,11 +9,13 @@ export const BG29_NOTION_DATABASE_ID = 'bg29-078-offline-database';
 const MOCK_TOKEN = 'bg29-078-offline-only-token';
 const BASE = 'https://api.notion.com/v1';
 export const BG29_NOTION_CAPTURE_IDS = Object.freeze([
-  ...Array.from({ length: 12 }, (_, i) =>
-    `bg29-078-url-${String(i + 1).padStart(2, '0')}`,
+  ...Array.from(
+    { length: 12 },
+    (_, i) => `bg29-078-url-${String(i + 1).padStart(2, '0')}`,
   ),
-  ...Array.from({ length: 12 }, (_, i) =>
-    `bg29-078-file-${String(i + 1).padStart(2, '0')}`,
+  ...Array.from(
+    { length: 12 },
+    (_, i) => `bg29-078-file-${String(i + 1).padStart(2, '0')}`,
   ),
 ]);
 
@@ -121,7 +120,8 @@ export function createBg29StagingNotionHarness(
       url.search ||
       url.hash ||
       !['POST', 'PATCH'].includes(init.method ?? '') ||
-      new Headers(init.headers).get('Authorization') !== `Bearer ${MOCK_TOKEN}` ||
+      new Headers(init.headers).get('Authorization') !==
+        `Bearer ${MOCK_TOKEN}` ||
       new Headers(init.headers).get('Notion-Version') !== '2022-06-28' ||
       new Headers(init.headers).get('Content-Type') !== 'application/json' ||
       typeof init.body !== 'string'
@@ -155,7 +155,10 @@ export function createBg29StagingNotionHarness(
       });
     };
 
-    if (method === 'POST' && path === `/v1/databases/${BG29_NOTION_DATABASE_ID}/query`) {
+    if (
+      method === 'POST' &&
+      path === `/v1/databases/${BG29_NOTION_DATABASE_ID}/query`
+    ) {
       const filter = obj(request.filter);
       const rich = obj(filter?.rich_text);
       const captureId = rich?.equals;
@@ -164,19 +167,13 @@ export function createBg29StagingNotionHarness(
         filter?.property !== 'Capture ID' ||
         typeof captureId !== 'string' ||
         !allowed.has(captureId)
-      ) deny();
+      )
+        deny();
 
-      if (
-        options.rateLimitOnceFor === captureId &&
-        !injectedRateLimit
-      ) {
+      if (options.rateLimitOnceFor === captureId && !injectedRateLimit) {
         injectedRateLimit = true;
         log(captureId, 429);
-        return json(
-          { code: 'rate_limited' },
-          429,
-          { 'Retry-After': '5' },
-        );
+        return json({ code: 'rate_limited' }, 429, { 'Retry-After': '5' });
       }
       log(captureId, 200);
       const existing = pages.get(captureId);
@@ -193,7 +190,8 @@ export function createBg29StagingNotionHarness(
         !captureId ||
         !allowed.has(captureId) ||
         !projection
-      ) deny();
+      )
+        deny();
 
       const existing = pages.get(captureId);
       if (existing) {
@@ -217,16 +215,26 @@ export function createBg29StagingNotionHarness(
       const pageId = path.slice('/v1/pages/'.length);
       const captureId = captureFromProperties(obj(request.properties));
       const projection = projectionFromProperties(request.properties);
-      const existing = [...pages.values()].find((page) => page.pageId === pageId);
+      const existing = [...pages.values()].find(
+        (page) => page.pageId === pageId,
+      );
       if (
         !existing ||
         captureId !== existing.captureId ||
         !projection ||
         projection.version < existing.projectionVersion ||
         Object.keys(obj(request.properties) ?? {}).some((key) =>
-          ['Name', 'Status', 'Project', 'Topics', 'Importance', 'Review Date'].includes(key),
+          [
+            'Name',
+            'Status',
+            'Project',
+            'Topics',
+            'Importance',
+            'Review Date',
+          ].includes(key),
         )
-      ) deny();
+      )
+        deny();
 
       existing.projectionVersion = projection.version;
       existing.projectionHash = projection.hash;
