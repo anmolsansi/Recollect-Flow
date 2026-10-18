@@ -145,7 +145,7 @@ describe('BG-29 MC-01 scheduler dependency injection', () => {
   it('keeps weekly backup opt-in and never runs it for daily Cron', async () => {
     const { dependencies, invoked } = fixture();
     const handler = createScheduledHandler(dependencies);
-    const env = { HOSTED_BACKUP_AUTOCREATE_ENABLED: 'true' } as Cloudflare.Env;
+    const env = { HOSTED_BACKUP_AUTOCREATE_ENABLED: 'true' } as unknown as Cloudflare.Env;
     const weekly = executionContext();
     await handler(controller(WEEKLY_DIGEST_CRON), env, weekly.context);
     expect(weekly.context.waitUntil).toHaveBeenCalledTimes(2);
