@@ -40,7 +40,10 @@ export function createBg29StagingSourceFetcher(
   options: Bg29StagingSourceOptions = {},
 ): Pick<SourceFetcher, 'fetch'> {
   const permitted = new Set<string>(BG29_STAGING_URLS);
-  if (options.failOnceFor !== undefined && !permitted.has(options.failOnceFor)) {
+  if (
+    options.failOnceFor !== undefined &&
+    !permitted.has(options.failOnceFor)
+  ) {
     throw new Error('BG29 staging failure target is not a permitted fixture');
   }
 
