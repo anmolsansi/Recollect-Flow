@@ -15,7 +15,7 @@ owner-confirmed; **do not re-run** that D1-only experiment. Production must
 not be changed, and the existing staging D1 may be reused only where
 explicitly authorized.
 
-The first two commits in this branch are *planning-only*. They do not seed
+The first two commits in this branch are _planning-only_. They do not seed
 D1, create R2 objects, deploy Workers, turn on Cron, contact external
 providers or invoke paid Cloudflare services. Opening a draft PR does not
 authorize any later hosted action.
@@ -48,19 +48,19 @@ Proceed in order. Each checkpoint is divided into minimal,
 independently-verifiable commits in
 [the microcommit ledger](BG-29_078_MICROCOMMITS.md).
 
-| Phase | Objective | Required gate |
-| --- | --- | --- |
-| 0 | Branch and draft-PR baseline | Clean branch at known main SHA; no production changes |
-| 1 | Scheduler/provider dependency injection | Production defaults unchanged; real external calls fail closed in staging |
-| 2 | Deterministic URL, Notion, AI fixtures | Exercise real worker services with mock transports, including failure cases |
-| 3 | Genuine PDFs and emulated R2 | Real `ExtractionService` reads/checksums/parses PDF bytes locally |
-| 4 | Idempotent 24-item seeder | Exactly 12 URL/12 file items, stable hashes, re-run safe |
-| 5 | Stage telemetry and retry/lease accounting | Per-sweep queue/age, originals, projections and attempt trace |
-| 6 | Full local integration and resource regression | End-to-end real services, mocked providers, 17-AC evidence mapping |
-| 7 | Explicit hosted $0 financial/production-isolation gate | Dated actual usage and user authorization; otherwise NO-GO |
-| 8 | Hosted isolated staging deployment with Cron off | R2 and staging Worker only if Phase 7 passed, never production |
-| 9 | Real hourly multi-stage execution | Authenticated Cloudflare events and stages all drain within 10 sweeps |
-| 10 | Cleanup, billing and independent acceptance review | Cron removed, bill reconciled, every AC PASS, CI green before closure |
+| Phase | Objective                                              | Required gate                                                               |
+| ----- | ------------------------------------------------------ | --------------------------------------------------------------------------- |
+| 0     | Branch and draft-PR baseline                           | Clean branch at known main SHA; no production changes                       |
+| 1     | Scheduler/provider dependency injection                | Production defaults unchanged; real external calls fail closed in staging   |
+| 2     | Deterministic URL, Notion, AI fixtures                 | Exercise real worker services with mock transports, including failure cases |
+| 3     | Genuine PDFs and emulated R2                           | Real `ExtractionService` reads/checksums/parses PDF bytes locally           |
+| 4     | Idempotent 24-item seeder                              | Exactly 12 URL/12 file items, stable hashes, re-run safe                    |
+| 5     | Stage telemetry and retry/lease accounting             | Per-sweep queue/age, originals, projections and attempt trace               |
+| 6     | Full local integration and resource regression         | End-to-end real services, mocked providers, 17-AC evidence mapping          |
+| 7     | Explicit hosted $0 financial/production-isolation gate | Dated actual usage and user authorization; otherwise NO-GO                  |
+| 8     | Hosted isolated staging deployment with Cron off       | R2 and staging Worker only if Phase 7 passed, never production              |
+| 9     | Real hourly multi-stage execution                      | Authenticated Cloudflare events and stages all drain within 10 sweeps       |
+| 10    | Cleanup, billing and independent acceptance review     | Cron removed, bill reconciled, every AC PASS, CI green before closure       |
 
 ## Start/stop decisions
 
