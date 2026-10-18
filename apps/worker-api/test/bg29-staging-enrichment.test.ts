@@ -28,15 +28,21 @@ describe('BG-29.078 MC-04 mock-only AI environment', () => {
     });
 
     expect(harness.safetyProfile().bindings).not.toContain('AI');
-    expect(harness.safetyProfile().bindings).not.toContain('OPENROUTER_API_KEY');
-    expect(harness.safetyProfile().bindings).not.toContain('NOTION_ACCESS_TOKEN');
+    expect(harness.safetyProfile().bindings).not.toContain(
+      'OPENROUTER_API_KEY',
+    );
+    expect(harness.safetyProfile().bindings).not.toContain(
+      'NOTION_ACCESS_TOKEN',
+    );
     expect(harness.safetyProfile().bindings).not.toContain('ATTACHMENTS');
   });
 
   it('creating the harness never invokes fetch or a real Workers AI binding', () => {
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('UNEXPECTED_PAID_OR_EXTERNAL_PROVIDER_CALL');
-    });
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('UNEXPECTED_PAID_OR_EXTERNAL_PROVIDER_CALL');
+      });
     try {
       const db = {} as D1Database;
       const harness = createBg29StagingEnrichmentHarness(db);
