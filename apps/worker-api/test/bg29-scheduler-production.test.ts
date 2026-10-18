@@ -22,7 +22,7 @@ vi.mock('../src/jobs/ai/capacity.worker', () => ({
     production.cleanupExpiredCapacityReservations,
 }));
 vi.mock('../src/recovery/backup-cleanup', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../src/recovery/backup-cleanup')>()),
+  ...(await importOriginal<Record<string, unknown>>()),
   cleanupExpiredHostedBackups: production.cleanupExpiredHostedBackups,
 }));
 vi.mock('../src/recovery/purge.worker', () => ({
