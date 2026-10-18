@@ -45,7 +45,10 @@ describe('BG-29.078 Step 4 fail-closed staging scheduler', () => {
       { MOCK_AI_ENABLED: 'false' },
       { AI_PROVIDERS_ENABLED: 'cloudflare' },
       { AI_PROVIDER_IMPLEMENTATIONS: '{"openrouter":"openrouter"}' },
-      { AI_PROVIDER_IMPLEMENTATIONS: '{"openrouter":"mock","gemini":"cloudflare"}' },
+      {
+        AI_PROVIDER_IMPLEMENTATIONS:
+          '{"openrouter":"mock","gemini":"cloudflare"}',
+      },
       { AI_PROVIDER_IMPLEMENTATIONS: 'not-json' },
       { DIGEST_AI_ENABLED: 'true' },
       { HOSTED_BACKUP_AUTOCREATE_ENABLED: 'true' },
