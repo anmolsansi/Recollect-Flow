@@ -146,7 +146,7 @@ or remaining external-call paths.
 
 **MC-13:** Document actual account-wide R2 free allowances,
 remaining usage and bounded worst-case operations. Stage a reviewed
-deployment config that binds *only* isolated D1/R2 and starts
+deployment config that binds _only_ isolated D1/R2 and starts
 with `crons = []`; include explicit rollback and no-cost guards.
 
 **Verification (planned):** Config-negative tests, Wrangler
