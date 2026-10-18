@@ -45,9 +45,11 @@ describe('BG-29.078 MC-03 offline Notion transport', () => {
   afterEach(() => vi.restoreAllMocks());
 
   it('processes create, exact-Capture-ID adoption and post-enrichment PATCH using real projection service', async () => {
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('LIVE_NOTION_NETWORK_ATTEMPT');
-    });
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('LIVE_NOTION_NETWORK_ATTEMPT');
+      });
     try {
       const mock = createBg29StagingNotionHarness();
       const notion = service(mock.fetcher);
@@ -59,25 +61,33 @@ describe('BG-29.078 MC-03 offline Notion transport', () => {
         pageId: `bg29-mock-page-${ITEM_ID}`,
         mode: 'created',
       });
-      const adopt = await notion.syncItem(item({ projectionHash: 'test-hash-2' }));
+      const adopt = await notion.syncItem(
+        item({ projectionHash: 'test-hash-2' }),
+      );
       expect(adopt).toEqual({ pageId: first.pageId, mode: 'adopted' });
-      const updated = await notion.syncItem(item({
-        notionPageId: first.pageId,
-        summary: 'Deterministic post-enrichment summary',
-        projectionVersion: 2,
-        projectionHash: 'test-hash-3',
-      }));
+      const updated = await notion.syncItem(
+        item({
+          notionPageId: first.pageId,
+          summary: 'Deterministic post-enrichment summary',
+          projectionVersion: 2,
+          projectionHash: 'test-hash-3',
+        }),
+      );
       expect(updated).toEqual({ pageId: first.pageId, mode: 'updated' });
 
-      expect(mock.pages()).toEqual([{
-        captureId: ITEM_ID,
-        pageId: first.pageId,
-        projectionVersion: 2,
-        projectionHash: 'test-hash-3',
-        createCount: 1,
-        updateCount: 2,
-      }]);
-      expect(mock.requests().map(({ method, status }) => [method, status])).toEqual([
+      expect(mock.pages()).toEqual([
+        {
+          captureId: ITEM_ID,
+          pageId: first.pageId,
+          projectionVersion: 2,
+          projectionHash: 'test-hash-3',
+          createCount: 1,
+          updateCount: 2,
+        },
+      ]);
+      expect(
+        mock.requests().map(({ method, status }) => [method, status]),
+      ).toEqual([
         ['POST', 200],
         ['POST', 200],
         ['POST', 200],
@@ -96,11 +106,15 @@ describe('BG-29.078 MC-03 offline Notion transport', () => {
   });
 
   it('returns a real RateLimitError for a one-shot 429 and then recovers', async () => {
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('LIVE_NOTION_NETWORK_ATTEMPT');
-    });
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('LIVE_NOTION_NETWORK_ATTEMPT');
+      });
     try {
-      const mock = createBg29StagingNotionHarness({ rateLimitOnceFor: ITEM_ID });
+      const mock = createBg29StagingNotionHarness({
+        rateLimitOnceFor: ITEM_ID,
+      });
       const notion = service(mock.fetcher);
       await expect(notion.syncItem(item())).rejects.toMatchObject({
         code: 'NOTION_RATE_LIMITED',
@@ -118,9 +132,11 @@ describe('BG-29.078 MC-03 offline Notion transport', () => {
   });
 
   it('denies live Notion endpoints, arbitrary page IDs, tokens and unknown fixture IDs without egress', async () => {
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('LIVE_NOTION_NETWORK_ATTEMPT');
-    });
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('LIVE_NOTION_NETWORK_ATTEMPT');
+      });
     try {
       const mock = createBg29StagingNotionHarness();
       for (const url of [
@@ -133,15 +149,17 @@ describe('BG-29.078 MC-03 offline Notion transport', () => {
           'BG29_STAGING_NOTION_EGRESS_DENIED',
         );
       }
-      await expect(mock.fetcher('https://api.notion.com/v1/pages', {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer actual-user-token',
-          'Notion-Version': '2022-06-28',
-          'Content-Type': 'application/json',
-        },
-        body: '{}',
-      })).rejects.toThrow('BG29_STAGING_NOTION_EGRESS_DENIED');
+      await expect(
+        mock.fetcher('https://api.notion.com/v1/pages', {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer actual-user-token',
+            'Notion-Version': '2022-06-28',
+            'Content-Type': 'application/json',
+          },
+          body: '{}',
+        }),
+      ).rejects.toThrow('BG29_STAGING_NOTION_EGRESS_DENIED');
       expect(() =>
         createBg29StagingNotionHarness({ rateLimitOnceFor: 'real-user-item' }),
       ).toThrow('not a fixture');
