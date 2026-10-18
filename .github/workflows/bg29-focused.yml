@@ -35,6 +35,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: BG29-078 temporary planning-docs formatter diagnostic
+        run: |
+          npx prettier --write docs/verification/BG-29_078_IMPLEMENTATION_BRANCH.md docs/verification/BG-29_078_MICROCOMMITS.md
+          git diff -- docs/verification/BG-29_078_IMPLEMENTATION_BRANCH.md docs/verification/BG-29_078_MICROCOMMITS.md
       - run: node --test scripts/bg29-inspector-connection.test.mjs
       - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
       - run: node scripts/bg29-zero-cost-preflight.mjs
