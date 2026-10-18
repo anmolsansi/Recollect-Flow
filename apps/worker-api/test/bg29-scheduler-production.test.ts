@@ -12,11 +12,14 @@ const production = vi.hoisted(() => ({
 }));
 
 vi.mock('../src/attachments/attachment.service', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../src/attachments/attachment.service')>()),
+  ...(await importOriginal<
+    typeof import('../src/attachments/attachment.service')
+  >()),
   cleanupExpiredAttachments: production.cleanupExpiredAttachments,
 }));
 vi.mock('../src/jobs/ai/capacity.worker', () => ({
-  cleanupExpiredCapacityReservations: production.cleanupExpiredCapacityReservations,
+  cleanupExpiredCapacityReservations:
+    production.cleanupExpiredCapacityReservations,
 }));
 vi.mock('../src/recovery/backup-cleanup', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../src/recovery/backup-cleanup')>()),
@@ -97,15 +100,27 @@ describe('BG-29 MC-01 production handler isolation', () => {
     await handleScheduled(controller(), env, context);
 
     expect(context.waitUntil).toHaveBeenCalledTimes(8);
-    expect(production.cleanupExpiredAttachments).toHaveBeenCalledExactlyOnceWith(
+    expect(
+      production.cleanupExpiredAttachments,
+    ).toHaveBeenCalledExactlyOnceWith(
       expect.any(D1AttachmentRepository),
       env.ATTACHMENTS,
     );
-    expect(production.cleanupExpiredCapacityReservations).toHaveBeenCalledExactlyOnceWith(env);
-    expect(production.cleanupExpiredHostedBackups).toHaveBeenCalledExactlyOnceWith(env.DB, env.ATTACHMENTS);
-    expect(production.processPurgeWorkflows).toHaveBeenCalledExactlyOnceWith(env);
-    expect(production.processExtractionJobs).toHaveBeenCalledExactlyOnceWith(env);
-    expect(production.processSourceAcquisitionJobs).toHaveBeenCalledExactlyOnceWith(env);
+    expect(
+      production.cleanupExpiredCapacityReservations,
+    ).toHaveBeenCalledExactlyOnceWith(env);
+    expect(
+      production.cleanupExpiredHostedBackups,
+    ).toHaveBeenCalledExactlyOnceWith(env.DB, env.ATTACHMENTS);
+    expect(production.processPurgeWorkflows).toHaveBeenCalledExactlyOnceWith(
+      env,
+    );
+    expect(production.processExtractionJobs).toHaveBeenCalledExactlyOnceWith(
+      env,
+    );
+    expect(
+      production.processSourceAcquisitionJobs,
+    ).toHaveBeenCalledExactlyOnceWith(env);
     expect(production.processEnrichJobs).toHaveBeenCalledExactlyOnceWith(env);
     expect(production.processNotionSyncJobs).toHaveBeenCalledExactlyOnceWith(
       env.DB,
