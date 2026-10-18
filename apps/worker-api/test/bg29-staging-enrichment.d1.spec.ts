@@ -63,9 +63,11 @@ describe('BG-29.078 MC-04 actual D1 enrichment with exclusively mock AI', () => 
     for (const id of BG29_STAGING_AI_CAPTURE_IDS) {
       await seed(id);
     }
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('UNEXPECTED_EXTERNAL_AI_EGRESS');
-    });
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('UNEXPECTED_EXTERNAL_AI_EGRESS');
+      });
     try {
       const harness = createBg29StagingEnrichmentHarness(env.DB);
       await harness.run();
@@ -116,13 +118,15 @@ describe('BG-29.078 MC-04 actual D1 enrichment with exclusively mock AI', () => 
         estimated_cost_micros: number;
       }>();
       expect(usage.results).toHaveLength(24);
-      expect(usage.results.every(
-        (entry) =>
-          entry.provider === 'openrouter' &&
-          entry.model === 'mock-model' &&
-          entry.status === 'success' &&
-          entry.estimated_cost_micros === 0,
-      )).toBe(true);
+      expect(
+        usage.results.every(
+          (entry) =>
+            entry.provider === 'openrouter' &&
+            entry.model === 'mock-model' &&
+            entry.status === 'success' &&
+            entry.estimated_cost_micros === 0,
+        ),
+      ).toBe(true);
 
       const audits = await env.DB.prepare(
         `SELECT COUNT(*) AS total FROM audit_events
@@ -139,9 +143,11 @@ describe('BG-29.078 MC-04 actual D1 enrichment with exclusively mock AI', () => 
     const id = BG29_STAGING_AI_CAPTURE_IDS[0]!;
     const text = `${original(id)} TRIGGER_PROVIDER_FAILURE`;
     await seed(id, text);
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('UNEXPECTED_EXTERNAL_AI_EGRESS');
-    });
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('UNEXPECTED_EXTERNAL_AI_EGRESS');
+      });
     try {
       const harness = createBg29StagingEnrichmentHarness(env.DB);
       await harness.run();
@@ -164,9 +170,9 @@ describe('BG-29.078 MC-04 actual D1 enrichment with exclusively mock AI', () => 
       });
       expect(Date.parse(job!.available_at)).toBeGreaterThan(Date.now());
       expect(
-        await env.DB.prepare(
-          `SELECT raw_text FROM items WHERE id = ?1`,
-        ).bind(id).first('raw_text'),
+        await env.DB.prepare(`SELECT raw_text FROM items WHERE id = ?1`)
+          .bind(id)
+          .first('raw_text'),
       ).toBe(text);
 
       // No early retry or repeated usage record before the backoff expires.
@@ -174,16 +180,20 @@ describe('BG-29.078 MC-04 actual D1 enrichment with exclusively mock AI', () => 
       const usage = await env.DB.prepare(
         `SELECT status, error_code, estimated_cost_micros
          FROM provider_usage WHERE item_id = ?1`,
-      ).bind(id).all<{
-        status: string;
-        error_code: string;
-        estimated_cost_micros: number;
-      }>();
-      expect(usage.results).toEqual([{
-        status: 'failed',
-        error_code: 'PROVIDER_OUTAGE',
-        estimated_cost_micros: 0,
-      }]);
+      )
+        .bind(id)
+        .all<{
+          status: string;
+          error_code: string;
+          estimated_cost_micros: number;
+        }>();
+      expect(usage.results).toEqual([
+        {
+          status: 'failed',
+          error_code: 'PROVIDER_OUTAGE',
+          estimated_cost_micros: 0,
+        },
+      ]);
       expect(network).not.toHaveBeenCalled();
     } finally {
       network.mockRestore();
