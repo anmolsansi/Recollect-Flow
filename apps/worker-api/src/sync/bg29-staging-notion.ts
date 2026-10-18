@@ -7,7 +7,6 @@ import { processNotionSyncJobs, type NotionWorkerOptions } from './sync.worker';
  */
 export const BG29_NOTION_DATABASE_ID = 'bg29-078-offline-database';
 const MOCK_TOKEN = 'bg29-078-offline-only-token';
-const BASE = 'https://api.notion.com/v1';
 export const BG29_NOTION_CAPTURE_IDS = Object.freeze([
   ...Array.from(
     { length: 12 },
