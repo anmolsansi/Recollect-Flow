@@ -16,7 +16,7 @@ function isolatedEnv(): Cloudflare.Env {
     WEB_INBOX_BASE_URL: 'https://invalid.test',
     MAX_ATTACHMENT_BYTES: '25000000',
     UPLOAD_TTL_SECONDS: '3600',
-  } as Cloudflare.Env;
+  } as unknown as Cloudflare.Env;
 }
 
 function controller(): ScheduledController {
