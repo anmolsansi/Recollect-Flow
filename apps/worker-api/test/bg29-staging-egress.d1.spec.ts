@@ -125,14 +125,10 @@ describe('BG-29.078 Step 4 staging integration is offline-only', () => {
         summary: string;
         notion_page_id: string;
       }>();
-      expect(row?.source_url).toBe(
-        'https://example.com/bg29-078/source-01',
-      );
+      expect(row?.source_url).toBe('https://example.com/bg29-078/source-01');
       expect(row?.raw_text).toContain('BG29_STAGING_URL_SENTINEL_01');
       expect(row?.summary).toBe('Mock summary');
-      expect(row?.notion_page_id).toBe(
-        'bg29-mock-page-bg29-078-url-01',
-      );
+      expect(row?.notion_page_id).toBe('bg29-mock-page-bg29-078-url-01');
 
       const jobs = await env.DB.prepare(
         `SELECT job_type, status FROM processing_jobs
@@ -144,9 +140,11 @@ describe('BG-29.078 Step 4 staging integration is offline-only', () => {
       ]);
       expect(scheduler.notionPages()).toHaveLength(1);
       expect(
-        scheduler.notionRequests().some(
-          (request) => request.method === 'POST' && request.status === 200,
-        ),
+        scheduler
+          .notionRequests()
+          .some(
+            (request) => request.method === 'POST' && request.status === 200,
+          ),
       ).toBe(true);
       expect(network).not.toHaveBeenCalled();
     } finally {
@@ -164,7 +162,9 @@ describe('BG-29.078 Step 4 staging integration is offline-only', () => {
         processing_status, captured_at, created_at, updated_at
       ) VALUES ('bg29-078-file-01', 'bg29-step4-file-01', 'file',
         'BG29 Step4 isolated', 'public', 'pending', ?1, ?1, ?1)`,
-    ).bind(at).run();
+    )
+      .bind(at)
+      .run();
     await env.DB.prepare(
       `INSERT INTO processing_jobs (
         id, item_id, job_type, status, attempts, available_at,
@@ -175,7 +175,9 @@ describe('BG-29.078 Step 4 staging integration is offline-only', () => {
       ) VALUES ('bg29-step4-extract-01', 'bg29-078-file-01',
         'extract', 'pending', 0, ?1, ?1, ?1, 'fixture',
         'public', 'openrouter', 'BG29-step4', 'none', 0, 0, 1)`,
-    ).bind(at).run();
+    )
+      .bind(at)
+      .run();
 
     const network = vi
       .spyOn(globalThis, 'fetch')
