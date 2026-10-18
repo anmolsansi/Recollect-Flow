@@ -30,8 +30,7 @@ export const handleScheduled = createScheduledHandler({
       env.ATTACHMENTS,
     ),
   cleanupCapacity: (env) => cleanupExpiredCapacityReservations(env),
-  cleanupBackups: (env) =>
-    cleanupExpiredHostedBackups(env.DB, env.ATTACHMENTS),
+  cleanupBackups: (env) => cleanupExpiredHostedBackups(env.DB, env.ATTACHMENTS),
   purgeWorkflows: (env) => processPurgeWorkflows(env),
   extractFiles: (env) => processExtractionJobs(env),
   acquireUrls: (env) => processSourceAcquisitionJobs(env),
