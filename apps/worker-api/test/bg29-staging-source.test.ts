@@ -7,9 +7,11 @@ import {
 
 describe('BG-29.078 MC-02 isolated staging source adapter', () => {
   it('parses all 12 fixture documents through the real bounded SourceFetcher', async () => {
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('UNEXPECTED_EXTERNAL_EGRESS');
-    });
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('UNEXPECTED_EXTERNAL_EGRESS');
+      });
 
     try {
       const source = createBg29StagingSourceFetcher();
@@ -41,9 +43,11 @@ describe('BG-29.078 MC-02 isolated staging source adapter', () => {
   });
 
   it('denies unknown, edited, and non-fixture URLs with no fetch or retries', async () => {
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('UNEXPECTED_EXTERNAL_EGRESS');
-    });
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('UNEXPECTED_EXTERNAL_EGRESS');
+      });
     try {
       const source = createBg29StagingSourceFetcher();
       const disallowed = [
@@ -72,9 +76,11 @@ describe('BG-29.078 MC-02 isolated staging source adapter', () => {
 
   it('simulates one bounded HTTP 503 with retry-after then recovers', async () => {
     const target = BG29_STAGING_URLS[0]!;
-    const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
-      throw new Error('UNEXPECTED_EXTERNAL_EGRESS');
-    });
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async () => {
+        throw new Error('UNEXPECTED_EXTERNAL_EGRESS');
+      });
     try {
       const source = createBg29StagingSourceFetcher({ failOnceFor: target });
       expect(await source.fetch(target)).toMatchObject({
