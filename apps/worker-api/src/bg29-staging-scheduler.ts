@@ -48,8 +48,7 @@ export function assertBg29StagingBindings(env: Cloudflare.Env): void {
   }
   if (!values.DB) deny('staging D1 binding required');
   if (values.MOCK_AI_ENABLED !== 'true') deny('mock AI must be enabled');
-  if (values.DIGEST_AI_ENABLED !== 'false')
-    deny('digest AI must be disabled');
+  if (values.DIGEST_AI_ENABLED !== 'false') deny('digest AI must be disabled');
   if (values.HOSTED_BACKUP_AUTOCREATE_ENABLED !== 'false')
     deny('hosted backup must be disabled');
 
@@ -79,8 +78,7 @@ export function assertBg29StagingBindings(env: Cloudflare.Env): void {
 
   if (
     values.ATTACHMENTS !== undefined &&
-    (typeof values.ATTACHMENTS !== 'object' ||
-      values.ATTACHMENTS === null)
+    (typeof values.ATTACHMENTS !== 'object' || values.ATTACHMENTS === null)
   )
     deny('invalid isolated R2 binding');
 
@@ -141,8 +139,7 @@ export function createBg29StagingScheduler(environment: Cloudflare.Env) {
       ctx: ExecutionContext,
     ): Promise<void> => {
       // Both checks happen before any service schedules a waitUntil promise.
-      if (controller.cron !== BACKGROUND_CRON)
-        deny('unapproved Cron schedule');
+      if (controller.cron !== BACKGROUND_CRON) deny('unapproved Cron schedule');
       assertBg29StagingBindings(env);
       if (env.DB !== db) deny('staging D1 binding changed');
       return handler(controller, env, ctx);
