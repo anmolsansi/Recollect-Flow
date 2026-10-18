@@ -7,7 +7,7 @@ import {
 } from '../src/sync/bg29-staging-notion';
 import {
   NotionSyncService,
-  RateLimitError,
+  type RateLimitError,
   type NotionItemPayload,
 } from '../src/sync/notion-sync.service';
 
