@@ -18,8 +18,8 @@ describe('BG-29.078 MC-04 mock-only AI environment', () => {
     const harness = createBg29StagingEnrichmentHarness(db);
     expect(harness.safetyProfile()).toEqual({
       bindings: [
-        'AI_PROVIDER_IMPLEMENTATIONS',
         'AI_PROVIDERS_ENABLED',
+        'AI_PROVIDER_IMPLEMENTATIONS',
         'DB',
         'MOCK_AI_ENABLED',
       ],
