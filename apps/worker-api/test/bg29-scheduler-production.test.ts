@@ -12,9 +12,7 @@ const production = vi.hoisted(() => ({
 }));
 
 vi.mock('../src/attachments/attachment.service', async (importOriginal) => ({
-  ...(await importOriginal<
-    typeof import('../src/attachments/attachment.service')
-  >()),
+  ...(await importOriginal<Record<string, unknown>>()),
   cleanupExpiredAttachments: production.cleanupExpiredAttachments,
 }));
 vi.mock('../src/jobs/ai/capacity.worker', () => ({
