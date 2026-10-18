@@ -33,7 +33,7 @@ function fixture() {
   const invoked: string[] = [];
   const release: Array<() => void> = [];
   const stage = (name: string) =>
-    vi.fn((_env: Cloudflare.Env) => {
+    vi.fn(() => {
       invoked.push(name);
       return new Promise<void>((resolve) => {
         release.push(resolve);
