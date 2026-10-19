@@ -22,7 +22,7 @@ function fixtureBindings(): Cloudflare.Env {
     DIGEST_AI_ENABLED: 'false',
     HOSTED_BACKUP_AUTOCREATE_ENABLED: 'false',
     WEB_INBOX_BASE_URL: 'https://invalid.test',
-  } as Cloudflare.Env;
+  } as unknown as Cloudflare.Env;
 }
 
 async function reset() {
