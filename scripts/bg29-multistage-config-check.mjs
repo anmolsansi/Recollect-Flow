@@ -1,5 +1,7 @@
+import console from 'node:console';
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import process from 'node:process';
+import { URL, fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
 const configPath = 'wrangler.bg29-multistage-staging.toml';
