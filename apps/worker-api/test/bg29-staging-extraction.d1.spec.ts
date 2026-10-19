@@ -3,7 +3,11 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createBg29StagingScheduler } from '../src/bg29-staging-scheduler';
 import { BACKGROUND_CRON } from '../src/digests/digest-schedule';
-import { createBg29PdfFixture, bg29PdfSentinel, bg29PdfSha256 } from './fixtures/bg29-synthetic-pdf';
+import {
+  createBg29PdfFixture,
+  bg29PdfSentinel,
+  bg29PdfSha256,
+} from './fixtures/bg29-synthetic-pdf';
 
 function fixtureBindings(): Cloudflare.Env {
   return {
@@ -36,7 +40,9 @@ async function reset() {
     env.DB.prepare('DELETE FROM items'),
   ]);
   for (let i = 1; i <= 12; i++) {
-    await env.ATTACHMENTS.delete(`bg29-078/file-${String(i).padStart(2, '0')}/original.pdf`);
+    await env.ATTACHMENTS.delete(
+      `bg29-078/file-${String(i).padStart(2, '0')}/original.pdf`,
+    );
   }
 }
 
@@ -50,13 +56,17 @@ async function seedFiles() {
     const pdf = createBg29PdfFixture(i);
     const hash = await bg29PdfSha256(pdf);
     originals.set(key, hash);
-    await env.ATTACHMENTS.put(key, pdf, { httpMetadata: { contentType: 'application/pdf' } });
+    await env.ATTACHMENTS.put(key, pdf, {
+      httpMetadata: { contentType: 'application/pdf' },
+    });
     await env.DB.prepare(
       `INSERT INTO items
        (id, idempotency_key, source_type, source_app, privacy_level,
         processing_status, captured_at, created_at, updated_at)
        VALUES (?1, ?2, 'file', 'BG29 staged file', 'public', 'pending', ?3, ?3, ?3)`,
-    ).bind(id, `bg29-staging-idempotency-${n}`, now).run();
+    )
+      .bind(id, `bg29-staging-idempotency-${n}`, now)
+      .run();
     await env.DB.prepare(
       `INSERT INTO attachments
        (id, item_id, object_key, size_bytes, content_hash,
@@ -64,10 +74,17 @@ async function seedFiles() {
         expires_at, created_at, updated_at)
        VALUES (?1, ?2, ?3, ?4, ?5, 'application/pdf', 'application/pdf',
         'synthetic.pdf', 'linked', ?6, ?7, ?7)`,
-    ).bind(
-      `bg29-staging-attachment-${n}`, id, key, pdf.byteLength, hash,
-      new Date(Date.now() + 86_400_000).toISOString(), now,
-    ).run();
+    )
+      .bind(
+        `bg29-staging-attachment-${n}`,
+        id,
+        key,
+        pdf.byteLength,
+        hash,
+        new Date(Date.now() + 86_400_000).toISOString(),
+        now,
+      )
+      .run();
     await env.DB.prepare(
       `INSERT INTO processing_jobs
        (id, item_id, job_type, status, attempts, available_at,
@@ -77,7 +94,9 @@ async function seedFiles() {
         data_collection_denied)
        VALUES (?1, ?2, 'extract', 'pending', 0, ?3, ?3, ?3,
          ?4, 'public', 'openrouter', 'BG29-staging', 'none', 0, 0, 1)`,
-    ).bind(`bg29-staging-extract-${n}`, id, now, hash).run();
+    )
+      .bind(`bg29-staging-extract-${n}`, id, now, hash)
+      .run();
   }
   return originals;
 }
@@ -88,7 +107,9 @@ async function scheduledSweep(
 ) {
   const work: Promise<unknown>[] = [];
   const context = {
-    waitUntil: (promise: Promise<unknown>) => { work.push(promise); },
+    waitUntil: (promise: Promise<unknown>) => {
+      work.push(promise);
+    },
   } as unknown as ExecutionContext;
   await schedule.scheduled(
     { cron: BACKGROUND_CRON, scheduledTime: Date.now() } as ScheduledController,
@@ -110,9 +131,12 @@ describe('BG-29.078 genuine extraction inside isolated staging scheduler', () =>
     const originals = await seedFiles();
     const bindings = fixtureBindings();
     const scheduler = createBg29StagingScheduler(bindings);
-    const network = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('UNAUTHORIZED_NETWORK'));
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new Error('UNAUTHORIZED_NETWORK'));
     try {
-      for (let sweep = 0; sweep < 3; sweep++) await scheduledSweep(scheduler, bindings);
+      for (let sweep = 0; sweep < 3; sweep++)
+        await scheduledSweep(scheduler, bindings);
       const extracted = await env.DB.prepare(
         `SELECT item_id, extracted_text, completeness, extractor_name
          FROM extraction_records ORDER BY item_id`,
@@ -124,7 +148,9 @@ describe('BG-29.078 genuine extraction inside isolated staging scheduler', () =>
       }>();
       expect(extracted.results).toHaveLength(12);
       extracted.results.forEach((record, index) => {
-        expect(record.item_id).toBe(`bg29-078-file-${String(index + 1).padStart(2, '0')}`);
+        expect(record.item_id).toBe(
+          `bg29-078-file-${String(index + 1).padStart(2, '0')}`,
+        );
         expect(record.extracted_text).toContain(bg29PdfSentinel(index + 1));
         expect(record.completeness).toBe('complete');
         expect(record.extractor_name).toBe('unpdf');
@@ -159,16 +185,27 @@ describe('BG-29.078 genuine extraction inside isolated staging scheduler', () =>
     const scheduler = createBg29StagingScheduler(bindings);
     const work: Promise<unknown>[] = [];
     await scheduler.scheduled(
-      { cron: BACKGROUND_CRON, scheduledTime: Date.now() } as ScheduledController,
+      {
+        cron: BACKGROUND_CRON,
+        scheduledTime: Date.now(),
+      } as ScheduledController,
       bindings,
-      { waitUntil: (promise: Promise<unknown>) => { work.push(promise); } } as ExecutionContext,
+      {
+        waitUntil: (promise: Promise<unknown>) => {
+          work.push(promise);
+        },
+      } as ExecutionContext,
     );
     const outcomes = await Promise.allSettled(work);
-    expect(outcomes.some((result) =>
-      result.status === 'rejected' && String(result.reason).includes('unapproved R2 PDF source'),
-    )).toBe(true);
+    expect(
+      outcomes.some(
+        (result) =>
+          result.status === 'rejected' &&
+          String(result.reason).includes('unapproved R2 PDF source'),
+      ),
+    ).toBe(true);
     const count = await env.DB.prepare(
-      "SELECT COUNT(*) AS total FROM extraction_records",
+      'SELECT COUNT(*) AS total FROM extraction_records',
     ).first<{ total: number }>();
     expect(count?.total).toBe(0);
   }, 120_000);

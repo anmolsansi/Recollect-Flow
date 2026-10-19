@@ -21,7 +21,7 @@ export async function seedBg29TwentyFour(
   const manifest: Bg29SeedOriginal[] = [];
 
   for (let index = 0; index < 24; index++) {
-    const n = String(index % 12 + 1).padStart(2, '0');
+    const n = String((index % 12) + 1).padStart(2, '0');
     const isUrl = index < 12;
     const id = `bg29-078-${isUrl ? 'url' : 'file'}-${n}`;
     const url = isUrl ? BG29_STAGING_URLS[index]! : null;
@@ -76,8 +76,13 @@ export async function seedBg29TwentyFour(
             'application/pdf', 'synthetic.pdf', 'linked', ?6, ?7, ?7)`,
         )
         .bind(
-          `bg29-078-attachment-${n}`, id, key, pdf.byteLength,
-          fingerprint, new Date(Date.now() + 86_400_000).toISOString(), at,
+          `bg29-078-attachment-${n}`,
+          id,
+          key,
+          pdf.byteLength,
+          fingerprint,
+          new Date(Date.now() + 86_400_000).toISOString(),
+          at,
         )
         .run();
     }

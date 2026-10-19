@@ -38,7 +38,9 @@ async function reset() {
     env.DB.prepare('DELETE FROM items'),
   ]);
   for (let n = 1; n <= 12; n++) {
-    await env.ATTACHMENTS.delete(`bg29-078/file-${String(n).padStart(2, '0')}/original.pdf`);
+    await env.ATTACHMENTS.delete(
+      `bg29-078/file-${String(n).padStart(2, '0')}/original.pdf`,
+    );
   }
 }
 
@@ -60,13 +62,19 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
       ['processing_jobs', 24],
       ['sync_attempts', 24],
     ] as const) {
-      const result = await env.DB.prepare(`SELECT COUNT(*) AS total FROM ${table}`).first<{ total: number }>();
+      const result = await env.DB.prepare(
+        `SELECT COUNT(*) AS total FROM ${table}`,
+      ).first<{ total: number }>();
       expect(result?.total).toBe(expected);
     }
-    expect(first.filter((row) => row.type === 'url').map((row) => row.source)).toEqual([...BG29_STAGING_URLS]);
+    expect(
+      first.filter((row) => row.type === 'url').map((row) => row.source),
+    ).toEqual([...BG29_STAGING_URLS]);
     for (const original of first.filter((row) => row.type === 'file')) {
       const object = await env.ATTACHMENTS.get(original.source);
-      expect(await bg29PdfSha256(await object!.arrayBuffer())).toBe(original.sha256);
+      expect(await bg29PdfSha256(await object!.arrayBuffer())).toBe(
+        original.sha256,
+      );
     }
   }, 120_000);
 
@@ -74,7 +82,9 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
     const originalManifest = await seedBg29TwentyFour(env.DB, env.ATTACHMENTS);
     const bindings = isolatedBindings();
     const scheduler = createBg29StagingScheduler(bindings);
-    const network = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('BG29_LIVE_NETWORK_FORBIDDEN'));
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new Error('BG29_LIVE_NETWORK_FORBIDDEN'));
     const snapshots: Array<{
       sweep: number;
       remaining: number;
@@ -84,13 +94,22 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
       for (let sweep = 1; sweep <= 8; sweep++) {
         const pending: Promise<unknown>[] = [];
         await scheduler.scheduled(
-          { cron: BACKGROUND_CRON, scheduledTime: Date.now() } as ScheduledController,
+          {
+            cron: BACKGROUND_CRON,
+            scheduledTime: Date.now(),
+          } as ScheduledController,
           bindings,
-          { waitUntil: (promise: Promise<unknown>) => { pending.push(promise); } } as ExecutionContext,
+          {
+            waitUntil: (promise: Promise<unknown>) => {
+              pending.push(promise);
+            },
+          } as ExecutionContext,
         );
         expect(pending).toHaveLength(8);
         const outcomes = await Promise.allSettled(pending);
-        expect(outcomes.filter((outcome) => outcome.status === 'rejected')).toEqual([]);
+        expect(
+          outcomes.filter((outcome) => outcome.status === 'rejected'),
+        ).toEqual([]);
 
         const queues = await env.DB.prepare(
           `SELECT
@@ -101,35 +120,69 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
         snapshots.push({
           sweep,
           remaining: queues?.total ?? -1,
-          oldestMinutes: queues?.oldest ? (Date.now() - Date.parse(queues.oldest)) / 60000 : null,
+          oldestMinutes: queues?.oldest
+            ? (Date.now() - Date.parse(queues.oldest)) / 60000
+            : null,
         });
         if (queues?.total === 0) break;
       }
       const count = async (table: string, predicate: string) =>
-        (await env.DB.prepare(`SELECT COUNT(*) AS total FROM ${table} WHERE ${predicate}`).first<{ total: number }>())?.total;
-      expect(await count('items', "source_app = 'BG29-078 sealed fixtures' AND deleted_at IS NULL")).toBe(24);
-      expect(await count('url_acquisitions', "status = 'acquired_text'")).toBe(12);
-      expect(await count('extraction_records', "completeness = 'complete' AND extractor_name='unpdf'")).toBe(12);
-      expect(await count('processing_jobs', "status = 'failed' OR status='pending' OR status='processing'")).toBe(0);
-      expect(await count('sync_attempts', "status = 'failed' OR status='pending' OR status='processing'")).toBe(0);
+        (
+          await env.DB.prepare(
+            `SELECT COUNT(*) AS total FROM ${table} WHERE ${predicate}`,
+          ).first<{ total: number }>()
+        )?.total;
+      expect(
+        await count(
+          'items',
+          "source_app = 'BG29-078 sealed fixtures' AND deleted_at IS NULL",
+        ),
+      ).toBe(24);
+      expect(await count('url_acquisitions', "status = 'acquired_text'")).toBe(
+        12,
+      );
+      expect(
+        await count(
+          'extraction_records',
+          "completeness = 'complete' AND extractor_name='unpdf'",
+        ),
+      ).toBe(12);
+      expect(
+        await count(
+          'processing_jobs',
+          "status = 'failed' OR status='pending' OR status='processing'",
+        ),
+      ).toBe(0);
+      expect(
+        await count(
+          'sync_attempts',
+          "status = 'failed' OR status='pending' OR status='processing'",
+        ),
+      ).toBe(0);
       expect(await count('items', 'notion_page_id IS NOT NULL')).toBe(24);
       expect(scheduler.notionPages()).toHaveLength(24);
-      for (const original of originalManifest.filter((entry) => entry.type === 'file')) {
+      for (const original of originalManifest.filter(
+        (entry) => entry.type === 'file',
+      )) {
         const object = await env.ATTACHMENTS.get(original.source);
-        expect(await bg29PdfSha256(await object!.arrayBuffer())).toBe(original.sha256);
+        expect(await bg29PdfSha256(await object!.arrayBuffer())).toBe(
+          original.sha256,
+        );
       }
       expect(network).not.toHaveBeenCalled();
-      console.log(JSON.stringify({
-        event: 'bg29_offline_actual_worker_pipeline',
-        hosted: false,
-        clock: 'logical-stage-sweeps-no-real-hour-claim',
-        originals: 24,
-        sweeps: snapshots,
-        real_pdf_extraction: true,
-        real_url_worker: true,
-        mock_ai: true,
-        mock_notion: true,
-      }));
+      console.log(
+        JSON.stringify({
+          event: 'bg29_offline_actual_worker_pipeline',
+          hosted: false,
+          clock: 'logical-stage-sweeps-no-real-hour-claim',
+          originals: 24,
+          sweeps: snapshots,
+          real_pdf_extraction: true,
+          real_url_worker: true,
+          mock_ai: true,
+          mock_notion: true,
+        }),
+      );
     } finally {
       network.mockRestore();
     }
