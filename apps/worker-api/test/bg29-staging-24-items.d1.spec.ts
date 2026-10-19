@@ -20,7 +20,7 @@ function isolatedBindings(): Cloudflare.Env {
     MAX_ATTACHMENT_BYTES: '25000000',
     UPLOAD_TTL_SECONDS: '3600',
     WEB_INBOX_BASE_URL: 'https://invalid.test',
-  } as Cloudflare.Env;
+  } as unknown as Cloudflare.Env;
 }
 
 async function reset() {
