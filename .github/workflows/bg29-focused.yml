@@ -24,6 +24,8 @@ on:
       - 'apps/worker-api/test/bg29-staging-entry.test.ts'
       - 'apps/worker-api/test/bg29-real-pdf.d1.spec.ts'
       - 'apps/worker-api/test/bg29-staging-extraction.d1.spec.ts'
+      - 'apps/worker-api/test/bg29-staging-24-items.d1.spec.ts'
+      - 'apps/worker-api/test/fixtures/bg29-24-capture-seed.ts'
       - 'apps/worker-api/test/fixtures/bg29-synthetic-pdf.ts'
       - 'scripts/bg29-multistage-config-check.mjs'
       - 'scripts/bg29-multistage-config-check.test.mjs'
@@ -47,6 +49,14 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Temporary BG29 fixture formatter diagnostics
+        run: |
+          npx prettier --write apps/worker-api/test/bg29-staging-extraction.d1.spec.ts apps/worker-api/test/fixtures/bg29-24-capture-seed.ts apps/worker-api/test/bg29-staging-24-items.d1.spec.ts
+          for file in apps/worker-api/test/bg29-staging-extraction.d1.spec.ts apps/worker-api/test/fixtures/bg29-24-capture-seed.ts apps/worker-api/test/bg29-staging-24-items.d1.spec.ts; do
+            printf 'BG29_FORMAT_FILE:%s\n' "$file"
+            base64 -w 0 "$file"
+            printf '\nBG29_FORMAT_END\n'
+          done
       - run: node --test scripts/bg29-inspector-connection.test.mjs
       - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
       - run: node scripts/bg29-zero-cost-preflight.mjs
@@ -70,3 +80,4 @@ jobs:
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-staging-egress.d1.spec.ts
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-real-pdf.d1.spec.ts
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-staging-extraction.d1.spec.ts
+      - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-staging-24-items.d1.spec.ts
