@@ -3,10 +3,16 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { processExtractionJobs } from '../src/jobs/extraction/extraction.worker';
 import { ExtractionService } from '../src/jobs/extraction/extraction.service';
-import { createBg29PdfFixture, bg29PdfSentinel, bg29PdfSha256 } from './fixtures/bg29-synthetic-pdf';
+import {
+  createBg29PdfFixture,
+  bg29PdfSentinel,
+  bg29PdfSha256,
+} from './fixtures/bg29-synthetic-pdf';
 
 const ITEM_COUNT = 12;
-const ids = Array.from({ length: ITEM_COUNT }, (_, i) => String(i + 1).padStart(2, '0'));
+const ids = Array.from({ length: ITEM_COUNT }, (_, i) =>
+  String(i + 1).padStart(2, '0'),
+);
 
 function itemId(n: string) {
   return `bg29-078-local-pdf-${n}`;
@@ -42,11 +48,16 @@ async function seedPdfOriginals(): Promise<Map<string, string>> {
     const key = objectKey(n);
     const existing = await env.ATTACHMENTS.get(key);
     if (existing) {
-      if (existing.size !== bytes.byteLength || await bg29PdfSha256(await existing.arrayBuffer()) !== hash) {
+      if (
+        existing.size !== bytes.byteLength ||
+        (await bg29PdfSha256(await existing.arrayBuffer())) !== hash
+      ) {
         throw new Error('BG29 original PDF changed during repeat seed');
       }
     } else {
-      await env.ATTACHMENTS.put(key, bytes, { httpMetadata: { contentType: 'application/pdf' } });
+      await env.ATTACHMENTS.put(key, bytes, {
+        httpMetadata: { contentType: 'application/pdf' },
+      });
     }
 
     await env.DB.prepare(
@@ -55,7 +66,9 @@ async function seedPdfOriginals(): Promise<Map<string, string>> {
         processing_status, captured_at, created_at, updated_at)
        VALUES (?1, ?2, 'file', 'BG29 PDF offline', 'public',
         'pending', ?3, ?3, ?3)`,
-    ).bind(itemId(n), `bg29-078-local-pdf-idem-${n}`, at).run();
+    )
+      .bind(itemId(n), `bg29-078-local-pdf-idem-${n}`, at)
+      .run();
     await env.DB.prepare(
       `INSERT OR IGNORE INTO attachments
        (id, item_id, object_key, size_bytes, content_hash,
@@ -64,10 +77,17 @@ async function seedPdfOriginals(): Promise<Map<string, string>> {
        VALUES (?1, ?2, ?3, ?4, ?5,
         'application/pdf', 'application/pdf', 'synthetic.pdf', 'linked',
         ?6, ?7, ?7)`,
-    ).bind(
-      `bg29-pdf-attachment-${n}`, itemId(n), key, bytes.byteLength, hash,
-      new Date(Date.now() + 86_400_000).toISOString(), at,
-    ).run();
+    )
+      .bind(
+        `bg29-pdf-attachment-${n}`,
+        itemId(n),
+        key,
+        bytes.byteLength,
+        hash,
+        new Date(Date.now() + 86_400_000).toISOString(),
+        at,
+      )
+      .run();
     await env.DB.prepare(
       `INSERT OR IGNORE INTO processing_jobs
        (id, item_id, job_type, status, attempts, available_at,
@@ -78,7 +98,9 @@ async function seedPdfOriginals(): Promise<Map<string, string>> {
        VALUES (?1, ?2, 'extract', 'pending', 0, ?3,
         ?3, ?3, ?4, 'public', 'openrouter', 'BG29-offline',
         'none', 0, 0, 1)`,
-    ).bind(`bg29-pdf-extract-job-${n}`, itemId(n), at, hash).run();
+    )
+      .bind(`bg29-pdf-extract-job-${n}`, itemId(n), at, hash)
+      .run();
   }
   return hashes;
 }
@@ -94,14 +116,20 @@ describe('BG-29.078 real local PDF extraction with emulated R2', () => {
     const second = await seedPdfOriginals();
     expect(second).toEqual(first);
     const count = async (table: string) =>
-      (await env.DB.prepare(`SELECT COUNT(*) AS total FROM ${table}`).first<{ total: number }>())?.total;
+      (
+        await env.DB.prepare(`SELECT COUNT(*) AS total FROM ${table}`).first<{
+          total: number;
+        }>()
+      )?.total;
     expect(await count('items')).toBe(12);
     expect(await count('attachments')).toBe(12);
     expect(await count('processing_jobs')).toBe(12);
     for (const n of ids) {
       const object = await env.ATTACHMENTS.get(objectKey(n));
       expect(object).not.toBeNull();
-      expect(await bg29PdfSha256(await object!.arrayBuffer())).toBe(first.get(n));
+      expect(await bg29PdfSha256(await object!.arrayBuffer())).toBe(
+        first.get(n),
+      );
     }
   }, 120_000);
 
@@ -147,7 +175,9 @@ describe('BG-29.078 real local PDF extraction with emulated R2', () => {
       expect(originals?.total).toBe(ITEM_COUNT);
       for (const n of ids) {
         const object = await env.ATTACHMENTS.get(objectKey(n));
-        expect(await bg29PdfSha256(await object!.arrayBuffer())).toBe(originalHashes.get(n));
+        expect(await bg29PdfSha256(await object!.arrayBuffer())).toBe(
+          originalHashes.get(n),
+        );
       }
       expect(outbound).not.toHaveBeenCalled();
     } finally {
@@ -180,6 +210,8 @@ describe('BG-29.078 real local PDF extraction with emulated R2', () => {
     ).first<{ total: number }>();
     expect(count?.total).toBe(0);
     const original = await env.ATTACHMENTS.get(objectKey('01'));
-    expect(await bg29PdfSha256(await original!.arrayBuffer())).toBe(hashes.get('01'));
+    expect(await bg29PdfSha256(await original!.arrayBuffer())).toBe(
+      hashes.get('01'),
+    );
   }, 120_000);
 });

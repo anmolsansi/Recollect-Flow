@@ -10,10 +10,7 @@ import {
  * dependencies are exposed. This entry is never used by wrangler.toml.
  * The presence of this file is NOT permission to deploy it.
  */
-export function stagingFetch(
-  _request: Request,
-  env: Cloudflare.Env,
-): Response {
+export function stagingFetch(_request: Request, env: Cloudflare.Env): Response {
   assertBg29StagingBindings(env);
   return new Response('BG-29 staging HTTP access disabled', {
     status: 404,

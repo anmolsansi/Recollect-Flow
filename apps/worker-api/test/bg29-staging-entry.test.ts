@@ -39,10 +39,10 @@ describe('BG-29.078 isolated staging Worker entry', () => {
 
   it('fails closed for an unexpected provider credential before HTTP handling', () => {
     expect(() =>
-      stagingFetch(
-        new Request('https://bg29-staging.invalid/'),
-        { ...bindings(), NOTION_ACCESS_TOKEN: 'should-fail' } as Cloudflare.Env,
-      ),
+      stagingFetch(new Request('https://bg29-staging.invalid/'), {
+        ...bindings(),
+        NOTION_ACCESS_TOKEN: 'should-fail',
+      } as Cloudflare.Env),
     ).toThrow('BG29_STAGING_EGRESS_DENIED');
   });
 
@@ -52,7 +52,10 @@ describe('BG-29.078 isolated staging Worker entry', () => {
     try {
       await expect(
         stagingScheduled(
-          { cron: '0 0 * * *', scheduledTime: Date.now() } as ScheduledController,
+          {
+            cron: '0 0 * * *',
+            scheduledTime: Date.now(),
+          } as ScheduledController,
           bindings(),
           { waitUntil } as unknown as ExecutionContext,
         ),
