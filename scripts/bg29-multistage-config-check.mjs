@@ -24,7 +24,7 @@ export function validateBg29MultistageConfig(raw) {
   mustMatch(content, /^database_name\s*=\s*"recollect-flow-bg29-staging"$/m, 'staging database name');
   mustMatch(content, new RegExp('^database_id\\s*=\\s*"' + stagingD1 + '"$', 'm'), 'known staging D1');
   mustMatch(content, /^binding\s*=\s*"ATTACHMENTS"$/m, 'R2 binding');
-  mustMatch(content, /^bucket_name\s*=\s*"bg29-multistage-r2-NOT-CREATED-DO-NOT-DEPLOY"$/m, 'uncreated R2 placeholder');
+  mustMatch(content, /^bucket_name\s*=\s*"bg29-multistage-r2-not-created-do-not-deploy"$/m, 'uncreated R2 placeholder');
   mustMatch(content, /^MOCK_AI_ENABLED\s*=\s*"true"$/m, 'mock AI enabled');
   mustMatch(content, /^DIGEST_AI_ENABLED\s*=\s*"false"$/m, 'digest AI disabled');
   mustMatch(content, /^HOSTED_BACKUP_AUTOCREATE_ENABLED\s*=\s*"false"$/m, 'hosted backups disabled');

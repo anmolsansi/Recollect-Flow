@@ -17,7 +17,7 @@ migrations_dir = "migrations"
 
 [[r2_buckets]]
 binding = "ATTACHMENTS"
-bucket_name = "bg29-multistage-r2-NOT-CREATED-DO-NOT-DEPLOY"
+bucket_name = "bg29-multistage-r2-not-created-do-not-deploy"
 
 [vars]
 MAX_ATTACHMENT_BYTES = "25000000"
