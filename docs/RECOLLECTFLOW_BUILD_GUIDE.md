@@ -3301,6 +3301,35 @@ Before BG-30 is unlocked, record real CI numbers and close every required
 load, upload, worker interruption and backlog recovery check in the
 100-step checklist. Missing hosted or 100,000-item proof must remain open.
 
+### BG-29.078 staging Worker candidate (local and CI only)
+
+The dedicated `apps/worker-api/src/bg29-staging-entry.ts` entry does not
+import the production HTTP application and returns HTTP 404 for all routes.
+Its Cron handler composes the real parallel scheduling mechanism using only
+the reviewed synthetic URL transport, mock AI adapter, and offline Notion
+transport. Unknown secrets/bindings and non-hourly schedules fail closed.
+
+`wrangler.bg29-multistage-staging.toml` is **not deployable without a new
+approval gate**: it names only the existing BG-29 staging D1
+(`b5cbeccc-92fb-4bbc-9597-f0174b84e57d`), an intentionally
+**uncreated** R2 bucket placeholder, no production routes or static assets,
+no live-provider credentials, and explicit `[triggers] crons = []`.
+The placeholder does not establish a real R2 bucket. Until actual R2
+extraction is implemented, the staging scheduler deliberately rejects
+outstanding PDF extraction jobs rather than reporting false success.
+
+For offline config verification run
+`node --test scripts/bg29-multistage-config-check.test.mjs` and
+`node scripts/bg29-multistage-config-check.mjs`. For the staging entry
+run `npx vitest run --config vitest.node.config.ts apps/worker-api/test/bg29-staging-entry.test.ts`.
+`npx wrangler deploy --config wrangler.bg29-multistage-staging.toml --dry-run`
+may be used only for **offline bundling**, never omit `--dry-run`.
+A successful local/CI result is not Cloudflare billing evidence, real
+elapsed-hour proof, hosted R2 integrity or permission to provision resources.
+The strict $0 gate remains NO-GO without an enforceable account-wide
+cost boundary and separate owner approval. GitHub #99 / Linear OPE-344
+stay open, and BG-30 stays locked.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-29](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-29--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
