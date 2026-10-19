@@ -1,0 +1,35 @@
+# BG-29.078 isolated full-pipeline candidate. NOT authorized for deployment.
+# This config deliberately names an UNCREATED R2 bucket. Do not create it
+# without the dated zero-dollar account-wide billing gate and owner approval.
+# NEVER use the production wrangler.toml or default remote migration command.
+name = "recollect-flow-bg29-multistage-staging"
+main = "apps/worker-api/src/bg29-staging-entry.ts"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
+workers_dev = false
+preview_urls = false
+
+[[d1_databases]]
+binding = "DB"
+database_name = "recollect-flow-bg29-staging"
+database_id = "b5cbeccc-92fb-4bbc-9597-f0174b84e57d"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "ATTACHMENTS"
+bucket_name = "bg29-multistage-r2-NOT-CREATED-DO-NOT-DEPLOY"
+
+[vars]
+MAX_ATTACHMENT_BYTES = "25000000"
+UPLOAD_TTL_SECONDS = "3600"
+MOCK_AI_ENABLED = "true"
+AI_PROVIDER_DEFAULT = "openrouter"
+AI_PROVIDERS_ENABLED = "openrouter"
+AI_PROVIDER_IMPLEMENTATIONS = '{"openrouter":"mock"}'
+DIGEST_AI_ENABLED = "false"
+HOSTED_BACKUP_AUTOCREATE_ENABLED = "false"
+WEB_INBOX_BASE_URL = "https://invalid.test"
+
+# Explicitly REMOVE any Cron on deployment. Never omit this section.
+[triggers]
+crons = []
