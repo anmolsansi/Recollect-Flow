@@ -7,6 +7,8 @@ on:
       - 'apps/worker-api/test/bg29-upload-pressure.d1.spec.ts'
       - 'apps/worker-api/test/bg29-multistage-drain.d1.spec.ts'
       - 'scripts/bg29-worker-resource.mjs'
+      - 'scripts/bg29-local-resource-review.mjs'
+      - 'scripts/bg29-local-resource-review.test.mjs'
       - 'scripts/bg29-zero-cost-preflight.mjs'
       - 'scripts/bg29-zero-cost-preflight.test.mjs'
       - 'scripts/bg29-hourly-evidence-check.mjs'
@@ -57,6 +59,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: node --test scripts/bg29-local-resource-review.test.mjs
       - run: node --test scripts/bg29-inspector-connection.test.mjs
       - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
       - run: node scripts/bg29-zero-cost-preflight.mjs
