@@ -63,7 +63,7 @@ async function sweep(now: Date): Promise<void> {
     bindingsWithSharedDb,
     {
       waitUntil: (promise: Promise<unknown>) => pending.push(promise),
-    } as ExecutionContext,
+    } as unknown as ExecutionContext,
   );
   expect(pending).toHaveLength(8);
   const outcomes = await Promise.allSettled(pending);
