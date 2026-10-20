@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const HOUR_MS = 60 * 60 * 1000;
 const MIN_OBSERVED_HOUR_MS = 55 * 60 * 1000;
 const DEFAULT_MAX_LAG_MS = 15 * 60 * 1000;
+const MAX_ELIGIBLE_SWEEPS = 10;
 
 function asUtcTimestamp(value) {
   if (
@@ -82,6 +83,11 @@ export function assessBg29HourlyEvidence(data, { now = Date.now() } = {}) {
   );
 
   if (Array.isArray(data.sweeps)) {
+    requireField(
+      data.sweeps.length <= MAX_ELIGIBLE_SWEEPS,
+      'The frozen acceptance budget allows no more than ten hourly sweeps',
+    );
+    const eventIds = new Set();
     let priorObserved = null;
     let priorScheduled = null;
     let originalCount = null;
@@ -90,9 +96,17 @@ export function assessBg29HourlyEvidence(data, { now = Date.now() } = {}) {
       const observed = asUtcTimestamp(sweep?.observed_at);
       const scheduled = asUtcTimestamp(sweep?.scheduled_at);
       requireField(
-        Boolean(sweep?.cloudflare_event_id),
+        typeof sweep?.cloudflare_event_id === 'string' &&
+          sweep.cloudflare_event_id.length > 0,
         `Sweep ${index} must have a source event ID`,
       );
+      if (sweep?.cloudflare_event_id) {
+        requireField(
+          !eventIds.has(sweep.cloudflare_event_id),
+          `Sweep ${index} reuses a previous Cloudflare event ID`,
+        );
+        eventIds.add(sweep.cloudflare_event_id);
+      }
       requireField(
         observed !== null && scheduled !== null,
         `Sweep ${index} needs UTC scheduled and observed timestamps`,
@@ -144,8 +158,8 @@ export function assessBg29HourlyEvidence(data, { now = Date.now() } = {}) {
     const last = data.sweeps.at(-1);
     if (first && last) {
       requireField(
-        first.originals >= 24 && first.originals <= 48,
-        'Fixture must contain 24 to 48 originals',
+        first.originals === 24,
+        'Frozen BG-29 fixture must contain exactly 24 originals',
       );
       requireField(
         last.pending === 0 &&
