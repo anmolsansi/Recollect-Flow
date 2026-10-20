@@ -173,10 +173,16 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
       const durableRequests = await freshWorker.notionRequests();
       expect(durablePages).toHaveLength(24);
       expect(durablePages.every((page) => page.createCount === 1)).toBe(true);
-      expect(durableRequests.filter((req) => req.method === 'PATCH').length).toBeGreaterThan(0);
+      expect(
+        durableRequests.filter((req) => req.method === 'PATCH').length,
+      ).toBeGreaterThan(0);
       const persisted = await env.DB.prepare(
-        `SELECT id, projection_hash, projection_version FROM items WHERE notion_page_id IS NOT NULL`
-      ).all<{ id: string; projection_hash: string; projection_version: number }>();
+        `SELECT id, projection_hash, projection_version FROM items WHERE notion_page_id IS NOT NULL`,
+      ).all<{
+        id: string;
+        projection_hash: string;
+        projection_version: number;
+      }>();
       expect(persisted.results).toHaveLength(24);
       for (const row of persisted.results) {
         const page = durablePages.find((value) => value.captureId === row.id);
