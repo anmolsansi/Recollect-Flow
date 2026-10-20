@@ -112,7 +112,13 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
     await env.DB.prepare(
       "UPDATE attachments SET content_hash = ?1 WHERE item_id = 'bg29-078-file-01'",
     )
-      .bind(await bg29PdfSha256(await (await env.ATTACHMENTS.get('bg29-078/file-01/original.pdf'))!.arrayBuffer()))
+      .bind(
+        await bg29PdfSha256(
+          await (await env.ATTACHMENTS.get(
+            'bg29-078/file-01/original.pdf',
+          ))!.arrayBuffer(),
+        ),
+      )
       .run();
     await env.DB.prepare(
       "UPDATE processing_jobs SET job_type = 'acquire_url' WHERE item_id = 'bg29-078-file-01'",
@@ -154,11 +160,18 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
       );
       expect(waits).toHaveLength(9);
       const outcomes = await Promise.allSettled(waits);
-      expect(outcomes.every((outcome) => outcome.status === 'fulfilled')).toBe(true);
+      expect(outcomes.every((outcome) => outcome.status === 'fulfilled')).toBe(
+        true,
+      );
 
       const sweeps = await env.DB.prepare(
         'SELECT id, cron, scheduled_at, observed_at FROM bg29_evidence_sweeps',
-      ).all<{ id: string; cron: string; scheduled_at: string; observed_at: string }>();
+      ).all<{
+        id: string;
+        cron: string;
+        scheduled_at: string;
+        observed_at: string;
+      }>();
       expect(sweeps.results).toHaveLength(1);
       expect(sweeps.results[0]?.cron).toBe(BACKGROUND_CRON);
       expect(sweeps.results[0]?.scheduled_at).toBe(
@@ -167,7 +180,12 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
 
       const stages = await env.DB.prepare(
         'SELECT stage, outcome, started_at, finished_at FROM bg29_evidence_stages ORDER BY stage',
-      ).all<{ stage: string; outcome: string; started_at: string; finished_at: string }>();
+      ).all<{
+        stage: string;
+        outcome: string;
+        started_at: string;
+        finished_at: string;
+      }>();
       expect(stages.results.map((stage) => stage.stage)).toEqual([
         'acquire_url',
         'enrich',
@@ -199,16 +217,21 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
         expect(JSON.parse(snapshot.evidence_ids_json).originals).toEqual(
           originals.map((item) => item.id).sort(),
         );
-        expect(JSON.parse(snapshot.status_matrix_json).length).toBeGreaterThan(0);
+        expect(JSON.parse(snapshot.status_matrix_json).length).toBeGreaterThan(
+          0,
+        );
       }
-      expect(JSON.parse(snapshots.results[0]!.status_matrix_json)).toContainEqual({
+      expect(
+        JSON.parse(snapshots.results[0]!.status_matrix_json),
+      ).toContainEqual({
         type: 'acquire_url',
         total: 1,
         status: 'retry_eligible',
       });
       expect(snapshots.results[0]?.oldest_age_ms).toBeGreaterThanOrEqual(0);
       expect(
-        JSON.parse(snapshots.results[1]!.evidence_ids_json).extractionRecords.length,
+        JSON.parse(snapshots.results[1]!.evidence_ids_json).extractionRecords
+          .length,
       ).toBeGreaterThan(0);
       expect(network).not.toHaveBeenCalled();
     } finally {
