@@ -16,6 +16,8 @@ export const BG29_STAGING_URLS = Object.freeze(
 export interface Bg29StagingSourceOptions {
   /** Simulate exactly one HTTP 503 before the permitted fixture succeeds. */
   failOnceFor?: string;
+  /** D1-backed one-shot claim for cross-isolate fault injection. */
+  claimOnce?: (url: string) => Promise<boolean>;
 }
 
 function deniedDestination(): SourceFetchOutcome {
@@ -61,7 +63,10 @@ export function createBg29StagingSourceFetcher(
     const url = input.url;
     const count = (attempts.get(url) ?? 0) + 1;
     attempts.set(url, count);
-    if (url === options.failOnceFor && count === 1) {
+    if (
+      url === options.failOnceFor &&
+      (options.claimOnce ? await options.claimOnce(url) : count === 1)
+    ) {
       return new Response('Synthetic transient source failure', {
         status: 503,
         headers: { 'retry-after': '1', 'content-type': 'text/plain' },

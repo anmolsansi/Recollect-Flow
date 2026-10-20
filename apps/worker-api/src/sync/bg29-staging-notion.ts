@@ -1,4 +1,8 @@
 import { processNotionSyncJobs, type NotionWorkerOptions } from './sync.worker';
+import {
+  assertBg29StagingNotionSchema,
+  createBg29DurableNotionStore,
+} from './bg29-staging-durable-notion';
 
 /**
  * Offline-only transport. The real NotionSyncService still constructs normal
@@ -41,6 +45,8 @@ export interface Bg29NotionPageRecord {
 export interface Bg29StagingNotionOptions {
   /** One and only one synthetic 429 with Retry-After: 5 for this item. */
   rateLimitOnceFor?: string;
+  /** Only isolated staging D1. Omitting db retains memory-only unit tests. */
+  db?: D1Database;
 }
 
 function obj(value: unknown): JsonObject | null {
@@ -98,6 +104,8 @@ export function createBg29StagingNotionHarness(
   ) {
     throw new Error('BG29 staging rate-limit target is not a fixture');
   }
+  const optionsDb = options.db;
+  const store = optionsDb ? createBg29DurableNotionStore(optionsDb) : null;
   const pages = new Map<string, Bg29NotionPageRecord>();
   const requests: Bg29NotionRequestRecord[] = [];
   let injectedRateLimit = false;
@@ -144,14 +152,17 @@ export function createBg29StagingNotionHarness(
       status: number,
       projection: { version: number; hash: string } | null = null,
     ) => {
-      requests.push({
+      const entry: Bg29NotionRequestRecord = {
         method,
         path,
         captureId,
         status,
         projectionVersion: projection?.version ?? null,
         projectionHash: projection?.hash ?? null,
-      });
+      };
+      if (store) return store.record(entry);
+      requests.push(entry);
+      return Promise.resolve();
     };
 
     if (
@@ -169,13 +180,20 @@ export function createBg29StagingNotionHarness(
       )
         deny();
 
-      if (options.rateLimitOnceFor === captureId && !injectedRateLimit) {
+      if (
+        options.rateLimitOnceFor === captureId &&
+        (store
+          ? await store.claimFaultOnce(`notion429:${captureId}`)
+          : !injectedRateLimit)
+      ) {
         injectedRateLimit = true;
-        log(captureId, 429);
+        await log(captureId, 429);
         return json({ code: 'rate_limited' }, 429, { 'Retry-After': '5' });
       }
-      log(captureId, 200);
-      const existing = pages.get(captureId);
+      await log(captureId, 200);
+      const existing = store
+        ? await store.byCaptureId(captureId)
+        : pages.get(captureId);
       return json({ results: existing ? [{ id: existing.pageId }] : [] });
     }
 
@@ -192,21 +210,31 @@ export function createBg29StagingNotionHarness(
       )
         deny();
 
-      const existing = pages.get(captureId);
+      const existing = store
+        ? await store.byCaptureId(captureId)
+        : pages.get(captureId);
       if (existing) {
-        log(captureId, 409, projection);
+        await log(captureId, 409, projection);
         return json({ code: 'conflict' }, 409);
       }
       const pageId = `bg29-mock-page-${captureId}`;
-      pages.set(captureId, {
+      const newPage = {
         captureId,
         pageId,
         projectionVersion: projection.version,
         projectionHash: projection.hash,
         createCount: 1,
         updateCount: 0,
-      });
-      log(captureId, 200, projection);
+      };
+      if (store) {
+        if (!(await store.create(newPage))) {
+          await log(captureId, 409, projection);
+          return json({ code: 'conflict' }, 409);
+        }
+      } else {
+        pages.set(captureId, newPage);
+      }
+      await log(captureId, 200, projection);
       return json({ id: pageId });
     }
 
@@ -214,9 +242,9 @@ export function createBg29StagingNotionHarness(
       const pageId = path.slice('/v1/pages/'.length);
       const captureId = captureFromProperties(obj(request.properties));
       const projection = projectionFromProperties(request.properties);
-      const existing = [...pages.values()].find(
-        (page) => page.pageId === pageId,
-      );
+      const existing = store
+        ? await store.byPageId(pageId)
+        : [...pages.values()].find((page) => page.pageId === pageId);
       if (
         !existing ||
         captureId !== existing.captureId ||
@@ -235,10 +263,18 @@ export function createBg29StagingNotionHarness(
       )
         deny();
 
-      existing.projectionVersion = projection.version;
-      existing.projectionHash = projection.hash;
-      existing.updateCount += 1;
-      log(captureId, 200, projection);
+      if (store) {
+        if (
+          !(await store.update(existing, projection.version, projection.hash))
+        ) {
+          deny();
+        }
+      } else {
+        existing.projectionVersion = projection.version;
+        existing.projectionHash = projection.hash;
+        existing.updateCount += 1;
+      }
+      await log(captureId, 200, projection);
       return json({ id: pageId });
     }
     return deny();
@@ -246,17 +282,33 @@ export function createBg29StagingNotionHarness(
 
   return Object.freeze({
     /** Safe inspectable copies; token, mutable maps and fetch transport are private. */
-    requests: (): Bg29NotionRequestRecord[] =>
-      requests.map((record) => ({ ...record })),
-    pages: (): Bg29NotionPageRecord[] =>
-      [...pages.values()].map((record) => ({ ...record })),
+    requests: (): Bg29NotionRequestRecord[] => {
+      if (store) throw new Error('BG29_STAGING_USE_ASYNC_DURABLE_LEDGER');
+      return requests.map((record) => ({ ...record }));
+    },
+    pages: (): Bg29NotionPageRecord[] => {
+      if (store) throw new Error('BG29_STAGING_USE_ASYNC_DURABLE_LEDGER');
+      return [...pages.values()].map((record) => ({ ...record }));
+    },
+    requestsAsync: (): Promise<Bg29NotionRequestRecord[]> =>
+      store
+        ? store.requests()
+        : Promise.resolve(requests.map((record) => ({ ...record }))),
+    pagesAsync: (): Promise<Bg29NotionPageRecord[]> =>
+      store
+        ? store.pages()
+        : Promise.resolve([...pages.values()].map((record) => ({ ...record }))),
     /** Deliberately exposed for negative transport contract tests only. */
     fetcher,
     /** Staging entry: cannot pass a live token or override the HTTP transport. */
-    run(
+    async run(
       db: D1Database,
       options: Omit<NotionWorkerOptions, 'fetcher'> = {},
     ): Promise<void> {
+      if (store) {
+        if (db !== optionsDb) throw new Error('BG29_STAGING_D1_CHANGED');
+        await assertBg29StagingNotionSchema(db);
+      }
       return processNotionSyncJobs(db, MOCK_TOKEN, BG29_NOTION_DATABASE_ID, {
         ...options,
         fetcher,

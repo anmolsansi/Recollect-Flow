@@ -1,3 +1,4 @@
+import { provisionBg29StagingNotionSchema } from '../src/sync/bg29-staging-durable-notion';
 import { applyD1Migrations, env } from 'cloudflare:test';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -25,6 +26,11 @@ function isolatedBindings(): Cloudflare.Env {
 
 async function reset() {
   await env.DB.batch([
+    env.DB.prepare('DELETE FROM bg29_mock_notion_requests'),
+    env.DB.prepare('DELETE FROM bg29_mock_notion_pages'),
+    env.DB.prepare('DELETE FROM bg29_mock_failure_injections'),
+  ]);
+  await env.DB.batch([
     env.DB.prepare('DELETE FROM provider_usage'),
     env.DB.prepare('DELETE FROM extraction_records'),
     env.DB.prepare('DELETE FROM attachments'),
@@ -47,6 +53,7 @@ async function reset() {
 describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', () => {
   beforeAll(async () => {
     await applyD1Migrations(env.DB, env.TEST_MIGRATIONS!);
+    await provisionBg29StagingNotionSchema(env.DB);
   });
   beforeEach(reset);
 
@@ -81,7 +88,6 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
   it('runs actual scheduled acquisition, R2 extraction, mock enrichment and Notion logic with no live egress', async () => {
     const originalManifest = await seedBg29TwentyFour(env.DB, env.ATTACHMENTS);
     const bindings = isolatedBindings();
-    const scheduler = createBg29StagingScheduler(bindings);
     const network = vi
       .spyOn(globalThis, 'fetch')
       .mockRejectedValue(new Error('BG29_LIVE_NETWORK_FORBIDDEN'));
@@ -92,6 +98,8 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
     }> = [];
     try {
       for (let sweep = 1; sweep <= 8; sweep++) {
+        // A fresh instance simulates Cloudflare's independent Cron isolates.
+        const scheduler = createBg29StagingScheduler(bindings);
         const pending: Promise<unknown>[] = [];
         await scheduler.scheduled(
           {
@@ -160,7 +168,27 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
         ),
       ).toBe(0);
       expect(await count('items', 'notion_page_id IS NOT NULL')).toBe(24);
-      expect(scheduler.notionPages()).toHaveLength(24);
+      const freshWorker = createBg29StagingScheduler(bindings);
+      const durablePages = await freshWorker.notionPages();
+      const durableRequests = await freshWorker.notionRequests();
+      expect(durablePages).toHaveLength(24);
+      expect(durablePages.every((page) => page.createCount === 1)).toBe(true);
+      expect(
+        durableRequests.filter((req) => req.method === 'PATCH').length,
+      ).toBeGreaterThan(0);
+      const persisted = await env.DB.prepare(
+        `SELECT id, projection_hash, projection_version FROM items WHERE notion_page_id IS NOT NULL`,
+      ).all<{
+        id: string;
+        projection_hash: string;
+        projection_version: number;
+      }>();
+      expect(persisted.results).toHaveLength(24);
+      for (const row of persisted.results) {
+        const page = durablePages.find((value) => value.captureId === row.id);
+        expect(page?.projectionHash).toBe(row.projection_hash);
+        expect(page?.projectionVersion).toBe(row.projection_version);
+      }
       for (const original of originalManifest.filter(
         (entry) => entry.type === 'file',
       )) {

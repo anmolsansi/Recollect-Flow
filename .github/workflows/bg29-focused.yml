@@ -21,6 +21,12 @@ on:
       - 'wrangler.bg29-multistage-staging.toml'
       - 'apps/worker-api/src/bg29-staging-entry.ts'
       - 'apps/worker-api/src/bg29-staging-scheduler.ts'
+      - 'apps/worker-api/src/sync/bg29-staging-notion.ts'
+      - 'apps/worker-api/src/sync/sync.worker.ts'
+      - 'apps/worker-api/test/bg29-notion-inflight.d1.spec.ts'
+      - 'apps/worker-api/src/sync/bg29-staging-durable-notion.ts'
+      - 'apps/worker-api/src/jobs/extraction/bg29-staging-source.ts'
+      - 'apps/worker-api/test/bg29-staging-durable-recovery.d1.spec.ts'
       - 'apps/worker-api/test/bg29-staging-entry.test.ts'
       - 'apps/worker-api/test/bg29-real-pdf.d1.spec.ts'
       - 'apps/worker-api/test/bg29-staging-extraction.d1.spec.ts'
@@ -73,3 +79,5 @@ jobs:
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-real-pdf.d1.spec.ts
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-staging-extraction.d1.spec.ts
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-staging-24-items.d1.spec.ts
+      - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-staging-durable-recovery.d1.spec.ts
+      - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-notion-inflight.d1.spec.ts
