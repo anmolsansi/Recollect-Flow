@@ -184,12 +184,14 @@ describe('BG-29.078 durable isolated 503 / 429 / stale lease recovery', () => {
       )
         .bind(notionRetry!.id)
         .first<{ status: string; attempts: number }>();
-      // JobService counts failures in attempts; the successful retry does not increment it.
+      // JobService counts failures in attempts; a successful retry does not increment it.
       expect(finalJobs).toEqual({ status: 'complete', attempts: 1 });
       expect(finalSync).toEqual({ status: 'complete', attempts: 1 });
       const urlEvidence = await env.DB.prepare(
-        "SELECT attempt_count FROM url_acquisitions WHERE item_id = ?1"
-      ).bind(firstUrlId).first<{ attempt_count: number }>();
+        'SELECT attempt_count FROM url_acquisitions WHERE item_id = ?1',
+      )
+        .bind(firstUrlId)
+        .first<{ attempt_count: number }>();
       expect(urlEvidence?.attempt_count).toBe(2);
 
       const claims = await env.DB.prepare(
