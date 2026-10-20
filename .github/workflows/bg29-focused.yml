@@ -51,6 +51,14 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Temporary BG29 canonical formatter export
+        run: |
+          npx prettier --write apps/worker-api/src/bg29-staging-scheduler.ts apps/worker-api/src/bg29-staging-evidence.ts apps/worker-api/src/bg29-staging-entry.ts apps/worker-api/test/bg29-staging-binding-hardening.test.ts apps/worker-api/test/fixtures/bg29-24-capture-seed.ts apps/worker-api/test/bg29-staging-24-items.d1.spec.ts docs/verification/BG-29_STEPS_6_8_IMPLEMENTATION.md .github/workflows/bg29-focused.yml
+          for file in apps/worker-api/src/bg29-staging-scheduler.ts apps/worker-api/src/bg29-staging-evidence.ts apps/worker-api/src/bg29-staging-entry.ts apps/worker-api/test/bg29-staging-binding-hardening.test.ts apps/worker-api/test/fixtures/bg29-24-capture-seed.ts apps/worker-api/test/bg29-staging-24-items.d1.spec.ts docs/verification/BG-29_STEPS_6_8_IMPLEMENTATION.md .github/workflows/bg29-focused.yml; do
+            printf 'BG29_FORMAT_FILE %s ' "$file"
+            base64 -w0 "$file"
+            printf '\n'
+          done
       - run: node --test scripts/bg29-inspector-connection.test.mjs
       - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
       - run: node scripts/bg29-zero-cost-preflight.mjs
