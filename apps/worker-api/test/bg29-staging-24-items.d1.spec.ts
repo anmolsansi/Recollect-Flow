@@ -321,6 +321,42 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
           "status = 'failed' OR status='pending' OR status='processing'",
         ),
       ).toBe(0);
+      // Every original must finish one source stage and one real enrichment.
+      // Grouped rows expose missing, duplicated or silently skipped stage jobs.
+      const terminalJobs = await env.DB.prepare(
+        'SELECT job_type, status, COUNT(*) AS total FROM processing_jobs GROUP BY job_type, status ORDER BY job_type, status',
+      ).all<{ job_type: string; status: string; total: number }>();
+      expect(terminalJobs.results).toEqual([
+        { job_type: 'acquire_url', status: 'complete', total: 12 },
+        { job_type: 'enrich', status: 'complete', total: 24 },
+        { job_type: 'extract', status: 'complete', total: 12 },
+      ]);
+      expect(
+        await count(
+          'processing_job_results',
+          "job_id IN (SELECT id FROM processing_jobs WHERE job_type = 'enrich')",
+        ),
+      ).toBe(24);
+      const usage = await env.DB.prepare(
+        "SELECT COUNT(*) AS total, COALESCE(SUM(estimated_cost_micros), 0) AS total_cost FROM provider_usage WHERE operation = 'enrich'",
+      ).first<{ total: number; total_cost: number }>();
+      expect(usage).toEqual({ total: 24, total_cost: 0 });
+      expect(await count('sync_attempts', "status = 'complete'")).toBe(24);
+
+      const urls = await env.DB.prepare(
+        "SELECT id, source_url, raw_text FROM items WHERE source_app = 'BG29-078 sealed fixtures' AND source_type = 'url'",
+      ).all<{ id: string; source_url: string; raw_text: string | null }>();
+      expect(urls.results).toHaveLength(12);
+      for (const original of originalManifest.filter(
+        (entry) => entry.type === 'url',
+      )) {
+        const row = urls.results.find((entry) => entry.id === original.id);
+        expect(row?.source_url).toBe(original.source);
+        expect(row?.raw_text).toBeNull();
+      }
+      expect(snapshots.length).toBeGreaterThanOrEqual(2);
+      expect(snapshots.length).toBeLessThanOrEqual(8);
+      expect(snapshots.at(-1)?.remaining).toBe(0);
       expect(await count('items', 'notion_page_id IS NOT NULL')).toBe(24);
       const freshWorker = createBg29StagingScheduler(bindings);
       const durablePages = await freshWorker.notionPages();
