@@ -23,8 +23,11 @@ Expected isolated local results:
   `EnrichService` persists results in `items` and `provider_usage`, not
   `processing_job_results`. The staging evidence ledger now checks this
   actual persistence contract instead of falsely reporting zero results.
-- 24 complete Notion sync attempts and 24 durable mock projections,
-  including at least one post-enrichment PATCH; one create per original.
+- At least 24 completed Notion sync attempts, covering 24 distinct
+  originals, and 24 durable mock projections. Independent post-enrichment
+  updates can create additional legitimate completed sync attempts;
+  requiring exactly 24 attempts would incorrectly reject this behavior.
+  There must be at least one PATCH and one initial create per original.
 - 24 original items unchanged, 12 original PDF R2 SHA-256 hashes
   unchanged, all original URL values intact, no unexpected network calls.
 - No pending, processing, retrying or terminal failed application
