@@ -344,7 +344,14 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
         "SELECT COUNT(*) AS total, COALESCE(SUM(estimated_cost_micros), 0) AS total_cost FROM provider_usage WHERE operation = 'enrich'",
       ).first<{ total: number; total_cost: number }>();
       expect(usage).toEqual({ total: 24, total_cost: 0 });
-      expect(await count('sync_attempts', "status = 'complete'")).toBe(24);
+      // Notion is independent of enrichment. Real post-enrichment updates
+      // can create additional complete sync attempts for the same original.
+      // Require coverage of every original, not one attempt per original.
+      const completedSync = await env.DB.prepare(
+        "SELECT COUNT(*) AS attempts, COUNT(DISTINCT item_id) AS originals FROM sync_attempts WHERE status = 'complete'",
+      ).first<{ attempts: number; originals: number }>();
+      expect(completedSync?.attempts).toBeGreaterThanOrEqual(24);
+      expect(completedSync?.originals).toBe(24);
       const ledger = createBg29StagingEvidenceLedger(env.DB);
       const evidenceSweep = await ledger.start(BACKGROUND_CRON, Date.now());
       await ledger.snapshot(evidenceSweep, 'after');
