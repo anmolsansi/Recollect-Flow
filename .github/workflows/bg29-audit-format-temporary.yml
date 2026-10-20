@@ -1,0 +1,29 @@
+name: BG29 audit Markdown formatter (temporary)
+on:
+  push:
+    branches:
+      - feat/bg29-078-final-acceptance-audit
+permissions:
+  contents: read
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Format only two audit documents for diagnostic output
+        shell: bash
+        run: |
+          npx prettier --write docs/verification/BG-29_078_FOLLOWUP_SCOPE.md docs/verification/BG-29_078_FOLLOWUP_AUDIT.md
+          echo 'BG29_SCOPE_BASE64_BEGIN'
+          base64 -w 0 docs/verification/BG-29_078_FOLLOWUP_SCOPE.md
+          echo
+          echo 'BG29_SCOPE_BASE64_END'
+          echo 'BG29_AUDIT_BASE64_BEGIN'
+          base64 -w 0 docs/verification/BG-29_078_FOLLOWUP_AUDIT.md
+          echo
+          echo 'BG29_AUDIT_BASE64_END'
