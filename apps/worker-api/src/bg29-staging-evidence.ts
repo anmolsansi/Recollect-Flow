@@ -77,6 +77,17 @@ export function createBg29StagingEvidenceLedger(db: D1Database) {
       const sync = await db.prepare(
         "SELECT destination AS type, status, COUNT(*) AS total FROM sync_attempts WHERE item_id LIKE 'bg29-078-%' GROUP BY destination, status",
       ).all<QueueCount>();
+      // Explicit retry-eligible counts are a subset of pending work, not
+      // additional jobs. Record them separately so a simple pending count
+      // cannot conceal a failing backoff/recovery scenario.
+      const processingRetries = await db.prepare(
+        "SELECT job_type AS type, COUNT(*) AS total FROM processing_jobs WHERE item_id LIKE 'bg29-078-%' AND status = 'pending' AND attempts > 0 AND available_at <= ?1 GROUP BY job_type",
+      ).bind(now.toISOString()).all<{ type: string; total: number }>();
+      const notionRetries = await db.prepare(
+        "SELECT destination AS type, COUNT(*) AS total FROM sync_attempts WHERE item_id LIKE 'bg29-078-%' AND status = 'pending' AND attempts > 0 AND available_at <= ?1 GROUP BY destination",
+      ).bind(now.toISOString()).all<{ type: string; total: number }>();
+      const retryEligible = [...processingRetries.results, ...notionRetries.results]
+        .map((row) => ({ ...row, status: 'retry_eligible' }));
       const jobs = await db.prepare(
         "SELECT status, available_at, lease_expires_at FROM processing_jobs WHERE item_id LIKE 'bg29-078-%'",
       ).all<QueueClock>();
@@ -131,7 +142,7 @@ export function createBg29StagingEvidenceLedger(db: D1Database) {
         sourceIds.length,
         oldest,
         oldest === null ? null : now.getTime() - Date.parse(oldest),
-        JSON.stringify([...queues.results, ...sync.results]),
+        JSON.stringify([...queues.results, ...sync.results, ...retryEligible]),
         JSON.stringify(evidenceIds),
       ).run();
     },
