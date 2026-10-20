@@ -375,7 +375,6 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
       );
       expect(evidenceIds.notionProjections).toHaveLength(24);
 
-
       const urls = await env.DB.prepare(
         "SELECT id, source_url, raw_text FROM items WHERE source_app = 'BG29-078 sealed fixtures' AND source_type = 'url'",
       ).all<{ id: string; source_url: string; raw_text: string | null }>();
