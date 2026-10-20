@@ -263,10 +263,12 @@ export function assessBg29HourlyEvidence(data, { now = Date.now() } = {}) {
           'Full sweep ' + index + ' needs its independent event log URL',
         );
         requireField(
-          Number.isFinite(sweep?.oldest_eligible_age_seconds) &&
-            sweep.oldest_eligible_age_seconds >= 0 ||
+          (Number.isFinite(sweep?.oldest_eligible_age_seconds) &&
+            sweep.oldest_eligible_age_seconds >= 0) ||
             sweep?.oldest_eligible_age_seconds === null,
-          'Full sweep ' + index + ' needs measured oldest eligible age or explicit null',
+          'Full sweep ' +
+            index +
+            ' needs measured oldest eligible age or explicit null',
         );
         for (const stage of Object.keys(expectedByStage)) {
           const row = sweep?.queues?.[stage];
@@ -291,7 +293,10 @@ export function assessBg29HourlyEvidence(data, { now = Date.now() } = {}) {
             requireField(
               row.complete + row.pending + row.processing + row.failed <=
                 expectedByStage[stage],
-              'Full sweep ' + index + ' exceeds the frozen workload for ' + stage,
+              'Full sweep ' +
+                index +
+                ' exceeds the frozen workload for ' +
+                stage,
             );
           }
         }
@@ -300,20 +305,26 @@ export function assessBg29HourlyEvidence(data, { now = Date.now() } = {}) {
           resource?.worker_errors === 0 &&
             resource?.cpu_limit_breaches === 0 &&
             resource?.memory_limit_breaches === 0,
-          'Full sweep ' + index + ' has Worker resource errors or missing metrics',
+          'Full sweep ' +
+            index +
+            ' has Worker resource errors or missing metrics',
         );
         if (resource?.cpu_ms !== null) {
           requireField(
             Number.isFinite(resource?.cpu_ms) &&
               resource.cpu_ms >= 0 &&
               resource.cpu_ms <= 10,
-            'Full sweep ' + index + ' exceeds Workers Free 10ms CPU budget or lacks a valid reading',
+            'Full sweep ' +
+              index +
+              ' exceeds Workers Free 10ms CPU budget or lacks a valid reading',
           );
         } else {
           requireField(
             typeof resource?.cpu_metric_unavailable_reason === 'string' &&
               resource.cpu_metric_unavailable_reason.length > 0,
-            'Full sweep ' + index + ' must explain unavailable hosted CPU metrics',
+            'Full sweep ' +
+              index +
+              ' must explain unavailable hosted CPU metrics',
           );
         }
       }
