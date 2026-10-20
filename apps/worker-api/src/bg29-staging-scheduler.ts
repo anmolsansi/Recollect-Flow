@@ -41,11 +41,17 @@ export function assertBg29StagingBindings(env: Cloudflare.Env): void {
   const values = env as unknown as Record<string, unknown>;
   if (!values || typeof values !== 'object') deny('missing environment');
 
-  // Non-enumerable/symbol bindings are also unexpected. Cloudflare bindings
-  // should be an ordinary own-property object with explicitly reviewed keys.
+  // Cloudflare bindings must be a plain own-property record, never an
+  // inherited object or a getter that could execute code during inspection.
+  const prototype = Object.getPrototypeOf(values);
+  if (prototype !== Object.prototype && prototype !== null)
+    deny('inherited staging binding');
   for (const key of Reflect.ownKeys(values)) {
     if (typeof key !== 'string' || !STAGING_BINDINGS.has(key))
       deny('unexpected binding');
+    const descriptor = Object.getOwnPropertyDescriptor(values, key);
+    if (!descriptor || !('value' in descriptor))
+      deny('staging binding accessor forbidden');
   }
   if (!values.DB) deny('staging D1 binding required');
   if (values.MOCK_AI_ENABLED !== 'true') deny('mock AI must be enabled');
