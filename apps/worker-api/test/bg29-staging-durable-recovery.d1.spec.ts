@@ -56,7 +56,10 @@ async function sweep(now: Date): Promise<void> {
   });
   const pending: Promise<unknown>[] = [];
   await instance.scheduled(
-    { cron: BACKGROUND_CRON, scheduledTime: now.getTime() } as ScheduledController,
+    {
+      cron: BACKGROUND_CRON,
+      scheduledTime: now.getTime(),
+    } as ScheduledController,
     bindingsWithSharedDb,
     {
       waitUntil: (promise: Promise<unknown>) => pending.push(promise),
@@ -64,7 +67,9 @@ async function sweep(now: Date): Promise<void> {
   );
   expect(pending).toHaveLength(8);
   const outcomes = await Promise.allSettled(pending);
-  expect(outcomes.filter((outcome) => outcome.status === 'rejected')).toEqual([]);
+  expect(outcomes.filter((outcome) => outcome.status === 'rejected')).toEqual(
+    [],
+  );
 }
 
 let bindingsWithSharedDb: Cloudflare.Env;
@@ -89,35 +94,57 @@ describe('BG-29.078 durable isolated 503 / 429 / stale lease recovery', () => {
 
     // Simulate a previous Worker crash without bypassing JobService lease recovery.
     await env.DB.prepare(
-      "UPDATE processing_jobs SET status = 'processing', lease_owner = 'dead-worker', lease_expires_at = ?1 WHERE item_id = ?2 AND job_type = 'acquire_url'"
-    ).bind(expired, staleUrlId).run();
+      "UPDATE processing_jobs SET status = 'processing', lease_owner = 'dead-worker', lease_expires_at = ?1 WHERE item_id = ?2 AND job_type = 'acquire_url'",
+    )
+      .bind(expired, staleUrlId)
+      .run();
     await env.DB.prepare(
-      "UPDATE sync_attempts SET status = 'processing', lease_owner = 'dead-notion-worker', lease_expires_at = ?1 WHERE item_id = ?2"
-    ).bind(expired, staleSyncId).run();
+      "UPDATE sync_attempts SET status = 'processing', lease_owner = 'dead-notion-worker', lease_expires_at = ?1 WHERE item_id = ?2",
+    )
+      .bind(expired, staleSyncId)
+      .run();
 
-    const network = vi.spyOn(globalThis, 'fetch')
+    const network = vi
+      .spyOn(globalThis, 'fetch')
       .mockRejectedValue(new Error('BG29_LIVE_NETWORK_FORBIDDEN'));
     try {
       await sweep(initial);
       const urlRetry = await env.DB.prepare(
-        "SELECT id, status, attempts, last_error_code, available_at FROM processing_jobs WHERE item_id = ?1 AND job_type = 'acquire_url'"
-      ).bind(firstUrlId).first<{
-        id: string; status: string; attempts: number; last_error_code: string;
-        available_at: string;
-      }>();
+        "SELECT id, status, attempts, last_error_code, available_at FROM processing_jobs WHERE item_id = ?1 AND job_type = 'acquire_url'",
+      )
+        .bind(firstUrlId)
+        .first<{
+          id: string;
+          status: string;
+          attempts: number;
+          last_error_code: string;
+          available_at: string;
+        }>();
       expect(urlRetry).toMatchObject({
-        status: 'pending', attempts: 1, last_error_code: 'SOURCE_SERVER_ERROR',
+        status: 'pending',
+        attempts: 1,
+        last_error_code: 'SOURCE_SERVER_ERROR',
       });
-      expect(Date.parse(urlRetry!.available_at)).toBeGreaterThan(initial.getTime());
+      expect(Date.parse(urlRetry!.available_at)).toBeGreaterThan(
+        initial.getTime(),
+      );
 
       const notionRetry = await env.DB.prepare(
-        "SELECT id, status, attempts, last_error_code, retry_after_at, available_at FROM sync_attempts WHERE item_id = ?1"
-      ).bind(firstUrlId).first<{
-        id: string; status: string; attempts: number; last_error_code: string;
-        retry_after_at: string; available_at: string;
-      }>();
+        'SELECT id, status, attempts, last_error_code, retry_after_at, available_at FROM sync_attempts WHERE item_id = ?1',
+      )
+        .bind(firstUrlId)
+        .first<{
+          id: string;
+          status: string;
+          attempts: number;
+          last_error_code: string;
+          retry_after_at: string;
+          available_at: string;
+        }>();
       expect(notionRetry).toMatchObject({
-        status: 'pending', attempts: 1, last_error_code: 'NOTION_RATE_LIMITED',
+        status: 'pending',
+        attempts: 1,
+        last_error_code: 'NOTION_RATE_LIMITED',
       });
       expect(notionRetry?.retry_after_at).toBe(notionRetry?.available_at);
       expect(notionRetry?.available_at).toBe(
@@ -127,39 +154,48 @@ describe('BG-29.078 durable isolated 503 / 429 / stale lease recovery', () => {
       // An immediate independent Cron cannot prematurely reclaim either job.
       await sweep(new Date(initial.getTime() + 500));
       const retryBefore = await env.DB.prepare(
-        "SELECT attempts FROM processing_jobs WHERE id = ?1"
-      ).bind(urlRetry!.id).first<{ attempts: number }>();
+        'SELECT attempts FROM processing_jobs WHERE id = ?1',
+      )
+        .bind(urlRetry!.id)
+        .first<{ attempts: number }>();
       const syncBefore = await env.DB.prepare(
-        "SELECT attempts FROM sync_attempts WHERE id = ?1"
-      ).bind(notionRetry!.id).first<{ attempts: number }>();
+        'SELECT attempts FROM sync_attempts WHERE id = ?1',
+      )
+        .bind(notionRetry!.id)
+        .first<{ attempts: number }>();
       expect(retryBefore?.attempts).toBe(1);
       expect(syncBefore?.attempts).toBe(1);
 
       for (let i = 0; i < 8; i++) {
         await sweep(new Date(initial.getTime() + 7_000 + i * 10_000));
         const left = await env.DB.prepare(
-          "SELECT (SELECT COUNT(*) FROM processing_jobs WHERE status IN ('pending','processing','failed')) + (SELECT COUNT(*) FROM sync_attempts WHERE status IN ('pending','processing','failed')) AS total"
+          "SELECT (SELECT COUNT(*) FROM processing_jobs WHERE status IN ('pending','processing','failed')) + (SELECT COUNT(*) FROM sync_attempts WHERE status IN ('pending','processing','failed')) AS total",
         ).first<{ total: number }>();
         if (left?.total === 0) break;
       }
 
       const finalJobs = await env.DB.prepare(
-        "SELECT status, attempts FROM processing_jobs WHERE item_id = ?1 AND job_type = 'acquire_url'"
-      ).bind(firstUrlId).first<{ status: string; attempts: number }>();
+        "SELECT status, attempts FROM processing_jobs WHERE item_id = ?1 AND job_type = 'acquire_url'",
+      )
+        .bind(firstUrlId)
+        .first<{ status: string; attempts: number }>();
       const finalSync = await env.DB.prepare(
-        "SELECT status, attempts FROM sync_attempts WHERE id = ?1"
-      ).bind(notionRetry!.id).first<{ status: string; attempts: number }>();
+        'SELECT status, attempts FROM sync_attempts WHERE id = ?1',
+      )
+        .bind(notionRetry!.id)
+        .first<{ status: string; attempts: number }>();
       expect(finalJobs).toEqual({ status: 'complete', attempts: 2 });
       expect(finalSync).toEqual({ status: 'complete', attempts: 2 });
 
       const claims = await env.DB.prepare(
-        "SELECT fault_key FROM bg29_mock_failure_injections ORDER BY fault_key"
+        'SELECT fault_key FROM bg29_mock_failure_injections ORDER BY fault_key',
       ).all<{ fault_key: string }>();
       expect(claims.results.map((entry) => entry.fault_key)).toEqual([
         'notion429:bg29-078-url-01',
         `url503:${BG29_STAGING_URLS[0]}`,
       ]);
-      const requests = await createBg29StagingScheduler(bindings()).notionRequests();
+      const requests =
+        await createBg29StagingScheduler(bindings()).notionRequests();
       expect(requests.filter((entry) => entry.status === 429)).toHaveLength(1);
       const pages = await createBg29StagingScheduler(bindings()).notionPages();
       expect(pages).toHaveLength(24);
@@ -168,19 +204,23 @@ describe('BG-29.078 durable isolated 503 / 429 / stale lease recovery', () => {
 
       for (const id of [staleUrlId, staleSyncId]) {
         const recovery = await env.DB.prepare(
-          "SELECT details_json FROM audit_events WHERE item_id = ?1 AND event_type IN ('lease_acquired', 'sync_lease_acquired')"
-        ).bind(id).all<{ details_json: string }>();
-        expect(recovery.results.some((entry) =>
-          JSON.parse(entry.details_json).stale_recovery === true
-        )).toBe(true);
+          "SELECT details_json FROM audit_events WHERE item_id = ?1 AND event_type IN ('lease_acquired', 'sync_lease_acquired')",
+        )
+          .bind(id)
+          .all<{ details_json: string }>();
+        expect(
+          recovery.results.some(
+            (entry) => JSON.parse(entry.details_json).stale_recovery === true,
+          ),
+        ).toBe(true);
       }
 
       const failed = await env.DB.prepare(
-        "SELECT (SELECT COUNT(*) FROM processing_jobs WHERE status != 'complete') + (SELECT COUNT(*) FROM sync_attempts WHERE status != 'complete') AS total"
+        "SELECT (SELECT COUNT(*) FROM processing_jobs WHERE status != 'complete') + (SELECT COUNT(*) FROM sync_attempts WHERE status != 'complete') AS total",
       ).first<{ total: number }>();
       expect(failed?.total).toBe(0);
       const originalsCount = await env.DB.prepare(
-        "SELECT COUNT(*) AS count FROM items WHERE source_app='BG29-078 sealed fixtures' AND deleted_at IS NULL"
+        "SELECT COUNT(*) AS count FROM items WHERE source_app='BG29-078 sealed fixtures' AND deleted_at IS NULL",
       ).first<{ count: number }>();
       expect(originalsCount?.count).toBe(24);
       expect(originals).toHaveLength(24);
