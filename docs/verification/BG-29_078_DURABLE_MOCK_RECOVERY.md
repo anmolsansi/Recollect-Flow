@@ -4,7 +4,12 @@
 
 ## Step 4: durable mock Notion
 
-- The normal `processNotionSyncJobs` / `NotionSyncService` logic is unchanged.
+- The `NotionSyncService` HTTP projection and idempotency algorithm is unchanged.
+  The normal `processNotionSyncJobs` worker includes a narrow in-flight
+  projection race fix: stale responses cannot overwrite a newer projection
+  hash, and a newer version receives a fresh sync attempt once the active
+  attempt completes. This is verified by
+  `bg29-notion-inflight.d1.spec.ts`.
 - The staging scheduler injects `createBg29StagingNotionHarness({ db })` with a strict tokenless mock transport. Page IDs, final projection hashes/versions, create/update counters and a sanitized request ledger persist in **isolated staging D1**, rather than a Worker-local Map.
 - `bg29_mock_notion_pages`, `bg29_mock_notion_requests` and `bg29_mock_failure_injections` are **staging-only** tables. They are created only through `provisionBg29StagingNotionSchema(db)`, invoked by local test setup or an **explicit, separately approved isolated staging schema provisioning step**. They are NOT part of the production migrations or deployment.
 - The scheduler's Notion stage refuses to run without those tables (`BG29_STAGING_DURABLE_SCHEMA_REQUIRED`); a different injected D1 binding is rejected.
