@@ -134,13 +134,14 @@ export async function processNotionSyncJobs(
       const persisted = await db
         .prepare(
           `UPDATE items
-           SET notion_page_id = ?1, projection_hash = ?2,
+           SET notion_page_id = ?1,
+               projection_hash = CASE WHEN projection_version = ?5 THEN ?2 ELSE NULL END,
                notion_last_synced_at = ?3, notion_missing_at = NULL,
                updated_at = ?3
            WHERE id = ?4
              AND (notion_page_id IS NULL OR notion_page_id = ?1)`,
         )
-        .bind(result.pageId, projectionHash, syncedAt, item.id)
+        .bind(result.pageId, projectionHash, syncedAt, item.id, item.projection_version)
         .run();
       if (persisted.meta.changes !== 1) {
         await jobService.failSyncAttempt(
@@ -167,6 +168,34 @@ export async function processNotionSyncJobs(
             mode: result.mode,
           }),
         );
+      } else {
+        // A projection may have changed while this active attempt was being
+        // sent. The normal item trigger cannot enqueue a second attempt until
+        // this lease completes; repair that race without losing the update.
+        const requeueAt = now().toISOString();
+        await db
+          .prepare(
+            `INSERT INTO sync_attempts
+             (id, item_id, destination, status, attempts,
+              available_at, created_at, updated_at)
+             SELECT ?1, i.id, 'notion', 'pending', 0, ?2, ?2, ?2
+             FROM items AS i
+             WHERE i.id = ?3 AND i.deleted_at IS NULL
+               AND i.projection_version > ?4
+               AND NOT EXISTS (
+                 SELECT 1 FROM sync_attempts AS pending
+                 WHERE pending.item_id = i.id
+                   AND pending.destination = 'notion'
+                   AND pending.status IN ('pending', 'processing')
+               )`,
+          )
+          .bind(
+            crypto.randomUUID(),
+            requeueAt,
+            item.id,
+            item.projection_version,
+          )
+          .run();
       }
     } catch (error: unknown) {
       if (error instanceof NotFoundError) {
