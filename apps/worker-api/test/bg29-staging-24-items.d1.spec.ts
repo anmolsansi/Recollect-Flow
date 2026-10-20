@@ -1,3 +1,4 @@
+import { provisionBg29StagingNotionSchema } from '../src/sync/bg29-staging-durable-notion';
 import { applyD1Migrations, env } from 'cloudflare:test';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -25,6 +26,11 @@ function isolatedBindings(): Cloudflare.Env {
 
 async function reset() {
   await env.DB.batch([
+    env.DB.prepare('DELETE FROM bg29_mock_notion_requests'),
+    env.DB.prepare('DELETE FROM bg29_mock_notion_pages'),
+    env.DB.prepare('DELETE FROM bg29_mock_failure_injections'),
+  ]);
+  await env.DB.batch([
     env.DB.prepare('DELETE FROM provider_usage'),
     env.DB.prepare('DELETE FROM extraction_records'),
     env.DB.prepare('DELETE FROM attachments'),
@@ -47,6 +53,7 @@ async function reset() {
 describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', () => {
   beforeAll(async () => {
     await applyD1Migrations(env.DB, env.TEST_MIGRATIONS!);
+    await provisionBg29StagingNotionSchema(env.DB);
   });
   beforeEach(reset);
 
@@ -160,7 +167,7 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
         ),
       ).toBe(0);
       expect(await count('items', 'notion_page_id IS NOT NULL')).toBe(24);
-      expect(scheduler.notionPages()).toHaveLength(24);
+      expect(await scheduler.notionPages()).toHaveLength(24);
       for (const original of originalManifest.filter(
         (entry) => entry.type === 'file',
       )) {
