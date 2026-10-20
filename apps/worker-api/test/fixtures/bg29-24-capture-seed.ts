@@ -144,5 +144,105 @@ export async function seedBg29TwentyFour(
       throw new Error(`BG29_SEED_IDENTITY_MISMATCH:${original.id}`);
     }
   }
+
+  // INSERT OR IGNORE cannot silently accept altered durable fixture metadata.
+  const itemRows = await db
+    .prepare(
+      "SELECT id, idempotency_key FROM items WHERE source_app = 'BG29-078 sealed fixtures'",
+    )
+    .all<{ id: string; idempotency_key: string }>();
+  for (const original of manifest) {
+    const row = itemRows.results.find((entry) => entry.id === original.id);
+    if (row?.idempotency_key !== 'bg29-078-fixed-idem-' + original.id) {
+      throw new Error('BG29_SEED_IDEMPOTENCY_MISMATCH:' + original.id);
+    }
+  }
+
+  const attachments = await db
+    .prepare(
+      "SELECT item_id, object_key, size_bytes, content_hash, declared_content_type, detected_content_type, status FROM attachments WHERE item_id LIKE 'bg29-078-file-%' OR object_key LIKE 'bg29-078/%'",
+    )
+    .all<{
+      item_id: string;
+      object_key: string;
+      size_bytes: number;
+      content_hash: string | null;
+      declared_content_type: string;
+      detected_content_type: string | null;
+      status: string;
+    }>();
+  if (attachments.results.length !== 12)
+    throw new Error('BG29_SEED_ATTACHMENT_COUNT_MISMATCH');
+  for (const original of manifest.filter((entry) => entry.type === 'file')) {
+    const row = attachments.results.find(
+      (entry) => entry.item_id === original.id,
+    );
+    const pdf = createBg29PdfFixture(Number(original.id.slice(-2)));
+    if (
+      !row ||
+      row.object_key !== original.source ||
+      row.size_bytes !== pdf.byteLength ||
+      row.content_hash !== original.sha256 ||
+      row.declared_content_type !== 'application/pdf' ||
+      row.detected_content_type !== 'application/pdf' ||
+      row.status !== 'linked'
+    )
+      throw new Error('BG29_SEED_ATTACHMENT_MISMATCH:' + original.id);
+  }
+
+  const sourceJobs = await db
+    .prepare(
+      "SELECT id, item_id, job_type, input_hash FROM processing_jobs WHERE (item_id LIKE 'bg29-078-%' AND job_type IN ('acquire_url', 'extract')) OR id LIKE 'bg29-078-job-%'",
+    )
+    .all<{
+      id: string;
+      item_id: string;
+      job_type: string;
+      input_hash: string | null;
+    }>();
+  if (sourceJobs.results.length !== 24)
+    throw new Error('BG29_SEED_SOURCE_JOB_COUNT_MISMATCH');
+  for (const original of manifest) {
+    const job = sourceJobs.results.find((row) => row.item_id === original.id);
+    if (
+      !job ||
+      job.id !== 'bg29-078-job-' + original.id ||
+      job.job_type !== (original.type === 'url' ? 'acquire_url' : 'extract') ||
+      job.input_hash !==
+        (original.type === 'url' ? 'url-source-v1:1' : original.sha256)
+    )
+      throw new Error('BG29_SEED_SOURCE_JOB_MISMATCH:' + original.id);
+  }
+
+  const syncRows = await db
+    .prepare(
+      "SELECT id, item_id, destination FROM sync_attempts WHERE id LIKE 'bg29-078-sync-%'",
+    )
+    .all<{ id: string; item_id: string; destination: string }>();
+  if (syncRows.results.length !== 24)
+    throw new Error('BG29_SEED_SYNC_COUNT_MISMATCH');
+  for (const original of manifest) {
+    const row = syncRows.results.find((entry) => entry.item_id === original.id);
+    if (
+      !row ||
+      row.id !== 'bg29-078-sync-' + original.id ||
+      row.destination !== 'notion'
+    )
+      throw new Error('BG29_SEED_SYNC_MISMATCH:' + original.id);
+  }
+
+  const objects = await r2.list({ prefix: 'bg29-078/' });
+  const expectedKeys = new Set(
+    manifest
+      .filter((entry) => entry.type === 'file')
+      .map((entry) => entry.source),
+  );
+  if (
+    objects.truncated ||
+    objects.objects.length !== 12 ||
+    objects.objects.some((object) => !expectedKeys.has(object.key))
+  )
+    throw new Error('BG29_SEED_R2_INVENTORY_MISMATCH');
+
   return manifest;
 }
