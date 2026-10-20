@@ -292,9 +292,6 @@ export function createBg29StagingNotionHarness(
     /** Deliberately exposed for negative transport contract tests only. */
     fetcher,
     /** Staging entry: cannot pass a live token or override the HTTP transport. */
-    run(
-      db: D1Database,
-      options: Omit<NotionWorkerOptions, 'fetcher'> = {},
     async run(
       db: D1Database,
       options: Omit<NotionWorkerOptions, 'fetcher'> = {},
