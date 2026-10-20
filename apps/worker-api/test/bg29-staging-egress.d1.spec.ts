@@ -155,11 +155,9 @@ describe('BG-29.078 Step 4 staging integration is offline-only', () => {
       ]);
       expect(await scheduler.notionPages()).toHaveLength(1);
       expect(
-        scheduler
-          .notionRequests()
-          .some(
-            (request) => request.method === 'POST' && request.status === 200,
-          ),
+        (await scheduler.notionRequests()).some(
+          (request) => request.method === 'POST' && request.status === 200,
+        ),
       ).toBe(true);
       expect(network).not.toHaveBeenCalled();
     } finally {
