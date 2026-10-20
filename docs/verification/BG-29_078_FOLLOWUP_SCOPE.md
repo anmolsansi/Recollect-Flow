@@ -38,9 +38,9 @@ See [the follow-up audit](BG-29_078_FOLLOWUP_AUDIT.md) for code-level stage trac
 
 ## Commit/evidence ledger
 
-| Scope | Recorded result |
-| --- | --- |
-| Issue and Linear status | #99 reopened; OPE-344 In Progress; 99/100 source, 49/50 paired |
-| Baseline and merged history | `9ead8c8e8c7dcea54ee8cb86aaaf95c9e458d990`; PRs #100–#109 merged |
-| CI on prior implementation | [Full #39333669257](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39333669257) and [BG-29 focused #39333669301](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39333669301) passed at `b5f307762d655abef731113680d6d21ed72c4c68`, before PR #109 merge |
-| New branch CI | Pending on this documentation-only branch; do not claim passing until verified |
+| Scope                       | Recorded result                                                                                                                                                                                                                                                               |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Issue and Linear status     | #99 reopened; OPE-344 In Progress; 99/100 source, 49/50 paired                                                                                                                                                                                                                |
+| Baseline and merged history | `9ead8c8e8c7dcea54ee8cb86aaaf95c9e458d990`; PRs #100–#109 merged                                                                                                                                                                                                              |
+| CI on prior implementation  | [Full #39333669257](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39333669257) and [BG-29 focused #39333669301](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39333669301) passed at `b5f307762d655abef731113680d6d21ed72c4c68`, before PR #109 merge |
+| New branch CI               | Pending on this documentation-only branch; do not claim passing until verified                                                                                                                                                                                                |
