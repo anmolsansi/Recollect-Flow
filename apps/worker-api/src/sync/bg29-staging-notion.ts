@@ -1,5 +1,8 @@
 import { processNotionSyncJobs, type NotionWorkerOptions } from './sync.worker';
-import { assertBg29StagingNotionSchema, createBg29DurableNotionStore } from './bg29-staging-durable-notion';
+import {
+  assertBg29StagingNotionSchema,
+  createBg29DurableNotionStore,
+} from './bg29-staging-durable-notion';
 
 /**
  * Offline-only transport. The real NotionSyncService still constructs normal
@@ -261,7 +264,9 @@ export function createBg29StagingNotionHarness(
         deny();
 
       if (store) {
-        if (!(await store.update(existing, projection.version, projection.hash))) {
+        if (
+          !(await store.update(existing, projection.version, projection.hash))
+        ) {
           deny();
         }
       } else {
@@ -286,9 +291,13 @@ export function createBg29StagingNotionHarness(
       return [...pages.values()].map((record) => ({ ...record }));
     },
     requestsAsync: (): Promise<Bg29NotionRequestRecord[]> =>
-      store ? store.requests() : Promise.resolve(requests.map((record) => ({ ...record }))),
+      store
+        ? store.requests()
+        : Promise.resolve(requests.map((record) => ({ ...record }))),
     pagesAsync: (): Promise<Bg29NotionPageRecord[]> =>
-      store ? store.pages() : Promise.resolve([...pages.values()].map((record) => ({ ...record }))),
+      store
+        ? store.pages()
+        : Promise.resolve([...pages.values()].map((record) => ({ ...record }))),
     /** Deliberately exposed for negative transport contract tests only. */
     fetcher,
     /** Staging entry: cannot pass a live token or override the HTTP transport. */
