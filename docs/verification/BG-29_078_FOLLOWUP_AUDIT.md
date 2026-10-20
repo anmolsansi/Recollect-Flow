@@ -8,16 +8,16 @@
 
 ## 1. Source-to-stage map (current implementation)
 
-| Stage | Actual implementation | Merged local proof | Assessment |
-| --- | --- | --- | --- |
-| Dedicated staging entry | `apps/worker-api/src/bg29-staging-entry.ts` exports `stagingFetch` (HTTP 404) and `stagingScheduled`; it constructs a new scheduler per invocation | `apps/worker-api/test/bg29-staging-entry.test.ts` | Entry isolation implemented; hosted entry not invoked |
-| Hourly dispatch | `apps/worker-api/src/scheduled-handler.ts` accepts a full injected dependency set, uses independent `context.waitUntil` for eight background services; `apps/worker-api/src/bg29-staging-scheduler.ts` rejects non-background Cron | `apps/worker-api/test/bg29-staging-24-items.d1.spec.ts` | Real scheduled service dispatch locally, not elapsed Cloudflare hours |
-| URL source acquisition | `processSourceAcquisitionJobs` → real `SourceAcquisitionService` and `SourceFetcher` via strict 12-URL `createBg29StagingSourceFetcher` offline transport | `apps/worker-api/test/bg29-staging-24-items.d1.spec.ts`, `apps/worker-api/test/bg29-staging-egress.d1.spec.ts` | Real parser/evidence path local; hosted retry proof missing |
-| PDF extraction | `processExtractionJobs` → `ExtractionService`/unpdf, with strict staged `bg29-078/` R2 object and attachment gates | `apps/worker-api/test/bg29-real-pdf.d1.spec.ts`, `apps/worker-api/test/bg29-staging-extraction.d1.spec.ts` | 12 real local PDF bytes via emulated R2; no hosted R2 read |
-| AI enrichment | `processEnrichJobs` → `EnrichService`, `AiProviderRegistry` and verified `MockAiAdapter` instances | `apps/worker-api/test/bg29-staging-24-items.d1.spec.ts` and previously merged mock AI tests | Real service/worker with deterministic mock, not paid inference |
-| Notion projection | `processNotionSyncJobs` → `NotionSyncService` via injected tokenless `createBg29StagingNotionHarness` transport | `apps/worker-api/test/bg29-staging-egress.d1.spec.ts`, `apps/worker-api/test/bg29-staging-24-items.d1.spec.ts` | Real projection logic; mock's external page state is NOT durable across Cron invocations |
-| Provider and config isolation | `assertBg29StagingBindings`, `wrangler.bg29-multistage-staging.toml`, `scripts/bg29-multistage-config-check.mjs` | Staging entry/egress tests, config-check tests and Wrangler offline dry-run from merged PR #109 | Safety controls locally tested; live bindings/account and billing not verified |
-| Evidence validator | `scripts/bg29-hourly-evidence-check.mjs`; intentionally returns `bg29_078_verified: false` | `scripts/bg29-hourly-evidence-check.test.mjs` | Historic D1-only/structural checker; does not yet validate the frozen full contract |
+| Stage                         | Actual implementation                                                                                                                                                                                                              | Merged local proof                                                                                             | Assessment                                                                               |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Dedicated staging entry       | `apps/worker-api/src/bg29-staging-entry.ts` exports `stagingFetch` (HTTP 404) and `stagingScheduled`; it constructs a new scheduler per invocation                                                                                 | `apps/worker-api/test/bg29-staging-entry.test.ts`                                                              | Entry isolation implemented; hosted entry not invoked                                    |
+| Hourly dispatch               | `apps/worker-api/src/scheduled-handler.ts` accepts a full injected dependency set, uses independent `context.waitUntil` for eight background services; `apps/worker-api/src/bg29-staging-scheduler.ts` rejects non-background Cron | `apps/worker-api/test/bg29-staging-24-items.d1.spec.ts`                                                        | Real scheduled service dispatch locally, not elapsed Cloudflare hours                    |
+| URL source acquisition        | `processSourceAcquisitionJobs` → real `SourceAcquisitionService` and `SourceFetcher` via strict 12-URL `createBg29StagingSourceFetcher` offline transport                                                                          | `apps/worker-api/test/bg29-staging-24-items.d1.spec.ts`, `apps/worker-api/test/bg29-staging-egress.d1.spec.ts` | Real parser/evidence path local; hosted retry proof missing                              |
+| PDF extraction                | `processExtractionJobs` → `ExtractionService`/unpdf, with strict staged `bg29-078/` R2 object and attachment gates                                                                                                                 | `apps/worker-api/test/bg29-real-pdf.d1.spec.ts`, `apps/worker-api/test/bg29-staging-extraction.d1.spec.ts`     | 12 real local PDF bytes via emulated R2; no hosted R2 read                               |
+| AI enrichment                 | `processEnrichJobs` → `EnrichService`, `AiProviderRegistry` and verified `MockAiAdapter` instances                                                                                                                                 | `apps/worker-api/test/bg29-staging-24-items.d1.spec.ts` and previously merged mock AI tests                    | Real service/worker with deterministic mock, not paid inference                          |
+| Notion projection             | `processNotionSyncJobs` → `NotionSyncService` via injected tokenless `createBg29StagingNotionHarness` transport                                                                                                                    | `apps/worker-api/test/bg29-staging-egress.d1.spec.ts`, `apps/worker-api/test/bg29-staging-24-items.d1.spec.ts` | Real projection logic; mock's external page state is NOT durable across Cron invocations |
+| Provider and config isolation | `assertBg29StagingBindings`, `wrangler.bg29-multistage-staging.toml`, `scripts/bg29-multistage-config-check.mjs`                                                                                                                   | Staging entry/egress tests, config-check tests and Wrangler offline dry-run from merged PR #109                | Safety controls locally tested; live bindings/account and billing not verified           |
+| Evidence validator            | `scripts/bg29-hourly-evidence-check.mjs`; intentionally returns `bg29_078_verified: false`                                                                                                                                         | `scripts/bg29-hourly-evidence-check.test.mjs`                                                                  | Historic D1-only/structural checker; does not yet validate the frozen full contract      |
 
 **Production isolation:** `apps/worker-api/src/index.ts` uses its own `createScheduledHandler` instance, preserving real production service bindings and dispatch; the staging entry and config are separate. The staging scheduler replaces cleanup/backup/purge with inert functions and denies digest/notification work, deliberately diverging only in safety-related services.
 
@@ -38,7 +38,7 @@
 
 - `createBg29StagingSourceFetcher` supports `failOnceFor`, but the scheduler calls it with **no options**; the required one retryable URL failure is therefore absent from the 24-item scheduled proof.
 - `createBg29StagingNotionHarness` supports `rateLimitOnceFor`, but the scheduler also calls it with **no options**; its mock 429/Retry-After is absent from the scheduled 24-item proof.
-- Both optional injected-failure flags are memory-scoped. Reconstructing the harness every Cron can repeat the intended *one-time* failure unless failure state is durable.
+- Both optional injected-failure flags are memory-scoped. Reconstructing the harness every Cron can repeat the intended _one-time_ failure unless failure state is durable.
 - No integrated staged hourly stale-lease injection/transition evidence is recorded.
 - **Required:** once-only D1-backed fixture failure control, existing retry/backoff/lease policies unchanged, and tests showing each failure recovers after re-instantiation with bounded attempts.
 - **Contract impact:** AC-05, AC-08, AC-11, AC-15.
@@ -75,18 +75,18 @@ The `stagingScheduled` comment says a future stage must add real R2 extraction; 
 
 ## 4. Frozen AC gate mapping at this checkpoint
 
-| Criterion | Current assessment |
-| --- | --- |
-| AC-01 (isolated hosted target) | Local config verified; hosted Worker/R2 identity **BLOCKED** |
-| AC-02 (account-wide $0 R2 authorization) | **BLOCKED**, no enforceable absolute $0 bound or separate approval |
-| AC-03–04 (24 real hosted originals/R2 hashes) | Local proof only; hosted **BLOCKED** |
-| AC-05–08 (URL, PDF, AI, Notion) | Local services partially proven; hosted and durable Notion/failure injection **BLOCKED** |
-| AC-09–11 (real-hour scheduling/drain/recovery) | **BLOCKED**: no full hosted multi-stage run or all required recoveries |
-| AC-12–13 (integrity/isolation) | Locally tested; hosted **BLOCKED** |
-| AC-14 (hosted resource viability) | **BLOCKED**: hosted CPU/runtime not measured |
-| AC-15 (authenticated full evidence) | **BLOCKED**: validator and logs incomplete |
-| AC-16 (Cron shutdown/final $0) | **BLOCKED** for future multi-stage run (older D1-only shutdown does not count) |
-| AC-17 (exact-head closure) | **BLOCKED** until all preceding criteria pass |
+| Criterion                                      | Current assessment                                                                       |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| AC-01 (isolated hosted target)                 | Local config verified; hosted Worker/R2 identity **BLOCKED**                             |
+| AC-02 (account-wide $0 R2 authorization)       | **BLOCKED**, no enforceable absolute $0 bound or separate approval                       |
+| AC-03–04 (24 real hosted originals/R2 hashes)  | Local proof only; hosted **BLOCKED**                                                     |
+| AC-05–08 (URL, PDF, AI, Notion)                | Local services partially proven; hosted and durable Notion/failure injection **BLOCKED** |
+| AC-09–11 (real-hour scheduling/drain/recovery) | **BLOCKED**: no full hosted multi-stage run or all required recoveries                   |
+| AC-12–13 (integrity/isolation)                 | Locally tested; hosted **BLOCKED**                                                       |
+| AC-14 (hosted resource viability)              | **BLOCKED**: hosted CPU/runtime not measured                                             |
+| AC-15 (authenticated full evidence)            | **BLOCKED**: validator and logs incomplete                                               |
+| AC-16 (Cron shutdown/final $0)                 | **BLOCKED** for future multi-stage run (older D1-only shutdown does not count)           |
+| AC-17 (exact-head closure)                     | **BLOCKED** until all preceding criteria pass                                            |
 
 **No AC is accepted as fully PASS in this audit.** Do not check `BG-29.078` or pair 39/50, close #99 / OPE-344 or unlock BG-30.
 
