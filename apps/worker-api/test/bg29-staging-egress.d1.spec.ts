@@ -1,3 +1,4 @@
+import { provisionBg29StagingNotionSchema } from '../src/sync/bg29-staging-durable-notion';
 import { applyD1Migrations, env } from 'cloudflare:test';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -41,6 +42,11 @@ async function runSweep(
 }
 
 async function reset() {
+  await env.DB.batch([
+    env.DB.prepare('DELETE FROM bg29_mock_notion_requests'),
+    env.DB.prepare('DELETE FROM bg29_mock_notion_pages'),
+    env.DB.prepare('DELETE FROM bg29_mock_failure_injections'),
+  ]);
   await env.DB.batch([
     env.DB.prepare('DELETE FROM provider_usage'),
     env.DB.prepare('DELETE FROM extraction_records'),
@@ -99,6 +105,7 @@ async function seedUrlAndSync(): Promise<void> {
 describe('BG-29.078 Step 4 staging integration is offline-only', () => {
   beforeAll(async () => {
     await applyD1Migrations(env.DB, env.TEST_MIGRATIONS!);
+    await provisionBg29StagingNotionSchema(env.DB);
   });
   beforeEach(reset);
 
@@ -146,7 +153,7 @@ describe('BG-29.078 Step 4 staging integration is offline-only', () => {
         { job_type: 'acquire_url', status: 'complete' },
         { job_type: 'enrich', status: 'complete' },
       ]);
-      expect(scheduler.notionPages()).toHaveLength(1);
+      expect(await scheduler.notionPages()).toHaveLength(1);
       expect(
         scheduler
           .notionRequests()
