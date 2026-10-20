@@ -44,7 +44,7 @@ not authenticated hourly Cloudflare events.
 The local Workerd inspector harness `scripts/bg29-worker-resource.mjs`
 profiles a **25,000,000-byte synthetic upload** in the isolated local
 Worker. A previously recorded [focused CI measurement](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39013728568)
-reported 280.59 ms upload wall time; a peak *sampled* V8 used heap of
+reported 280.59 ms upload wall time; a peak _sampled_ V8 used heap of
 7,383,656 bytes; 7 heap and 20 CPU samples; and 312.56 ms **sampled
 non-idle activity**. These metrics reflect that earlier local run.
 They are **not** billed Worker CPU, full isolate memory, or a hosted
@@ -84,7 +84,7 @@ substitute for real hosted quota evidence.
    unavailable CPU measurement), isolated bindings, Cron shutdown and
    complete account-wide R2/Workers $0 billing reconciliation.
 
-Positive *synthetic schema* tests must **never** count as authentic
+Positive _synthetic schema_ tests must **never** count as authentic
 Cloudflare acceptance. Negative tests reject missing R2 reads,
 missing Notion update, missing retry or billing evidence, duplicate
 events, over-budget sweeps, pending work, or CPU limit breaches.
