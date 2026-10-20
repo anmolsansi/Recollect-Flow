@@ -3301,6 +3301,49 @@ Before BG-30 is unlocked, record real CI numbers and close every required
 load, upload, worker interruption and backlog recovery check in the
 100-step checklist. Missing hosted or 100,000-item proof must remain open.
 
+### BG-29.078 staging Worker candidate (local and CI only)
+
+The dedicated `apps/worker-api/src/bg29-staging-entry.ts` entry does not
+import the production HTTP application and returns HTTP 404 for all routes.
+Its Cron handler composes the real parallel scheduling mechanism using only
+the reviewed synthetic URL transport, mock AI adapter, and offline Notion
+transport. Unknown secrets/bindings and non-hourly schedules fail closed.
+
+`wrangler.bg29-multistage-staging.toml` is **not deployable without a new
+approval gate**: it names only the existing BG-29 staging D1
+(`b5cbeccc-92fb-4bbc-9597-f0174b84e57d`), an intentionally
+**uncreated** R2 bucket placeholder, no production routes or static assets,
+no live-provider credentials, and explicit `[triggers] crons = []`.
+The placeholder does not establish a real hosted R2 bucket. The staging
+scheduler now invokes the real ExtractionService for linked PDF objects only
+when they carry the approved synthetic `bg29-078/` object-key prefix and a
+staging R2 binding. Unexpected file types, missing bindings and unrelated
+attachment paths are rejected before extraction. The production scheduler
+and public HTTP entry point remain unchanged.
+
+For offline config verification run
+`node --test scripts/bg29-multistage-config-check.test.mjs` and
+`node scripts/bg29-multistage-config-check.mjs`. For the staging entry
+run `npx vitest run --config vitest.node.config.ts apps/worker-api/test/bg29-staging-entry.test.ts`.
+`npx wrangler deploy --config wrangler.bg29-multistage-staging.toml --dry-run`
+may be used only for **offline bundling**, never omit `--dry-run`.
+A separate offline integration test seeds twelve genuine small PDF files
+in emulated R2 and exercises the actual leased worker, checksum validation,
+`unpdf` extraction and D1 persistence. See
+`apps/worker-api/test/bg29-real-pdf.d1.spec.ts`. The staging scheduler
+parity test is `apps/worker-api/test/bg29-staging-extraction.d1.spec.ts`.
+The repeat-safe 24-item fixture and full local stage test live in
+`apps/worker-api/test/fixtures/bg29-24-capture-seed.ts` and
+`apps/worker-api/test/bg29-staging-24-items.d1.spec.ts`. Use
+`npx vitest run --config vitest.d1.config.ts <test-path>` to run one.
+These are local synthetic fast-time tests, not elapsed hosted Cron evidence.
+
+A successful local/CI result is not Cloudflare billing evidence, real
+elapsed-hour proof, hosted R2 integrity or permission to provision resources.
+The strict $0 gate remains NO-GO without an enforceable account-wide
+cost boundary and separate owner approval. GitHub #99 / Linear OPE-344
+stay open, and BG-30 stays locked.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-29](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-29--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.

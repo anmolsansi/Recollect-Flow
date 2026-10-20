@@ -3,6 +3,7 @@ import { BACKGROUND_CRON } from './digests/digest-schedule';
 import { createScheduledHandler } from './scheduled-handler';
 import { createBg29StagingSourceFetcher } from './jobs/extraction/bg29-staging-source';
 import { processSourceAcquisitionJobs } from './jobs/extraction/source-acquisition.worker';
+import { processExtractionJobs } from './jobs/extraction/extraction.worker';
 import { createBg29StagingEnrichmentHarness } from './jobs/ai/bg29-staging-enrichment';
 import { createBg29StagingNotionHarness } from './sync/bg29-staging-notion';
 
@@ -98,8 +99,9 @@ export function assertBg29StagingBindings(env: Cloudflare.Env): void {
  * Notion uses the real sync worker with an in-memory, tokenless transport.
  * Notifications, hosted backups, cleanup and purge are deliberately inert.
  *
- * R2/PDF extraction is reserved for Step 7 and REFUSES outstanding extract
- * jobs, rather than silently dropping or completing them.
+ * R2/PDF extraction executes the real worker only for explicitly seeded
+ * synthetic PDF originals. Missing/foreign R2 bindings and unexpected source
+ * paths fail closed rather than silently recording extracted fixtures.
  */
 export function createBg29StagingScheduler(environment: Cloudflare.Env) {
   assertBg29StagingBindings(environment);
@@ -108,6 +110,17 @@ export function createBg29StagingScheduler(environment: Cloudflare.Env) {
   const ai = createBg29StagingEnrichmentHarness(db);
   const notion = createBg29StagingNotionHarness();
   const isolatedEnv = Object.freeze({ DB: db }) as unknown as Env;
+  // Never spread the caller's bindings: this is the complete R2/PDF-only
+  // environment that the actual ExtractionService is allowed to see.
+  const extractionEnv = Object.freeze({
+    DB: db,
+    ATTACHMENTS: environment.ATTACHMENTS,
+    MAX_ATTACHMENT_BYTES: '25000000',
+    MOCK_AI_ENABLED: 'true',
+    AI_PROVIDER_DEFAULT: 'openrouter',
+    AI_PROVIDERS_ENABLED: 'openrouter',
+    AI_PROVIDER_IMPLEMENTATIONS: '{"openrouter":"mock"}',
+  }) as unknown as Env;
 
   const handler = createScheduledHandler({
     cleanupAttachments: async () => {},
@@ -121,8 +134,36 @@ export function createBg29StagingScheduler(environment: Cloudflare.Env) {
            WHERE job_type = 'extract' AND status IN ('pending', 'processing')`,
         )
         .first<{ total: number }>();
-      if ((outstanding?.total ?? 0) > 0)
+      if ((outstanding?.total ?? 0) === 0) return;
+      if (
+        !environment.ATTACHMENTS ||
+        typeof environment.ATTACHMENTS.get !== 'function'
+      ) {
         deny('R2 extraction not configured; do not claim files processed');
+      }
+
+      const forbidden = await db
+        .prepare(
+          `SELECT COUNT(*) AS total FROM processing_jobs AS job
+           WHERE job.job_type = 'extract'
+             AND job.status IN ('pending', 'processing')
+             AND (
+               job.item_id NOT LIKE 'bg29-078-file-%'
+               OR NOT EXISTS (
+                 SELECT 1 FROM attachments AS attachment
+                 WHERE attachment.item_id = job.item_id
+                   AND attachment.status = 'linked'
+                   AND attachment.object_key LIKE 'bg29-078/%'
+                   AND attachment.declared_content_type = 'application/pdf'
+                   AND attachment.detected_content_type = 'application/pdf'
+               )
+             )`,
+        )
+        .first<{ total: number }>();
+      if ((forbidden?.total ?? 0) !== 0) {
+        deny('unapproved R2 PDF source or missing verified attachment');
+      }
+      await processExtractionJobs(extractionEnv);
     },
     acquireUrls: () =>
       processSourceAcquisitionJobs(isolatedEnv, { fetcher: source }),

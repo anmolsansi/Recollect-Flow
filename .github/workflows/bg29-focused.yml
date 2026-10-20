@@ -18,6 +18,17 @@ on:
       - 'wrangler.bg29-d1-probe-cron.toml'
       - 'docs/verification/BG-29_D1_ONLY_DEPLOY_GUIDE.md'
       - 'wrangler.bg29-staging.example.toml'
+      - 'wrangler.bg29-multistage-staging.toml'
+      - 'apps/worker-api/src/bg29-staging-entry.ts'
+      - 'apps/worker-api/src/bg29-staging-scheduler.ts'
+      - 'apps/worker-api/test/bg29-staging-entry.test.ts'
+      - 'apps/worker-api/test/bg29-real-pdf.d1.spec.ts'
+      - 'apps/worker-api/test/bg29-staging-extraction.d1.spec.ts'
+      - 'apps/worker-api/test/bg29-staging-24-items.d1.spec.ts'
+      - 'apps/worker-api/test/fixtures/bg29-24-capture-seed.ts'
+      - 'apps/worker-api/test/fixtures/bg29-synthetic-pdf.ts'
+      - 'scripts/bg29-multistage-config-check.mjs'
+      - 'scripts/bg29-multistage-config-check.test.mjs'
       - 'scripts/bg29-inspector-connection.mjs'
       - 'scripts/bg29-inspector-connection.test.mjs'
       - 'scripts/browser-acceptance-runtime.mjs'
@@ -41,6 +52,9 @@ jobs:
       - run: node --test scripts/bg29-inspector-connection.test.mjs
       - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
       - run: node scripts/bg29-zero-cost-preflight.mjs
+      - run: node --test scripts/bg29-multistage-config-check.test.mjs
+      - run: node scripts/bg29-multistage-config-check.mjs
+      - run: npx wrangler deploy --config wrangler.bg29-multistage-staging.toml --dry-run
       - run: node --test scripts/bg29-hourly-evidence-check.test.mjs
       - run: node --test scripts/bg29-d1-cron-probe.test.mjs scripts/bg29-d1-probe-config.test.mjs
       - run: npx wrangler deploy --config wrangler.bg29-d1-probe.toml --dry-run
@@ -54,4 +68,8 @@ jobs:
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-upload-pressure.d1.spec.ts
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-multistage-drain.d1.spec.ts
       - run: npx vitest run --config vitest.node.config.ts apps/worker-api/test/bg29-staging-egress.test.ts
+      - run: npx vitest run --config vitest.node.config.ts apps/worker-api/test/bg29-staging-entry.test.ts
       - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-staging-egress.d1.spec.ts
+      - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-real-pdf.d1.spec.ts
+      - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-staging-extraction.d1.spec.ts
+      - run: npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-staging-24-items.d1.spec.ts
