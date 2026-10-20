@@ -24,7 +24,11 @@ function sample() {
 
 test('local heap/CPU profile is valid but never certifies hosted 10ms Cron CPU', () => {
   const result = reviewBg29LocalResourceProfile(sample());
-  assert.equal(result.local_resource_profile_valid, true, result.errors.join('; '));
+  assert.equal(
+    result.local_resource_profile_valid,
+    true,
+    result.errors.join('; '),
+  );
   assert.equal(result.hosted_cron_cpu_budget_verified, false);
   assert.equal(result.hosted_memory_limit_verified, false);
   assert.equal(result.worker_free_cron_cpu_budget_ms, 10);
@@ -46,7 +50,10 @@ test('rejects fabricated or absent measured CPU/heap metrics', () => {
   ]) {
     const profile = sample();
     modify(profile);
-    assert.equal(reviewBg29LocalResourceProfile(profile).local_resource_profile_valid, false);
+    assert.equal(
+      reviewBg29LocalResourceProfile(profile).local_resource_profile_valid,
+      false,
+    );
   }
 });
 
@@ -59,6 +66,9 @@ test('rejects hosted bindings, real egress and wrong test size', () => {
   ]) {
     const profile = sample();
     modify(profile);
-    assert.equal(reviewBg29LocalResourceProfile(profile).local_resource_profile_valid, false);
+    assert.equal(
+      reviewBg29LocalResourceProfile(profile).local_resource_profile_valid,
+      false,
+    );
   }
 });
