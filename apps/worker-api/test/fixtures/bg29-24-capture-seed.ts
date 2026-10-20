@@ -174,7 +174,9 @@ export async function seedBg29TwentyFour(
   if (attachments.results.length !== 12)
     throw new Error('BG29_SEED_ATTACHMENT_COUNT_MISMATCH');
   for (const original of manifest.filter((entry) => entry.type === 'file')) {
-    const row = attachments.results.find((entry) => entry.item_id === original.id);
+    const row = attachments.results.find(
+      (entry) => entry.item_id === original.id,
+    );
     const pdf = createBg29PdfFixture(Number(original.id.slice(-2)));
     if (
       !row ||
@@ -231,7 +233,9 @@ export async function seedBg29TwentyFour(
 
   const objects = await r2.list({ prefix: 'bg29-078/' });
   const expectedKeys = new Set(
-    manifest.filter((entry) => entry.type === 'file').map((entry) => entry.source),
+    manifest
+      .filter((entry) => entry.type === 'file')
+      .map((entry) => entry.source),
   );
   if (
     objects.truncated ||
