@@ -59,6 +59,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: TEMP BG29 final formatter diff
+        run: |
+          npx prettier --write apps/worker-api/test/bg29-staging-24-items.d1.spec.ts docs/verification/BG-29_STEPS_09_11_LOCAL_REVIEW.md
+          git diff -- apps/worker-api/test/bg29-staging-24-items.d1.spec.ts docs/verification/BG-29_STEPS_09_11_LOCAL_REVIEW.md
       - run: node --test scripts/bg29-local-resource-review.test.mjs
       - run: node --test scripts/bg29-inspector-connection.test.mjs
       - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
