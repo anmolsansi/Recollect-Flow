@@ -331,12 +331,12 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
         { job_type: 'enrich', status: 'complete', total: 24 },
         { job_type: 'extract', status: 'complete', total: 12 },
       ]);
-      expect(
-        await count(
-          'processing_job_results',
-          "job_id IN (SELECT id FROM processing_jobs WHERE job_type = 'enrich')",
-        ),
-      ).toBe(24);
+      // EnrichService persists derived fields on items and a successful
+      // provider_usage row; it does not write processing_job_results.
+      const enriched = await env.DB.prepare(
+        "SELECT COUNT(DISTINCT item.id) AS total FROM items AS item JOIN processing_jobs AS job ON job.item_id = item.id AND job.job_type = 'enrich' AND job.status = 'complete' JOIN provider_usage AS usage ON usage.item_id = item.id AND usage.operation = 'enrich' AND usage.status = 'success' WHERE item.summary IS NOT NULL",
+      ).first<{ total: number }>();
+      expect(enriched?.total).toBe(24);
       const usage = await env.DB.prepare(
         "SELECT COUNT(*) AS total, COALESCE(SUM(estimated_cost_micros), 0) AS total_cost FROM provider_usage WHERE operation = 'enrich'",
       ).first<{ total: number; total_cost: number }>();
