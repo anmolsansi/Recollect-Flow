@@ -18,8 +18,11 @@ Expected isolated local results:
   deterministic source transport.
 - 12 PDFs read from emulated R2, verified and parsed by actual
   `ExtractionService` / `unpdf`.
-- 24 complete enrichment jobs and 24 attached enrichment result rows
-  through mock AI, with 24 usage entries and **zero estimated AI cost**.
+- 24 complete enrichment jobs with 24 persisted derived-item summaries and
+  24 successful mock-AI usage entries with **zero estimated AI cost**.
+  `EnrichService` persists results in `items` and `provider_usage`, not
+  `processing_job_results`. The staging evidence ledger now checks this
+  actual persistence contract instead of falsely reporting zero results.
 - 24 complete Notion sync attempts and 24 durable mock projections,
   including at least one post-enrichment PATCH; one create per original.
 - 24 original items unchanged, 12 original PDF R2 SHA-256 hashes
