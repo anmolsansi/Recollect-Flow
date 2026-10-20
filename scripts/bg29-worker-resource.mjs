@@ -308,7 +308,9 @@ try {
   };
   const review = reviewBg29LocalResourceProfile(result);
   if (!review.local_resource_profile_valid) {
-    throw new Error('Local resource evidence failed: ' + review.errors.join('; '));
+    throw new Error(
+      'Local resource evidence failed: ' + review.errors.join('; '),
+    );
   }
   console.log(JSON.stringify({ ...result, review }, null, 2));
 } catch (error) {
