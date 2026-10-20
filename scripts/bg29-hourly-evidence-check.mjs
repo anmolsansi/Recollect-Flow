@@ -206,7 +206,7 @@ export function assessBg29HourlyEvidence(data, { now = Date.now() } = {}) {
       requireField(
         Number.isSafeInteger(full.notion_post_enrichment_updates) &&
           full.notion_post_enrichment_updates >= 1,
-        'Full pipeline must prove a post-enrichment Notion update',
+        'Full pipeline must prove notion_post_enrichment_updates >= 1',
       );
       for (const name of [
         'url_503_recovered',
