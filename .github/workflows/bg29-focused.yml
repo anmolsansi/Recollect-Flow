@@ -59,10 +59,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: TEMP BG29 formatter differences
-        run: |
-          npx prettier --write scripts/bg29-hourly-evidence-check.mjs scripts/bg29-local-resource-review.test.mjs scripts/bg29-worker-resource.mjs
-          git diff -- scripts/bg29-hourly-evidence-check.mjs scripts/bg29-local-resource-review.test.mjs scripts/bg29-worker-resource.mjs
       - run: node --test scripts/bg29-local-resource-review.test.mjs
       - run: node --test scripts/bg29-inspector-connection.test.mjs
       - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
