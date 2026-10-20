@@ -78,6 +78,46 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
     }
   }, 120_000);
 
+  it('rejects a changed idempotency key rather than hiding it under INSERT OR IGNORE', async () => {
+    await seedBg29TwentyFour(env.DB, env.ATTACHMENTS);
+    await env.DB.prepare(
+      "UPDATE items SET idempotency_key = 'tampered-seed' WHERE id = 'bg29-078-url-01'",
+    ).run();
+    await expect(seedBg29TwentyFour(env.DB, env.ATTACHMENTS)).rejects.toThrow(
+      'BG29_SEED_IDEMPOTENCY_MISMATCH',
+    );
+  });
+
+  it('rejects changed attachment metadata and a source job bound to the wrong type', async () => {
+    await seedBg29TwentyFour(env.DB, env.ATTACHMENTS);
+    await env.DB.prepare(
+      "UPDATE attachments SET content_hash = 'tampered' WHERE item_id = 'bg29-078-file-01'",
+    ).run();
+    await expect(seedBg29TwentyFour(env.DB, env.ATTACHMENTS)).rejects.toThrow(
+      'BG29_SEED_ATTACHMENT_MISMATCH',
+    );
+    await env.DB.prepare(
+      "UPDATE attachments SET content_hash = ?1 WHERE item_id = 'bg29-078-file-01'",
+    )
+      .bind(await bg29PdfSha256(await (await env.ATTACHMENTS.get('bg29-078/file-01/original.pdf'))!.arrayBuffer()))
+      .run();
+    await env.DB.prepare(
+      "UPDATE processing_jobs SET job_type = 'acquire_url' WHERE item_id = 'bg29-078-file-01'",
+    ).run();
+    await expect(seedBg29TwentyFour(env.DB, env.ATTACHMENTS)).rejects.toThrow(
+      'BG29_SEED_SOURCE_JOB_MISMATCH',
+    );
+  });
+
+  it('refuses an unexpected additional object in the isolated R2 prefix', async () => {
+    await seedBg29TwentyFour(env.DB, env.ATTACHMENTS);
+    await env.ATTACHMENTS.put('bg29-078/unexpected.txt', 'unexpected');
+    await expect(seedBg29TwentyFour(env.DB, env.ATTACHMENTS)).rejects.toThrow(
+      'BG29_SEED_R2_INVENTORY_MISMATCH',
+    );
+    await env.ATTACHMENTS.delete('bg29-078/unexpected.txt');
+  });
+
   it('runs actual scheduled acquisition, R2 extraction, mock enrichment and Notion logic with no live egress', async () => {
     const originalManifest = await seedBg29TwentyFour(env.DB, env.ATTACHMENTS);
     const bindings = isolatedBindings();
