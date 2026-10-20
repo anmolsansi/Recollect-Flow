@@ -141,7 +141,13 @@ export async function processNotionSyncJobs(
            WHERE id = ?4
              AND (notion_page_id IS NULL OR notion_page_id = ?1)`,
         )
-        .bind(result.pageId, projectionHash, syncedAt, item.id, item.projection_version)
+        .bind(
+          result.pageId,
+          projectionHash,
+          syncedAt,
+          item.id,
+          item.projection_version,
+        )
         .run();
       if (persisted.meta.changes !== 1) {
         await jobService.failSyncAttempt(
