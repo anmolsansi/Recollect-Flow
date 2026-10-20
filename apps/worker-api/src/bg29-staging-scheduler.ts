@@ -96,7 +96,7 @@ export function assertBg29StagingBindings(env: Cloudflare.Env): void {
  *
  * URL acquisition uses the real job worker with an offline exact-URL
  * transport. Enrichment uses the real worker with mock adapters only.
- * Notion uses the real sync worker with an in-memory, tokenless transport.
+ * Notion uses the real sync worker with a durable D1-backed, tokenless transport.
  * Notifications, hosted backups, cleanup and purge are deliberately inert.
  *
  * R2/PDF extraction executes the real worker only for explicitly seeded
@@ -108,7 +108,7 @@ export function createBg29StagingScheduler(environment: Cloudflare.Env) {
   const db = environment.DB;
   const source = createBg29StagingSourceFetcher();
   const ai = createBg29StagingEnrichmentHarness(db);
-  const notion = createBg29StagingNotionHarness();
+  const notion = createBg29StagingNotionHarness({ db });
   const isolatedEnv = Object.freeze({ DB: db }) as unknown as Env;
   // Never spread the caller's bindings: this is the complete R2/PDF-only
   // environment that the actual ExtractionService is allowed to see.
@@ -185,7 +185,7 @@ export function createBg29StagingScheduler(environment: Cloudflare.Env) {
       if (env.DB !== db) deny('staging D1 binding changed');
       return handler(controller, env, ctx);
     },
-    notionRequests: () => notion.requests(),
-    notionPages: () => notion.pages(),
+    notionRequests: () => notion.requestsAsync(),
+    notionPages: () => notion.pagesAsync(),
   });
 }
