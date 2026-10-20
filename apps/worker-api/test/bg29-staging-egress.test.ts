@@ -113,8 +113,9 @@ describe('BG-29.078 Step 4 fail-closed staging scheduler', () => {
       ).rejects.toThrow('BG29_STAGING_EGRESS_DENIED');
       expect(waitUntil).not.toHaveBeenCalled();
       expect(fetchSpy).not.toHaveBeenCalled();
-      expect(scheduler.notionPages()).toEqual([]);
-      expect(scheduler.notionRequests()).toEqual([]);
+      // Access to a durable ledger requires a real isolated D1, not this fake.
+      await expect(scheduler.notionPages()).rejects.toThrow();
+      await expect(scheduler.notionRequests()).rejects.toThrow();
     } finally {
       fetchSpy.mockRestore();
     }

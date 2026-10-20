@@ -6,6 +6,7 @@ import { processSourceAcquisitionJobs } from './jobs/extraction/source-acquisiti
 import { processExtractionJobs } from './jobs/extraction/extraction.worker';
 import { createBg29StagingEnrichmentHarness } from './jobs/ai/bg29-staging-enrichment';
 import { createBg29StagingNotionHarness } from './sync/bg29-staging-notion';
+import { createBg29DurableNotionStore } from './sync/bg29-staging-durable-notion';
 
 /**
  * Step 4 / BG-29.078: staging-only scheduled pipeline.
@@ -102,19 +103,36 @@ export function assertBg29StagingBindings(env: Cloudflare.Env): void {
  *
  * URL acquisition uses the real job worker with an offline exact-URL
  * transport. Enrichment uses the real worker with mock adapters only.
- * Notion uses the real sync worker with an in-memory, tokenless transport.
+ * Notion uses the real sync worker with a durable D1-backed, tokenless transport.
  * Notifications, hosted backups, cleanup and purge are deliberately inert.
  *
  * R2/PDF extraction executes the real worker only for explicitly seeded
  * synthetic PDF originals. Missing/foreign R2 bindings and unexpected source
  * paths fail closed rather than silently recording extracted fixtures.
  */
-export function createBg29StagingScheduler(environment: Cloudflare.Env) {
+export interface Bg29StagingFaultPlan {
+  url503For?: string;
+  notion429For?: string;
+  /** Test-only clock; hosted Worker always uses wall time. */
+  now?: () => Date;
+}
+
+export function createBg29StagingScheduler(
+  environment: Cloudflare.Env,
+  faults: Bg29StagingFaultPlan = {},
+) {
   assertBg29StagingBindings(environment);
   const db = environment.DB;
-  const source = createBg29StagingSourceFetcher();
+  const ledger = createBg29DurableNotionStore(db);
+  const source = createBg29StagingSourceFetcher({
+    failOnceFor: faults.url503For,
+    claimOnce: (url) => ledger.claimFaultOnce(`url503:${url}`),
+  });
   const ai = createBg29StagingEnrichmentHarness(db);
-  const notion = createBg29StagingNotionHarness();
+  const notion = createBg29StagingNotionHarness({
+    db,
+    rateLimitOnceFor: faults.notion429For,
+  });
   const isolatedEnv = Object.freeze({ DB: db }) as unknown as Env;
   // Never spread the caller's bindings: this is the complete R2/PDF-only
   // environment that the actual ExtractionService is allowed to see.
@@ -172,9 +190,12 @@ export function createBg29StagingScheduler(environment: Cloudflare.Env) {
       await processExtractionJobs(extractionEnv);
     },
     acquireUrls: () =>
-      processSourceAcquisitionJobs(isolatedEnv, { fetcher: source }),
+      processSourceAcquisitionJobs(isolatedEnv, {
+        fetcher: source,
+        now: faults.now,
+      }),
     enrichItems: () => ai.run(),
-    syncNotion: () => notion.run(db),
+    syncNotion: () => notion.run(db, { now: faults.now }),
     digest: async () => deny('digest and notification jobs disabled'),
     weeklyBackup: async () => deny('hosted backup disabled'),
   });
@@ -191,7 +212,7 @@ export function createBg29StagingScheduler(environment: Cloudflare.Env) {
       if (env.DB !== db) deny('staging D1 binding changed');
       return handler(controller, env, ctx);
     },
-    notionRequests: () => notion.requests(),
-    notionPages: () => notion.pages(),
+    notionRequests: () => notion.requestsAsync(),
+    notionPages: () => notion.pagesAsync(),
   });
 }
