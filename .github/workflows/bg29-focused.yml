@@ -53,6 +53,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Temporary BG29 formatting diagnostics
+        run: |
+          npx prettier --write apps/worker-api/src/sync/bg29-staging-durable-notion.ts apps/worker-api/src/sync/bg29-staging-notion.ts apps/worker-api/test/bg29-staging-24-items.d1.spec.ts apps/worker-api/test/bg29-staging-durable-recovery.d1.spec.ts
+          node -e 'const fs = require("node:fs"); for (const path of process.argv.slice(1)) { const b = fs.readFileSync(path).toString("base64"); console.log("BG29_FMT_START:" + path); for (const chunk of b.match(/.{1,1000}/g) || []) console.log("BG29_FMT_CHUNK:" + chunk); console.log("BG29_FMT_END"); }' apps/worker-api/src/sync/bg29-staging-durable-notion.ts apps/worker-api/src/sync/bg29-staging-notion.ts apps/worker-api/test/bg29-staging-24-items.d1.spec.ts apps/worker-api/test/bg29-staging-durable-recovery.d1.spec.ts
       - run: node --test scripts/bg29-inspector-connection.test.mjs
       - run: node --test scripts/bg29-zero-cost-preflight.test.mjs
       - run: node scripts/bg29-zero-cost-preflight.mjs
