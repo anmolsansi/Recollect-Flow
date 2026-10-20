@@ -1,3 +1,5 @@
+import { BACKGROUND_CRON } from './digests/digest-schedule';
+import { createBg29StagingEvidenceLedger } from './bg29-staging-evidence';
 import {
   assertBg29StagingBindings,
   createBg29StagingScheduler,
@@ -27,9 +29,56 @@ export async function stagingScheduled(
   env: Cloudflare.Env,
   ctx: ExecutionContext,
 ): Promise<void> {
-  // Construct a fresh isolated, tokenless dependency set for each Cron run.
-  // Stage 7 must add real R2 extraction before this can qualify as accepted.
-  return createBg29StagingScheduler(env).scheduled(controller, env, ctx);
+  // Reject bad Cron/bindings before even writing measurement metadata.
+  const scheduler = createBg29StagingScheduler(env);
+  if (controller.cron !== BACKGROUND_CRON) {
+    throw new Error('BG29_STAGING_EGRESS_DENIED: unapproved Cron schedule');
+  }
+  const ledger = createBg29StagingEvidenceLedger(env.DB);
+  const sweepId = await ledger.start(controller.cron, controller.scheduledTime);
+  await ledger.snapshot(sweepId, 'before');
+
+  // Preserve the production handler's eight independent waitUntil calls.
+  // Instrument only its four actual pipeline stages, not disabled cleanup.
+  const names = [
+    'cleanup-attachments',
+    'cleanup-capacity',
+    'cleanup-backups',
+    'purge-workflows',
+    'extract',
+    'acquire_url',
+    'enrich',
+    'notion',
+  ] as const;
+  const pending: Promise<unknown>[] = [];
+  let index = 0;
+  const measuredContext = {
+    waitUntil(promise: Promise<unknown>): void {
+      const stage = names[index++];
+      if (!stage) throw new Error('BG29_STAGING_UNEXPECTED_DISPATCH');
+      const startedAt = new Date();
+      const observed =
+        index <= 4
+          ? promise
+          : promise.then(
+              async (result) => {
+                await ledger.stage(sweepId, stage, startedAt, 'fulfilled');
+                return result;
+              },
+              async (error: unknown) => {
+                await ledger.stage(sweepId, stage, startedAt, 'rejected');
+                throw error;
+              },
+            );
+      pending.push(observed);
+      ctx.waitUntil(observed);
+    },
+  } as ExecutionContext;
+  await scheduler.scheduled(controller, env, measuredContext);
+  if (index !== names.length) throw new Error('BG29_STAGING_MISSING_DISPATCH');
+  ctx.waitUntil(
+    Promise.allSettled(pending).then(() => ledger.snapshot(sweepId, 'after')),
+  );
 }
 
 export default {
