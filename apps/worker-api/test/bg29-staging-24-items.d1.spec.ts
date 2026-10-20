@@ -133,6 +133,9 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
 
   it('persists precise local before-after queue matrices and four real stage timings', async () => {
     const originals = await seedBg29TwentyFour(env.DB, env.ATTACHMENTS);
+    await env.DB.prepare(
+      "UPDATE processing_jobs SET attempts = 1 WHERE id = 'bg29-078-job-bg29-078-url-01'",
+    ).run();
     const bindings = isolatedBindings();
     const network = vi
       .spyOn(globalThis, 'fetch')
@@ -198,6 +201,11 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
         );
         expect(JSON.parse(snapshot.status_matrix_json).length).toBeGreaterThan(0);
       }
+      expect(JSON.parse(snapshots.results[0]!.status_matrix_json)).toContainEqual({
+        type: 'acquire_url',
+        total: 1,
+        status: 'retry_eligible',
+      });
       expect(snapshots.results[0]?.oldest_age_ms).toBeGreaterThanOrEqual(0);
       expect(
         JSON.parse(snapshots.results[1]!.evidence_ids_json).extractionRecords.length,
