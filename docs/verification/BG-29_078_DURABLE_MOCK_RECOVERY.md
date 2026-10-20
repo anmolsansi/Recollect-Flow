@@ -25,6 +25,7 @@ The staging scheduler accepts a **reviewed test-only fault plan**:
 ## Verification and limits
 
 Run:
+
 ```sh
 npx vitest run --config vitest.node.config.ts apps/worker-api/test/bg29-staging-notion.test.ts apps/worker-api/test/bg29-staging-egress.test.ts
 npx vitest run --config vitest.d1.config.ts apps/worker-api/test/bg29-staging-24-items.d1.spec.ts
