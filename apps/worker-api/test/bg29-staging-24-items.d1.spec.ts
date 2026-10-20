@@ -1,5 +1,8 @@
 import { provisionBg29StagingNotionSchema } from '../src/sync/bg29-staging-durable-notion';
-import { provisionBg29StagingEvidenceSchema } from '../src/bg29-staging-evidence';
+import {
+  createBg29StagingEvidenceLedger,
+  provisionBg29StagingEvidenceSchema,
+} from '../src/bg29-staging-evidence';
 import { stagingScheduled } from '../src/bg29-staging-entry';
 import { applyD1Migrations, env } from 'cloudflare:test';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -342,6 +345,29 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
       ).first<{ total: number; total_cost: number }>();
       expect(usage).toEqual({ total: 24, total_cost: 0 });
       expect(await count('sync_attempts', "status = 'complete'")).toBe(24);
+      const ledger = createBg29StagingEvidenceLedger(env.DB);
+      const evidenceSweep = await ledger.start(BACKGROUND_CRON, Date.now());
+      await ledger.snapshot(evidenceSweep, 'after');
+      const evidence = await env.DB.prepare(
+        'SELECT evidence_ids_json FROM bg29_evidence_snapshots WHERE sweep_id = ?1 AND phase = ?2',
+      )
+        .bind(evidenceSweep, 'after')
+        .first<{ evidence_ids_json: string }>();
+      const evidenceIds = JSON.parse(evidence!.evidence_ids_json) as {
+        originals: string[];
+        urlAcquisitions: string[];
+        extractionRecords: string[];
+        enrichmentResults: string[];
+        notionProjections: string[];
+      };
+      expect(evidenceIds.originals).toHaveLength(24);
+      expect(evidenceIds.urlAcquisitions).toHaveLength(12);
+      expect(evidenceIds.extractionRecords).toHaveLength(12);
+      expect(evidenceIds.enrichmentResults).toEqual(
+        originalManifest.map((entry) => entry.id).sort(),
+      );
+      expect(evidenceIds.notionProjections).toHaveLength(24);
+
 
       const urls = await env.DB.prepare(
         "SELECT id, source_url, raw_text FROM items WHERE source_app = 'BG29-078 sealed fixtures' AND source_type = 'url'",
