@@ -26,14 +26,20 @@ describe('BG-29 Step 6 inherited binding and network isolation', () => {
     expect(() => assertBg29StagingBindings(infected)).toThrow(
       'BG29_STAGING_EGRESS_DENIED',
     );
-    const clean = Object.assign(Object.create(null) as Cloudflare.Env, cleanBindings());
+    const clean = Object.assign(
+      Object.create(null) as Cloudflare.Env,
+      cleanBindings(),
+    );
     expect(() => assertBg29StagingBindings(clean)).not.toThrow();
   });
 
   it('rejects binding accessors without executing their code', () => {
     const bindings = cleanBindings();
     const secretGetter = vi.fn(() => 'secret');
-    Object.defineProperty(bindings, 'DB', { get: secretGetter, enumerable: true });
+    Object.defineProperty(bindings, 'DB', {
+      get: secretGetter,
+      enumerable: true,
+    });
     expect(() => assertBg29StagingBindings(bindings)).toThrow(
       'BG29_STAGING_EGRESS_DENIED',
     );
@@ -41,9 +47,9 @@ describe('BG-29 Step 6 inherited binding and network isolation', () => {
   });
 
   it('never delegates unexpected URLs or HTTP routes to real network fetch', async () => {
-    const network = vi.spyOn(globalThis, 'fetch').mockRejectedValue(
-      new Error('UNAUTHORIZED_NETWORK'),
-    );
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new Error('UNAUTHORIZED_NETWORK'));
     try {
       const fixture = createBg29StagingSourceFetcher();
       for (const source of [
@@ -52,10 +58,17 @@ describe('BG-29 Step 6 inherited binding and network isolation', () => {
         'https://api.notion.com/v1/pages',
         'https://example.com@other.example/bg29-078/source-01',
       ]) {
-        expect((await fixture.fetch(source)).status).toBe('destination_blocked');
+        expect((await fixture.fetch(source)).status).toBe(
+          'destination_blocked',
+        );
       }
       for (const pathname of ['/api/items', '/api/notifications', '/capture']) {
-        expect(stagingFetch(new Request(`https://unused.invalid${pathname}`), cleanBindings()).status).toBe(404);
+        expect(
+          stagingFetch(
+            new Request(`https://unused.invalid${pathname}`),
+            cleanBindings(),
+          ).status,
+        ).toBe(404);
       }
       expect(network).not.toHaveBeenCalled();
     } finally {
