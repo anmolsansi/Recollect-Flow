@@ -23,18 +23,19 @@ A 2026-10-17 prior read-only inspection (see `BG-29_STAGING_ONLY_PLAN.md`) repor
 Cloudflare rounds billable overage units upward. Remaining free allowances may change independently during the test. Even a very small overage may therefore produce a bill.
 
 Official references (checked October 21, 2026):
+
 - https://developers.cloudflare.com/r2/pricing/
 - https://developers.cloudflare.com/workers/platform/limits/
 - https://developers.cloudflare.com/billing/manage/budget-alerts/
 
-## Bounded synthetic *incremental* workload estimate — NOT a financial guarantee
+## Bounded synthetic _incremental_ workload estimate — NOT a financial guarantee
 
 The frozen contract permits **12 synthetic PDFs, 12 synthetic URL responses, 24 unique originals, and at most 10 genuine eligible hourly sweeps**. Each PDF must remain strictly under the 25,000,000-byte application limit.
 
 - Absolute source PDF payload upper envelope: less than `12 × 25,000,000 = 300,000,000` bytes (about 0.3 decimal GB of new data). The actual deterministic PDFs are much smaller. This is **not** account-wide R2 total storage, nor an estimate of how long objects are retained.
 - Initial R2 puts: approximately 12 successful `PutObject` (Class A), plus bucket setup and any metadata/list/retry operations. A repeated or interrupted seed could cause more unless independently prevented.
 - Successful extraction: at least 12 `GetObject` reads (Class B). Repeated scheduled sweeps, checksum probes, retries, smoke tests, and post-run integrity checks add more. The code does **not** supply a hard account-wide upper bound on requests.
-- A planning-only envelope of **100 Class A and 500 Class B incremental operations** would be comfortably below the *published total free allowance*, **but is NOT proven as an enforced limit, an exact implementation bound, or remaining account headroom**. Do not treat this envelope as approval or a statement of worst-case financial liability.
+- A planning-only envelope of **100 Class A and 500 Class B incremental operations** would be comfortably below the _published total free allowance_, **but is NOT proven as an enforced limit, an exact implementation bound, or remaining account headroom**. Do not treat this envelope as approval or a statement of worst-case financial liability.
 - Other account workloads may consume the shared free allowances while BG-29 runs. Cloudflare budget alerts cannot halt that exposure.
 
 Under an absolute `$0` rule, **estimated $0 is not guaranteed $0**. Thus the decision remains NO-GO regardless of theoretical headroom in isolation.
@@ -48,7 +49,7 @@ Before reconsideration, collect in the owner's authenticated Cloudflare dashboar
 3. Current and projected Billable Usage and any delayed/unbilled operations; separate R2 storage and A/B from D1/Workers.
 4. D1 Free/Paid plan, current usage/quotas, current dedicated staging D1 existence and migrations.
 5. Current Worker, D1, R2 binding/resource inventory. Compare against production IDs and names using `wrangler.toml`; confirm ownership/isolation and currently installed triggers.
-6. A dated independent basis showing the owner’s required **enforceable** $0 condition can be met. If that is impossible with usage-billed R2, the owner would have to explicitly *change* the financial policy before hosted work. A mere free-tier balance, positive budget-alert balance, or casual request to continue does not change it.
+6. A dated independent basis showing the owner’s required **enforceable** $0 condition can be met. If that is impossible with usage-billed R2, the owner would have to explicitly _change_ the financial policy before hosted work. A mere free-tier balance, positive budget-alert balance, or casual request to continue does not change it.
 
 ## GO/NO-GO record
 
