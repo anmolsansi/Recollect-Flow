@@ -169,3 +169,7 @@ A factual OPE-247 update may state: BG-23–BG-29 source/local/CI proofs have do
 ### 38/50 — No invented PR or deployment (BG-30.075–076)
 
 The only BG-30 source branch is `feat/bg-30-evidence-reconciliation`. A BG-30 PR number must come from GitHub after it exists, never from a guessed sequence. Historic production Worker version `c0e78f89-d7a6-4416-a638-57693d256c03` belongs to August documents and is **not** asserted as the deployed October implementation. The matrix leaves `deployed_version: null` until observed.
+
+### 39/50 — Authorized updates and human review gates (BG-30.077–078)
+
+GitHub issue #116 may track source documentation, but source updates do not waive OPE-247 review, BG-29.078 elapsed-hour acceptance, the hard $0 account constraint, production backup/restore approval, live provider credentials or physical-device signoff. No Linear Done or production change is initiated by this ledger. Final merge requires exact-head CI and the repository's review rules.
