@@ -89,3 +89,7 @@ The [BG-06 closeout](BG-06_FINAL_CLOSEOUT.md) names PR #39 at merge `a5096e...`,
 ### 18/50 — Status and clock regression evidence (BG-30.035–036)
 
 The [BG-13 atomic-processing closeout](BG-13_FINAL_CLOSEOUT.md) identifies implementation PR #62, merge `3d1af004bc0ebfaa95645a39880b38f623d3c447`, and green [merged-main CI #38052191291](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38052191291) for persisted item/job generation consistency. The [BG-02 usage-clock stabilization](BG-02_USAGE_CLOCK_STABILIZATION.md) is the targeted fix record for the old clock-dependent test; a fresh BG-30 branch suite must still prove no regression.
+
+### 19/50 — Smoke verifier and still-open audit boundaries (BG-30.037–038)
+
+[BG-03 final closeout](BG-03_FINAL_CLOSEOUT.md) verifies release-smoke edit-version handling through PR #28, merge `95f27d34527a3d5b9b9e31037c060672bf54c8f6`; [BG-04 final closeout](BG-04_FINAL_CLOSEOUT.md) verifies the smoke story/setup through PR #32, merge `feb568f6438bc7068520fb654ca933238b9f8c28`. The September audit's original failures remain recorded as historical. Production and physical-device acceptance are **not** fixed by local smoke changes.
