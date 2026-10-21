@@ -57,3 +57,7 @@ Every open row must name a concrete next action: CI, browser, isolated recovery,
 ### 10/50 — Historical versus accepted limitations (BG-30.019–020)
 
 The 2026-08 deployed Worker version and 2026-09 audit are labeled historical snapshots. FTS punctuation/tokenization constraints and browser/device gaps stay listed. A source merge does not grant the production release; the open BG-29.078 hosted elapsed-hour gate is retained as DEFERRED/NOT VERIFIED.
+
+### 11/50 — Legacy BUILD_STATUS inspection (BG-30.021–022)
+
+`../BUILD_STATUS.md` is headed 2026-08-08. Its `Completed and deployed` block, 66-test counts and `Locally complete, release pending` snapshots must not be read as 2026-10-21 state. Its October 21 preface already warns about this and should be superseded by a current independently versioned evidence matrix, while preserving dated original content.
