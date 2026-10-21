@@ -161,3 +161,7 @@ A desktop browser extension is V2 conditional on capture volume, and multi-user 
 ### 36/50 — External issue identities and guide-local BG keys (BG-30.071–072)
 
 Verified Linear issue is [OPE-247](https://linear.app/openclaw-neutron/issue/OPE-247/complete-v1-security-observability-and-operational-hardening), titled Complete V1 security, observability, and operational hardening, and still In Progress. [OPE-344](https://linear.app/openclaw-neutron/issue/OPE-344/bg-29-resilience-capacity-and-performance-acceptance) covers BG-29. BG-30 is [GitHub #116](https://github.com/anmolsansi/Recollect-Flow/issues/116), not a fabricated OPE-30 or Linear Done state. The offline evidence-matrix validator is wired into `npm run check`.
+
+### 37/50 — Factual tracker update text and links (BG-30.073–074)
+
+A factual OPE-247 update may state: BG-23–BG-29 source/local/CI proofs have documented artifacts, BG-29.078 is deferred at strict $0, BG-30 reconciliation is being prepared in #116, and consolidated hosted operational/security acceptance remains open. Use [BG-25](BG-25_SECURITY_HARDENING.md), [BG-26](BG-26_OPERATIONS_VISIBILITY.md), [BG-28](BG-28_FINAL_CLOSEOUT.md), and [BG-29](BG-29_RESILIENCE_ACCEPTANCE.md) as evidence rather than claiming live deployment.
