@@ -4159,15 +4159,6 @@ These unchecked steps inherit this task's **what, why, when, where and proof** a
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
-**2026-10-21 evidence checkpoint:** 90/100 source review/record actions are
-supported by the [BG-30 ledger](verification/BG-30_EVIDENCE.md),
-[capability matrix](verification/BG-30_RELEASE_MATRIX.json), source changes,
-and first CI negative/failure output. BG-30.091–100 remain unchecked pending
-latest-head CI, PR integration review and actual completion decision. The
-OPE-247 broader hardening gate and BG-29.078 hosted test remain open;
-checking documentation steps does not certify production or device tests.
-
-
 #### BG-30 / 01 — Establish task context
 
 - [x] `BG-30.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
