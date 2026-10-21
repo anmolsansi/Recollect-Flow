@@ -189,3 +189,7 @@ The historic August `BUILD_STATUS.md` opens with a current pointer to a separate
 ### 43/50 — Historical counts and live-claim boundaries (BG-30.085–086)
 
 `../repo_context.md` now names its audited September commit and removes the unqualified assertion that the old five defects remain the current code state. Later merged fixes are linked to BG-30 evidence. The old test counts remain preserved as historical. No newly claimed live production version, cost, provider success or device test was invented.
+
+### 44/50 — Open release gates and BG-31 entry (BG-30.087–088)
+
+BG-30 reconciliation feeds BG-31 release-manifest planning at strict $0; it does not auto-unlock BG-32/production or BG-40 GO. Follow-up release checks require exact hosted version, owner-approved backups/migrations, production HTTPS Web, configured provider behavior, actual device stories and the deferred BG-29.078 full hourly multistage proof where acceptance is required.
