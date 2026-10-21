@@ -105,3 +105,7 @@ OPE-225 implements D1 FTS5 indexing, filters, safe structural snippets and idemp
 ### 22/50 — Web and capacity trace (BG-30.043–044)
 
 OPE-248's [Web Inbox ticket](../tickets/OPE-248.md) documents item review/recovery and isolated browser behavior; BG-21's merged [hosting PR #84](https://github.com/anmolsansi/Recollect-Flow/pull/84) does not by itself prove the production Web root works. OPE-227's [capacity ticket](../tickets/OPE-227.md) and [BG-29 resource ledger](BG-29_RESILIENCE_ACCEPTANCE.md) cover isolated quota/circuit/continuity, but account-wide hosted limits and assured $0 billing are unverified.
+
+### 23/50 — Recovery trace and implementation/release split (BG-30.045–046)
+
+OPE-228's [recovery ticket](../tickets/OPE-228.md) and [BG-28 closeout](BG-28_FINAL_CLOSEOUT.md) describe portable export, read-back backup, explicit purge, receipt anti-resurrection, restore and integrity fixtures. [Merged BG-28 PR #98](https://github.com/anmolsansi/Recollect-Flow/pull/98) proves code delivery, not real loss or an approved remote purge drill. Deployed schema/version and actual disaster recovery must be independently recorded.
