@@ -45,3 +45,7 @@ A feature counts as implemented only after inspecting a named source or a merged
 ### 07/50 — CI versus deployed revision (BG-30.013–014)
 
 CI evidence requires a run URL with the tested commit SHA. A green historical main workflow is **not** evidence for an updated branch. Deployed versions are never inferred from `main` or a PR merge. The historic `c0e78f89-d7a6-4416-a638-57693d256c03` Worker version in `BUILD_STATUS.md` is a dated snapshot, not a current production feature release attestation.
+
+### 08/50 — Production versus device evidence (BG-30.015–016)
+
+Production acceptance requires an authorized exact deployed identity and a live feature-specific observation. Physical-iPhone Shortcut/Share Sheet/offline behavior requires actual device proof. Isolated Chrome tests, mock provider responses and Mac-side Shortcut exports cannot satisfy those columns. Missing evidence is marked **NOT VERIFIED**, not complete.
