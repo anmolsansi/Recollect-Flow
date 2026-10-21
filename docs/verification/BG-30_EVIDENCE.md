@@ -69,3 +69,7 @@ The 2026-08 deployed Worker version and 2026-09 audit are labeled historical sna
 ### 13/50 — Verified merge identities (BG-30.025–026)
 
 GitHub PR API confirms BG-06 #39 merged at `a5096e337def6cad993ff5267f640cc619cafa03`, browser download BG-07 #42 at `27aa0dad8cf82c8e8c483baaf1b302c4772d170d`, status BG-13 #62 at `3d1af004bc0ebfaa95645a39880b38f623d3c447`, Web hosting BG-21 #84 at `b7536746b46d8703e620b3cc5e9f5c6f24327d38`, and BG-29 #100 at `b7edcb7b9d76837f570f90ba6c1934c6926d95be`. These prove merges, not hosted acceptance.
+
+### 14/50 — Historical suites versus today's candidate (BG-30.027–028)
+
+The audit's 132/132 Node, 114/115 D1 and 9/9 Web figures are specifically its 2026-09-12 checkout. The 104/74/9 OPE-225/226/248 totals belong to August local checkpoints. Only the 2026-10-21 [main CI #39569038036](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39569038036) proves green CI on `1d932546e81daa806d68d91fbaf9f91c4b1e5d5f`; current BG-30 branch needs a separate exact-head check.
