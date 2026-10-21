@@ -185,3 +185,7 @@ Build Guide §36 now directs readers to the dated reconciliation and its machine
 ### 42/50 — Local-document links and status matrix (BG-30.083–084)
 
 The historic August `BUILD_STATUS.md` opens with a current pointer to a separately dated BG-30 capability matrix rather than letting `Completed and deployed` function as October release truth. Every row expresses implementation, local, CI, deployment, production, device, remaining action and limitations. JSON structural validation is included in `npm run check`.
+
+### 43/50 — Historical counts and live-claim boundaries (BG-30.085–086)
+
+`../repo_context.md` now names its audited September commit and removes the unqualified assertion that the old five defects remain the current code state. Later merged fixes are linked to BG-30 evidence. The old test counts remain preserved as historical. No newly claimed live production version, cost, provider success or device test was invented.

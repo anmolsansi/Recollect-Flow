@@ -6,7 +6,7 @@ The original September 2026 runtime audit below is historical; it does not certi
 
 ## Context provenance
 
-This context is prepared from current `main` at `99678dfef1da1ea31b8b1f12c985bdaaf950b722`.
+This original September context snapshot was prepared at `99678dfef1da1ea31b8b1f12c985bdaaf950b722`. The later BG-30 code and verification baseline is `1d932546e81daa806d68d91fbaf9f91c4b1e5d5f` (2026-10-21), with [reconciled current evidence](verification/BG-30_EVIDENCE.md).
 
 The latest runtime/code audit was performed against application commit `6d5c36b81c9167dc3b53841562d5c997c3c4b3cb` on 2026-09-12. Current `main` is exactly one commit ahead of that audited application state. The only files added by that later commit are:
 
@@ -42,7 +42,7 @@ Implemented code on `main` includes:
 - daily and weekly digest infrastructure;
 - portable export, hosted backup, permanent purge workflow and restore/integrity tooling.
 
-The system is **not V1 release-ready**. The current verification foundation has two release-blocking defects, several user-workflow defects remain, Web capture/production hosting are incomplete, OPE-247 hardening is not consolidated, and real production/device acceptance has not been completed.
+The system is **not V1 release-ready**. At the September 12 audit, two verification-foundation failures and several browser/workflow defects were reproduced. Later BG-02–BG-29 fixes must be judged against their own merged commits and CI evidence, not this historical finding. OPE-247 consolidated hardening, BG-29.078 elapsed-hosted-Cron acceptance and current production/device proof remain outstanding.
 
 ## Stack
 
