@@ -26,9 +26,9 @@ The owner's standing condition remains **$0 additional charges and no production
 ### Owner approval record (unsigned; do not infer approval)
 
 - Owner identity/dated authorization: **NOT PROVIDED**
-- Current account-wide usage and billing evidence: **NOT AVAILABLE**
+- Current account-wide usage and billing evidence: **VERIFIED VIA SIGNED-IN OPERA ON 2026-10-21**: $0 observed/projected, R2 Class A 0, Class B 5, 30.45 MB stored; see Step 12 snapshot
 - Proof of enforceable financial policy: **NOT AVAILABLE**
-- Exact staging Worker/D1/R2 resource IDs verified against production: **PARTIAL CONFIG-ONLY**
+- Exact staging Worker/D1/R2 resource IDs verified against production: **PARTIAL ACCOUNT INVENTORY VERIFIED**: the old D1-only probe and staging D1 were observed; new dedicated multistage Worker and R2 bucket absent
 - Independent review of zero-egress and scheduled runtime feasibility: **LOCAL-ONLY**
 - Authorization decision: **WITHHELD — NO-GO**
 - Separate future allowance for any nonzero billing risk: **NOT GRANTED**
@@ -68,9 +68,9 @@ Any later approval must document a reviewed identity, dated account evidence, ex
 
 ### No-op checkpoint
 
-- **Cloudflare account read-only dashboard inspection:** Verified result of this turn: Login redirected; no authenticated usage available
+- **Cloudflare account read-only dashboard inspection:** Current result: Signed-in Opera later confirmed $0 observed/projected, R2 Class A 0, Class B 5, 30.45 MB storage, D1 610.3 kB, Workers Free, and the probe Cron disabled. Earlier login redirect was superseded.
 - **Production Worker/D1/R2:** Verified result of this turn: Not operated on
-- **Existing staging D1:** Verified result of this turn: Not operated on; previous existence historical
+- **Existing staging D1:** Verified result of this turn: Exists in the current account inventory; 610.3 kB. Read-only inspection only, no mutation.
 - **Dedicated new staging R2:** Verified result of this turn: Not created or accessed
 - **Hosted staging Worker:** Verified result of this turn: Not deployed or changed
 - **Staging remote migrations/fixture upload:** Verified result of this turn: Not performed
