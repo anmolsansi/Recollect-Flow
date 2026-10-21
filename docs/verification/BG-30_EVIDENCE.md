@@ -117,3 +117,7 @@ Every delivery row must separately express merged source, local/CI test, deploye
 ### 25/50 — Tracker identity and traceability (BG-30.049–050)
 
 BG-30 is guide-local work tracked under [GitHub #116](https://github.com/anmolsansi/Recollect-Flow/issues/116); OPE-247 is its broader still-active Linear hardening epic, not a newly completed ticket. OPE-344/BG-29 stays open; no inferred Linear Done status is allowed from merging #100. `../TRACEABILITY.md` now explicitly points to this reconciliation ledger and separates documented source from production gates.
+
+### 26/50 — Authentication and rotation packet (BG-30.051–052)
+
+Auth evidence: [BG-23/24](BG-23_BG-24_ACCEPTANCE.md), [BG-25](BG-25_SECURITY_HARDENING.md) and `../TOKEN_ROTATION.md`. Scope separation, negative session tests and token rotation are source/local claims. OPE-247 explicitly requires capture/admin/local-worker rotation **rehearsals**. No proof here of a fresh production rotation or a revoked session on current deployment.
