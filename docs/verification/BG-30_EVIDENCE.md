@@ -25,3 +25,7 @@ Build Guide §36 defines completion as a separately readable implemented/tested/
 ### 02/50 — Baseline and code discovery (BG-30.003–004)
 
 The exact starting source is `1d932546e81daa806d68d91fbaf9f91c4b1e5d5f`, merged PR #115. [Main CI #39569038036](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39569038036) passed on that SHA. Primary records are `../BUILD_STATUS.md`, `../repo_context.md`, `../TRACEABILITY.md`, `../OPERATIONS_RUNBOOK.md`, `../WORKFLOW_AUDIT_2026-09-12.md`, `../tickets/`, and BG-23–BG-29 verification files. This is source/document discovery, not a fresh application checkout test.
+
+### 03/50 — Prior evidence and binding contract (BG-30.005–006)
+
+Use the [September audit](../WORKFLOW_AUDIT_2026-09-12.md) only at its original application SHA `6d5c36b81c9167dc3b53841562d5c997c3c4b3cb`. Later fixes must be grounded in their own exact merge and test evidence. The acceptance contracts are Build Guide §36, [V1 testing](../TESTING_AND_ACCEPTANCE.md), [security governance](../SECURITY_PRIVACY_GOVERNANCE.md), and [operations runbook](../OPERATIONS_RUNBOOK.md). A previously passing CI run is not an exact-head BG-30 run.
