@@ -77,3 +77,7 @@ The audit's 132/132 Node, 114/115 D1 and 9/9 Web figures are specifically its 20
 ### 15/50 — Repo context date and current reality (BG-30.029–030)
 
 The top of `../repo_context.md` still describes `99678df...` as current after a September 12 audit. By October 21 GitHub `main` is `1d932546...`; later merged BG features are demonstrably present. The reconciliation must preserve the original audit as a dated baseline and link current BG-30 matrix rather than silently rewriting the audited checkout provenance.
+
+### 16/50 — Five dated audit defects (BG-30.031–032)
+
+The September audit lists (1) signed-session private download, (2) bare-URL enrichment, (3) persisted processing status mismatch, (4) clock-dependent quality gate, and (5) out-of-date release smoke script. Treat all five as historical **findings** until linked to specific later fixing PRs, tests and merged SHA. No other issue may be inferred from a matching label alone.
