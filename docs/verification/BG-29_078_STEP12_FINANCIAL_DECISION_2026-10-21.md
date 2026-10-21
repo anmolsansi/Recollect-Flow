@@ -101,6 +101,7 @@ This read-only snapshot **supersedes** the earlier unauthenticated browser attem
 4. No production binding was touched or changed. A future hosted rollout would need another fresh check of the account plus independently approved, enforceable risk controls or an explicitly revised spending policy.
 
 The dashboard account-specific pages were inspected in Opera at:
+
 - Cloudflare **Billing → Subscriptions** and **Billing → Billable usage**.
 - **R2 Object Storage → Overview**.
 - **Workers & Pages → Overview** and the existing probe's **Settings → Trigger events**.
