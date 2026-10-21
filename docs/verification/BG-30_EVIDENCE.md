@@ -97,3 +97,7 @@ The [BG-13 atomic-processing closeout](BG-13_FINAL_CLOSEOUT.md) identifies imple
 ### 20/50 — Audit history and limitation wording (BG-30.039–040)
 
 Preserve `../WORKFLOW_AUDIT_2026-09-12.md` byte-for-byte as the original 2026-09-12 observation. Where older docs say release-blocking defects remain, qualify them as at-that-SHA findings with follow-up commit links. New gaps are unverified hosted provider/Notion/digest/device, BG-29.078 and OPE-247 consolidated hardening rather than an invented repeat of already merged code defects.
+
+### 21/50 — Search and digest feature trace (BG-30.041–042)
+
+OPE-225 implements D1 FTS5 indexing, filters, safe structural snippets and idempotent rebuild per [ticket](../tickets/OPE-225.md). OPE-226 implements IST daily/weekly selection, restricted-content neutralization, explicit digest review and bounded Telegram delivery per [ticket](../tickets/OPE-226.md) and [BG-27 evidence](BG-27_DIGEST_REVIEW.md). Both have local/CI evidence, but actual released migrations, live digest delivery and seven eligible consecutive days remain separate acceptance.
