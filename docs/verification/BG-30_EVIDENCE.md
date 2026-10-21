@@ -193,3 +193,7 @@ The historic August `BUILD_STATUS.md` opens with a current pointer to a separate
 ### 44/50 — Open release gates and BG-31 entry (BG-30.087–088)
 
 BG-30 reconciliation feeds BG-31 release-manifest planning at strict $0; it does not auto-unlock BG-32/production or BG-40 GO. Follow-up release checks require exact hosted version, owner-approved backups/migrations, production HTTPS Web, configured provider behavior, actual device stories and the deferred BG-29.078 full hourly multistage proof where acceptance is required.
+
+### 45/50 — Priority 4 hardening packet decision (BG-30.089–090)
+
+The evidence index links BG-23/24 token rotation, BG-25 security/private object/log controls, BG-26 operational visibility, BG-27 digest safety, BG-28 recovery and BG-29 capacity. Current judgement: documentation is reconciled for review, but OPE-247 consolidated security/incident/operator/live acceptance remains **In Progress**. Priority 4 is **NOT CLOSED** from source/CI alone; the release stays **NO-GO** pending independently required gates.
