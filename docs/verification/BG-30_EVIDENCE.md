@@ -81,3 +81,7 @@ The top of `../repo_context.md` still describes `99678df...` as current after a 
 ### 16/50 — Five dated audit defects (BG-30.031–032)
 
 The September audit lists (1) signed-session private download, (2) bare-URL enrichment, (3) persisted processing status mismatch, (4) clock-dependent quality gate, and (5) out-of-date release smoke script. Treat all five as historical **findings** until linked to specific later fixing PRs, tests and merged SHA. No other issue may be inferred from a matching label alone.
+
+### 17/50 — Download and URL evidence trail (BG-30.033–034)
+
+The [BG-06 closeout](BG-06_FINAL_CLOSEOUT.md) names PR #39 at merge `a5096e...`, with alternate signed cookie/bearer authorization. The [BG-07 closeout](BG-07_FINAL_CLOSEOUT.md) names PR #42 at merge `27aa0d...` and isolated Chrome byte-accurate PDF/PNG/text download regressions. For unavailable/bare URLs, follow [BG-09 fetcher](BG-09_BOUNDED_SOURCE_FETCHER.md), [BG-10 evidence chain](BG-10_URL_EVIDENCE_CHAIN.md) and [BG-11 closeout](BG-11_FINAL_CLOSEOUT.md); these are repository evidence, not re-run production crawling.
