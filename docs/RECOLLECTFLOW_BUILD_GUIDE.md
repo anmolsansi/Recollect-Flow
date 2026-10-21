@@ -3368,6 +3368,14 @@ Follow the [100 microtasks for BG-29](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-29
 
 ## 36. BG-30 — Reconcile completion records and close hardening evidence
 
+**Current reconciliation (2026-10-21):** The [BG-30 evidence ledger](verification/BG-30_EVIDENCE.md)
+and [structured capability matrix](verification/BG-30_RELEASE_MATRIX.json) preserve
+separate implementation, test, hosted, device and release gates. GitHub #116
+tracks this documentation effort. It does **not** close Linear OPE-247 or
+accept BG-29.078, which stays deferred under the owner-approved strict $0
+local-development exception. The code and CI history must not be read as a
+current production deploy or physical-device test.
+
 **What and why.** The baseline documentation mixes old missing-feature lists with
 new merged implementation notes. That makes it hard to choose the next task safely.
 

@@ -177,3 +177,7 @@ GitHub issue #116 may track source documentation, but source updates do not waiv
 ### 40/50 — Blocked updates and evidence-consistent wording (BG-30.079–080)
 
 An external tracker closeout is **BLOCKED** while its independent OPE-247 acceptance remains incomplete. Marking BG-30 documentation reconciled is not a GO to launch. If approval, account billing evidence or device observations are absent, the exact gate remains **NOT VERIFIED** and the tracker must retain active/open state. Historical verification text remains dated and attributable.
+
+### 41/50 — Guide status and operator runbook (BG-30.081–082)
+
+Build Guide §36 now directs readers to the dated reconciliation and its machine-checkable per-feature matrix; the operational runbook links security, rotation, safe logging, ops visibility, outages, capacity and recovery proofs. These are **reviewable historical/synthetic proofs**, not substituted real provider or cloud run results. BG-29.078 remains open.
