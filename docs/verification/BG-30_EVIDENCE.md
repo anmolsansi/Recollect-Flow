@@ -4,7 +4,7 @@
 **Baseline:** `1d932546e81daa806d68d91fbaf9f91c4b1e5d5f` on `main`.
 **Tracking:** [GitHub #116](https://github.com/anmolsansi/Recollect-Flow/issues/116);
 [Linear OPE-247](https://linear.app/openclaw-neutron/issue/OPE-247/complete-v1-security-observability-and-operational-hardening).
-**Status:** reconciliation in progress; no release or production acceptance is implied.
+**Status:** branch reconciliation prepared for review. Full acceptance/merge blocked by exact-head CI and independently outstanding release-level gates. No production acceptance is implied.
 
 The 100 source actions are paired as 50 meaningful review units. This file
 records review evidence, acceptance boundaries and unresolved work. The Build
@@ -218,3 +218,7 @@ The [PR #117 changed-file list](https://github.com/anmolsansi/Recollect-Flow/pul
 ### 49/50 — Actual results and exception register (BG-30.097–098)
 
 Baseline `main` CI #39569038036 was green at `1d932546e81daa806d68d91fbaf9f91c4b1e5d5f`. First BG-30 PR CI #39646952371 passed new matrix checks but failed `prettier --check` on the test file, so **full CI was not run** on that head. [Microcommit 46](https://github.com/anmolsansi/Recollect-Flow/pull/117/commits) addresses the format issue; the final branch head still requires exact-head green CI. Deferred: BG-29.078 hosted multistage, provider billing assurance, OPE-247 live drills, October production/deployment identity, actual device acceptance. The owner rule authorizes $0 development only.
+
+### 50/50 — Documentation and BG-31 eligibility decision (BG-30.099–100)
+
+BG-30 reconciliation artifacts now name source, local evidence, CI provenance, deployment, production, device, limitations and remaining gates separately. A **BG-31 release-manifest draft** can proceed as $0 local documentation under the October 21 dependency exception, but BG-30's Priority 4 hardening acceptance is **NOT CLOSED**, BG-32/production remains **NO-GO**, and OPE-247 must stay In Progress. Exact-head CI, PR review and any authorized acceptance are required before claiming BG-30 fully complete or merging this draft PR.
