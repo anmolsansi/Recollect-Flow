@@ -15,6 +15,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: TEMP BG29 audit formatting diff
+        run: |
+          npx prettier --write docs/verification/BG-29_078_STEP12_FINANCIAL_DECISION_2026-10-21.md
+          git diff -- docs/verification/BG-29_078_STEP12_FINANCIAL_DECISION_2026-10-21.md
+          exit 1
       - run: npm run check
       - run: npm run release:package:test
       - run: npm run release:package
