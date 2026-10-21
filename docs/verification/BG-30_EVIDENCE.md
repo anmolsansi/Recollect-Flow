@@ -37,3 +37,7 @@ Review environment: GitHub source, merged PR metadata, historical CI and connect
 ### 05/50 — Minimal inputs and evidence tracking (BG-30.009–010)
 
 Input artifacts are repository documents, canonical checklist items and actual merge/CI metadata; no real-user capture or private content is necessary. [Issue #116](https://github.com/anmolsansi/Recollect-Flow/issues/116) is the sole BG-30 parent with 50 two-action pairs. This evidence record distinguishes **observed** source, **inherited** historical tests, **unobserved** live acceptance and **blocked** external gates.
+
+### 06/50 — Implementation versus local tests (BG-30.011–012)
+
+A feature counts as implemented only after inspecting a named source or a merged reviewable change. Local success must link a focused test, browser story or bounded isolated D1 fixture. The ledger will keep these separate even when both describe the same feature. A migration file alone is not a deployed migration.
