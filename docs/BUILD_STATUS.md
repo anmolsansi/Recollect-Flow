@@ -1,5 +1,18 @@
 # Build status — 2026-08-08
 
+## October 21, 2026 capability reconciliation (current code, not live audit)
+
+Read [BG-30 evidence](verification/BG-30_EVIDENCE.md) and its
+[per-feature matrix](verification/BG-30_RELEASE_MATRIX.json) before any
+historical status section below. Each record separately names implementation
+revision, local results, CI provenance, deployed version, production result,
+physical-device result, limitations and next acceptance gate. All **October**
+deployment and live-acceptance fields remain unverified without observed
+version-specific proof. The earlier `Completed and deployed` heading, August
+Worker ID and test counts are **historical August 8 snapshots**, not a
+claim that the currently merged V1 release is deployed. BG-29.078 stays open,
+and OPE-247 hardening cannot be closed from implementation alone.
+
 ## Current 2026-10-21 development-order decision (not a deployment status)
 
 The owner directed a single [strict $0 BG-29.078 downstream-development exception](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md) for all BG-30–BG-40 tasks. BG-29 remains 99/100, with hosted multi-stage Cron acceptance unverified; GitHub #99 open and Linear OPE-344 In Progress. Source review, documentation, local fixtures/tests and preparatory CI may continue without declaring BG-29.078 PASS or spending money. All independent production, device, live-provider, elapsed-time and billing acceptance gates remain outstanding until genuinely evidenced and separately authorized. Historic statements below belong to their named 2026-08-08/earlier snapshots and must not be read as an October 2026 deployed release audit.

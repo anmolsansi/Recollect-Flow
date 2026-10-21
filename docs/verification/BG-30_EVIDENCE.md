@@ -181,3 +181,7 @@ An external tracker closeout is **BLOCKED** while its independent OPE-247 accept
 ### 41/50 — Guide status and operator runbook (BG-30.081–082)
 
 Build Guide §36 now directs readers to the dated reconciliation and its machine-checkable per-feature matrix; the operational runbook links security, rotation, safe logging, ops visibility, outages, capacity and recovery proofs. These are **reviewable historical/synthetic proofs**, not substituted real provider or cloud run results. BG-29.078 remains open.
+
+### 42/50 — Local-document links and status matrix (BG-30.083–084)
+
+The historic August `BUILD_STATUS.md` opens with a current pointer to a separately dated BG-30 capability matrix rather than letting `Completed and deployed` function as October release truth. Every row expresses implementation, local, CI, deployment, production, device, remaining action and limitations. JSON structural validation is included in `npm run check`.
