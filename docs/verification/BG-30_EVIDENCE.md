@@ -165,3 +165,7 @@ Verified Linear issue is [OPE-247](https://linear.app/openclaw-neutron/issue/OPE
 ### 37/50 — Factual tracker update text and links (BG-30.073–074)
 
 A factual OPE-247 update may state: BG-23–BG-29 source/local/CI proofs have documented artifacts, BG-29.078 is deferred at strict $0, BG-30 reconciliation is being prepared in #116, and consolidated hosted operational/security acceptance remains open. Use [BG-25](BG-25_SECURITY_HARDENING.md), [BG-26](BG-26_OPERATIONS_VISIBILITY.md), [BG-28](BG-28_FINAL_CLOSEOUT.md), and [BG-29](BG-29_RESILIENCE_ACCEPTANCE.md) as evidence rather than claiming live deployment.
+
+### 38/50 — No invented PR or deployment (BG-30.075–076)
+
+The only BG-30 source branch is `feat/bg-30-evidence-reconciliation`. A BG-30 PR number must come from GitHub after it exists, never from a guessed sequence. Historic production Worker version `c0e78f89-d7a6-4416-a638-57693d256c03` belongs to August documents and is **not** asserted as the deployed October implementation. The matrix leaves `deployed_version: null` until observed.
