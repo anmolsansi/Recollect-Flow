@@ -85,3 +85,7 @@ The September audit lists (1) signed-session private download, (2) bare-URL enri
 ### 17/50 — Download and URL evidence trail (BG-30.033–034)
 
 The [BG-06 closeout](BG-06_FINAL_CLOSEOUT.md) names PR #39 at merge `a5096e...`, with alternate signed cookie/bearer authorization. The [BG-07 closeout](BG-07_FINAL_CLOSEOUT.md) names PR #42 at merge `27aa0d...` and isolated Chrome byte-accurate PDF/PNG/text download regressions. For unavailable/bare URLs, follow [BG-09 fetcher](BG-09_BOUNDED_SOURCE_FETCHER.md), [BG-10 evidence chain](BG-10_URL_EVIDENCE_CHAIN.md) and [BG-11 closeout](BG-11_FINAL_CLOSEOUT.md); these are repository evidence, not re-run production crawling.
+
+### 18/50 — Status and clock regression evidence (BG-30.035–036)
+
+The [BG-13 atomic-processing closeout](BG-13_FINAL_CLOSEOUT.md) identifies implementation PR #62, merge `3d1af004bc0ebfaa95645a39880b38f623d3c447`, and green [merged-main CI #38052191291](https://github.com/anmolsansi/Recollect-Flow/actions/runs/38052191291) for persisted item/job generation consistency. The [BG-02 usage-clock stabilization](BG-02_USAGE_CLOCK_STABILIZATION.md) is the targeted fix record for the old clock-dependent test; a fresh BG-30 branch suite must still prove no regression.
