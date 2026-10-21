@@ -29,3 +29,7 @@ The exact starting source is `1d932546e81daa806d68d91fbaf9f91c4b1e5d5f`, merged 
 ### 03/50 — Prior evidence and binding contract (BG-30.005–006)
 
 Use the [September audit](../WORKFLOW_AUDIT_2026-09-12.md) only at its original application SHA `6d5c36b81c9167dc3b53841562d5c997c3c4b3cb`. Later fixes must be grounded in their own exact merge and test evidence. The acceptance contracts are Build Guide §36, [V1 testing](../TESTING_AND_ACCEPTANCE.md), [security governance](../SECURITY_PRIVACY_GOVERNANCE.md), and [operations runbook](../OPERATIONS_RUNBOOK.md). A previously passing CI run is not an exact-head BG-30 run.
+
+### 04/50 — Environment and authority (BG-30.007–008)
+
+Review environment: GitHub source, merged PR metadata, historical CI and connected Linear issue. No production or staged Worker deploy, remote migration, Cloudflare resource creation, live provider invocation, Telegram send or device test is authorized. The BG-29 exception is development-only at strict additional cost $0. No production account or billed quota read has been claimed.
