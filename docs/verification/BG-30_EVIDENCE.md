@@ -153,3 +153,7 @@ The existing server-side local-worker endpoints have a distinct claim: bounded a
 ### 34/50 — RAG and Android entry boundaries (BG-30.067–068)
 
 V1.5 RAG remains conditional on accepted V1, at least 100 useful captures, a gold question set and separate citation/quality evaluation. Android is V1.1/V2 conditional on genuine Android use. Neither belongs in the BG-30 current V1 completion numerator. A separate `Ollama-client` matrix row records the unproven runnable program instead of hiding it behind server API status.
+
+### 35/50 — Extension and multiuser separation (BG-30.069–070)
+
+A desktop browser extension is V2 conditional on capture volume, and multi-user productization is V3/new authorization. The [release roadmap](../RELEASE_ROADMAP.md) holds their entry conditions. BG-30 records them only as **not in current V1 scope**, not a missing V1 regression or a completed delivered feature.
