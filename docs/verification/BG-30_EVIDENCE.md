@@ -129,3 +129,7 @@ Auth evidence: [BG-23/24](BG-23_BG-24_ACCEPTANCE.md), [BG-25](BG-25_SECURITY_HAR
 ### 28/50 — Operations visibility and incident response (BG-30.055–056)
 
 [BG-26 operations record](BG-26_OPERATIONS_VISIBILITY.md) covers admin-scoped usage and `/api/v1/operations/summary` with safe aggregate groups and retry-deferred distinction. [Operations runbook](../OPERATIONS_RUNBOOK.md) lists incident steps for token loss, provider/Notion outage, D1 damage, FTS drift and purge/backup faults. A readable playbook is not evidence that a live incident rotation/recovery drill occurred.
+
+### 29/50 — Privacy and capacity controls (BG-30.057–058)
+
+Privacy routing and deletion freshness are documented in [security governance](../SECURITY_PRIVACY_GOVERNANCE.md), [BG-25](BG-25_SECURITY_HARDENING.md) and [BG-28](BG-28_FINAL_CLOSEOUT.md). [BG-29](BG-29_RESILIENCE_ACCEPTANCE.md) measured isolated load, V8 samples and local queue stages. Provider-account spend/hosted resource performance and multi-stage real elapsed Cron remain unverified; the $0 rule bars risk-bearing live tests.
