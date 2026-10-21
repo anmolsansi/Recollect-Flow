@@ -53,3 +53,7 @@ Production acceptance requires an authorized exact deployed identity and a live 
 ### 09/50 — Remaining gate and exact-SHA requirements (BG-30.017–018)
 
 Every open row must name a concrete next action: CI, browser, isolated recovery, configured live provider, real elapsed Cron, operator rotation or physical iPhone. Fix references must carry exact 40-character merge SHA or exact tested head. A ticket key, branch name or vaguely recent green run is insufficient identity.
+
+### 10/50 — Historical versus accepted limitations (BG-30.019–020)
+
+The 2026-08 deployed Worker version and 2026-09 audit are labeled historical snapshots. FTS punctuation/tokenization constraints and browser/device gaps stay listed. A source merge does not grant the production release; the open BG-29.078 hosted elapsed-hour gate is retained as DEFERRED/NOT VERIFIED.
