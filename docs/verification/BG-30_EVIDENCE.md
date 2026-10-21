@@ -197,3 +197,12 @@ BG-30 reconciliation feeds BG-31 release-manifest planning at strict $0; it does
 ### 45/50 — Priority 4 hardening packet decision (BG-30.089–090)
 
 The evidence index links BG-23/24 token rotation, BG-25 security/private object/log controls, BG-26 operational visibility, BG-27 digest safety, BG-28 recovery and BG-29 capacity. Current judgement: documentation is reconciled for review, but OPE-247 consolidated security/incident/operator/live acceptance remains **In Progress**. Priority 4 is **NOT CLOSED** from source/CI alone; the release stays **NO-GO** pending independently required gates.
+
+### 46/50 — Checklist scope review and focused CI proof (BG-30.091–092)
+
+The 100 canonical actions and [PR #117](https://github.com/anmolsansi/Recollect-Flow/pull/117)
+were compared against the Build Guide §36 outcome. The first exact-branch
+[CI #39646952371](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39646952371)
+ran the new offline evidence checks successfully, then stopped at formatting:
+`scripts/bg30-evidence.test.mjs`. This commit fixes that deterministic
+style error; the full suite must be rerun on the final source revision.

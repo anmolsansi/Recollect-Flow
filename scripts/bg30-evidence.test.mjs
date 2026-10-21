@@ -58,7 +58,9 @@ test('unverified deployments cannot become production claims', () => {
 });
 
 test('a local-worker API does not claim runnable Ollama acceptance', () => {
-  const localClient = matrix.capabilities.find((row) => row.id === 'Ollama-client');
+  const localClient = matrix.capabilities.find(
+    (row) => row.id === 'Ollama-client',
+  );
   assert.ok(localClient);
   assert.equal(localClient.implemented, 'NO');
   assert.equal(localClient.local_test, 'NOT_VERIFIED');
