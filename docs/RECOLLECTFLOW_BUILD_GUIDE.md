@@ -238,6 +238,24 @@ must not assume an unsettled API, authentication or state contract. Calendar-bas
 observation for BG-38/BG-39 may overlap once the same release candidate is stable;
 the completion gates remain in the listed order.
 
+### Owner-directed BG-29.078 development exception — 2026-10-21
+
+The hosted BG-29.078 acceptance remains unverified. BG-29 stays at 99/100,
+GitHub #99 remains open and Linear OPE-344 remains In Progress.
+
+The owner has authorized safe, zero-additional-cost **development** of BG-30
+through BG-40 and any future downstream tickets without waiting for
+BG-29.078. The exception applies transitively when that unfinished test is
+the only inherited blocker. It permits documentation, source changes, local
+tests, CI and safe planning, not automatic completion of other prerequisites.
+
+All production, real-provider, physical-device, elapsed-time, billing and
+release-acceptance gates remain independently required. No new spending or
+live operations are approved. BG-40 may record a truthful NO-GO.
+
+See the [authoritative downstream development exception](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md) for the full
+scope and per-ticket restrictions.
+
 ## 6. How a small task is completed
 
 ### Microtask edition — 100 steps per task
