@@ -173,3 +173,7 @@ The only BG-30 source branch is `feat/bg-30-evidence-reconciliation`. A BG-30 PR
 ### 39/50 — Authorized updates and human review gates (BG-30.077–078)
 
 GitHub issue #116 may track source documentation, but source updates do not waive OPE-247 review, BG-29.078 elapsed-hour acceptance, the hard $0 account constraint, production backup/restore approval, live provider credentials or physical-device signoff. No Linear Done or production change is initiated by this ledger. Final merge requires exact-head CI and the repository's review rules.
+
+### 40/50 — Blocked updates and evidence-consistent wording (BG-30.079–080)
+
+An external tracker closeout is **BLOCKED** while its independent OPE-247 acceptance remains incomplete. Marking BG-30 documentation reconciled is not a GO to launch. If approval, account billing evidence or device observations are absent, the exact gate remains **NOT VERIFIED** and the tracker must retain active/open state. Historical verification text remains dated and attributable.
