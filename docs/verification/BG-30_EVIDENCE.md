@@ -109,3 +109,7 @@ OPE-248's [Web Inbox ticket](../tickets/OPE-248.md) documents item review/recove
 ### 23/50 — Recovery trace and implementation/release split (BG-30.045–046)
 
 OPE-228's [recovery ticket](../tickets/OPE-228.md) and [BG-28 closeout](BG-28_FINAL_CLOSEOUT.md) describe portable export, read-back backup, explicit purge, receipt anti-resurrection, restore and integrity fixtures. [Merged BG-28 PR #98](https://github.com/anmolsansi/Recollect-Flow/pull/98) proves code delivery, not real loss or an approved remote purge drill. Deployed schema/version and actual disaster recovery must be independently recorded.
+
+### 24/50 — Production versus acceptance and canonical ticket files (BG-30.047–048)
+
+Every delivery row must separately express merged source, local/CI test, deployed version, production smoke and owner-device use. Known records: `../tickets/OPE-225.md`, `OPE-226.md`, `OPE-248.md`, `OPE-227.md`, `OPE-228.md`, plus BG-23–BG-29 verification. Do not substitute green unit tests for HTTPS login, provider sends, restored original bytes, real iPhone queueing or actual hourly Cron drain.
