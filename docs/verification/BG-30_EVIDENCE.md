@@ -65,3 +65,7 @@ The 2026-08 deployed Worker version and 2026-09 audit are labeled historical sna
 ### 12/50 — Obsolete statements identified (BG-30.023–024)
 
 `../BUILD_STATUS.md` still calls OPE-227 implemented on a pending feature branch and OPE-228 an implementation checkpoint. Their source is in the later merged repository, so those branch-pending sentences are historical rather than current status. `../repo_context.md` still attributes release blockers to the old September application snapshot; follow-up BG-03–BG-29 records, rather than that paragraph, are the live provenance.
+
+### 13/50 — Verified merge identities (BG-30.025–026)
+
+GitHub PR API confirms BG-06 #39 merged at `a5096e337def6cad993ff5267f640cc619cafa03`, browser download BG-07 #42 at `27aa0dad8cf82c8e8c483baaf1b302c4772d170d`, status BG-13 #62 at `3d1af004bc0ebfaa95645a39880b38f623d3c447`, Web hosting BG-21 #84 at `b7536746b46d8703e620b3cc5e9f5c6f24327d38`, and BG-29 #100 at `b7edcb7b9d76837f570f90ba6c1934c6926d95be`. These prove merges, not hosted acceptance.
