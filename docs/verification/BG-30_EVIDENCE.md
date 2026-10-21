@@ -33,3 +33,7 @@ Use the [September audit](../WORKFLOW_AUDIT_2026-09-12.md) only at its original 
 ### 04/50 — Environment and authority (BG-30.007–008)
 
 Review environment: GitHub source, merged PR metadata, historical CI and connected Linear issue. No production or staged Worker deploy, remote migration, Cloudflare resource creation, live provider invocation, Telegram send or device test is authorized. The BG-29 exception is development-only at strict additional cost $0. No production account or billed quota read has been claimed.
+
+### 05/50 — Minimal inputs and evidence tracking (BG-30.009–010)
+
+Input artifacts are repository documents, canonical checklist items and actual merge/CI metadata; no real-user capture or private content is necessary. [Issue #116](https://github.com/anmolsansi/Recollect-Flow/issues/116) is the sole BG-30 parent with 50 two-action pairs. This evidence record distinguishes **observed** source, **inherited** historical tests, **unobserved** live acceptance and **blocked** external gates.
