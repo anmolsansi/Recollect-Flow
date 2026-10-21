@@ -9,6 +9,18 @@
 | BG-32–BG-39 real acceptance                             | **NOT automatically unlocked or completed**                             | Separate actual production/device/provider/time and cost/authorization evidence for each ticket                                          |
 | BG-40 launch disposition                                | Explicit GO/NO-GO only; outstanding gates recorded; NO-GO is legitimate | No GO from an unverified throughput, safety or billing claim                                                                             |
 
+## BG-30 evidence reconciliation (2026-10-21)
+
+The [BG-30 evidence ledger](verification/BG-30_EVIDENCE.md) distinguishes source
+implementation, historical local proof, exact-sha CI, released version, observed
+production acceptance, physical-device acceptance and remaining blockers. It
+reconciles the September audit without rewriting its original results. This
+record is **in-progress**, not a GO decision. BG-29.078 remains deferred under
+the [strict $0 owner decision](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md).
+[GitHub BG-30 #116](https://github.com/anmolsansi/Recollect-Flow/issues/116)
+is the task tracker; Linear OPE-247 remains In Progress until every actual
+release-level security and operations criterion passes.
+
 ## Product-goal traceability
 
 | Goal                             | Requirements                              | Delivery             | Acceptance evidence                                     |

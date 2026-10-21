@@ -113,3 +113,7 @@ OPE-228's [recovery ticket](../tickets/OPE-228.md) and [BG-28 closeout](BG-28_FI
 ### 24/50 — Production versus acceptance and canonical ticket files (BG-30.047–048)
 
 Every delivery row must separately express merged source, local/CI test, deployed version, production smoke and owner-device use. Known records: `../tickets/OPE-225.md`, `OPE-226.md`, `OPE-248.md`, `OPE-227.md`, `OPE-228.md`, plus BG-23–BG-29 verification. Do not substitute green unit tests for HTTPS login, provider sends, restored original bytes, real iPhone queueing or actual hourly Cron drain.
+
+### 25/50 — Tracker identity and traceability (BG-30.049–050)
+
+BG-30 is guide-local work tracked under [GitHub #116](https://github.com/anmolsansi/Recollect-Flow/issues/116); OPE-247 is its broader still-active Linear hardening epic, not a newly completed ticket. OPE-344/BG-29 stays open; no inferred Linear Done status is allowed from merging #100. `../TRACEABILITY.md` now explicitly points to this reconciliation ledger and separates documented source from production gates.
