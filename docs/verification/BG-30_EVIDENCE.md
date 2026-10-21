@@ -61,3 +61,7 @@ The 2026-08 deployed Worker version and 2026-09 audit are labeled historical sna
 ### 11/50 — Legacy BUILD_STATUS inspection (BG-30.021–022)
 
 `../BUILD_STATUS.md` is headed 2026-08-08. Its `Completed and deployed` block, 66-test counts and `Locally complete, release pending` snapshots must not be read as 2026-10-21 state. Its October 21 preface already warns about this and should be superseded by a current independently versioned evidence matrix, while preserving dated original content.
+
+### 12/50 — Obsolete statements identified (BG-30.023–024)
+
+`../BUILD_STATUS.md` still calls OPE-227 implemented on a pending feature branch and OPE-228 an implementation checkpoint. Their source is in the later merged repository, so those branch-pending sentences are historical rather than current status. `../repo_context.md` still attributes release blockers to the old September application snapshot; follow-up BG-03–BG-29 records, rather than that paragraph, are the live provenance.
