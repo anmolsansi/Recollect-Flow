@@ -121,3 +121,7 @@ BG-30 is guide-local work tracked under [GitHub #116](https://github.com/anmolsa
 ### 26/50 — Authentication and rotation packet (BG-30.051–052)
 
 Auth evidence: [BG-23/24](BG-23_BG-24_ACCEPTANCE.md), [BG-25](BG-25_SECURITY_HARDENING.md) and `../TOKEN_ROTATION.md`. Scope separation, negative session tests and token rotation are source/local claims. OPE-247 explicitly requires capture/admin/local-worker rotation **rehearsals**. No proof here of a fresh production rotation or a revoked session on current deployment.
+
+### 27/50 — Log redaction and private objects (BG-30.053–054)
+
+[BG-25 security matrix](BG-25_SECURITY_HARDENING.md) documents synthetic auth, request, log and object-access tests; [security policy](../SECURITY_PRIVACY_GOVERNANCE.md) forbids logged secrets, prompts or raw sensitive payloads. Earlier private R2 download regressions are in [BG-07](BG-07_FINAL_CLOSEOUT.md). A passing synthetic suite is not a new independent production-log audit.
