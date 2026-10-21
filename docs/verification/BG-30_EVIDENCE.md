@@ -145,3 +145,7 @@ Privacy routing and deletion freshness are documented in [security governance](.
 ### 32/50 — Required versus deferred local processing (BG-30.063–064)
 
 The [release roadmap](../RELEASE_ROADMAP.md) lists Phase 8 local Ollama/strict-private processing. Without a running client and Mac-on/Mac-off acceptance, that capability remains **UNIMPLEMENTED/UNVERIFIED** for release purposes. A strict-private no-AI path is already an intentional fallback. Deferring a V1 local-client requirement needs an explicit owner decision, not a silent change to the PRD.
+
+### 33/50 — API-only and no-AI fallback truth (BG-30.065–066)
+
+The existing server-side local-worker endpoints have a distinct claim: bounded authenticated job execution interface. They do not prove a process that executes Ollama prompts, runs offline, heartbeats, handles lease loss or restarts cleanly. Failed/forbidden AI must leave original capture/search available without sending private input externally, as covered by isolated outage tests. A validated no-AI capture is not evidence of local-model enrichment.
