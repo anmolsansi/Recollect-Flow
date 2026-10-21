@@ -93,3 +93,7 @@ The [BG-13 atomic-processing closeout](BG-13_FINAL_CLOSEOUT.md) identifies imple
 ### 19/50 — Smoke verifier and still-open audit boundaries (BG-30.037–038)
 
 [BG-03 final closeout](BG-03_FINAL_CLOSEOUT.md) verifies release-smoke edit-version handling through PR #28, merge `95f27d34527a3d5b9b9e31037c060672bf54c8f6`; [BG-04 final closeout](BG-04_FINAL_CLOSEOUT.md) verifies the smoke story/setup through PR #32, merge `feb568f6438bc7068520fb654ca933238b9f8c28`. The September audit's original failures remain recorded as historical. Production and physical-device acceptance are **not** fixed by local smoke changes.
+
+### 20/50 — Audit history and limitation wording (BG-30.039–040)
+
+Preserve `../WORKFLOW_AUDIT_2026-09-12.md` byte-for-byte as the original 2026-09-12 observation. Where older docs say release-blocking defects remain, qualify them as at-that-SHA findings with follow-up commit links. New gaps are unverified hosted provider/Notion/digest/device, BG-29.078 and OPE-247 consolidated hardening rather than an invented repeat of already merged code defects.
