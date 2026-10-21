@@ -41,3 +41,7 @@ Input artifacts are repository documents, canonical checklist items and actual m
 ### 06/50 — Implementation versus local tests (BG-30.011–012)
 
 A feature counts as implemented only after inspecting a named source or a merged reviewable change. Local success must link a focused test, browser story or bounded isolated D1 fixture. The ledger will keep these separate even when both describe the same feature. A migration file alone is not a deployed migration.
+
+### 07/50 — CI versus deployed revision (BG-30.013–014)
+
+CI evidence requires a run URL with the tested commit SHA. A green historical main workflow is **not** evidence for an updated branch. Deployed versions are never inferred from `main` or a PR merge. The historic `c0e78f89-d7a6-4416-a638-57693d256c03` Worker version in `BUILD_STATUS.md` is a dated snapshot, not a current production feature release attestation.
