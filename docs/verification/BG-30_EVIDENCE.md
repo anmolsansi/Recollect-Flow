@@ -137,3 +137,7 @@ Privacy routing and deletion freshness are documented in [security governance](.
 ### 30/50 — Recovery and OPE-247 remaining gates (BG-30.059–060)
 
 [BG-28 recovery](BG-28_FINAL_CLOSEOUT.md) contains synthetic bundle verification, restore and purge safety. OPE-247 remains **In Progress** in Linear: release-level proof still needs live rotation and incident rehearsal, independent log/privacy audit, account-wide operations/billing headroom, production deployment identity, and authorized recovery as required. No one should close OPE-247 from an API inventory alone.
+
+### 31/50 — Local-worker API and executable client inventory (BG-30.061–062)
+
+`../tickets/OPE-246.md` describes local-worker bearer endpoints for lease, heartbeat, complete and fail. A repository-scoped GitHub code search for `ollama` returned documentation and migration matches but no runnable client implementation file. The [September audit](../WORKFLOW_AUDIT_2026-09-12.md) also could not establish a runnable local Ollama worker. An API surface alone is not working local inference.
