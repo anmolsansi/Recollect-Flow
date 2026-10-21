@@ -2,6 +2,13 @@
 
 Read the [build guide](RECOLLECTFLOW_BUILD_GUIDE.md) for the detailed feature explanations, design reasoning, examples, source references and completion boundaries. This companion preserves the original 100 microtasks for each of the 40 tasks, in priority order. Boxes remain planned work until task-specific evidence proves completion, at which point the corresponding checklist may be checked.
 
+**Owner-directed 2026-10-21 BG-29.078 exception:**
+[one $0 downstream development dependency rule](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md)
+applies transitively to BG-30 through BG-40. Their .002 checks must review and
+record deferred BG-29.078 status, not require it to be marked passed before
+safe local development. All other acceptance, release and spend gates remain.
+No checkbox is pre-checked by this exception.
+
 ## BG-01 — 100 executable microtasks
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#7-bg-01--freeze-a-reproducible-starting-point).
@@ -4154,7 +4161,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-30 / 01 — Establish task context
 
 - [ ] `BG-30.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-30.002` **Dependency:** Verify BG-29's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [ ] `BG-30.002` **Dependency:** Review BG-29's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
 - [ ] `BG-30.003` **Baseline:** Record the actual checkout or release candidate used for BG-30.
 - [ ] `BG-30.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
 - [ ] `BG-30.005` **Evidence:** Check whether existing evidence already satisfies any BG-30 step; reference it instead of manufacturing work.
@@ -4292,7 +4299,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-31 / 01 — Establish task context
 
 - [ ] `BG-31.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-31.002` **Dependency:** Verify BG-30's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [ ] `BG-31.002` **Dependency:** Review BG-30's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
 - [ ] `BG-31.003` **Baseline:** Record the actual checkout or release candidate used for BG-31.
 - [ ] `BG-31.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
 - [ ] `BG-31.005` **Evidence:** Check whether existing evidence already satisfies any BG-31 step; reference it instead of manufacturing work.
@@ -4430,7 +4437,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-32 / 01 — Establish task context
 
 - [ ] `BG-32.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-32.002` **Dependency:** Verify BG-31's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [ ] `BG-32.002` **Dependency:** Review BG-31's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
 - [ ] `BG-32.003` **Baseline:** Record the actual checkout or release candidate used for BG-32.
 - [ ] `BG-32.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
 - [ ] `BG-32.005` **Evidence:** Check whether existing evidence already satisfies any BG-32 step; reference it instead of manufacturing work.
@@ -4568,7 +4575,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-33 / 01 — Establish task context
 
 - [ ] `BG-33.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-33.002` **Dependency:** Verify BG-32's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [ ] `BG-33.002` **Dependency:** Review BG-32's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
 - [ ] `BG-33.003` **Baseline:** Record the actual checkout or release candidate used for BG-33.
 - [ ] `BG-33.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
 - [ ] `BG-33.005` **Evidence:** Check whether existing evidence already satisfies any BG-33 step; reference it instead of manufacturing work.
@@ -4706,7 +4713,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-34 / 01 — Establish task context
 
 - [ ] `BG-34.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-34.002` **Dependency:** Verify BG-33's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [ ] `BG-34.002` **Dependency:** Review BG-33's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
 - [ ] `BG-34.003` **Baseline:** Record the actual checkout or release candidate used for BG-34.
 - [ ] `BG-34.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
 - [ ] `BG-34.005` **Evidence:** Check whether existing evidence already satisfies any BG-34 step; reference it instead of manufacturing work.
@@ -4844,7 +4851,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-35 / 01 — Establish task context
 
 - [ ] `BG-35.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-35.002` **Dependency:** Verify BG-34's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [ ] `BG-35.002` **Dependency:** Review BG-34's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
 - [ ] `BG-35.003` **Baseline:** Record the actual checkout or release candidate used for BG-35.
 - [ ] `BG-35.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
 - [ ] `BG-35.005` **Evidence:** Check whether existing evidence already satisfies any BG-35 step; reference it instead of manufacturing work.
@@ -4982,7 +4989,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-36 / 01 — Establish task context
 
 - [ ] `BG-36.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-36.002` **Dependency:** Verify BG-35's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [ ] `BG-36.002` **Dependency:** Review BG-35's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
 - [ ] `BG-36.003` **Baseline:** Record the actual checkout or release candidate used for BG-36.
 - [ ] `BG-36.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
 - [ ] `BG-36.005` **Evidence:** Check whether existing evidence already satisfies any BG-36 step; reference it instead of manufacturing work.
@@ -5120,7 +5127,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-37 / 01 — Establish task context
 
 - [ ] `BG-37.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-37.002` **Dependency:** Verify BG-36's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [ ] `BG-37.002` **Dependency:** Review BG-36's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
 - [ ] `BG-37.003` **Baseline:** Record the actual checkout or release candidate used for BG-37.
 - [ ] `BG-37.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
 - [ ] `BG-37.005` **Evidence:** Check whether existing evidence already satisfies any BG-37 step; reference it instead of manufacturing work.
@@ -5258,7 +5265,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-38 / 01 — Establish task context
 
 - [ ] `BG-38.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-38.002` **Dependency:** Verify BG-37's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [ ] `BG-38.002` **Dependency:** Review BG-37's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
 - [ ] `BG-38.003` **Baseline:** Record the actual checkout or release candidate used for BG-38.
 - [ ] `BG-38.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
 - [ ] `BG-38.005` **Evidence:** Check whether existing evidence already satisfies any BG-38 step; reference it instead of manufacturing work.
@@ -5396,7 +5403,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-39 / 01 — Establish task context
 
 - [ ] `BG-39.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-39.002` **Dependency:** Verify BG-38's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [ ] `BG-39.002` **Dependency:** Review BG-38's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
 - [ ] `BG-39.003` **Baseline:** Record the actual checkout or release candidate used for BG-39.
 - [ ] `BG-39.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
 - [ ] `BG-39.005` **Evidence:** Check whether existing evidence already satisfies any BG-39 step; reference it instead of manufacturing work.
@@ -5534,7 +5541,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-40 / 01 — Establish task context
 
 - [ ] `BG-40.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-40.002` **Dependency:** Verify BG-39's required completion evidence; preserve any unresolved prerequisite as a blocker.
+- [ ] `BG-40.002` **Dependency:** Review BG-39's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
 - [ ] `BG-40.003` **Baseline:** Record the actual checkout or release candidate used for BG-40.
 - [ ] `BG-40.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
 - [ ] `BG-40.005` **Evidence:** Check whether existing evidence already satisfies any BG-40 step; reference it instead of manufacturing work.

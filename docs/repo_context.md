@@ -1,5 +1,9 @@
 # Repo Context — RecollectFlow — refreshed 2026-09-16
 
+## 2026-10-21 development-order addendum
+
+The original September 2026 runtime audit below is historical; it does not certify current deployment. For all BG-30 through BG-40 development, apply the [owner's strict $0 BG-29.078 exception](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md). BG-29.078 remains unverified, and the waiver permits local work **only**, not unchecked production, device, real-clock, provider or billing acceptance. A downstream task's independent technical prerequisites and financial permissions still apply.
+
 ## Context provenance
 
 This context is prepared from current `main` at `99678dfef1da1ea31b8b1f12c985bdaaf950b722`.
