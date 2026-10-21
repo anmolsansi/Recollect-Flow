@@ -101,3 +101,7 @@ Preserve `../WORKFLOW_AUDIT_2026-09-12.md` byte-for-byte as the original 2026-09
 ### 21/50 — Search and digest feature trace (BG-30.041–042)
 
 OPE-225 implements D1 FTS5 indexing, filters, safe structural snippets and idempotent rebuild per [ticket](../tickets/OPE-225.md). OPE-226 implements IST daily/weekly selection, restricted-content neutralization, explicit digest review and bounded Telegram delivery per [ticket](../tickets/OPE-226.md) and [BG-27 evidence](BG-27_DIGEST_REVIEW.md). Both have local/CI evidence, but actual released migrations, live digest delivery and seven eligible consecutive days remain separate acceptance.
+
+### 22/50 — Web and capacity trace (BG-30.043–044)
+
+OPE-248's [Web Inbox ticket](../tickets/OPE-248.md) documents item review/recovery and isolated browser behavior; BG-21's merged [hosting PR #84](https://github.com/anmolsansi/Recollect-Flow/pull/84) does not by itself prove the production Web root works. OPE-227's [capacity ticket](../tickets/OPE-227.md) and [BG-29 resource ledger](BG-29_RESILIENCE_ACCEPTANCE.md) cover isolated quota/circuit/continuity, but account-wide hosted limits and assured $0 billing are unverified.
