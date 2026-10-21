@@ -240,27 +240,21 @@ the completion gates remain in the listed order.
 
 ### Owner-directed BG-29.078 development exception — 2026-10-21
 
-**Override for BG-30 through BG-40 and any later successor tasks, development entry only.** The owner does not
-want to incur any additional expense to complete the still-unverified hosted
-BG-29.078 hourly multi-stage acceptance. Its 99/100 BG-29 status, GitHub #99
-and Linear OPE-344 remain unresolved; this is **not** a PASS, N/A, automatic
-closure, release approval, or a change to its frozen acceptance contract.
+The hosted BG-29.078 acceptance remains unverified. BG-29 stays at 99/100,
+GitHub #99 remains open and Linear OPE-344 remains In Progress.
 
-BG-30 and every downstream ticket (including future tasks beyond BG-40) may now proceed with evidence reconciliation,
-source changes, local/offline tests, documented planning, CI and safe preparatory
-work, even when the only inherited blocked prerequisite is BG-29.078. Record the
-exception once and carry it transitively through BG-40; do not repeatedly demand
-hosted R2/Cron acceptance to start unrelated safe work. Other incomplete
-predecessor obligations remain independently visible and cannot be silently
-waived. No unperformed production, device, provider, real-clock or actual-cost
-evidence may be marked complete. BG-32+ live operations remain subject to
-separate authorization and the **strict $0 additional-spend** rule; BG-40 must
-record an evidence-based GO/NO-GO, which may be NO-GO.
+The owner has authorized safe, zero-additional-cost **development** of BG-30
+through BG-40 and any future downstream tickets without waiting for
+BG-29.078. The exception applies transitively when that unfinished test is
+the only inherited blocker. It permits documentation, source changes, local
+tests, CI and safe planning, not automatic completion of other prerequisites.
 
-**Authoritative exception and per-ticket boundaries:**
-[BG-29.078 $0 downstream development exception](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md).
-This rule supersedes the unconditional *start-after* restriction **only** for
-safe BG-30–BG-40 development activity, not for deployment or acceptance.
+All production, real-provider, physical-device, elapsed-time, billing and
+release-acceptance gates remain independently required. No new spending or
+live operations are approved. BG-40 may record a truthful NO-GO.
+
+See the [authoritative downstream development exception](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md) for the full
+scope and per-ticket restrictions.
 
 ## 6. How a small task is completed
 

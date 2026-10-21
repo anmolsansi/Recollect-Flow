@@ -1,53 +1,108 @@
 # BG-29.078 — $0 downstream development dependency exception
 
-**Owner decision:** 2026-10-21 — do not incur any additional cost to finish BG-29; continue with BG-30 and later planned tickets.
-**Applicability:** RecollectFlow BG-30 through BG-40 **and any future successor tickets**, including any direct or inherited dependency on BG-29.078.
-**Starting source baseline:** `027192d83b836f8f3ae84bb307dd07c934f32b47` on `main` when this documentation change began.
-**Exception type:** DEVELOPMENT-ENTRY ONLY. This is not a passed test, acceptance waiver, production-release authorization or representation of operational readiness.
+**Owner direction:** 2026-10-21. No additional spending to finish BG-29;
+continue with downstream development.
 
-## 1. Frozen unfinished requirement and evidence
+**Scope:** BG-30 through BG-40 and all later successor tickets that directly
+or transitively depend on BG-29.078.
 
-- BG-29 stays **99/100** source microtasks; BG-29.078 (measured actual multi-stage hourly hosted backlog delay) remains **UNCHECKED/DEFERRED**, not PASS, N/A or DONE.
-- The corresponding GitHub #99 paired item stays **49/50**; [GitHub issue #99](https://github.com/anmolsansi/Recollect-Flow/issues/99) remains open and [Linear OPE-344](https://linear.app/openclaw-neutron/issue/OPE-344/bg-29-resilience-capacity-and-performance-acceptance) stays In Progress, unless independently and truthfully reclassified through a later owner decision.
-- The [frozen acceptance contract](BG-29_078_ACCEPTANCE_CONTRACT.md) AC-01 through AC-17 is unchanged. The previous D1-only hourly Cron and local emulated D1/R2 tests are valuable partial evidence, **not** the genuine hosted end-to-end acceptance.
-- The [Step 12 financial decision](BG-29_078_STEP12_FINANCIAL_DECISION_2026-10-21.md) is **NO-GO**: metered R2 free allowances and $0 currently billed are not an enforceable $0 upper bound. Steps 13–17 were not authorized or completed.
+**Source baseline:** `027192d83b836f8f3ae84bb307dd07c934f32b47`.
 
-## 2. Single exception governing all subsequent work
+**Decision class:** Development entry only. No acceptance waiver.
 
-1. **Development may continue:** BG-29.078's unfinished hosted proof must not be used as a repeated gate to prevent BG-30 through BG-40 repository analysis, documentation, design, local code/test work, local D1/R2 emulation, fixture preparation, offline CI or review. No additional permission is needed simply to reuse this exception for the same missing BG-29.078 evidence.
-2. **Carry the risk forward explicitly:** When a downstream `.002` dependency check encounters the unfinished BG-29.078 directly or transitively, record this dated development exception and keep its missing hosted evidence visible. The dependency check may be completed as an *accurate disposition review*, not a claim that BG-29 passed.
-3. **Other prerequisites still apply:** This does not waive missing implementation, correctness, integrity, privacy, physical-device, migration, backup, live-provider, scheduling, billing or other required acceptance proof from BG-30 onward. Normal completion gates still require their actual independent evidence.
-4. **Development completion is not release acceptance:** BG-30 documentation reconciliation and BG-31 release-manifest preparation may reach their own documented completion if all **their** evidence requirements pass. For BG-32 through BG-39, prepare and validate safe offline portions without falsely completing mandatory production, real-device, real-clock, provider or billing checks.
-5. **BG-40 can record NO-GO:** An explicit V1 GO/NO-GO decision may be documented with residual BG-29.078 risk and other unverified gates. A GO claim must not be inferred from this exception; missing safety-critical acceptance still blocks a responsible production GO.
+## 1. BG-29 remains incomplete
 
-## 3. Hard $0 operational boundary (all future tickets)
+- The canonical BG-29 checklist remains **99/100**.
+- BG-29.078 is **DEFERRED / NOT VERIFIED**, never PASS, N/A or DONE.
+- GitHub issue [#99](https://github.com/anmolsansi/Recollect-Flow/issues/99)
+  remains open at 49/50 paired steps.
+- Linear [OPE-344](https://linear.app/openclaw-neutron/issue/OPE-344/bg-29-resilience-capacity-and-performance-acceptance)
+  remains In Progress.
+- The [AC-01 through AC-17 acceptance contract](BG-29_078_ACCEPTANCE_CONTRACT.md)
+  remains unchanged. Local/emulated tests and the old D1-only live Cron
+  do not count as the genuine hosted multistage acceptance.
+- The [financial assessment](BG-29_078_STEP12_FINANCIAL_DECISION_2026-10-21.md)
+  remains **NO-GO**. Metered R2 lacks an enforceable $0 spending cap.
+  Steps 13–17 were neither authorized nor completed.
 
-- **No new charges, including small or estimated charges.** No metered paid API/provider activity, subscription/plan upgrade, hosted R2 provisioning or access, remote D1 migrations, production deployment, Cloudflare Cron enablement, real messaging, or billable external interaction without a **new, operation-specific owner authorization and an acceptable financial safeguard**.
-- Existing free-tier allowances, account projections and budget alerts are **not** automatic permission and do not guarantee a hard $0 bill.
-- Permitted now: GitHub/Linear documentation and issue tracking, code/test/design/review, local fixtures, local emulated R2 and D1, CI using existing authorized capacity, and read-only investigation.
-- If a downstream ticket inherently needs hosted services, real users, physical devices, seven calendar days, two weeks of actual usage, or actual paid-service billing proof, mark that portion **BLOCKED/NOT RUN** until genuinely possible within the $0 policy and specifically authorized. No substitution of simulations for live evidence.
-- Production code, bindings, secrets, routes and databases remain unchanged by this policy. Existing disabled BG-29 staging Cron remains disabled.
+## 2. One development exception for all downstream tickets
 
-## 4. Ticket-by-ticket treatment
+- BG-29.078 alone must not block BG-30–BG-40 or any later successor
+  from repository analysis, documentation, design, source changes,
+  local fixtures, offline D1/R2 emulation, local tests or safe CI.
+- The `.002` dependency check should record this dated exception
+  whenever BG-29.078 is the only missing inherited prerequisite.
+  Checking `.002` means the disposition was reviewed; it does not
+  mean the unfinished BG-29.078 test was passed.
+- There is no need to request the same BG-29 development exception
+  again for each downstream ticket.
+- All other missing predecessor requirements remain independent.
+  No implementation, integrity, privacy, safety, release, device,
+  external-provider, scheduling or billing acceptance is waived.
+- BG-30 documentation reconciliation and BG-31 release planning
+  may be completed on their own evidence. BG-32–BG-39 can proceed
+  with safe local work while genuine live steps remain blocked.
+- BG-40 may document an informed **NO-GO**, but the exception
+  never justifies an unsupported V1 GO decision.
 
-| Ticket   | What the exception permits now                                                              | What it does **not** prove or authorize                                                           |
-| -------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| BG-30    | Reconcile documentation, tickets, audit, OPE-247 evidence and current implementation status | BG-29.078 PASS, unrelated OPE-247 missing evidence or production acceptance                       |
-| BG-31    | Prepare a precise release manifest, backups, stop/rollback plan and approval packet         | Production release or completed live inventory not actually observed                              |
-| BG-32    | Prepare/configure/test locally and review release operations                                | Production migration/deployment or smoke before explicit authorization and suitable cost controls |
-| BG-33–34 | Develop/test capture, retrieval, AI and Notion failure fixtures locally                     | Actual approved production, AI/Notion provider or outage proof                                    |
-| BG-35–36 | Prepare iPhone workflows and offline test matrices                                          | Physical iPhone test result without the actual device observation                                 |
-| BG-37    | Prepare restore drills against isolated local artifacts                                     | Independently validated hosted recovery without the required artifacts/operations                 |
-| BG-38    | Prepare daily digest tests and evidence collection                                          | Seven consecutive real eligible scheduled delivery days or live messaging                         |
-| BG-39    | Prepare the real-use protocol and $0 financial verification criteria                        | Two weeks of observed use or final invoice/cost reconciliation not obtained                       |
-| BG-40    | Draft/review an evidence-based explicit GO/NO-GO, including NO-GO                           | A GO decision without required operational, safety and cost proof                                 |
+## 3. Strict $0 and production protection
 
-## 5. Application and verification
+- No added charges or paid subscription and service upgrades.
+- No hosted R2 writes, reads or provisioning; no remote D1 mutation,
+  production deployment or Cloudflare Cron enablement.
+- No real Notion, OpenRouter, Telegram or other paid/outbound
+  provider interaction or live notification without separate
+  operation-specific owner approval and acceptable cost safeguards.
+- A free allowance, projected $0 invoice or budget alert is not a
+  hard spending cutoff and does not constitute permission.
+- Read-only research, GitHub/Linear records, local code and tests,
+  local emulated D1/R2 and CI within authorized free capacity
+  remain permitted.
+- The BG-29 staging Cron remains disabled. This documentation
+  change does not alter production resources or secret values.
 
-- This single exception applies **transitively** to BG-30..BG-40 **and any newly added downstream successors**, not just BG-30. Future maintainers should not request to rerun or pay for BG-29.078 as a prerequisite to the **safe development subset** of a later ticket.
-- A downstream checklist's `.002` checkbox is eligible only after its reviewer records which predecessor evidence exists, identifies any other missing prerequisites, and links this exception for BG-29.078. No other checkbox is automatically completed.
-- Evidence tables should have separate **implemented / locally tested / CI / deployed / device / time-based / billing / outstanding** states. Keep unknown values unknown; preserve source SHA and links.
-- A later owner decision may authorize a different financial policy and real acceptance attempt, but must be explicit, documented and independently reviewed; this October 21 exception cannot grant it by implication.
-- This document changes only development ordering and documentation. It does not change the frozen BG-29 test's numerical thresholds, production release conditions or the meaning of PASS.
+## 4. Ticket-by-ticket boundaries
 
-**Record outcome:** BG-29.078 remains deferred; BG-30–BG-40 safe development unblocked; production and live acceptance remain separately gated; additional spend authorized = **$0**.
+**BG-30:** Reconcile implementation, status, audits and OPE-247.
+Do not infer missing hardening or BG-29 acceptance.
+
+**BG-31:** Prepare the release manifest, backups, operational stops
+and recovery plan. No production action is implied.
+
+**BG-32:** Plan and test deployments locally. Real production
+migrations, deployment and smoke checks require separate approval.
+
+**BG-33–BG-34:** Prepare capture, download, enrichment and Notion
+fixtures. Live provider/production behavior is not locally proved.
+
+**BG-35–BG-36:** Prepare device QA. Physical iPhone acceptance must
+be observed on the actual device.
+
+**BG-37:** Prepare isolated recovery drills. Do not claim an
+independent hosted restoration without its actual evidence.
+
+**BG-38:** Prepare daily digest observation. Seven consecutive
+eligible real scheduled days cannot be replaced with simulation.
+
+**BG-39:** Prepare a two-week usage protocol and actual-cost
+verification. Neither two weeks of use nor a final bill is assumed.
+
+**BG-40:** Record GO/NO-GO from available evidence; missing
+safety-critical or billing acceptance may require NO-GO.
+
+## 5. Review and future applicability
+
+- This single exception also applies to any future ticket that
+  inherits the same unfinished BG-29.078 prerequisite.
+- A downstream dependency review must name its actual known
+  and outstanding predecessor requirements; no task is
+  automatically marked complete.
+- Track implemented, locally tested, CI, deployed, device,
+  real-clock, cost and outstanding evidence separately.
+- This exception cannot silently change the frozen BG-29
+  thresholds, authorize spending or change release GO criteria.
+- Any later billing-policy relaxation or live acceptance attempt
+  needs a separate, explicit, dated owner decision.
+
+**Result:** BG-29.078 remains deferred. Safe downstream
+development may proceed at $0; live acceptance remains gated.
