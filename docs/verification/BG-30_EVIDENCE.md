@@ -141,3 +141,7 @@ Privacy routing and deletion freshness are documented in [security governance](.
 ### 31/50 — Local-worker API and executable client inventory (BG-30.061–062)
 
 `../tickets/OPE-246.md` describes local-worker bearer endpoints for lease, heartbeat, complete and fail. A repository-scoped GitHub code search for `ollama` returned documentation and migration matches but no runnable client implementation file. The [September audit](../WORKFLOW_AUDIT_2026-09-12.md) also could not establish a runnable local Ollama worker. An API surface alone is not working local inference.
+
+### 32/50 — Required versus deferred local processing (BG-30.063–064)
+
+The [release roadmap](../RELEASE_ROADMAP.md) lists Phase 8 local Ollama/strict-private processing. Without a running client and Mac-on/Mac-off acceptance, that capability remains **UNIMPLEMENTED/UNVERIFIED** for release purposes. A strict-private no-AI path is already an intentional fallback. Deferring a V1 local-client requirement needs an explicit owner decision, not a silent change to the PRD.
