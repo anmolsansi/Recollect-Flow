@@ -214,3 +214,7 @@ The structured matrix labels all October production observations `NOT_VERIFIED` 
 ### 48/50 — Cleanup and cumulative diff review (BG-30.095–096)
 
 The [PR #117 changed-file list](https://github.com/anmolsansi/Recollect-Flow/pull/117/files) contains documentation, one JSON evidence matrix, a Node offline validator and `package.json` test wiring only. No temporary fixtures, production secrets, credentials, private source content, cloud changes, external account operations or unrelated code refactor were introduced. There were no owned local test processes to stop.
+
+### 49/50 — Actual results and exception register (BG-30.097–098)
+
+Baseline `main` CI #39569038036 was green at `1d932546e81daa806d68d91fbaf9f91c4b1e5d5f`. First BG-30 PR CI #39646952371 passed new matrix checks but failed `prettier --check` on the test file, so **full CI was not run** on that head. [Microcommit 46](https://github.com/anmolsansi/Recollect-Flow/pull/117/commits) addresses the format issue; the final branch head still requires exact-head green CI. Deferred: BG-29.078 hosted multistage, provider billing assurance, OPE-247 live drills, October production/deployment identity, actual device acceptance. The owner rule authorizes $0 development only.
