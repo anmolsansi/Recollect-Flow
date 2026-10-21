@@ -13,14 +13,14 @@ A 2026-10-17 prior read-only inspection (see `BG-29_STAGING_ONLY_PLAN.md`) repor
 
 ## Published pricing and risk
 
-| Product/metric | Official published free allowance or bound | Consequence |
-| --- | --- | --- |
-| Workers Free | 100,000 requests/day; five account-wide Cron triggers; **10 ms CPU per scheduled invocation** | Hosted extraction may exceed CPU; that is a FAIL, not permission to upgrade |
-| R2 Standard storage | 10 GB-month/month included, then $0.015/GB-month | Shared usage is unknown; no absolute $0 cap |
-| R2 Standard Class A | 1,000,000 operations/month included, then $4.50/million | Account-wide consumed operations **unknown**; creation and PUT count |
-| R2 Standard Class B | 10,000,000 operations/month included, then $0.36/million | Reads/HEADs count; shared concurrent traffic unknown |
-| R2 Standard egress | Free | Does not eliminate storage/operation charges |
-| Billing alerts | Notifications only; do not pause or cap usage | Not a $0 enforcement mechanism |
+| Product/metric      | Official published free allowance or bound                                                    | Consequence                                                                 |
+| ------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Workers Free        | 100,000 requests/day; five account-wide Cron triggers; **10 ms CPU per scheduled invocation** | Hosted extraction may exceed CPU; that is a FAIL, not permission to upgrade |
+| R2 Standard storage | 10 GB-month/month included, then $0.015/GB-month                                              | Shared usage is unknown; no absolute $0 cap                                 |
+| R2 Standard Class A | 1,000,000 operations/month included, then $4.50/million                                       | Account-wide consumed operations **unknown**; creation and PUT count        |
+| R2 Standard Class B | 10,000,000 operations/month included, then $0.36/million                                      | Reads/HEADs count; shared concurrent traffic unknown                        |
+| R2 Standard egress  | Free                                                                                          | Does not eliminate storage/operation charges                                |
+| Billing alerts      | Notifications only; do not pause or cap usage                                                 | Not a $0 enforcement mechanism                                              |
 
 Cloudflare rounds billable overage units upward. Remaining free allowances may change independently during the test. Even a very small overage may therefore produce a bill.
 
