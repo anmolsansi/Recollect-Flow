@@ -49,3 +49,7 @@ CI evidence requires a run URL with the tested commit SHA. A green historical ma
 ### 08/50 — Production versus device evidence (BG-30.015–016)
 
 Production acceptance requires an authorized exact deployed identity and a live feature-specific observation. Physical-iPhone Shortcut/Share Sheet/offline behavior requires actual device proof. Isolated Chrome tests, mock provider responses and Mac-side Shortcut exports cannot satisfy those columns. Missing evidence is marked **NOT VERIFIED**, not complete.
+
+### 09/50 — Remaining gate and exact-SHA requirements (BG-30.017–018)
+
+Every open row must name a concrete next action: CI, browser, isolated recovery, configured live provider, real elapsed Cron, operator rotation or physical iPhone. Fix references must carry exact 40-character merge SHA or exact tested head. A ticket key, branch name or vaguely recent green run is insufficient identity.
