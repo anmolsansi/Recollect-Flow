@@ -73,3 +73,7 @@ GitHub PR API confirms BG-06 #39 merged at `a5096e337def6cad993ff5267f640cc619ca
 ### 14/50 — Historical suites versus today's candidate (BG-30.027–028)
 
 The audit's 132/132 Node, 114/115 D1 and 9/9 Web figures are specifically its 2026-09-12 checkout. The 104/74/9 OPE-225/226/248 totals belong to August local checkpoints. Only the 2026-10-21 [main CI #39569038036](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39569038036) proves green CI on `1d932546e81daa806d68d91fbaf9f91c4b1e5d5f`; current BG-30 branch needs a separate exact-head check.
+
+### 15/50 — Repo context date and current reality (BG-30.029–030)
+
+The top of `../repo_context.md` still describes `99678df...` as current after a September 12 audit. By October 21 GitHub `main` is `1d932546...`; later merged BG features are demonstrably present. The reconciliation must preserve the original audit as a dated baseline and link current BG-30 matrix rather than silently rewriting the audited checkout provenance.
