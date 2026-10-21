@@ -1,7 +1,7 @@
 # BG-29.078 — $0 downstream development dependency exception
 
 **Owner decision:** 2026-10-21 — do not incur any additional cost to finish BG-29; continue with BG-30 and later planned tickets.
-**Applicability:** RecollectFlow BG-30 through BG-40, including any inherited dependency on BG-29.078.
+**Applicability:** RecollectFlow BG-30 through BG-40 **and any future successor tickets**, including any direct or inherited dependency on BG-29.078.
 **Starting source baseline:** `027192d83b836f8f3ae84bb307dd07c934f32b47` on `main` when this documentation change began.
 **Exception type:** DEVELOPMENT-ENTRY ONLY. This is not a passed test, acceptance waiver, production-release authorization or representation of operational readiness.
 
@@ -44,7 +44,7 @@
 
 ## 5. Application and verification
 
-- This single exception applies **transitively** to BG-30..BG-40, not just BG-30. Future maintainers should not request to rerun or pay for BG-29.078 as a prerequisite to the **safe development subset** of a later ticket.
+- This single exception applies **transitively** to BG-30..BG-40 **and any newly added downstream successors**, not just BG-30. Future maintainers should not request to rerun or pay for BG-29.078 as a prerequisite to the **safe development subset** of a later ticket.
 - A downstream checklist's `.002` checkbox is eligible only after its reviewer records which predecessor evidence exists, identifies any other missing prerequisites, and links this exception for BG-29.078. No other checkbox is automatically completed.
 - Evidence tables should have separate **implemented / locally tested / CI / deployed / device / time-based / billing / outstanding** states. Keep unknown values unknown; preserve source SHA and links.
 - A later owner decision may authorize a different financial policy and real acceptance attempt, but must be explicit, documented and independently reviewed; this October 21 exception cannot grant it by implication.

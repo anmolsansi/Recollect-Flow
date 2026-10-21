@@ -4,7 +4,8 @@ Read the [build guide](RECOLLECTFLOW_BUILD_GUIDE.md) for the detailed feature ex
 
 **Owner-directed 2026-10-21 BG-29.078 exception:**
 [one $0 downstream development dependency rule](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md)
-applies transitively to BG-30 through BG-40. Their .002 checks must review and
+applies transitively to BG-30 through BG-40 and any subsequently added successor
+tickets. Their .002 checks must review and
 record deferred BG-29.078 status, not require it to be marked passed before
 safe local development. All other acceptance, release and spend gates remain.
 No checkbox is pre-checked by this exception.
