@@ -206,3 +206,7 @@ were compared against the Build Guide §36 outcome. The first exact-branch
 ran the new offline evidence checks successfully, then stopped at formatting:
 `scripts/bg30-evidence.test.mjs`. This commit fixes that deterministic
 style error; the full suite must be rerun on the final source revision.
+
+### 47/50 — Negative outcomes and contract integrity (BG-30.093–094)
+
+The structured matrix labels all October production observations `NOT_VERIFIED` and leaves deploy versions null. The local Ollama client is explicitly `NO` with no runnable acceptance. BG-29.078 is `DEFERRED_NOT_VERIFIED`. The PR does not modify authentication, external transports, production configuration or migrations. The source checklist has only the 90 evidence-preparation actions checked; final acceptance and merged-head verification are not asserted.
