@@ -12,12 +12,12 @@ The owner's standing condition remains **$0 additional charges and no production
 
 - **Target Worker:** Maximum permitted proposal: `recollect-flow-bg29-multistage-staging`, with dedicated staging entry only; Current decision: Not deployed / current hosted presence unverified
 - **Staging D1:** Maximum permitted proposal: `recollect-flow-bg29-staging` / `b5cbeccc-92fb-4bbc-9597-f0174b84e57d`; Current decision: Exists in prior owner-reported probe; reverify before any operation
-- **Staging R2:** Maximum permitted proposal: One *new distinct* **Standard** bucket, never production; Current decision: NO-GO creation, name not assigned, current absence not independently checked
+- **Staging R2:** Maximum permitted proposal: One _new distinct_ **Standard** bucket, never production; Current decision: NO-GO creation, name not assigned, current absence not independently checked
 - **Source originals:** Maximum permitted proposal: Exactly 12 allowlisted URL fixtures + 12 SHA-pinned valid PDFs; Current decision: Local fixtures available, **not** remotely seeded
 - **Worker ingress:** Maximum permitted proposal: `workers_dev = false`, `preview_urls = false`, no routes/custom domains; Current decision: Prepared only
 - **Provider interactions:** Maximum permitted proposal: Mock URL, mock AI, durable mock Notion; no real Notion/OpenRouter/Telegram/notifications; Current decision: Fail-closed preparation only
 - **Cron:** Maximum permitted proposal: `[triggers]` with `crons = []`; Current decision: Config disabled; remote trigger state not rechecked
-- **Test length:** Maximum permitted proposal: 10 maximum *real* eligible hourly sweeps **only after later separate Step 16 approval**; Current decision: Not activated
+- **Test length:** Maximum permitted proposal: 10 maximum _real_ eligible hourly sweeps **only after later separate Step 16 approval**; Current decision: Not activated
 - **Billing:** Maximum permitted proposal: Strict **$0 additional charge** across all services; Current decision: No enforceable R2 cutoff demonstrated
 - **Cleanup:** Maximum permitted proposal: Preserve D1 evidence; disable any owned Cron; delete only expressly approved synthetic fixtures; Current decision: No hosted artifacts created here
 
