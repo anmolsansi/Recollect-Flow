@@ -262,7 +262,6 @@ record an evidence-based GO/NO-GO, which may be NO-GO.
 This rule supersedes the unconditional *start-after* restriction **only** for
 safe BG-30–BG-40 development activity, not for deployment or acceptance.
 
-
 ## 6. How a small task is completed
 
 ### Microtask edition — 100 steps per task

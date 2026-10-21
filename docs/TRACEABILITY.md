@@ -2,12 +2,12 @@
 
 ## BG-29.078 downstream exception and release boundary — 2026-10-21
 
-| Requirement / decision | Documented disposition | Evidence/next gate |
-| --- | --- | --- |
-| BG-29.078 hosted hourly multistage throughput and delay | **DEFERRED — not PASS/N/A**; BG-29 99/100 | [Frozen AC-01–AC-17](verification/BG-29_078_ACCEPTANCE_CONTRACT.md); hosted run never accepted |
-| BG-30–BG-40 development entry | **ALLOWED at strict $0** when only inherited blocker is BG-29.078 | [Owner-directed cross-ticket exception](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md); local/development evidence per ticket |
-| BG-32–BG-39 real acceptance | **NOT automatically unlocked or completed** | Separate actual production/device/provider/time and cost/authorization evidence for each ticket |
-| BG-40 launch disposition | Explicit GO/NO-GO only; outstanding gates recorded; NO-GO is legitimate | No GO from an unverified throughput, safety or billing claim |
+| Requirement / decision                                  | Documented disposition                                                  | Evidence/next gate                                                                                                                       |
+| ------------------------------------------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| BG-29.078 hosted hourly multistage throughput and delay | **DEFERRED — not PASS/N/A**; BG-29 99/100                               | [Frozen AC-01–AC-17](verification/BG-29_078_ACCEPTANCE_CONTRACT.md); hosted run never accepted                                           |
+| BG-30–BG-40 development entry                           | **ALLOWED at strict $0** when only inherited blocker is BG-29.078       | [Owner-directed cross-ticket exception](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md); local/development evidence per ticket |
+| BG-32–BG-39 real acceptance                             | **NOT automatically unlocked or completed**                             | Separate actual production/device/provider/time and cost/authorization evidence for each ticket                                          |
+| BG-40 launch disposition                                | Explicit GO/NO-GO only; outstanding gates recorded; NO-GO is legitimate | No GO from an unverified throughput, safety or billing claim                                                                             |
 
 ## Product-goal traceability
 

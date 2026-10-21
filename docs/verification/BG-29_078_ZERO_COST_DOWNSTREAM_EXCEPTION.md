@@ -30,17 +30,17 @@
 
 ## 4. Ticket-by-ticket treatment
 
-| Ticket | What the exception permits now | What it does **not** prove or authorize |
-| --- | --- | --- |
-| BG-30 | Reconcile documentation, tickets, audit, OPE-247 evidence and current implementation status | BG-29.078 PASS, unrelated OPE-247 missing evidence or production acceptance |
-| BG-31 | Prepare a precise release manifest, backups, stop/rollback plan and approval packet | Production release or completed live inventory not actually observed |
-| BG-32 | Prepare/configure/test locally and review release operations | Production migration/deployment or smoke before explicit authorization and suitable cost controls |
-| BG-33–34 | Develop/test capture, retrieval, AI and Notion failure fixtures locally | Actual approved production, AI/Notion provider or outage proof |
-| BG-35–36 | Prepare iPhone workflows and offline test matrices | Physical iPhone test result without the actual device observation |
-| BG-37 | Prepare restore drills against isolated local artifacts | Independently validated hosted recovery without the required artifacts/operations |
-| BG-38 | Prepare daily digest tests and evidence collection | Seven consecutive real eligible scheduled delivery days or live messaging |
-| BG-39 | Prepare the real-use protocol and $0 financial verification criteria | Two weeks of observed use or final invoice/cost reconciliation not obtained |
-| BG-40 | Draft/review an evidence-based explicit GO/NO-GO, including NO-GO | A GO decision without required operational, safety and cost proof |
+| Ticket   | What the exception permits now                                                              | What it does **not** prove or authorize                                                           |
+| -------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| BG-30    | Reconcile documentation, tickets, audit, OPE-247 evidence and current implementation status | BG-29.078 PASS, unrelated OPE-247 missing evidence or production acceptance                       |
+| BG-31    | Prepare a precise release manifest, backups, stop/rollback plan and approval packet         | Production release or completed live inventory not actually observed                              |
+| BG-32    | Prepare/configure/test locally and review release operations                                | Production migration/deployment or smoke before explicit authorization and suitable cost controls |
+| BG-33–34 | Develop/test capture, retrieval, AI and Notion failure fixtures locally                     | Actual approved production, AI/Notion provider or outage proof                                    |
+| BG-35–36 | Prepare iPhone workflows and offline test matrices                                          | Physical iPhone test result without the actual device observation                                 |
+| BG-37    | Prepare restore drills against isolated local artifacts                                     | Independently validated hosted recovery without the required artifacts/operations                 |
+| BG-38    | Prepare daily digest tests and evidence collection                                          | Seven consecutive real eligible scheduled delivery days or live messaging                         |
+| BG-39    | Prepare the real-use protocol and $0 financial verification criteria                        | Two weeks of observed use or final invoice/cost reconciliation not obtained                       |
+| BG-40    | Draft/review an evidence-based explicit GO/NO-GO, including NO-GO                           | A GO decision without required operational, safety and cost proof                                 |
 
 ## 5. Application and verification
 
