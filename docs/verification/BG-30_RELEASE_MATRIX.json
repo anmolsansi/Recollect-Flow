@@ -213,6 +213,20 @@
       "accepted_limitation": null,
       "source_sha": "1d932546e81daa806d68d91fbaf9f91c4b1e5d5f",
       "historical_evidence": "docs/MOBILE_CAPTURE_SPEC.md"
+    },
+    {
+      "id": "Ollama-client",
+      "capability": "Runnable local Ollama processing client",
+      "implemented": "NO",
+      "local_test": "NOT_VERIFIED",
+      "ci_evidence": "NONE",
+      "deployed_version": null,
+      "production_evidence": "NOT_VERIFIED",
+      "device_evidence": "NOT_VERIFIED",
+      "remaining_gate": "Explicit V1 scope/deferral decision, runnable client implementation, lease/heartbeat/timeout/shutdown and Mac-off acceptance",
+      "accepted_limitation": "Existing local-worker bearer API is not an executable client",
+      "source_sha": null,
+      "historical_evidence": "docs/WORKFLOW_AUDIT_2026-09-12.md"
     }
   ]
 }

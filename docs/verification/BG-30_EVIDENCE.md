@@ -149,3 +149,7 @@ The [release roadmap](../RELEASE_ROADMAP.md) lists Phase 8 local Ollama/strict-p
 ### 33/50 — API-only and no-AI fallback truth (BG-30.065–066)
 
 The existing server-side local-worker endpoints have a distinct claim: bounded authenticated job execution interface. They do not prove a process that executes Ollama prompts, runs offline, heartbeats, handles lease loss or restarts cleanly. Failed/forbidden AI must leave original capture/search available without sending private input externally, as covered by isolated outage tests. A validated no-AI capture is not evidence of local-model enrichment.
+
+### 34/50 — RAG and Android entry boundaries (BG-30.067–068)
+
+V1.5 RAG remains conditional on accepted V1, at least 100 useful captures, a gold question set and separate citation/quality evaluation. Android is V1.1/V2 conditional on genuine Android use. Neither belongs in the BG-30 current V1 completion numerator. A separate `Ollama-client` matrix row records the unproven runnable program instead of hiding it behind server API status.
