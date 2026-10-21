@@ -157,3 +157,7 @@ V1.5 RAG remains conditional on accepted V1, at least 100 useful captures, a gol
 ### 35/50 — Extension and multiuser separation (BG-30.069–070)
 
 A desktop browser extension is V2 conditional on capture volume, and multi-user productization is V3/new authorization. The [release roadmap](../RELEASE_ROADMAP.md) holds their entry conditions. BG-30 records them only as **not in current V1 scope**, not a missing V1 regression or a completed delivered feature.
+
+### 36/50 — External issue identities and guide-local BG keys (BG-30.071–072)
+
+Verified Linear issue is [OPE-247](https://linear.app/openclaw-neutron/issue/OPE-247/complete-v1-security-observability-and-operational-hardening), titled Complete V1 security, observability, and operational hardening, and still In Progress. [OPE-344](https://linear.app/openclaw-neutron/issue/OPE-344/bg-29-resilience-capacity-and-performance-acceptance) covers BG-29. BG-30 is [GitHub #116](https://github.com/anmolsansi/Recollect-Flow/issues/116), not a fabricated OPE-30 or Linear Done state. The offline evidence-matrix validator is wired into `npm run check`.
