@@ -1,5 +1,8 @@
 import { provisionBg29StagingNotionSchema } from '../src/sync/bg29-staging-durable-notion';
-import { provisionBg29StagingEvidenceSchema } from '../src/bg29-staging-evidence';
+import {
+  createBg29StagingEvidenceLedger,
+  provisionBg29StagingEvidenceSchema,
+} from '../src/bg29-staging-evidence';
 import { stagingScheduled } from '../src/bg29-staging-entry';
 import { applyD1Migrations, env } from 'cloudflare:test';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -321,6 +324,71 @@ describe('BG-29.078 isolated real worker stages with 24 repeat-safe originals', 
           "status = 'failed' OR status='pending' OR status='processing'",
         ),
       ).toBe(0);
+      // Every original must finish one source stage and one real enrichment.
+      // Grouped rows expose missing, duplicated or silently skipped stage jobs.
+      const terminalJobs = await env.DB.prepare(
+        'SELECT job_type, status, COUNT(*) AS total FROM processing_jobs GROUP BY job_type, status ORDER BY job_type, status',
+      ).all<{ job_type: string; status: string; total: number }>();
+      expect(terminalJobs.results).toEqual([
+        { job_type: 'acquire_url', status: 'complete', total: 12 },
+        { job_type: 'enrich', status: 'complete', total: 24 },
+        { job_type: 'extract', status: 'complete', total: 12 },
+      ]);
+      // EnrichService persists derived fields on items and a successful
+      // provider_usage row; it does not write processing_job_results.
+      const enriched = await env.DB.prepare(
+        "SELECT COUNT(DISTINCT item.id) AS total FROM items AS item JOIN processing_jobs AS job ON job.item_id = item.id AND job.job_type = 'enrich' AND job.status = 'complete' JOIN provider_usage AS usage ON usage.item_id = item.id AND usage.operation = 'enrich' AND usage.status = 'success' WHERE item.summary IS NOT NULL",
+      ).first<{ total: number }>();
+      expect(enriched?.total).toBe(24);
+      const usage = await env.DB.prepare(
+        "SELECT COUNT(*) AS total, COALESCE(SUM(estimated_cost_micros), 0) AS total_cost FROM provider_usage WHERE operation = 'enrich'",
+      ).first<{ total: number; total_cost: number }>();
+      expect(usage).toEqual({ total: 24, total_cost: 0 });
+      // Notion is independent of enrichment. Real post-enrichment updates
+      // can create additional complete sync attempts for the same original.
+      // Require coverage of every original, not one attempt per original.
+      const completedSync = await env.DB.prepare(
+        "SELECT COUNT(*) AS attempts, COUNT(DISTINCT item_id) AS originals FROM sync_attempts WHERE status = 'complete'",
+      ).first<{ attempts: number; originals: number }>();
+      expect(completedSync?.attempts).toBeGreaterThanOrEqual(24);
+      expect(completedSync?.originals).toBe(24);
+      const ledger = createBg29StagingEvidenceLedger(env.DB);
+      const evidenceSweep = await ledger.start(BACKGROUND_CRON, Date.now());
+      await ledger.snapshot(evidenceSweep, 'after');
+      const evidence = await env.DB.prepare(
+        'SELECT evidence_ids_json FROM bg29_evidence_snapshots WHERE sweep_id = ?1 AND phase = ?2',
+      )
+        .bind(evidenceSweep, 'after')
+        .first<{ evidence_ids_json: string }>();
+      const evidenceIds = JSON.parse(evidence!.evidence_ids_json) as {
+        originals: string[];
+        urlAcquisitions: string[];
+        extractionRecords: string[];
+        enrichmentResults: string[];
+        notionProjections: string[];
+      };
+      expect(evidenceIds.originals).toHaveLength(24);
+      expect(evidenceIds.urlAcquisitions).toHaveLength(12);
+      expect(evidenceIds.extractionRecords).toHaveLength(12);
+      expect(evidenceIds.enrichmentResults).toEqual(
+        originalManifest.map((entry) => entry.id).sort(),
+      );
+      expect(evidenceIds.notionProjections).toHaveLength(24);
+
+      const urls = await env.DB.prepare(
+        "SELECT id, source_url, raw_text FROM items WHERE source_app = 'BG29-078 sealed fixtures' AND source_type = 'url'",
+      ).all<{ id: string; source_url: string; raw_text: string | null }>();
+      expect(urls.results).toHaveLength(12);
+      for (const original of originalManifest.filter(
+        (entry) => entry.type === 'url',
+      )) {
+        const row = urls.results.find((entry) => entry.id === original.id);
+        expect(row?.source_url).toBe(original.source);
+        expect(row?.raw_text).toBeNull();
+      }
+      expect(snapshots.length).toBeGreaterThanOrEqual(2);
+      expect(snapshots.length).toBeLessThanOrEqual(8);
+      expect(snapshots.at(-1)?.remaining).toBe(0);
       expect(await count('items', 'notion_page_id IS NOT NULL')).toBe(24);
       const freshWorker = createBg29StagingScheduler(bindings);
       const durablePages = await freshWorker.notionPages();

@@ -4,6 +4,7 @@ import { URL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { createLocalAcceptanceRuntime } from './browser-acceptance-runtime.mjs';
 import { createLoopbackInspectorSocket } from './bg29-inspector-connection.mjs';
+import { reviewBg29LocalResourceProfile } from './bg29-local-resource-review.mjs';
 
 const API_PORT = 8793;
 const INSPECTOR_PORT = 9237;
@@ -305,7 +306,13 @@ try {
       'Sampling may miss a transient allocation peak; confirmed local profiling does not ' +
       'replace Cloudflare staging or production Worker metrics.',
   };
-  console.log(JSON.stringify(result, null, 2));
+  const review = reviewBg29LocalResourceProfile(result);
+  if (!review.local_resource_profile_valid) {
+    throw new Error(
+      'Local resource evidence failed: ' + review.errors.join('; '),
+    );
+  }
+  console.log(JSON.stringify({ ...result, review }, null, 2));
 } catch (error) {
   console.error(
     'BG29 LOCAL RESOURCE PROFILE NOT VERIFIED:',

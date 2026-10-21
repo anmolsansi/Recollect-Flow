@@ -173,7 +173,7 @@ export function createBg29StagingEvidenceLedger(db: D1Database) {
         ),
         enrichmentResults: await ids(
           db,
-          "SELECT result.job_id AS id FROM processing_job_results AS result JOIN processing_jobs AS job ON job.id = result.job_id WHERE job.item_id LIKE 'bg29-078-%' AND job.job_type = 'enrich'",
+          "SELECT DISTINCT item.id AS id FROM items AS item JOIN processing_jobs AS job ON job.item_id = item.id AND job.job_type = 'enrich' AND job.status = 'complete' JOIN provider_usage AS usage ON usage.item_id = item.id AND usage.operation = 'enrich' AND usage.status = 'success' WHERE item.id LIKE 'bg29-078-%' AND item.summary IS NOT NULL",
         ),
         notionProjections: await ids(
           db,
