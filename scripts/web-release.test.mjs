@@ -10,6 +10,7 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { URL } from 'node:url';
 import { inspectWebOutput, manifestFor } from './web-release.mjs';
 
 function fixture() {
