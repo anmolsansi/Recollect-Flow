@@ -60,27 +60,15 @@ test('BG-31 offline ledger: unknown, reordered and gapped migrations stop', () =
     /STOP/,
   );
   assert.throws(
-    () =>
-      compareMigrationLedger(
-        [migrations[0], migrations[2]],
-        migrations,
-      ),
+    () => compareMigrationLedger([migrations[0], migrations[2]], migrations),
     /STOP/,
   );
   assert.throws(
-    () =>
-      compareMigrationLedger(
-        [migrations[0], migrations[0]],
-        migrations,
-      ),
+    () => compareMigrationLedger([migrations[0], migrations[0]], migrations),
     /Duplicate/,
   );
   assert.throws(
-    () =>
-      compareMigrationLedger(
-        [...migrations, '9999_unknown.sql'],
-        migrations,
-      ),
+    () => compareMigrationLedger([...migrations, '9999_unknown.sql'], migrations),
     /more migrations/,
   );
 });
