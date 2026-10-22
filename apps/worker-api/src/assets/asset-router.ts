@@ -6,7 +6,7 @@ export interface StaticAssets {
   fetch(request: Request): Promise<Response>;
 }
 
-const shellRoutes = new Set(['/', '/capture', '/capture/file', '/operations']);
+const shellRoutes = new Set(['/', '/capture', '/capture/file', '/operations', '/digests']);
 const hashedAsset = /^\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.[A-Za-z0-9]+$/;
 
 function isShellRoute(pathname: string): boolean {
