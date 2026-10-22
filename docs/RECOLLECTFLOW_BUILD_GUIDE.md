@@ -3461,6 +3461,12 @@ rollback and owner authorization requirements. The
 [BG-31 evidence record](verification/BG-31_RELEASE_MANIFEST_EVIDENCE.md)
 separates verified source/CI facts from missing live inventory. A local
 `npm run bg31:manifest:test` regression protects this distinction.
+The offline regression also checks declared D1/R2 bindings, the AI and Web
+asset bindings, the login rate limiter, the nonsecret Notion configuration,
+selected source provider names, and disabled digest AI/automatic hosted backup
+switches. These checks catch source configuration drift. They cannot verify
+live credentials, deployed capability, provider quotas or a strict $0 billing
+ceiling.
 
 **This is a release-preparation draft, not an approved release.** The
 baseline is `195fcd65f6a75667228c718411a95b1c20a70679` with passed
