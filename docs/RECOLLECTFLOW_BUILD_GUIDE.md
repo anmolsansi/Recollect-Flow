@@ -3449,6 +3449,29 @@ will be checked and how data will be recovered if something fails.
 **When.** After BG-30. **Where.** Release/runbook records and deployment configuration.
 
 ### Name the exact release that is ready for approval
+### BG-31 implementation record, 2026-10-22
+
+The [BG-31 human release manifest](releases/BG-31_RELEASE_MANIFEST.md) and
+[machine-checkable NO-GO packet](releases/BG-31_RELEASE_MANIFEST.json) now
+identify the exact reviewed baseline, the complete source migration chain,
+the committed Worker and Web binding names, the required secret names, the
+independent-original/anti-resurrection backup plan, and explicit smoke, stop,
+rollback and owner authorization requirements. The
+[BG-31 evidence record](verification/BG-31_RELEASE_MANIFEST_EVIDENCE.md)
+separates verified source/CI facts from missing live inventory. A local
+`npm run bg31:manifest:test` regression protects this distinction.
+
+**This is a release-preparation draft, not an approved release.** The
+baseline is `195fcd65f6a75667228c718411a95b1c20a70679` with passed
+[CI #39752503664](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39752503664).
+Current deployed Worker version, migration ledger and pending delta, Web
+`release_id`, prior compatible binary, independently verified attachment
+backup/receipt set, restore operator and owner authorization are **NOT
+VERIFIED**. BG-29.078 is deferred and OPE-247 remains open. The standing
+owner-directed $0 exception allows source documentation and safe CI, not
+production changes, hosted R2 operations, paid provider tests or BG-32 GO.
+
+
 
 A release manifest turns “deploy the fixes” into a reviewable operation. Record
 the Git revision, Web artifact, Worker configuration, migration set, target
