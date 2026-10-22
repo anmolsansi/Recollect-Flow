@@ -33,9 +33,19 @@ manifest tests, full quality and browser checks, local migrations, Web packaging
 and Wrangler **dry-run only**. Packaging at the GitHub PR merge checkout (parents main and branch),
 `d045e14ac0cb9c1c530f9830d96de46faebc34da`, reported Web release ID
 `4d71d3b8e237b8f32bc5d79a471b6c872132c0845c0d24ccc010677a728b7c0e`
-and five public files; Wrangler reported `4.116.0`. No immutable matching
+and five public files. Runner setup selected Node `22.23.3`;
+Wrangler reported `4.116.0` and Google Chrome `155.0.8059.39`.
+The exact npm minor/patch was not logged in the cited run. No immutable matching
 Worker bundle or Web manifest was uploaded. These records are **not** the
 future owner-approved candidate. Re-run CI against the final changed head.
+
+**Source-level CI validation:** [run #39780508581](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39780508581)
+passed the then-current branch head `f0f96cc277e5674edf9a9472bd6423d89f097da3`:
+format, lint, typecheck, Node/D1 suites, Web package, Wrangler dry-run,
+local migrations, focused tests, and local/browser hosting, capture, upload,
+recovery, private download, search/workflow and digests. No hosted URL,
+physical-device or approved provider smoke was exercised. Subsequent changes
+require new exact-head green CI before review.
 
 **Artifact pairing invariant:** the Worker entry, `wrangler.toml`, lockfile and generated Web file hashes must agree with the release ID emitted by `scripts/web-release.mjs`. Its `source_revision`, `worker_entry_sha256`, `worker_config_sha256`, `lockfile_sha256`, individual `web_files[].sha256` and `release_id` belong in the frozen, owner-approved packet. The release ID is deterministic from these inputs, but **is not a deployed Worker version**. Build locally in an isolated checkout; do not silently rebuild a different candidate for deployment.
 
