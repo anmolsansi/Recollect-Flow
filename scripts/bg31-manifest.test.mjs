@@ -86,8 +86,7 @@ test('BG-31 declared target names and secrets match committed Worker config', ()
   assert.deepEqual([...manifest.required_secret_names].sort(), names.sort());
 });
 
-
-test('BG-31 detects source target and $0 configuration drift without claiming live proof', () => {
+test('BG-31 source target and $0 config drift is detected', () => {
   const target = manifest.source_targets;
   assert.match(
     config,
