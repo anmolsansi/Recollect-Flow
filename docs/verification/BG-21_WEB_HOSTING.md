@@ -155,12 +155,18 @@ cover:
 - Existing immutable-hash, JSON-API, missing-asset and logout/private-cache
   behavior, without changing any D1 migration, external provider or secret.
 
-**Verification boundary:** These tests use the existing isolated local
-Worker/Chrome and CI environment. Mark BG-21.044 checked only after its
-required packaged-browser test passes on the exact branch head. Even then,
-BG-21.059/.061/.062/.065/.077/.080 remain **NOT VERIFIED**, because
-no authorized isolated remote HTTPS release, real Secure cookie observation,
-cross-release cache invalidation/rollback rehearsal or actual publication
-was performed. The owner-directed strict $0 condition and BG-32 production
-NO-GO remain unchanged. Reconciliation of the operator UI cannot grant
-hosted acceptance or release authorization.
+**Verified source CI:** [Run #39769262188](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39769262188)
+passed on exact route-fix/test SHA `9ae1045ecff05d865da92f68d9778f195ecfbbbd`.
+The complete repository gate included formatting, lint, unit tests, local D1,
+clean packaged Worker/Web, Wrangler dry-run and the isolated Chrome browser
+suite. BG-21.044 is now checked, bringing the source record to **94/100**
+and GitHub issue #83 to **45/50 pairs**. Subsequent documentation changes
+require their own exact-head CI before merge.
+
+**Remaining acceptance:** These tests use the isolated local Worker/Chrome
+and CI environment. BG-21.059/.061/.062/.065/.077/.080 remain
+**NOT VERIFIED**, because no authorized isolated remote HTTPS release,
+real Secure cookie observation, cross-release cache invalidation/rollback
+rehearsal or actual publication was performed. The owner-directed strict
+$0 condition and BG-32 production NO-GO remain unchanged. Source route
+completion cannot grant hosted acceptance or release authorization.
