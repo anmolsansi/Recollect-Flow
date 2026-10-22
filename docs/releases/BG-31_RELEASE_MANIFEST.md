@@ -30,7 +30,7 @@ This is the owner-review packet for the **future** BG-32 production operation, n
 [run #39758159109](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39758159109)
 passed at commit `2649603a8f8f83fca997c6e115c1338b8afb88d4` with six BG-31
 manifest tests, full quality and browser checks, local migrations, Web packaging
-and Wrangler **dry-run only**. Packaging from an earlier commit in that run,
+and Wrangler **dry-run only**. Packaging at the GitHub PR merge checkout (parents main and branch),
 `d045e14ac0cb9c1c530f9830d96de46faebc34da`, reported Web release ID
 `4d71d3b8e237b8f32bc5d79a471b6c872132c0845c0d24ccc010677a728b7c0e`
 and five public files; Wrangler reported `4.116.0`. No immutable matching
