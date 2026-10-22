@@ -1,0 +1,42 @@
+name: BG-31 one-time formatting
+
+on:
+  push:
+    branches:
+      - feat/bg-31-release-manifest
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format only BG-31 changes
+        run: |
+          npx prettier --write \
+            docs/OPERATIONS_RUNBOOK.md \
+            docs/RECOLLECTFLOW_BUILD_GUIDE.md \
+            docs/RELEASE_ROADMAP.md \
+            docs/releases/BG-31_RELEASE_MANIFEST.json \
+            docs/releases/BG-31_RELEASE_MANIFEST.md \
+            docs/verification/BG-31_RELEASE_MANIFEST_EVIDENCE.md \
+            docs/verification/README.md \
+            scripts/bg31-manifest.test.mjs
+      - name: Commit formatting if needed
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add docs/OPERATIONS_RUNBOOK.md docs/RECOLLECTFLOW_BUILD_GUIDE.md docs/RELEASE_ROADMAP.md docs/releases/BG-31_RELEASE_MANIFEST.json docs/releases/BG-31_RELEASE_MANIFEST.md docs/verification/BG-31_RELEASE_MANIFEST_EVIDENCE.md docs/verification/README.md scripts/bg31-manifest.test.mjs
+            git commit -m "style(bg31): format scoped manifest changes [47/50] (#119)"
+            git push origin HEAD:feat/bg-31-release-manifest
+          fi
