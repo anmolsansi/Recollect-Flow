@@ -1,5 +1,16 @@
 # Reliability, observability, cost, backup, and recovery runbook
 
+## BG-30 evidence and authorization boundary (2026-10-21)
+
+The [BG-30 hardening ledger](verification/BG-30_EVIDENCE.md) links actual
+security, rotation, redaction, private-object, operational visibility, incident,
+privacy, capacity and recovery results. The [capability matrix](verification/BG-30_RELEASE_MATRIX.json)
+keeps locally tested behavior separate from hosted and device acceptance.
+BG-29.078 real elapsed hourly multistage Cron is **NOT VERIFIED**, and the
+[owner's $0 development exception](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md)
+does not authorize R2 billing exposure, provider sends, remote migrations,
+production changes or live incident drills. OPE-247 remains In Progress.
+
 ## Reliability objectives
 
 | Capability              | Target                                       | Degraded mode                       |

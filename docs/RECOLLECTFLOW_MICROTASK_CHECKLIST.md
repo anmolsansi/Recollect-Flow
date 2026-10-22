@@ -4161,132 +4161,132 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-30 / 01 — Establish task context
 
-- [ ] `BG-30.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-30.002` **Dependency:** Review BG-29's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
-- [ ] `BG-30.003` **Baseline:** Record the actual checkout or release candidate used for BG-30.
-- [ ] `BG-30.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-30.005` **Evidence:** Check whether existing evidence already satisfies any BG-30 step; reference it instead of manufacturing work.
-- [ ] `BG-30.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-30.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-30.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-30.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-30.010` **Tracking:** Open a BG-30 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-30.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-30.002` **Dependency:** Review BG-29's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
+- [x] `BG-30.003` **Baseline:** Record the actual checkout or release candidate used for BG-30.
+- [x] `BG-30.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-30.005` **Evidence:** Check whether existing evidence already satisfies any BG-30 step; reference it instead of manufacturing work.
+- [x] `BG-30.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-30.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-30.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-30.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-30.010` **Tracking:** Open a BG-30 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-30 / 02 — Status schema
 
-- [ ] `BG-30.011` Define implementation column.
-- [ ] `BG-30.012` Define local-test column.
-- [ ] `BG-30.013` Define CI-evidence column.
-- [ ] `BG-30.014` Define deployed-version column.
-- [ ] `BG-30.015` Define production-evidence column.
-- [ ] `BG-30.016` Define device-evidence column.
-- [ ] `BG-30.017` Define remaining-gate column.
-- [ ] `BG-30.018` Define exact SHA reference.
-- [ ] `BG-30.019` Define historical evidence label.
-- [ ] `BG-30.020` Define accepted limitation field.
+- [x] `BG-30.011` Define implementation column.
+- [x] `BG-30.012` Define local-test column.
+- [x] `BG-30.013` Define CI-evidence column.
+- [x] `BG-30.014` Define deployed-version column.
+- [x] `BG-30.015` Define production-evidence column.
+- [x] `BG-30.016` Define device-evidence column.
+- [x] `BG-30.017` Define remaining-gate column.
+- [x] `BG-30.018` Define exact SHA reference.
+- [x] `BG-30.019` Define historical evidence label.
+- [x] `BG-30.020` Define accepted limitation field.
 
 #### BG-30 / 03 — Baseline reconciliation
 
-- [ ] `BG-30.021` Read current BUILD_STATUS.
-- [ ] `BG-30.022` Identify obsolete missing-feature statements.
-- [ ] `BG-30.023` Identify merged branch-pending statements.
-- [ ] `BG-30.024` Verify corresponding merge SHAs.
-- [ ] `BG-30.025` Preserve useful historical evidence.
-- [ ] `BG-30.026` Replace unqualified old test counts.
-- [ ] `BG-30.027` Separate current from historical result.
-- [ ] `BG-30.028` Reconcile repository context summary.
-- [ ] `BG-30.029` Avoid claiming unrun checks.
-- [ ] `BG-30.030` Record reconciliation date.
+- [x] `BG-30.021` Read current BUILD_STATUS.
+- [x] `BG-30.022` Identify obsolete missing-feature statements.
+- [x] `BG-30.023` Identify merged branch-pending statements.
+- [x] `BG-30.024` Verify corresponding merge SHAs.
+- [x] `BG-30.025` Preserve useful historical evidence.
+- [x] `BG-30.026` Replace unqualified old test counts.
+- [x] `BG-30.027` Separate current from historical result.
+- [x] `BG-30.028` Reconcile repository context summary.
+- [x] `BG-30.029` Avoid claiming unrun checks.
+- [x] `BG-30.030` Record reconciliation date.
 
 #### BG-30 / 04 — Audit defects
 
-- [ ] `BG-30.031` Locate each audit finding.
-- [ ] `BG-30.032` Find actual fixing revision.
-- [ ] `BG-30.033` Find download regression evidence.
-- [ ] `BG-30.034` Find bare-URL regression evidence.
-- [ ] `BG-30.035` Find status consistency evidence.
-- [ ] `BG-30.036` Find clock-test evidence.
-- [ ] `BG-30.037` Find smoke-script evidence.
-- [ ] `BG-30.038` Mark unresolved finding explicitly.
-- [ ] `BG-30.039` Update limitation wording accurately.
-- [ ] `BG-30.040` Preserve original audit as history.
+- [x] `BG-30.031` Locate each audit finding.
+- [x] `BG-30.032` Find actual fixing revision.
+- [x] `BG-30.033` Find download regression evidence.
+- [x] `BG-30.034` Find bare-URL regression evidence.
+- [x] `BG-30.035` Find status consistency evidence.
+- [x] `BG-30.036` Find clock-test evidence.
+- [x] `BG-30.037` Find smoke-script evidence.
+- [x] `BG-30.038` Mark unresolved finding explicitly.
+- [x] `BG-30.039` Update limitation wording accurately.
+- [x] `BG-30.040` Preserve original audit as history.
 
 #### BG-30 / 05 — Feature trace
 
-- [ ] `BG-30.041` Reconcile OPE-225 search state.
-- [ ] `BG-30.042` Reconcile OPE-226 digest state.
-- [ ] `BG-30.043` Reconcile OPE-248 Web state.
-- [ ] `BG-30.044` Reconcile OPE-227 capacity state.
-- [ ] `BG-30.045` Reconcile OPE-228 recovery state.
-- [ ] `BG-30.046` Verify implementation versus release.
-- [ ] `BG-30.047` Verify release versus acceptance.
-- [ ] `BG-30.048` Link exact ticket files.
-- [ ] `BG-30.049` Avoid inferred tracker Done status.
-- [ ] `BG-30.050` Update traceability rows.
+- [x] `BG-30.041` Reconcile OPE-225 search state.
+- [x] `BG-30.042` Reconcile OPE-226 digest state.
+- [x] `BG-30.043` Reconcile OPE-248 Web state.
+- [x] `BG-30.044` Reconcile OPE-227 capacity state.
+- [x] `BG-30.045` Reconcile OPE-228 recovery state.
+- [x] `BG-30.046` Verify implementation versus release.
+- [x] `BG-30.047` Verify release versus acceptance.
+- [x] `BG-30.048` Link exact ticket files.
+- [x] `BG-30.049` Avoid inferred tracker Done status.
+- [x] `BG-30.050` Update traceability rows.
 
 #### BG-30 / 06 — Hardening packet
 
-- [ ] `BG-30.051` Collect auth evidence.
-- [ ] `BG-30.052` Collect rotation evidence.
-- [ ] `BG-30.053` Collect log-redaction evidence.
-- [ ] `BG-30.054` Collect private-object evidence.
-- [ ] `BG-30.055` Collect operational visibility evidence.
-- [ ] `BG-30.056` Collect incident procedure evidence.
-- [ ] `BG-30.057` Collect privacy evidence.
-- [ ] `BG-30.058` Collect capacity evidence.
-- [ ] `BG-30.059` Collect recovery evidence.
-- [ ] `BG-30.060` Identify remaining OPE-247 blockers.
+- [x] `BG-30.051` Collect auth evidence.
+- [x] `BG-30.052` Collect rotation evidence.
+- [x] `BG-30.053` Collect log-redaction evidence.
+- [x] `BG-30.054` Collect private-object evidence.
+- [x] `BG-30.055` Collect operational visibility evidence.
+- [x] `BG-30.056` Collect incident procedure evidence.
+- [x] `BG-30.057` Collect privacy evidence.
+- [x] `BG-30.058` Collect capacity evidence.
+- [x] `BG-30.059` Collect recovery evidence.
+- [x] `BG-30.060` Identify remaining OPE-247 blockers.
 
 #### BG-30 / 07 — Optional scope
 
-- [ ] `BG-30.061` Inventory local-worker APIs.
-- [ ] `BG-30.062` Check runnable client evidence.
-- [ ] `BG-30.063` Identify actual local-processing requirement.
-- [ ] `BG-30.064` Record required versus deferred decision.
-- [ ] `BG-30.065` Avoid API-only completion claim.
-- [ ] `BG-30.066` Keep no-AI behavior explicit.
-- [ ] `BG-30.067` Keep RAG separately gated.
-- [ ] `BG-30.068` Keep Android separately gated.
-- [ ] `BG-30.069` Keep extension separately gated.
-- [ ] `BG-30.070` Keep multi-user scope separate.
+- [x] `BG-30.061` Inventory local-worker APIs.
+- [x] `BG-30.062` Check runnable client evidence.
+- [x] `BG-30.063` Identify actual local-processing requirement.
+- [x] `BG-30.064` Record required versus deferred decision.
+- [x] `BG-30.065` Avoid API-only completion claim.
+- [x] `BG-30.066` Keep no-AI behavior explicit.
+- [x] `BG-30.067` Keep RAG separately gated.
+- [x] `BG-30.068` Keep Android separately gated.
+- [x] `BG-30.069` Keep extension separately gated.
+- [x] `BG-30.070` Keep multi-user scope separate.
 
 #### BG-30 / 08 — Tracker boundaries
 
-- [ ] `BG-30.071` Confirm existing external ticket IDs.
-- [ ] `BG-30.072` Keep BG IDs guide-local.
-- [ ] `BG-30.073` Prepare factual ticket update text.
-- [ ] `BG-30.074` Include verified evidence links.
-- [ ] `BG-30.075` Avoid fabricated PR references.
-- [ ] `BG-30.076` Avoid fabricated deployed versions.
-- [ ] `BG-30.077` Use authorized tracker workflow only.
-- [ ] `BG-30.078` Preserve human acceptance gates.
-- [ ] `BG-30.079` Record blocked external updates honestly.
-- [ ] `BG-30.080` Match tracker wording to evidence.
+- [x] `BG-30.071` Confirm existing external ticket IDs.
+- [x] `BG-30.072` Keep BG IDs guide-local.
+- [x] `BG-30.073` Prepare factual ticket update text.
+- [x] `BG-30.074` Include verified evidence links.
+- [x] `BG-30.075` Avoid fabricated PR references.
+- [x] `BG-30.076` Avoid fabricated deployed versions.
+- [x] `BG-30.077` Use authorized tracker workflow only.
+- [x] `BG-30.078` Preserve human acceptance gates.
+- [x] `BG-30.079` Record blocked external updates honestly.
+- [x] `BG-30.080` Match tracker wording to evidence.
 
 #### BG-30 / 09 — Documentation closure
 
-- [ ] `BG-30.081` Update cumulative guide status.
-- [ ] `BG-30.082` Update operational runbook links.
-- [ ] `BG-30.083` Check local document links.
-- [ ] `BG-30.084` Check completion matrix consistency.
-- [ ] `BG-30.085` Check stale counts labeled.
-- [ ] `BG-30.086` Check live guarantees justified.
-- [ ] `BG-30.087` Review unresolved release gates.
-- [ ] `BG-30.088` Record next release prerequisite.
-- [ ] `BG-30.089` Save final hardening evidence index.
-- [ ] `BG-30.090` Prepare Priority 4 acceptance decision.
+- [x] `BG-30.081` Update cumulative guide status.
+- [x] `BG-30.082` Update operational runbook links.
+- [x] `BG-30.083` Check local document links.
+- [x] `BG-30.084` Check completion matrix consistency.
+- [x] `BG-30.085` Check stale counts labeled.
+- [x] `BG-30.086` Check live guarantees justified.
+- [x] `BG-30.087` Review unresolved release gates.
+- [x] `BG-30.088` Record next release prerequisite.
+- [x] `BG-30.089` Save final hardening evidence index.
+- [x] `BG-30.090` Prepare Priority 4 acceptance decision.
 
 #### BG-30 / 10 — Verify and close this task
 
-- [ ] `BG-30.091` **Review:** Compare the completed checklist with BG-30's stated outcome; identify uncovered behavior.
-- [ ] `BG-30.092` **Verification:** Run or inspect the focused proof required by BG-30; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-30.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-30.094` **Integrity:** Check that BG-30 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-30.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-30.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-30.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-30.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-30.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-30.091` **Review:** Compare the completed checklist with BG-30's stated outcome; identify uncovered behavior.
+- [x] `BG-30.092` **Verification:** Run or inspect the focused proof required by BG-30; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-30.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-30.094` **Integrity:** Check that BG-30 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-30.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-30.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-30.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-30.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-30.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-30.100` **Gate:** Check the parent completion boundary and record whether BG-31 is unlocked.
 
 ## BG-31 — 100 executable microtasks
