@@ -10,7 +10,7 @@
 
 [BG-30 final closeout](BG-30_FINAL_CLOSEOUT.md) is merged on main and its GitHub issue #116 is closed. It reconciles implementation documentation, not operational acceptance. The [BG-30 release matrix](BG-30_RELEASE_MATRIX.json) has null deployed identities and unknown production/device evidence. BG-29.078 is still deferred at 99/100. Under the [owner's $0 downstream exception](BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md), BG-31 may prepare local documents, offline tests and CI, but may not query/write hosted R2, deploy, run remote migrations, send provider messages or incur charges. OPE-247 remains In Progress.
 
-The BG-31 task is *manifest preparation*, not a command to execute BG-32. An approval must identify the exact final source SHA, packaged Web `release_id`, Worker artifact, target account/bindings, verified independent backup and declared mutations. Those fields are intentionally **null or NOT VERIFIED** in the machine manifest until evidence exists. D1 applied ledger, current remote Worker version and Web origin have **not** been inspected here. No Cloudflare account connection, external provider credential, backup artifact, signed owner release authorization or validated recovery operator was available for such a claim.
+The BG-31 task is _manifest preparation_, not a command to execute BG-32. An approval must identify the exact final source SHA, packaged Web `release_id`, Worker artifact, target account/bindings, verified independent backup and declared mutations. Those fields are intentionally **null or NOT VERIFIED** in the machine manifest until evidence exists. D1 applied ledger, current remote Worker version and Web origin have **not** been inspected here. No Cloudflare account connection, external provider credential, backup artifact, signed owner release authorization or validated recovery operator was available for such a claim.
 
 ## Changes and why they matter
 
@@ -24,25 +24,25 @@ The BG-31 task is *manifest preparation*, not a command to execute BG-32. An app
 
 `npm run bg31:manifest:test` covers **offline repository consistency**, not live services or a backup restore. Historical BG-30 main CI passed; the BG-31 branch needs its **own** exact-head CI after all changes. The private/authenticated browser and physical iPhone, hosted TLS, provider permission, cost, remote migration state, independent recovery, and 10 real elapsed-hour multistage Cron proof remain separate evidence. The manifest deliberately cannot certify those from fixtures.
 
-Every micro-commit should reference [#119](https://github.com/anmolsansi/Recollect-Flow/issues/119) and one paired task number. The canonical 100-step checklist is updated only for actions whose required observation and review can be justified. A document that *describes* an unknown live value does not satisfy a checklist action that says to *read* or *verify* it.
+Every micro-commit should reference [#119](https://github.com/anmolsansi/Recollect-Flow/issues/119) and one paired task number. The canonical 100-step checklist is updated only for actions whose required observation and review can be justified. A document that _describes_ an unknown live value does not satisfy a checklist action that says to _read_ or _verify_ it.
 
 ## Missing evidence ledger and blockers
 
-| Area | Current state | To close the gate |
-| --- | --- | --- |
-| Candidate deployable bundle / matching Web assets | UNFROZEN | Package identical approved Git SHA, preserve deterministic Web release manifest and Worker dry-run/hash, exact-head green CI |
-| Live Worker deployment identity | NOT VERIFIED | Authorized read-only inspection of actual account, deployed version and routing |
-| Live D1 ledger and pending migrations | NOT VERIFIED | Read-only list from correct D1 UUID; compare actual ordered filenames; review new SQL against isolated backup |
-| Live R2, HTTPS origin, provider targets | NOT VERIFIED | Confirm correct live account/bucket/origin and private destination without disclosing secrets or sending anything |
-| Config secret presence | NOT VERIFIED | Authorized names-only presence/permissions check; no values printed |
-| Previous compatible Worker/Web artifact | NOT IDENTIFIED | Select immutable known-good package and check mixed-schema compatibility |
-| D1 backup and independent originals | NOT CREATED/VERIFIED | Approved independently protected copies and verified full SHA/count/pagination |
-| Latest purge receipts | NOT VERIFIED | Independent receipts with readback, newest ledger and anti-resurrection check |
-| Restore operator and time/recovery objectives | NOT ASSIGNED/MEASURED | Named trained operator, isolated rehearsal, measured recovery |
-| Smoke and live provider checks | NOT EXECUTED | Approved BG-32 release and separately approved external neutral actions |
-| Owner approval reference | ABSENT | Dated explicit exact-build, target, backup, cost and rollback authorization |
-| BG-29.078 | DEFERRED/NOT VERIFIED | Real hosted multistage elapsed-hour evidence under an independently acceptable strict $0 plan |
-| OPE-247 and V1 approval | OPEN / NO-GO | Independent security, capacity, production and device acceptance |
+| Area                                              | Current state         | To close the gate                                                                                                            |
+| ------------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Candidate deployable bundle / matching Web assets | UNFROZEN              | Package identical approved Git SHA, preserve deterministic Web release manifest and Worker dry-run/hash, exact-head green CI |
+| Live Worker deployment identity                   | NOT VERIFIED          | Authorized read-only inspection of actual account, deployed version and routing                                              |
+| Live D1 ledger and pending migrations             | NOT VERIFIED          | Read-only list from correct D1 UUID; compare actual ordered filenames; review new SQL against isolated backup                |
+| Live R2, HTTPS origin, provider targets           | NOT VERIFIED          | Confirm correct live account/bucket/origin and private destination without disclosing secrets or sending anything            |
+| Config secret presence                            | NOT VERIFIED          | Authorized names-only presence/permissions check; no values printed                                                          |
+| Previous compatible Worker/Web artifact           | NOT IDENTIFIED        | Select immutable known-good package and check mixed-schema compatibility                                                     |
+| D1 backup and independent originals               | NOT CREATED/VERIFIED  | Approved independently protected copies and verified full SHA/count/pagination                                               |
+| Latest purge receipts                             | NOT VERIFIED          | Independent receipts with readback, newest ledger and anti-resurrection check                                                |
+| Restore operator and time/recovery objectives     | NOT ASSIGNED/MEASURED | Named trained operator, isolated rehearsal, measured recovery                                                                |
+| Smoke and live provider checks                    | NOT EXECUTED          | Approved BG-32 release and separately approved external neutral actions                                                      |
+| Owner approval reference                          | ABSENT                | Dated explicit exact-build, target, backup, cost and rollback authorization                                                  |
+| BG-29.078                                         | DEFERRED/NOT VERIFIED | Real hosted multistage elapsed-hour evidence under an independently acceptable strict $0 plan                                |
+| OPE-247 and V1 approval                           | OPEN / NO-GO          | Independent security, capacity, production and device acceptance                                                             |
 
 **Document-level judgment:** BG-31 has a substantive release packet, safe source-only validation and an explicit no-go decision. It cannot claim **100% operational checklist closure** or unlock a production deploy while the live inventory, frozen Web/Worker artifacts, independent recovery and owner approval fields remain missing. Deferred facts stay deferred; the $0 exception is not a pass.
 

@@ -20,7 +20,10 @@ test('BG-31 manifest remains explicitly NO-GO without live release evidence', ()
   assert.match(manifest.manifest_id, /^BG31-DRAFT-/);
   assert.equal(manifest.decision, 'NO_GO');
   assert.equal(manifest.approval_status, 'NOT_GRANTED');
-  assert.equal(manifest.cost_boundary, 'STRICT_ZERO_ADDITIONAL_COST_LOCAL_DEVELOPMENT_ONLY');
+  assert.equal(
+    manifest.cost_boundary,
+    'STRICT_ZERO_ADDITIONAL_COST_LOCAL_DEVELOPMENT_ONLY',
+  );
   assert.equal(manifest.gates.bg29_078, 'DEFERRED_NOT_VERIFIED');
   assert.equal(manifest.gates.ope247, 'IN_PROGRESS');
   assert.equal(manifest.gates.bg32_production_authorized, false);
@@ -39,7 +42,10 @@ test('BG-31 does not claim fabricated artifact, migration, approval, or backup p
   }
   assert.equal(manifest.pending_forward_migrations, null);
   assert.equal(manifest.recovery.verified_d1_backup_id, null);
-  assert.equal(manifest.recovery.verified_independent_originals_manifest_sha256, null);
+  assert.equal(
+    manifest.recovery.verified_independent_originals_manifest_sha256,
+    null,
+  );
   assert.equal(manifest.recovery.isolated_restore_test_verified, false);
   assert.equal(manifest.recovery.newest_purge_receipts_verified, false);
   assert.equal(manifest.recovery.source_loss_domain_separated, false);
@@ -55,7 +61,10 @@ test('BG-31 ordered migration list equals actual repository migrations', () => {
     .filter((name) => /^\d{4}_.+\.sql$/.test(name))
     .sort();
   assert.deepEqual(manifest.source_migrations, actual);
-  assert.equal(manifest.source_migrations.at(-1), '0025_bg28_scheduled_backups.sql');
+  assert.equal(
+    manifest.source_migrations.at(-1),
+    '0025_bg28_scheduled_backups.sql',
+  );
 });
 
 test('BG-31 declared target names and secrets match committed Worker config', () => {
@@ -68,9 +77,13 @@ test('BG-31 declared target names and secrets match committed Worker config', ()
   for (const secret of manifest.required_secret_names) {
     assert.match(config, new RegExp('"' + secret + '"'));
   }
-  const required = config.match(/\[secrets\][\s\S]*?required\s*=\s*\[([^\]]+)\]/);
+  const required = config.match(
+    /\[secrets\][\s\S]*?required\s*=\s*\[([^\]]+)\]/,
+  );
   assert.ok(required);
-  const names = [...required[1].matchAll(/"([^"]+)"/g)].map((match) => match[1]);
+  const names = [...required[1].matchAll(/"([^"]+)"/g)].map(
+    (match) => match[1],
+  );
   assert.deepEqual([...manifest.required_secret_names].sort(), names.sort());
 });
 
@@ -89,7 +102,13 @@ test('BG-31 stage list and release safety boundary are complete', () => {
 
 test('BG-31 manifest contains no approval or credential values', () => {
   const serialized = JSON.stringify(manifest);
-  assert.doesNotMatch(serialized, /(?:sk-or-|ghp_|-----BEGIN (?:RSA |OPENSSH )?PRIVATE KEY-----)/);
+  assert.doesNotMatch(
+    serialized,
+    /(?:sk-or-|ghp_|-----BEGIN (?:RSA |OPENSSH )?PRIVATE KEY-----)/,
+  );
   assert.ok(!('secret_values' in manifest));
-  assert.equal(manifest.source_targets.telegram_destination_secret_name, 'TELEGRAM_CHAT_ID');
+  assert.equal(
+    manifest.source_targets.telegram_destination_secret_name,
+    'TELEGRAM_CHAT_ID',
+  );
 });

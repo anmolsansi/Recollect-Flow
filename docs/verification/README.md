@@ -1,6 +1,5 @@
 # Verification Evidence Index
 
-
 ## BG-31 — release manifest (development draft, NO-GO)
 
 [Human release packet](../releases/BG-31_RELEASE_MANIFEST.md) and

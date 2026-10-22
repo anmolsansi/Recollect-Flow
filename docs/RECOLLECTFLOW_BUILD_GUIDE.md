@@ -3449,6 +3449,7 @@ will be checked and how data will be recovered if something fails.
 **When.** After BG-30. **Where.** Release/runbook records and deployment configuration.
 
 ### Name the exact release that is ready for approval
+
 ### BG-31 implementation record, 2026-10-22
 
 The [BG-31 human release manifest](releases/BG-31_RELEASE_MANIFEST.md) and
@@ -3470,8 +3471,6 @@ backup/receipt set, restore operator and owner authorization are **NOT
 VERIFIED**. BG-29.078 is deferred and OPE-247 remains open. The standing
 owner-directed $0 exception allows source documentation and safe CI, not
 production changes, hosted R2 operations, paid provider tests or BG-32 GO.
-
-
 
 A release manifest turns “deploy the fixes” into a reviewable operation. Record
 the Git revision, Web artifact, Worker configuration, migration set, target

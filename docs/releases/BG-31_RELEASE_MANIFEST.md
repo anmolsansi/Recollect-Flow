@@ -10,21 +10,21 @@ This is the owner-review packet for the **future** BG-32 production operation, n
 
 ## 1. Candidate identity and evidence
 
-| Field | Candidate or status | Proof / next action |
-| --- | --- | --- |
-| Repository | `anmolsansi/Recollect-Flow` | Repository metadata |
-| Source baseline | `195fcd65f6a75667228c718411a95b1c20a70679` on `main` | [Merged BG-30 final closeout](https://github.com/anmolsansi/Recollect-Flow/commit/195fcd65f6a75667228c718411a95b1c20a70679) |
-| Exact baseline CI | [#39752503664](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39752503664), **PASS** on baseline SHA | GitHub workflow status 2026-10-22 |
-| Work branch | `feat/bg-31-release-manifest` | Documentation/preflight changes only, not a deploy candidate |
-| Release source SHA | **NOT FROZEN** | Freeze exact future review/approved head and verify its own CI |
-| Worker entry | `apps/worker-api/src/index.ts` | `wrangler.toml` `main` |
-| Worker configuration | `wrangler.toml` | Source review only; runtime/deployed version **NOT VERIFIED** |
-| Web assets | `apps/web/dist` bundled into Worker | `npm run release:package` produces versioned assets |
-| Web release ID / hashes | **NOT BUILT OR RECORDED for BG-31** | `apps/web/dist/release-manifest.json` must match approved source SHA and bundle |
-| Worker bundle hash/version | **NOT FROZEN** | Capture dry-run bundle hash and deployable artifact identity without deploying |
-| CI at final work head | **PENDING** | Require exact-head full GitHub CI, not baseline CI |
-| Runtime toolchain | CI Node 22; `package.json` requires Node >=22; Wrangler declared `^4.116.0` | Record actual `node --version`, `npm --version`, `npx wrangler --version` from packaging runner |
-| Browser gate | Historical isolated Chrome/local bundled Worker acceptance | [BG-21](../verification/BG-21_WEB_HOSTING.md) and [BG-30 matrix](../verification/BG-30_RELEASE_MATRIX.json); current hosted HTTPS acceptance **NOT VERIFIED** |
+| Field                      | Candidate or status                                                                                             | Proof / next action                                                                                                                                           |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository                 | `anmolsansi/Recollect-Flow`                                                                                     | Repository metadata                                                                                                                                           |
+| Source baseline            | `195fcd65f6a75667228c718411a95b1c20a70679` on `main`                                                            | [Merged BG-30 final closeout](https://github.com/anmolsansi/Recollect-Flow/commit/195fcd65f6a75667228c718411a95b1c20a70679)                                   |
+| Exact baseline CI          | [#39752503664](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39752503664), **PASS** on baseline SHA | GitHub workflow status 2026-10-22                                                                                                                             |
+| Work branch                | `feat/bg-31-release-manifest`                                                                                   | Documentation/preflight changes only, not a deploy candidate                                                                                                  |
+| Release source SHA         | **NOT FROZEN**                                                                                                  | Freeze exact future review/approved head and verify its own CI                                                                                                |
+| Worker entry               | `apps/worker-api/src/index.ts`                                                                                  | `wrangler.toml` `main`                                                                                                                                        |
+| Worker configuration       | `wrangler.toml`                                                                                                 | Source review only; runtime/deployed version **NOT VERIFIED**                                                                                                 |
+| Web assets                 | `apps/web/dist` bundled into Worker                                                                             | `npm run release:package` produces versioned assets                                                                                                           |
+| Web release ID / hashes    | **NOT BUILT OR RECORDED for BG-31**                                                                             | `apps/web/dist/release-manifest.json` must match approved source SHA and bundle                                                                               |
+| Worker bundle hash/version | **NOT FROZEN**                                                                                                  | Capture dry-run bundle hash and deployable artifact identity without deploying                                                                                |
+| CI at final work head      | **PENDING**                                                                                                     | Require exact-head full GitHub CI, not baseline CI                                                                                                            |
+| Runtime toolchain          | CI Node 22; `package.json` requires Node >=22; Wrangler declared `^4.116.0`                                     | Record actual `node --version`, `npm --version`, `npx wrangler --version` from packaging runner                                                               |
+| Browser gate               | Historical isolated Chrome/local bundled Worker acceptance                                                      | [BG-21](../verification/BG-21_WEB_HOSTING.md) and [BG-30 matrix](../verification/BG-30_RELEASE_MATRIX.json); current hosted HTTPS acceptance **NOT VERIFIED** |
 
 **Artifact pairing invariant:** the Worker entry, `wrangler.toml`, lockfile and generated Web file hashes must agree with the release ID emitted by `scripts/web-release.mjs`. Its `source_revision`, `worker_entry_sha256`, `worker_config_sha256`, `lockfile_sha256`, individual `web_files[].sha256` and `release_id` belong in the frozen, owner-approved packet. The release ID is deterministic from these inputs, but **is not a deployed Worker version**. Build locally in an isolated checkout; do not silently rebuild a different candidate for deployment.
 
@@ -32,15 +32,15 @@ The strict $0 [BG-29.078 exception](../verification/BG-29_078_ZERO_COST_DOWNSTRE
 
 ## 2. Live inventory and identity reconciliation
 
-| Target | Source-declared identifier | Live observation | Required before BG-32 |
-| --- | --- | --- | --- |
-| Cloudflare Worker | `recollect-flow` | **NOT VERIFIED** | Read-only deployment/version inspection, record account and exact version |
-| D1 binding | `DB`; configured name `recollect-flow-prod`, configured UUID `5fcba514-d0f7-45e7-a632-d4c59233af71` | **NOT VERIFIED** | Compare target account, binding UUID, actual database and migration ledger |
-| R2 binding | `ATTACHMENTS`; configured bucket `recollect-flow-attachments-prod` | **NOT VERIFIED** | Compare bucket/account identity and access controls; **no hosted R2 read/write** under current $0 rule |
-| Web origin | Single Worker-served asset origin plus secret `WEB_INBOX_BASE_URL` | **NOT VERIFIED** | Observe actual production HTTPS origin, domain route, deep links, cookie origin and exact assets |
-| Notion | `NOTION_DATABASE_ID` in `wrangler.toml` | Destination membership/capabilities **NOT VERIFIED** | Compare approved database by a safe fingerprint/owner attestation, without exposing credentials |
-| Telegram | Secret `TELEGRAM_CHAT_ID`; `TELEGRAM_BOT_TOKEN` | Private destination **NOT VERIFIED** | Owner identifies approved private destination, separate approval for any send |
-| AI | `AI` binding and configured OpenRouter/Cloudflare provider routing | Provider account access, quota and terms **NOT VERIFIED** | Verify explicit approved capabilities and no unexpected metered path |
+| Target            | Source-declared identifier                                                                          | Live observation                                          | Required before BG-32                                                                                  |
+| ----------------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Cloudflare Worker | `recollect-flow`                                                                                    | **NOT VERIFIED**                                          | Read-only deployment/version inspection, record account and exact version                              |
+| D1 binding        | `DB`; configured name `recollect-flow-prod`, configured UUID `5fcba514-d0f7-45e7-a632-d4c59233af71` | **NOT VERIFIED**                                          | Compare target account, binding UUID, actual database and migration ledger                             |
+| R2 binding        | `ATTACHMENTS`; configured bucket `recollect-flow-attachments-prod`                                  | **NOT VERIFIED**                                          | Compare bucket/account identity and access controls; **no hosted R2 read/write** under current $0 rule |
+| Web origin        | Single Worker-served asset origin plus secret `WEB_INBOX_BASE_URL`                                  | **NOT VERIFIED**                                          | Observe actual production HTTPS origin, domain route, deep links, cookie origin and exact assets       |
+| Notion            | `NOTION_DATABASE_ID` in `wrangler.toml`                                                             | Destination membership/capabilities **NOT VERIFIED**      | Compare approved database by a safe fingerprint/owner attestation, without exposing credentials        |
+| Telegram          | Secret `TELEGRAM_CHAT_ID`; `TELEGRAM_BOT_TOKEN`                                                     | Private destination **NOT VERIFIED**                      | Owner identifies approved private destination, separate approval for any send                          |
+| AI                | `AI` binding and configured OpenRouter/Cloudflare provider routing                                  | Provider account access, quota and terms **NOT VERIFIED** | Verify explicit approved capabilities and no unexpected metered path                                   |
 
 Source configuration is **not** live proof. These values describe committed configuration only. Never infer the Cloudflare account, provisioned resource state, deployed version, environment secret presence, hosted Web origin, current DB schema, or provider permission from `main`.
 
@@ -83,15 +83,15 @@ The deliberate numbering gap 0011–0013 is present in the repository and is **n
 
 ### High-risk portions of the chain
 
-| Source migration | Schema effects | Backfill/compatibility question |
-| --- | --- | --- |
-| 0020 | New AI capacity windows, reservations, circuit breakers, expiration and probe indexes | Historical capacity is not inferred from new tables; verify runtime behavior at upgraded schema |
-| 0021 | Backup artifacts, purge workflows and steps, independent anti-resurrection purge receipts, restore/integrity runs and indexes | Receipt preservation is a release integrity gate; code rollback is not database rollback |
-| 0022 | URL acquisition evidence structures | Confirm old/new URL fetch and search behavior before deciding mixed-version compatibility |
-| 0023–0024 | Processing generation and materialized current status | Validate any backfill/trigger and generation constraints on a **restored isolated copy**, never assume additive-only safety |
-| 0025 | `scheduled_backup_periods` table and state index | Table creation does not activate scheduled backup; `HOSTED_BACKUP_AUTOCREATE_ENABLED` remains off unless separately approved |
+| Source migration | Schema effects                                                                                                                | Backfill/compatibility question                                                                                              |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 0020             | New AI capacity windows, reservations, circuit breakers, expiration and probe indexes                                         | Historical capacity is not inferred from new tables; verify runtime behavior at upgraded schema                              |
+| 0021             | Backup artifacts, purge workflows and steps, independent anti-resurrection purge receipts, restore/integrity runs and indexes | Receipt preservation is a release integrity gate; code rollback is not database rollback                                     |
+| 0022             | URL acquisition evidence structures                                                                                           | Confirm old/new URL fetch and search behavior before deciding mixed-version compatibility                                    |
+| 0023–0024        | Processing generation and materialized current status                                                                         | Validate any backfill/trigger and generation constraints on a **restored isolated copy**, never assume additive-only safety  |
+| 0025             | `scheduled_backup_periods` table and state index                                                                              | Table creation does not activate scheduled backup; `HOSTED_BACKUP_AUTOCREATE_ENABLED` remains off unless separately approved |
 
-**Source-only migration evaluation:** the chain is forward-only. Applied SQL, schema additions, triggers, table/index changes and data backfills may be irreversible by deploying an older Worker. No production compatibility claim is possible without seeing the actual remote ledger, reviewing *all* pending SQL, replaying the transition against an isolated backup and checking old-code compatibility.
+**Source-only migration evaluation:** the chain is forward-only. Applied SQL, schema additions, triggers, table/index changes and data backfills may be irreversible by deploying an older Worker. No production compatibility claim is possible without seeing the actual remote ledger, reviewing _all_ pending SQL, replaying the transition against an isolated backup and checking old-code compatibility.
 
 **Stop before migration** on unknown or out-of-order ledger rows, a source checksum/name mismatch, wrong account/UUID, missing backup/readback, unreviewed data backfill, absent compatible previous artifact, or a cost/authorization conflict. **Stop after an interrupted migration:** inspect the actual D1 ledger and schema before attempting any retry. Never blindly replay SQL or run production `npm run db:migrate:remote` from this document.
 
@@ -127,19 +127,19 @@ Policy [`2026-07-31.2`](../SECURITY_PRIVACY_GOVERNANCE.md) governs Unknown/Publi
 
 Execute **only after** BG-32 grants operation-specific authorization, takes the verified backup and applies the approved exact candidate. Record stage timestamp, target origin, request ID, actual result and operator. An incomplete stage is neither PASS nor implicit permission to continue.
 
-| Stage | Expected result | Mandatory stop |
-| --- | --- | --- |
-| S01: identity/config/ledger | Exact approved Worker build, Web release ID, correct D1 UUID, R2 binding, migrations and HTTPS origin | Any mismatch or missing identity |
-| S02: homepage/static files | Root loads correct hashed Web assets without private cache exposure | Missing bundle, stale asset or secret leak |
-| S03: direct deep link | New browser session loads `/items/<id>` route correctly | Missing/broken SPA route |
-| S04: login/session/logout | Correct cookie flags, session persistence, logout invalidation | Login failure, session leak, insecure cookie |
-| S05: anonymous denial | Protected item/export/download/API routes reject unauthenticated access | Any protected data exposure |
-| S06: capture + same-key replay | Synthetic owner capture returns durable canonical ID; retry never loses or duplicates source unexpectedly | Lost item, inconsistent event, wrong ID |
-| S07: original attachment | Authenticated original bytes match expected hash; anonymous retrieval denied, private cache disabled | Missing originals, hash mismatch, public/private leak |
-| S08: search + reopening | Known distinctive fixture phrase resolves to correct item and evidence; privacy/deletion filters hold | Missing or wrong-private item |
-| S09: privacy and optional degradation | Unknown/Sensitive disallow unauthorized external dispatch; failed optional provider never unsaves item | Unexpected outbound route or lost canonical save |
-| S10: permitted integrations | Only separately approved neutral Notion/Telegram/AI fixtures reach their intended destinations | Wrong external destination, surprise charge, missing provider permission |
-| S11: operational inspection | Safe job backlog, D1 migration, auth, capture, error, external quota and log review | Unexplained elevated errors, raw secret/content log or unexpected billing exposure |
+| Stage                                 | Expected result                                                                                           | Mandatory stop                                                                     |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| S01: identity/config/ledger           | Exact approved Worker build, Web release ID, correct D1 UUID, R2 binding, migrations and HTTPS origin     | Any mismatch or missing identity                                                   |
+| S02: homepage/static files            | Root loads correct hashed Web assets without private cache exposure                                       | Missing bundle, stale asset or secret leak                                         |
+| S03: direct deep link                 | New browser session loads `/items/<id>` route correctly                                                   | Missing/broken SPA route                                                           |
+| S04: login/session/logout             | Correct cookie flags, session persistence, logout invalidation                                            | Login failure, session leak, insecure cookie                                       |
+| S05: anonymous denial                 | Protected item/export/download/API routes reject unauthenticated access                                   | Any protected data exposure                                                        |
+| S06: capture + same-key replay        | Synthetic owner capture returns durable canonical ID; retry never loses or duplicates source unexpectedly | Lost item, inconsistent event, wrong ID                                            |
+| S07: original attachment              | Authenticated original bytes match expected hash; anonymous retrieval denied, private cache disabled      | Missing originals, hash mismatch, public/private leak                              |
+| S08: search + reopening               | Known distinctive fixture phrase resolves to correct item and evidence; privacy/deletion filters hold     | Missing or wrong-private item                                                      |
+| S09: privacy and optional degradation | Unknown/Sensitive disallow unauthorized external dispatch; failed optional provider never unsaves item    | Unexpected outbound route or lost canonical save                                   |
+| S10: permitted integrations           | Only separately approved neutral Notion/Telegram/AI fixtures reach their intended destinations            | Wrong external destination, surprise charge, missing provider permission           |
+| S11: operational inspection           | Safe job backlog, D1 migration, auth, capture, error, external quota and log review                       | Unexplained elevated errors, raw secret/content log or unexpected billing exposure |
 
 **No external test message is included in the current authorization.** If provider test scope is not approved, record S10 **NOT EXECUTED** and do not silently send. Hosted proof, iPhone, two-week use, seven-day digest and BG-29.078 remain later independent acceptance gates.
 
@@ -155,17 +155,17 @@ Auth failures, persistent capture loss, private route leak, migration inconsiste
 
 ## 7. BG-32 owner approval packet
 
-| Requested action | Current approval status |
-| --- | --- |
-| Review BG-31 manifest source and CI | $0 documentation/CI permitted |
-| Approve exact candidate SHA, Worker and Web release hashes | **NOT GRANTED: artifact not frozen** |
-| Approve target Cloudflare account, D1 UUID, R2, Web origin and migration delta | **NOT GRANTED: read-only inventory unverified** |
-| Approve independent backup destination and verified restore evidence | **NOT GRANTED: no verified backup** |
-| Approve D1 forward migration / Worker deploy / hosted smoke | **NOT GRANTED** |
-| Approve any Notion/AI/Telegram test or notification | **NOT GRANTED separately for each destination/action** |
-| Approve financial exposure or alter strict $0 rule | **NOT GRANTED; strict $0 remains** |
-| Approve BG-32 production operation | **NO-GO** |
-| Approve V1 release GO | **NO-GO** |
+| Requested action                                                               | Current approval status                                |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------ |
+| Review BG-31 manifest source and CI                                            | $0 documentation/CI permitted                          |
+| Approve exact candidate SHA, Worker and Web release hashes                     | **NOT GRANTED: artifact not frozen**                   |
+| Approve target Cloudflare account, D1 UUID, R2, Web origin and migration delta | **NOT GRANTED: read-only inventory unverified**        |
+| Approve independent backup destination and verified restore evidence           | **NOT GRANTED: no verified backup**                    |
+| Approve D1 forward migration / Worker deploy / hosted smoke                    | **NOT GRANTED**                                        |
+| Approve any Notion/AI/Telegram test or notification                            | **NOT GRANTED separately for each destination/action** |
+| Approve financial exposure or alter strict $0 rule                             | **NOT GRANTED; strict $0 remains**                     |
+| Approve BG-32 production operation                                             | **NO-GO**                                              |
+| Approve V1 release GO                                                          | **NO-GO**                                              |
 
 **Release owner:** repository owner, approval needed in an explicit dated record referencing the immutable completed manifest revision, exact artifact hashes, approved targets, intended commands, maximum scope and rollback plan.  
 **Execution operator:** **UNASSIGNED**. Must be named and authorized by the owner before any deployment.  
