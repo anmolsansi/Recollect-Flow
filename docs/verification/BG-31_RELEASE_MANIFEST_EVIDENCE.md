@@ -27,6 +27,32 @@ The focused proof and checklist review are completed only for the source-only
 scope. BG-32 remains blocked. Missing hosted account, migration, backup,
 rollback-artifact, operator and approval evidence stays **NOT VERIFIED**.
 
+## Follow-up: source-only migration preflight and CI reconciliation
+
+After the original manifest, BG-31 added
+[`scripts/bg31-migration-ledger.mjs`](../../scripts/bg31-migration-ledger.mjs)
+with five negative/positive Node cases in
+[`scripts/bg31-migration-ledger.test.mjs`](../../scripts/bg31-migration-ledger.test.mjs)
+and the `npm run bg31:ledger:test` gate in root `npm run check`.
+It reads only a caller-supplied local JSON ledger and the source-controlled
+migration filenames. It does not call Cloudflare. Prefix validation rejects
+missing, duplicate, unknown or reordered migrations rather than fabricating
+pending production SQL. A successful run on synthetic JSON is not live D1 proof.
+
+[CI #39780508581](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39780508581)
+was successful on branch head `f0f96cc277e5674edf9a9472bd6423d89f097da3`
+with local Node/D1, package/dry-run and Chrome browser acceptance. Runner
+Node `22.23.3`, Wrangler `4.116.0` and Chrome `155.0.8059.39`
+were observed in CI logs. These prove local browser tests, **not** real
+hosted HTTPS or a production session. Any newer head must pass its own CI.
+
+The canonical checklist additionally records directly evidenced source/toolchain,
+source migration head, full local test and browser proof, declared secret
+**names** and nonsecret variables, documented deep-link stop/fallback and the
+observed lack of deployment authorization. Actual secret presence, live origin,
+artifact pairing, source-to-live migrations, financial boundary and owner
+approval remain unverified.
+
 ## Scope and prior evidence
 
 [BG-30 final closeout](BG-30_FINAL_CLOSEOUT.md) is merged on main and its GitHub issue #116 is closed. It reconciles implementation documentation, not operational acceptance. The [BG-30 release matrix](BG-30_RELEASE_MATRIX.json) has null deployed identities and unknown production/device evidence. BG-29.078 is still deferred at 99/100. Under the [owner's $0 downstream exception](BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md), BG-31 may prepare local documents, offline tests and CI, but may not query/write hosted R2, deploy, run remote migrations, send provider messages or incur charges. OPE-247 remains In Progress.
