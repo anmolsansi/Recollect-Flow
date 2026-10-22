@@ -12,6 +12,18 @@ does not authorize R2 billing exposure, provider sends, remote migrations,
 production changes or live incident drills. OPE-247 remains In Progress.
 
 ## Reliability objectives
+## BG-31 release approval reference (2026-10-22)
+
+The [BG-31 release manifest](releases/BG-31_RELEASE_MANIFEST.md) specifies
+source candidate and packaging evidence, an explicitly **unverified** live
+migration ledger and target identity, verified-independent-backup prerequisites,
+smoke/stop stages, code-versus-schema rollback choices and owner signoff fields.
+Its [evidence ledger](verification/BG-31_RELEASE_MANIFEST_EVIDENCE.md)
+keeps the strict $0 NO-GO state visible. No runbook procedure described here
+may be treated as production or outbound-provider authorization. BG-32 is
+blocked until a separate, exact-build release approval is recorded.
+
+
 
 | Capability              | Target                                       | Degraded mode                       |
 | ----------------------- | -------------------------------------------- | ----------------------------------- |
