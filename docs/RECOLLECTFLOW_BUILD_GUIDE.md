@@ -2519,6 +2519,20 @@ proxy. See [BG-21 hosting and verification](verification/BG-21_WEB_HOSTING.md)
 for routing, configuration, error/cache behavior, release/rollback and remaining
 operator/CI proof. Branch implementation is not evidence of a production deploy.
 
+
+**Current source-only follow-up (2026-10-22):** The authenticated
+`/operations` React page was added by BG-26 after the original BG-21
+operator-route exception was recorded. BG-27 introduced a `/digests` page,
+but the bundled Worker had not kept its SPA allowlist and Wrangler
+`run_worker_first` list aligned with those routes. [BG-21 PR #121](https://github.com/anmolsansi/Recollect-Flow/pull/121)
+repairs this source routing drift and adds packaged-browser regression
+coverage. [BG-21 evidence](verification/BG-21_WEB_HOSTING.md) separates
+the original historical status from these later changes. Actual Cloudflare
+HTTPS edge cookies, multi-release caching, rollback and publication remain
+**NOT VERIFIED** under the owner's standing strict $0/no-production-change
+rule; BG-32 has not been authorized.
+
+
 ### Deploy the application shell without swallowing API errors
 
 Implement the hosting arrangement decided in BG-20. Build Web assets with the
