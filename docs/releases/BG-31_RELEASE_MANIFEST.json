@@ -52,7 +52,9 @@
     "TELEGRAM_CHAT_ID",
     "WEB_INBOX_BASE_URL"
   ],
-  "conditional_secret_names": ["OPENROUTER_API_KEY"],
+  "conditional_secret_names": [
+    "OPENROUTER_API_KEY"
+  ],
   "source_migrations": [
     "0001_initial.sql",
     "0002_add_duplicate_of.sql",
@@ -114,5 +116,21 @@
     "build_guide": "docs/RECOLLECTFLOW_BUILD_GUIDE.md",
     "migration_dir": "migrations",
     "recovery_operator_procedure": "docs/RECOVERY_OPERATOR_PROCEDURE.md"
+  },
+  "ci_fingerprint_checkpoint": {
+    "source_sha": "a8063204f15158aac5f7da5ef00ddc53820c7796",
+    "github_ci_run_id": 39783592918,
+    "github_ci_run_url": "https://github.com/anmolsansi/Recollect-Flow/actions/runs/39783592918",
+    "conclusion": "success",
+    "toolchain": {
+      "node": "22.23.3",
+      "npm": "10.9.9",
+      "wrangler": "4.116.0"
+    },
+    "web_release_id": "bd71d34b551d37eb0c5887d8d1b37d1f01ab874fa7beab48752f9c1978c05ee6",
+    "web_release_manifest_sha256": "4a7cfc430adfda9cf3242f8170a6ee39d7c2c022fcf9c69b2e1ab134675648b1",
+    "worker_dry_run_index_js_sha256": "97c6bbc88bb4c6c440871c9038e7580001c8ba6f5d52617c7ad4a74db2adb500",
+    "uploaded_artifact": false,
+    "approved_for_deployment": false
   }
 }
