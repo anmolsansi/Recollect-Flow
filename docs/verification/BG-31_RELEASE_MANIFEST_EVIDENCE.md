@@ -6,6 +6,26 @@
 **Baseline exact CI:** [#39752503664](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39752503664), successful on that source. This is **not** CI on the BG-31 branch.  
 **Manifest:** [human release packet](../releases/BG-31_RELEASE_MANIFEST.md), [machine-verifiable NO-GO JSON](../releases/BG-31_RELEASE_MANIFEST.json).
 
+## Verified branch checkpoint CI (not production release proof)
+
+The prior branch checkpoint `2649603a8f8f83fca997c6e115c1338b8afb88d4`
+passed [GitHub Actions run #39758159109](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39758159109)
+with all quality, formatting, typecheck, package, Wrangler **dry-run**,
+local D1 and browser acceptance steps successful. Six BG-31 source-only
+manifest tests passed. No artifact was uploaded from that run.
+
+In that run, the packaging step executed on the **earlier commit**
+`d045e14ac0cb9c1c530f9830d96de46faebc34da` and reported Web release ID
+`4d71d3b8e237b8f32bc5d79a471b6c872132c0845c0d24ccc010677a728b7c0e`
+with five bundled public files. Wrangler identified version `4.116.0`.
+This is reproducible **CI checkpoint evidence**, not an approved immutable
+Worker bundle, an uploaded Web manifest or final source/artifact match.
+Any later branch commit requires a new successful exact-head CI run.
+
+The focused proof and checklist review are completed only for the source-only
+scope. BG-32 remains blocked. Missing hosted account, migration, backup,
+rollback-artifact, operator and approval evidence stays **NOT VERIFIED**.
+
 ## Scope and prior evidence
 
 [BG-30 final closeout](BG-30_FINAL_CLOSEOUT.md) is merged on main and its GitHub issue #116 is closed. It reconciles implementation documentation, not operational acceptance. The [BG-30 release matrix](BG-30_RELEASE_MATRIX.json) has null deployed identities and unknown production/device evidence. BG-29.078 is still deferred at 99/100. Under the [owner's $0 downstream exception](BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md), BG-31 may prepare local documents, offline tests and CI, but may not query/write hosted R2, deploy, run remote migrations, send provider messages or incur charges. OPE-247 remains In Progress.
@@ -22,7 +42,7 @@ The BG-31 task is _manifest preparation_, not a command to execute BG-32. An app
 
 ## Truthful validation boundary
 
-`npm run bg31:manifest:test` covers **offline repository consistency**, not live services or a backup restore. Historical BG-30 main CI passed; the BG-31 branch needs its **own** exact-head CI after all changes. The private/authenticated browser and physical iPhone, hosted TLS, provider permission, cost, remote migration state, independent recovery, and 10 real elapsed-hour multistage Cron proof remain separate evidence. The manifest deliberately cannot certify those from fixtures.
+`npm run bg31:manifest:test` covers **offline repository consistency**, not live services or a backup restore. Historical BG-30 main CI passed; the BG-31 branch passed the checkpoint CI above; any subsequently changed head needs its **own** new exact-head CI. The private/authenticated browser and physical iPhone, hosted TLS, provider permission, cost, remote migration state, independent recovery, and 10 real elapsed-hour multistage Cron proof remain separate evidence. The manifest deliberately cannot certify those from fixtures.
 
 Every micro-commit should reference [#119](https://github.com/anmolsansi/Recollect-Flow/issues/119) and one paired task number. The canonical 100-step checklist is updated only for actions whose required observation and review can be justified. A document that _describes_ an unknown live value does not satisfy a checklist action that says to _read_ or _verify_ it.
 
