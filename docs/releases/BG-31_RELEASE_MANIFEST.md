@@ -20,11 +20,22 @@ This is the owner-review packet for the **future** BG-32 production operation, n
 | Worker entry               | `apps/worker-api/src/index.ts`                                                                                  | `wrangler.toml` `main`                                                                                                                                        |
 | Worker configuration       | `wrangler.toml`                                                                                                 | Source review only; runtime/deployed version **NOT VERIFIED**                                                                                                 |
 | Web assets                 | `apps/web/dist` bundled into Worker                                                                             | `npm run release:package` produces versioned assets                                                                                                           |
-| Web release ID / hashes    | **NOT BUILT OR RECORDED for BG-31**                                                                             | `apps/web/dist/release-manifest.json` must match approved source SHA and bundle                                                                               |
+| Web release ID / hashes    | **CI checkpoint only; NOT FROZEN**                                                                              | Earlier generated Web ID below; artifact not archived                                                                                                         |
 | Worker bundle hash/version | **NOT FROZEN**                                                                                                  | Capture dry-run bundle hash and deployable artifact identity without deploying                                                                                |
-| CI at final work head      | **PENDING**                                                                                                     | Require exact-head full GitHub CI, not baseline CI                                                                                                            |
+| CI at final work head      | **PASS at checkpoint; see below**                                                                               | Re-run CI for any newer work head                                                                                                                             |
 | Runtime toolchain          | CI Node 22; `package.json` requires Node >=22; Wrangler declared `^4.116.0`                                     | Record actual `node --version`, `npm --version`, `npx wrangler --version` from packaging runner                                                               |
 | Browser gate               | Historical isolated Chrome/local bundled Worker acceptance                                                      | [BG-21](../verification/BG-21_WEB_HOSTING.md) and [BG-30 matrix](../verification/BG-30_RELEASE_MATRIX.json); current hosted HTTPS acceptance **NOT VERIFIED** |
+
+**Verified branch CI checkpoint (not a release freeze):** GitHub Actions
+[run #39758159109](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39758159109)
+passed at commit `2649603a8f8f83fca997c6e115c1338b8afb88d4` with six BG-31
+manifest tests, full quality and browser checks, local migrations, Web packaging
+and Wrangler **dry-run only**. Packaging from an earlier commit in that run,
+`d045e14ac0cb9c1c530f9830d96de46faebc34da`, reported Web release ID
+`4d71d3b8e237b8f32bc5d79a471b6c872132c0845c0d24ccc010677a728b7c0e`
+and five public files; Wrangler reported `4.116.0`. No immutable matching
+Worker bundle or Web manifest was uploaded. These records are **not** the
+future owner-approved candidate. Re-run CI against the final changed head.
 
 **Artifact pairing invariant:** the Worker entry, `wrangler.toml`, lockfile and generated Web file hashes must agree with the release ID emitted by `scripts/web-release.mjs`. Its `source_revision`, `worker_entry_sha256`, `worker_config_sha256`, `lockfile_sha256`, individual `web_files[].sha256` and `release_id` belong in the frozen, owner-approved packet. The release ID is deterministic from these inputs, but **is not a deployed Worker version**. Build locally in an isolated checkout; do not silently rebuild a different candidate for deployment.
 
