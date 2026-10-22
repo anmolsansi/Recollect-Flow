@@ -11,7 +11,7 @@ binding = "ASSETS"
 not_found_handling = "none"
 # API paths and approved SPA routes bypass asset-first serving.
 # Hashed bundle paths run through Worker for explicit immutable caching.
-run_worker_first = ["/api", "/api/*", "/", "/capture", "/capture/*", "/items/*", "/assets/*"]
+run_worker_first = ["/api", "/api/*", "/", "/capture", "/capture/*", "/items/*", "/operations", "/digests", "/assets/*"]
 
 # Per-edge, short-window login abuse limit. Unique namespace for this Worker.
 # Bounded client keys are derived only from Cloudflare's connecting-IP header.
