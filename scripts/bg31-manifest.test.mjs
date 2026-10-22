@@ -111,3 +111,16 @@ test('BG-31 manifest contains no approval or credential values', () => {
     'TELEGRAM_CHAT_ID',
   );
 });
+
+test('BG-31 CI checkpoint is distinct from a frozen deployable artifact', () => {
+  const checkpoint = manifest.ci_fingerprint_checkpoint;
+  assert.match(checkpoint.source_sha, /^[a-f0-9]{40}$/);
+  assert.equal(checkpoint.conclusion, 'success');
+  assert.match(checkpoint.web_release_id, /^[a-f0-9]{64}$/);
+  assert.match(checkpoint.web_release_manifest_sha256, /^[a-f0-9]{64}$/);
+  assert.match(checkpoint.worker_dry_run_index_js_sha256, /^[a-f0-9]{64}$/);
+  assert.equal(checkpoint.uploaded_artifact, false);
+  assert.equal(checkpoint.approved_for_deployment, false);
+  assert.equal(manifest.release_candidate.source_sha, null);
+  assert.equal(manifest.gates.bg32_production_authorized, false);
+});
