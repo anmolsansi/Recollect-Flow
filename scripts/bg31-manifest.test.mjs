@@ -86,6 +86,139 @@ test('BG-31 declared target names and secrets match committed Worker config', ()
   assert.deepEqual([...manifest.required_secret_names].sort(), names.sort());
 });
 
+
+test('BG-31 detects source target and $0 configuration drift without claiming live proof', () => {
+  const target = manifest.source_targets;
+  assert.match(config, new RegExp('^database_name = "' + target.d1_name + '"
+  assert.deepEqual(
+    manifest.smoke_stages,
+    Array.from({ length: 11 }, (_, i) => 'S' + String(i + 1).padStart(2, '0')),
+  );
+  for (const id of manifest.smoke_stages) {
+    assert.match(docs, new RegExp('\\b' + id + ':'));
+  }
+  assert.match(docs, /independent-receipts\.json/);
+  assert.match(docs, /dry_run=true/);
+  assert.match(docs, /cannot be represented as a fully approved/);
+});
+
+test('BG-31 manifest contains no approval or credential values', () => {
+  const serialized = JSON.stringify(manifest);
+  assert.doesNotMatch(
+    serialized,
+    /(?:sk-or-|ghp_|-----BEGIN (?:RSA |OPENSSH )?PRIVATE KEY-----)/,
+  );
+  assert.ok(!('secret_values' in manifest));
+  assert.equal(
+    manifest.source_targets.telegram_destination_secret_name,
+    'TELEGRAM_CHAT_ID',
+  );
+});
+
+test('BG-31 CI checkpoint is distinct from a frozen deployable artifact', () => {
+  const checkpoint = manifest.ci_fingerprint_checkpoint;
+  assert.match(checkpoint.source_sha, /^[a-f0-9]{40}$/);
+  assert.equal(checkpoint.conclusion, 'success');
+  assert.match(checkpoint.web_release_id, /^[a-f0-9]{64}$/);
+  assert.match(checkpoint.web_release_manifest_sha256, /^[a-f0-9]{64}$/);
+  assert.match(checkpoint.worker_dry_run_index_js_sha256, /^[a-f0-9]{64}$/);
+  assert.equal(checkpoint.uploaded_artifact, false);
+  assert.equal(checkpoint.approved_for_deployment, false);
+  assert.equal(manifest.release_candidate.source_sha, null);
+  assert.equal(manifest.gates.bg32_production_authorized, false);
+});
+, 'm'));
+  assert.match(config, new RegExp('^binding = "' + target.r2_binding + '"
+  assert.deepEqual(
+    manifest.smoke_stages,
+    Array.from({ length: 11 }, (_, i) => 'S' + String(i + 1).padStart(2, '0')),
+  );
+  for (const id of manifest.smoke_stages) {
+    assert.match(docs, new RegExp('\\b' + id + ':'));
+  }
+  assert.match(docs, /independent-receipts\.json/);
+  assert.match(docs, /dry_run=true/);
+  assert.match(docs, /cannot be represented as a fully approved/);
+});
+
+test('BG-31 manifest contains no approval or credential values', () => {
+  const serialized = JSON.stringify(manifest);
+  assert.doesNotMatch(
+    serialized,
+    /(?:sk-or-|ghp_|-----BEGIN (?:RSA |OPENSSH )?PRIVATE KEY-----)/,
+  );
+  assert.ok(!('secret_values' in manifest));
+  assert.equal(
+    manifest.source_targets.telegram_destination_secret_name,
+    'TELEGRAM_CHAT_ID',
+  );
+});
+
+test('BG-31 CI checkpoint is distinct from a frozen deployable artifact', () => {
+  const checkpoint = manifest.ci_fingerprint_checkpoint;
+  assert.match(checkpoint.source_sha, /^[a-f0-9]{40}$/);
+  assert.equal(checkpoint.conclusion, 'success');
+  assert.match(checkpoint.web_release_id, /^[a-f0-9]{64}$/);
+  assert.match(checkpoint.web_release_manifest_sha256, /^[a-f0-9]{64}$/);
+  assert.match(checkpoint.worker_dry_run_index_js_sha256, /^[a-f0-9]{64}$/);
+  assert.equal(checkpoint.uploaded_artifact, false);
+  assert.equal(checkpoint.approved_for_deployment, false);
+  assert.equal(manifest.release_candidate.source_sha, null);
+  assert.equal(manifest.gates.bg32_production_authorized, false);
+});
+, 'm'));
+  assert.match(config, /^binding = "AI"$/m);
+  assert.match(config, /^binding = "ASSETS"$/m);
+  assert.match(config, /^name = "LOGIN_RATE_LIMITER"$/m);
+  assert.match(
+    config,
+    new RegExp('^' + target.notion_destination_var + ' = "[^"]+"
+  assert.deepEqual(
+    manifest.smoke_stages,
+    Array.from({ length: 11 }, (_, i) => 'S' + String(i + 1).padStart(2, '0')),
+  );
+  for (const id of manifest.smoke_stages) {
+    assert.match(docs, new RegExp('\\b' + id + ':'));
+  }
+  assert.match(docs, /independent-receipts\.json/);
+  assert.match(docs, /dry_run=true/);
+  assert.match(docs, /cannot be represented as a fully approved/);
+});
+
+test('BG-31 manifest contains no approval or credential values', () => {
+  const serialized = JSON.stringify(manifest);
+  assert.doesNotMatch(
+    serialized,
+    /(?:sk-or-|ghp_|-----BEGIN (?:RSA |OPENSSH )?PRIVATE KEY-----)/,
+  );
+  assert.ok(!('secret_values' in manifest));
+  assert.equal(
+    manifest.source_targets.telegram_destination_secret_name,
+    'TELEGRAM_CHAT_ID',
+  );
+});
+
+test('BG-31 CI checkpoint is distinct from a frozen deployable artifact', () => {
+  const checkpoint = manifest.ci_fingerprint_checkpoint;
+  assert.match(checkpoint.source_sha, /^[a-f0-9]{40}$/);
+  assert.equal(checkpoint.conclusion, 'success');
+  assert.match(checkpoint.web_release_id, /^[a-f0-9]{64}$/);
+  assert.match(checkpoint.web_release_manifest_sha256, /^[a-f0-9]{64}$/);
+  assert.match(checkpoint.worker_dry_run_index_js_sha256, /^[a-f0-9]{64}$/);
+  assert.equal(checkpoint.uploaded_artifact, false);
+  assert.equal(checkpoint.approved_for_deployment, false);
+  assert.equal(manifest.release_candidate.source_sha, null);
+  assert.equal(manifest.gates.bg32_production_authorized, false);
+});
+, 'm'),
+  );
+  assert.match(config, /^AI_PROVIDER_DEFAULT = "openrouter"$/m);
+  assert.match(config, /^AI_PROVIDERS_ENABLED = "openrouter,cloudflare"$/m);
+  assert.match(config, /^DIGEST_AI_ENABLED = "false"$/m);
+  assert.doesNotMatch(config, /^HOSTED_BACKUP_AUTOCREATE_ENABLED = "true"$/m);
+  assert.equal(manifest.live_inventory.secret_presence_verified, false);
+});
+
 test('BG-31 stage list and release safety boundary are complete', () => {
   assert.deepEqual(
     manifest.smoke_stages,
