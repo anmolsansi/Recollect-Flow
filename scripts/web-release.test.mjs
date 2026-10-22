@@ -117,7 +117,10 @@ test('missing entry and absent root fail packaging', () => {
 });
 
 test('configured Worker-first paths cover every shipped React deep link', () => {
-  const toml = readFileSync(new URL('../wrangler.toml', import.meta.url), 'utf8');
+  const toml = readFileSync(
+    new URL('../wrangler.toml', import.meta.url),
+    'utf8',
+  );
   const app = readFileSync(
     new URL('../apps/web/src/App.tsx', import.meta.url),
     'utf8',
