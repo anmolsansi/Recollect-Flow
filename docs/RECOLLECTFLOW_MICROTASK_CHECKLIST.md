@@ -4314,12 +4314,12 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 - [x] `BG-31.011` Record candidate Git SHA.
 - [x] `BG-31.012` Record CI run reference.
-- [ ] `BG-31.013` Record Node/tool versions.
+- [x] `BG-31.013` Record Node/tool versions.
 - [ ] `BG-31.014` Record Worker artifact identity.
 - [ ] `BG-31.015` Record matching Web artifact identity.
-- [ ] `BG-31.016` Record current migration head.
-- [ ] `BG-31.017` Record complete test evidence.
-- [ ] `BG-31.018` Record browser acceptance evidence.
+- [x] `BG-31.016` Record current migration head.
+- [x] `BG-31.017` Record complete test evidence.
+- [x] `BG-31.018` Record browser acceptance evidence.
 - [x] `BG-31.019` Identify unresolved local qualification.
 - [x] `BG-31.020` Freeze candidate manifest version.
 
@@ -4351,9 +4351,9 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-31 / 05 — Configuration
 
-- [ ] `BG-31.041` Inventory required secret names.
+- [x] `BG-31.041` Inventory required secret names.
 - [ ] `BG-31.042` Verify presence without values.
-- [ ] `BG-31.043` Inventory required nonsecret variables.
+- [x] `BG-31.043` Inventory required nonsecret variables.
 - [ ] `BG-31.044` Verify canonical Web origin.
 - [ ] `BG-31.045` Verify approved provider configuration.
 - [ ] `BG-31.046` Verify enabled implementation capabilities.
@@ -4394,12 +4394,12 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-31.072` Define capture loss trigger.
 - [x] `BG-31.073` Define privacy leak trigger.
 - [x] `BG-31.074` Define migration failure trigger.
-- [ ] `BG-31.075` Define deep-link failure trigger.
+- [x] `BG-31.075` Define deep-link failure trigger.
 - [ ] `BG-31.076` Identify compatible old artifact.
 - [ ] `BG-31.077` Identify schema-compatible rollback boundary.
 - [ ] `BG-31.078` Define traffic stop procedure.
 - [ ] `BG-31.079` Define operator notification path.
-- [ ] `BG-31.080` Record recovery fallback if rollback unsafe.
+- [x] `BG-31.080` Record recovery fallback if rollback unsafe.
 
 #### BG-31 / 09 — Authorization packet
 
@@ -4412,7 +4412,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-31.087` Include stop/rollback plan.
 - [x] `BG-31.088` Present reviewable manifest.
 - [ ] `BG-31.089` Record actual release authorization reference.
-- [ ] `BG-31.090` Keep execution blocked without required approval.
+- [x] `BG-31.090` Keep execution blocked without required approval.
 
 #### BG-31 / 10 — Verify and close this task
 
