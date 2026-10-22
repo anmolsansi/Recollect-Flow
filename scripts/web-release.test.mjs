@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import {
   mkdtempSync,
   mkdirSync,
+  readFileSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -112,5 +113,27 @@ test('missing entry and absent root fail packaging', () => {
     assert.throws(() => inspectWebOutput(f.dist), /root element/);
   } finally {
     f.cleanup();
+  }
+});
+
+test('configured Worker-first paths cover every shipped React deep link', () => {
+  const toml = readFileSync(new URL('../wrangler.toml', import.meta.url), 'utf8');
+  const app = readFileSync(new URL('../apps/web/src/App.tsx', import.meta.url), 'utf8');
+  const configured = toml.match(/^run_worker_first\\s*=\\s*(\\[[^\\n]+\\])/m);
+  assert.ok(configured, 'Missing Wrangler Worker-first routing list');
+  const routes = JSON.parse(configured[1]);
+  for (const [reactPath, workerPath] of [
+    ['/', '/'],
+    ['/capture', '/capture'],
+    ['/capture/file', '/capture/*'],
+    ['/items/:id', '/items/*'],
+    ['/operations', '/operations'],
+    ['/digests', '/digests'],
+  ]) {
+    assert.ok(app.includes('<Route path="' + reactPath + '"'), reactPath);
+    assert.ok(routes.includes(workerPath), 'Missing Worker-first: ' + workerPath);
+  }
+  for (const apiPath of ['/api', '/api/*', '/assets/*']) {
+    assert.ok(routes.includes(apiPath), 'Worker-first bypass must include: ' + apiPath);
   }
 });
