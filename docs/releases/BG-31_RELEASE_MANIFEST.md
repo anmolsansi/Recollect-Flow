@@ -122,3 +122,33 @@ Policy [`2026-07-31.2`](../SECURITY_PRIVACY_GOVERNANCE.md) governs Unknown/Publi
 **Current evidence:** backup identifier **NOT PROVIDED**, backup timestamp **NOT VERIFIED**, independently copied object count **NOT VERIFIED**, verified SHA-256 manifest **NOT AVAILABLE**, newest purge receipts **NOT VERIFIED**, restore dry run **NOT RUN**, recovery destination/operator **NOT ASSIGNED**. These are blocking prerequisites, not assumed successful nightly copies.
 
 **Recovery target:** no committed recovery point objective or restore-time measurement is proved for this candidate. Before approval, owner/operator must choose an acceptable recovery window, run an isolated timed rehearsal and record actual results. Rolling application code backward never reverses a D1 migration. If old code is schema-incompatible, keep traffic stopped and use a reviewed forward repair or verified isolated restore, including any post-snapshot data-loss implications.
+
+## 6. Post-deploy smoke stages and mandatory stops
+
+Execute **only after** BG-32 grants operation-specific authorization, takes the verified backup and applies the approved exact candidate. Record stage timestamp, target origin, request ID, actual result and operator. An incomplete stage is neither PASS nor implicit permission to continue.
+
+| Stage | Expected result | Mandatory stop |
+| --- | --- | --- |
+| S01: identity/config/ledger | Exact approved Worker build, Web release ID, correct D1 UUID, R2 binding, migrations and HTTPS origin | Any mismatch or missing identity |
+| S02: homepage/static files | Root loads correct hashed Web assets without private cache exposure | Missing bundle, stale asset or secret leak |
+| S03: direct deep link | New browser session loads `/items/<id>` route correctly | Missing/broken SPA route |
+| S04: login/session/logout | Correct cookie flags, session persistence, logout invalidation | Login failure, session leak, insecure cookie |
+| S05: anonymous denial | Protected item/export/download/API routes reject unauthenticated access | Any protected data exposure |
+| S06: capture + same-key replay | Synthetic owner capture returns durable canonical ID; retry never loses or duplicates source unexpectedly | Lost item, inconsistent event, wrong ID |
+| S07: original attachment | Authenticated original bytes match expected hash; anonymous retrieval denied, private cache disabled | Missing originals, hash mismatch, public/private leak |
+| S08: search + reopening | Known distinctive fixture phrase resolves to correct item and evidence; privacy/deletion filters hold | Missing or wrong-private item |
+| S09: privacy and optional degradation | Unknown/Sensitive disallow unauthorized external dispatch; failed optional provider never unsaves item | Unexpected outbound route or lost canonical save |
+| S10: permitted integrations | Only separately approved neutral Notion/Telegram/AI fixtures reach their intended destinations | Wrong external destination, surprise charge, missing provider permission |
+| S11: operational inspection | Safe job backlog, D1 migration, auth, capture, error, external quota and log review | Unexplained elevated errors, raw secret/content log or unexpected billing exposure |
+
+**No external test message is included in the current authorization.** If provider test scope is not approved, record S10 **NOT EXECUTED** and do not silently send. Hosted proof, iPhone, two-week use, seven-day digest and BG-29.078 remain later independent acceptance gates.
+
+### Immediate response to a stop trigger
+
+1. Halt further migration/deploy, optional processing, scheduled jobs or traffic **only through an approved, environment-specific operating procedure**. Never improvise destructive toggles.
+2. Preserve incident UTC timestamp, safe IDs, immutable artifact and ledger state, operation logs without raw content, and the last known good build/backup identities.
+3. If schema remains compatible, use the **verified** previous Worker/Web artifact and matching configuration to restore compatible code, then repeat auth/capture/private-download and consistency checks. **Previous artifact: NOT YET IDENTIFIED OR PROVED COMPATIBLE.**
+4. If migration changed schema incompatibly, **do not deploy old code blindly**. Prefer reviewed forward repair and re-verify. If that is unsafe, restore a verified independent backup into an isolated database/bucket, reconcile newer purge receipts and captured writes, and seek explicit owner approval before traffic cutover.
+5. Notify the owner through the pre-agreed **non-Telegram operational channel**. Escalation contact/channel **NOT DESIGNATED**. Do not send a live Telegram bot message as a substitute for approval.
+
+Auth failures, persistent capture loss, private route leak, migration inconsistency, deep-link failure, corruption/hash mismatch, missing backup/receipt evidence or any possible additional charge all block GO. No change to production or external messaging is authorized by writing these steps.
