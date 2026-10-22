@@ -15,7 +15,7 @@ not been waived. No V1 GO or BG-32 deploy authorization follows from this row.
 
 ## Roadmap rules
 
-Every phase ends with a user-demonstrable gate. Infrastructure does not count as progress when the real workflow remains unusable. A failed gate blocks dependent work. `BUILD_STATUS.md` is the source for current completion.
+Every phase ends with a user-demonstrable gate. Infrastructure does not count as progress when the real workflow remains unusable. A failed gate blocks dependent work. The [BG-30 evidence matrix](verification/BG-30_RELEASE_MATRIX.json) distinguishes current reviewed source from deployed and accepted versions. `BUILD_STATUS.md` contains dated historical snapshots and must not serve as a standalone current release attestation.
 
 ## BG-11 acceptance gate (V1 extraction recovery)
 

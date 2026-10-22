@@ -8,13 +8,7 @@ The original September 2026 runtime audit below is historical; it does not certi
 
 This original September context snapshot was prepared at `99678dfef1da1ea31b8b1f12c985bdaaf950b722`. The later BG-30 code and verification baseline is `1d932546e81daa806d68d91fbaf9f91c4b1e5d5f` (2026-10-21), with [reconciled current evidence](verification/BG-30_EVIDENCE.md).
 
-The latest runtime/code audit was performed against application commit `6d5c36b81c9167dc3b53841562d5c997c3c4b3cb` on 2026-09-12. Current `main` is exactly one commit ahead of that audited application state. The only files added by that later commit are:
-
-- `docs/RECOLLECTFLOW_BUILD_GUIDE.md`
-- `docs/RECOLLECTFLOW_MICROTASK_CHECKLIST.md`
-- `docs/WORKFLOW_AUDIT_2026-09-12.md`
-
-Therefore the September 12 workflow findings remain the best runtime evidence for the current application code, but this document does **not** claim that the full verification suite was rerun on `99678df…`.
+The historical runtime/code audit was performed against application commit `6d5c36b81c9167dc3b53841562d5c997c3c4b3cb` on 2026-09-12. The original September context commit `99678dfef1da1ea31b8b1f12c985bdaaf950b722` added the Build Guide, checklist and workflow audit after that audit. **That was the September baseline, not today's `main`.** Later merged fixes and their exact CI are recorded in the [BG-30 reconciliation](verification/BG-30_EVIDENCE.md). The audit's failing tests and workflow defects remain historical findings rather than the current application verdict.
 
 Use these sources together:
 

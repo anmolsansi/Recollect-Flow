@@ -15,7 +15,7 @@ The [BG-30 evidence ledger](verification/BG-30_EVIDENCE.md) distinguishes source
 implementation, historical local proof, exact-sha CI, released version, observed
 production acceptance, physical-device acceptance and remaining blockers. It
 reconciles the September audit without rewriting its original results. This
-record is **in-progress**, not a GO decision. BG-29.078 remains deferred under
+reconciliation records the documentation gate separately from live acceptance. It is **not** a V1 GO decision. BG-29.078 remains deferred under
 the [strict $0 owner decision](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md).
 [GitHub BG-30 #116](https://github.com/anmolsansi/Recollect-Flow/issues/116)
 is the task tracker; Linear OPE-247 remains In Progress until every actual

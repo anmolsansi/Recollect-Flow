@@ -4,7 +4,7 @@
 **Baseline:** `1d932546e81daa806d68d91fbaf9f91c4b1e5d5f` on `main`.
 **Tracking:** [GitHub #116](https://github.com/anmolsansi/Recollect-Flow/issues/116);
 [Linear OPE-247](https://linear.app/openclaw-neutron/issue/OPE-247/complete-v1-security-observability-and-operational-hardening).
-**Status:** branch reconciliation prepared for review. Full acceptance/merge blocked by exact-head CI and independently outstanding release-level gates. No production acceptance is implied.
+**Status:** source/document reconciliation complete at review candidate; latest PR-head CI and merge-main checks are separate acceptance records. BG-29.078 and OPE-247 release-level work remain independently open. No production acceptance is implied.
 
 The 100 source actions are paired as 50 meaningful review units. This file
 records review evidence, acceptance boundaries and unresolved work. The Build
@@ -222,3 +222,11 @@ Baseline `main` CI #39569038036 was green at `1d932546e81daa806d68d91fbaf9f91c4b
 ### 50/50 — Documentation and BG-31 eligibility decision (BG-30.099–100)
 
 BG-30 reconciliation artifacts now name source, local evidence, CI provenance, deployment, production, device, limitations and remaining gates separately. A **BG-31 release-manifest draft** can proceed as $0 local documentation under the October 21 dependency exception, but BG-30's Priority 4 hardening acceptance is **NOT CLOSED**, BG-32/production remains **NO-GO**, and OPE-247 must stay In Progress. Exact-head CI, PR review and any authorized acceptance are required before claiming BG-30 fully complete or merging this draft PR.
+
+## Final verification review (2026-10-22)
+
+- The previous exact PR head `8c9f2efdc0bd188fbf6bb224e744bf34884d3469` passed [full CI #39648249127](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39648249127), including `npm run check`, contracts, formatting, lint, typecheck, workerd/D1, build, local migrations, bundled Worker dry-run, FTS/capture bench, isolated Chrome download, upload, recovery, acquisition, operations and digest journeys. All steps concluded successfully. **This is prior-head evidence; new reconciliation edits still need exact-head CI.**
+- The review checked 159 relative Markdown links in seven directly modified docs against the 553-entry GitHub tree at `8c9f2efdc0bd188fbf6bb224e744bf34884d3469`: **0 broken relative destinations**. This is a file-path validation, not a check of remote URLs or anchor labels.
+- The per-feature matrix now includes explicit capture, deduplication, R2, URL fallback, generation-aware processing, Web capture and upload, hosted AI, extraction, Notion, privacy, Shortcut, release smoke, search, digest, capacity, recovery and operational controls. Its `source_sha` semantics distinguish implementation merges from the dated repository snapshot; historic repo-wide CI is not a substitute for feature-specific production proof.
+- All checks performed were repository source, GitHub CI, existing local/browser evidence and non-mutating document references. No hosted Cloudflare changes, subscription/payment operations, live provider calls, new device tests or production deployment were performed.
+- The parent BG-30 documentation completion boundary is distinct from [Linear OPE-247](https://linear.app/openclaw-neutron/issue/OPE-247/complete-v1-security-observability-and-operational-hardening) release-level hardening. OPE-247 remains In Progress and BG-29.078 remains DEFERRED / NOT VERIFIED (99/100). Only strict-$0 BG-31 *manifest planning* may follow under the standing owner exception. BG-32 and V1 launch remain NO-GO without separate authorization and genuine hosted/device/financial acceptance.
