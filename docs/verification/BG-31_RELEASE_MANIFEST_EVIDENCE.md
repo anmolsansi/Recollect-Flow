@@ -1,0 +1,27 @@
+# BG-31 — Release-manifest preparation and verification
+
+**As of:** 2026-10-22.  
+**GitHub:** [#119](https://github.com/anmolsansi/Recollect-Flow/issues/119) · **Linear:** [OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345/bg-31-prepare-the-v1-release-manifest-without-production-changes).  
+**Branch:** `feat/bg-31-release-manifest`, base `main` at `195fcd65f6a75667228c718411a95b1c20a70679`.  
+**Baseline exact CI:** [#39752503664](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39752503664), successful on that source. This is **not** CI on the BG-31 branch.  
+**Manifest:** [human release packet](../releases/BG-31_RELEASE_MANIFEST.md), [machine-verifiable NO-GO JSON](../releases/BG-31_RELEASE_MANIFEST.json).
+
+## Scope and prior evidence
+
+[BG-30 final closeout](BG-30_FINAL_CLOSEOUT.md) is merged on main and its GitHub issue #116 is closed. It reconciles implementation documentation, not operational acceptance. The [BG-30 release matrix](BG-30_RELEASE_MATRIX.json) has null deployed identities and unknown production/device evidence. BG-29.078 is still deferred at 99/100. Under the [owner's $0 downstream exception](BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md), BG-31 may prepare local documents, offline tests and CI, but may not query/write hosted R2, deploy, run remote migrations, send provider messages or incur charges. OPE-247 remains In Progress.
+
+The BG-31 task is *manifest preparation*, not a command to execute BG-32. An approval must identify the exact final source SHA, packaged Web `release_id`, Worker artifact, target account/bindings, verified independent backup and declared mutations. Those fields are intentionally **null or NOT VERIFIED** in the machine manifest until evidence exists. D1 applied ledger, current remote Worker version and Web origin have **not** been inspected here. No Cloudflare account connection, external provider credential, backup artifact, signed owner release authorization or validated recovery operator was available for such a claim.
+
+## Changes and why they matter
+
+- `docs/releases/BG-31_RELEASE_MANIFEST.md`: human-readable source and live target identities, migration chain and compatibility stop rules, required bindings and secret **names only**, independent backup and purge-receipt instructions, staged smoke, rollback decisions and no-go authorization packet. It is a controlled planning artifact rather than an implied change approval.
+- `docs/releases/BG-31_RELEASE_MANIFEST.json`: explicit machine-readable `NO_GO`, null future artifact/approval/remote facts, exact source migration names and fail-closed gates; makes misleading “ready” assumptions detectable in CI.
+- `scripts/bg31-manifest.test.mjs`: offline Node checks for artifact honesty, complete source-controlled migrations, matching `wrangler.toml` identifiers/secret names, smoke stages, missing backup evidence and unchanged $0/BG-29/BG-32 rules. It never connects to external systems.
+- `package.json`: adds `npm run bg31:manifest:test` to the normal `npm run check` quality gate so later source/manifest drift cannot silently pass.
+- `docs/RECOLLECTFLOW_BUILD_GUIDE.md`, `docs/RECOLLECTFLOW_MICROTASK_CHECKLIST.md`, `docs/RELEASE_ROADMAP.md` and this index: align owner-facing status without changing runtime behavior.
+
+## Truthful validation boundary
+
+`npm run bg31:manifest:test` covers **offline repository consistency**, not live services or a backup restore. Historical BG-30 main CI passed; the BG-31 branch needs its **own** exact-head CI after all changes. The private/authenticated browser and physical iPhone, hosted TLS, provider permission, cost, remote migration state, independent recovery, and 10 real elapsed-hour multistage Cron proof remain separate evidence. The manifest deliberately cannot certify those from fixtures.
+
+Every micro-commit should reference [#119](https://github.com/anmolsansi/Recollect-Flow/issues/119) and one paired task number. The canonical 100-step checklist is updated only for actions whose required observation and review can be justified. A document that *describes* an unknown live value does not satisfy a checklist action that says to *read* or *verify* it.
