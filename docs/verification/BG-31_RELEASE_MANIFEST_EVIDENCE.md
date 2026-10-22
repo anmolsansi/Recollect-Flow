@@ -14,8 +14,9 @@ with all quality, formatting, typecheck, package, Wrangler **dry-run**,
 local D1 and browser acceptance steps successful. Six BG-31 source-only
 manifest tests passed. No artifact was uploaded from that run.
 
-In that run, the packaging step executed on the **earlier commit**
-`d045e14ac0cb9c1c530f9830d96de46faebc34da` and reported Web release ID
+In that run, the packaging step executed on the **GitHub-generated PR merge commit**
+`d045e14ac0cb9c1c530f9830d96de46faebc34da`
+(with parents main `195fcd65...` and branch `2649603a...`) and reported Web release ID
 `4d71d3b8e237b8f32bc5d79a471b6c872132c0845c0d24ccc010677a728b7c0e`
 with five bundled public files. Wrangler identified version `4.116.0`.
 This is reproducible **CI checkpoint evidence**, not an approved immutable
