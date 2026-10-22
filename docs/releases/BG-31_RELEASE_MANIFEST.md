@@ -92,6 +92,48 @@ The source-controlled migration chain uses `migrations_dir = "migrations"` and a
 
 The deliberate numbering gap 0011–0013 is present in the repository and is **not** permission to invent replacement SQL. Last source migration: `0025_bg28_scheduled_backups.sql`. Do not calculate the pending list by subtracting migration numbers. Compute the **exact ordered filename difference** between this source list and the read-only live D1 ledger, after confirming database UUID, account and SHA.
 
+### Safe offline pending-ledger comparison (no remote commands)
+
+After a separately approved **read-only** inspection, the operator must
+save the observed `d1_migrations` filenames to a protected local JSON file,
+in actual applied order. Use this minimal **normalized** format (the example
+is synthetic and does not represent any production ledger):
+
+```json
+{
+  "applied_migrations": ["0001_initial.sql", "0002_add_duplicate_of.sql"]
+}
+```
+
+Run only the offline comparator, which reads repository SQL filenames and the
+supplied local JSON; it never connects to Cloudflare:
+
+```bash
+node scripts/bg31-migration-ledger.mjs /secure/release/read-only-ledger.json
+npm run bg31:ledger:test
+```
+
+The result is an exact ordered **source minus supplied-ledger prefix** and
+exits nonzero on missing, duplicated, unknown, reordered or gapped rows.
+An empty applied list is valid only when the operator independently proves
+that the inspected target is a **fresh** database. The utility does **not**
+authenticate the input, confirm account/D1 UUID, check SQL checksums, prove
+backup completeness or authorize migration; record source snapshot SHA,
+account identity and inspected D1 UUID separately, privately.
+
+**Confirmed source-only impact examples:** migration `0022` adds
+`items.source_revision`, a `url_acquisitions` evidence table and indexes,
+rebuilds the FTS table, and replaces/adds FTS triggers. Migration `0023`
+adds `processing_generation` columns to `items`, `processing_jobs` and
+`extraction_records`, indexes and epoch triggers; it deliberately does not
+backfill historical job generations. Migration `0024` creates two processing
+views and four triggers that project current status on writes, with no source
+SQL data backfill. Migration `0025` adds `scheduled_backup_periods` and
+its state index; no schedule is activated by SQL alone. These effects are
+from the SQL files, **not** a claim that the migrations are pending or safe
+against the current live schema. Test the actual delta against an isolated
+approved backup before performing BG-32.
+
 ### High-risk portions of the chain
 
 | Source migration | Schema effects                                                                                                                | Backfill/compatibility question                                                                                              |
