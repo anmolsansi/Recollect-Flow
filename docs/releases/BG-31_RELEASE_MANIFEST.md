@@ -152,3 +152,29 @@ Execute **only after** BG-32 grants operation-specific authorization, takes the 
 5. Notify the owner through the pre-agreed **non-Telegram operational channel**. Escalation contact/channel **NOT DESIGNATED**. Do not send a live Telegram bot message as a substitute for approval.
 
 Auth failures, persistent capture loss, private route leak, migration inconsistency, deep-link failure, corruption/hash mismatch, missing backup/receipt evidence or any possible additional charge all block GO. No change to production or external messaging is authorized by writing these steps.
+
+## 7. BG-32 owner approval packet
+
+| Requested action | Current approval status |
+| --- | --- |
+| Review BG-31 manifest source and CI | $0 documentation/CI permitted |
+| Approve exact candidate SHA, Worker and Web release hashes | **NOT GRANTED: artifact not frozen** |
+| Approve target Cloudflare account, D1 UUID, R2, Web origin and migration delta | **NOT GRANTED: read-only inventory unverified** |
+| Approve independent backup destination and verified restore evidence | **NOT GRANTED: no verified backup** |
+| Approve D1 forward migration / Worker deploy / hosted smoke | **NOT GRANTED** |
+| Approve any Notion/AI/Telegram test or notification | **NOT GRANTED separately for each destination/action** |
+| Approve financial exposure or alter strict $0 rule | **NOT GRANTED; strict $0 remains** |
+| Approve BG-32 production operation | **NO-GO** |
+| Approve V1 release GO | **NO-GO** |
+
+**Release owner:** repository owner, approval needed in an explicit dated record referencing the immutable completed manifest revision, exact artifact hashes, approved targets, intended commands, maximum scope and rollback plan.  
+**Execution operator:** **UNASSIGNED**. Must be named and authorized by the owner before any deployment.  
+**Restore operator:** **UNASSIGNED**. Must have independently verified backup read access and documented recovery procedure.  
+**Approval evidence/reference:** **NONE**.  
+**Next release action:** only review this draft and safely complete source/CI/manifest checks. Missing operator identities, live migration diff, independent backup, candidate Web/Worker artifacts, provider/billing capacity and operational gates keep BG-32 blocked.
+
+### Acceptance and handoff
+
+BG-31's documentation can be reviewable without executing BG-32. It cannot be represented as a fully approved or production-ready manifest while release identity, live target inventory, verified recovery copy or authorization are absent. Status is **SOURCE PREPARED, RELEASE NOT READY, BG-32 PRODUCTION BLOCKED**. Keep source CI, deployed versions, physical-device evidence, elapsed-hour resilience and billing proof in separate records.
+
+See [BG-31 evidence](../verification/BG-31_RELEASE_MANIFEST_EVIDENCE.md), [release roadmap](../RELEASE_ROADMAP.md), [Build Guide §37](../RECOLLECTFLOW_BUILD_GUIDE.md#37-bg-31--prepare-a-concrete-release-manifest) and the [canonical 100-step checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-31--100-executable-microtasks).
