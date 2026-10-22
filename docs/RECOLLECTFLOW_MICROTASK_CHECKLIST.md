@@ -4315,8 +4315,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-31.011` Record candidate Git SHA.
 - [x] `BG-31.012` Record CI run reference.
 - [x] `BG-31.013` Record Node/tool versions.
-- [ ] `BG-31.014` Record Worker artifact identity.
-- [ ] `BG-31.015` Record matching Web artifact identity.
+- [x] `BG-31.014` Record Worker artifact identity.
+- [x] `BG-31.015` Record matching Web artifact identity.
 - [x] `BG-31.016` Record current migration head.
 - [x] `BG-31.017` Record complete test evidence.
 - [x] `BG-31.018` Record browser acceptance evidence.
