@@ -49,3 +49,48 @@ Source configuration is **not** live proof. These values describe committed conf
 A later authorized operator records: inspection timestamp (UTC), account identifier in a private operations vault, Worker deployment ID, D1 UUID and remote applied migration names, binding list, actual Web origin and certificate/auth properties, R2 bucket identity without object access, Notion database identity via nonsecret owner reference, Telegram private destination confirmation **without sending**, and safe evidence links. Preserve no secret values or message contents. The D1 check must be explicitly read-only and targeted to the confirmed UUID. If any account, origin, binding or ID differs from this manifest, **STOP** and issue a new candidate revision.
 
 The required production schema delta is **UNKNOWN** until read-only live `d1_migrations` inventory is obtained. Do not claim that migrations 0020/0021/0025, or any other migration, are either present or pending based solely on source or a past local migration log.
+
+## 3. Ordered migration inventory and compatibility gate
+
+The source-controlled migration chain uses `migrations_dir = "migrations"` and applies in filename order. The complete current source order is:
+
+```text
+0001_initial.sql
+0002_add_duplicate_of.sql
+0003_add_attachments_table.sql
+0004_add_policy_routing.sql
+0005_update_hosted_ai_policy.sql
+0006_add_capture_request_fingerprint.sql
+0007_add_job_leases.sql
+0008_add_sync_available_at.sql
+0009_complete_jobs_and_notion_projection.sql
+0010_add_enrichment_fields.sql
+0014_allow_cloudflare_provider.sql
+0015_add_extraction_records.sql
+0016_add_item_search_fts.sql
+0017_add_item_review_contract.sql
+0018_add_item_duplicate_target.sql
+0019_add_digest_jobs.sql
+0020_add_ai_capacity_controls.sql
+0021_add_recovery_workflows.sql
+0022_add_url_acquisition_evidence.sql
+0023_add_processing_generation.sql
+0024_materialize_current_processing_status.sql
+0025_bg28_scheduled_backups.sql
+```
+
+The deliberate numbering gap 0011–0013 is present in the repository and is **not** permission to invent replacement SQL. Last source migration: `0025_bg28_scheduled_backups.sql`. Do not calculate the pending list by subtracting migration numbers. Compute the **exact ordered filename difference** between this source list and the read-only live D1 ledger, after confirming database UUID, account and SHA.
+
+### High-risk portions of the chain
+
+| Source migration | Schema effects | Backfill/compatibility question |
+| --- | --- | --- |
+| 0020 | New AI capacity windows, reservations, circuit breakers, expiration and probe indexes | Historical capacity is not inferred from new tables; verify runtime behavior at upgraded schema |
+| 0021 | Backup artifacts, purge workflows and steps, independent anti-resurrection purge receipts, restore/integrity runs and indexes | Receipt preservation is a release integrity gate; code rollback is not database rollback |
+| 0022 | URL acquisition evidence structures | Confirm old/new URL fetch and search behavior before deciding mixed-version compatibility |
+| 0023–0024 | Processing generation and materialized current status | Validate any backfill/trigger and generation constraints on a **restored isolated copy**, never assume additive-only safety |
+| 0025 | `scheduled_backup_periods` table and state index | Table creation does not activate scheduled backup; `HOSTED_BACKUP_AUTOCREATE_ENABLED` remains off unless separately approved |
+
+**Source-only migration evaluation:** the chain is forward-only. Applied SQL, schema additions, triggers, table/index changes and data backfills may be irreversible by deploying an older Worker. No production compatibility claim is possible without seeing the actual remote ledger, reviewing *all* pending SQL, replaying the transition against an isolated backup and checking old-code compatibility.
+
+**Stop before migration** on unknown or out-of-order ledger rows, a source checksum/name mismatch, wrong account/UUID, missing backup/readback, unreviewed data backfill, absent compatible previous artifact, or a cost/authorization conflict. **Stop after an interrupted migration:** inspect the actual D1 ledger and schema before attempting any retry. Never blindly replay SQL or run production `npm run db:migrate:remote` from this document.
