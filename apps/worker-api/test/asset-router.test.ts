@@ -32,6 +32,7 @@ describe('BG-21 public asset routing', () => {
     '/capture',
     '/capture/file',
     '/operations',
+    '/digests',
     '/items/123',
     '/items/%3F',
   ])('serves only the public shell for %s', async (pathname) => {
