@@ -4299,29 +4299,29 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-31 / 01 — Establish task context
 
-- [ ] `BG-31.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-31.002` **Dependency:** Review BG-30's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
-- [ ] `BG-31.003` **Baseline:** Record the actual checkout or release candidate used for BG-31.
-- [ ] `BG-31.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-31.005` **Evidence:** Check whether existing evidence already satisfies any BG-31 step; reference it instead of manufacturing work.
-- [ ] `BG-31.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-31.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-31.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-31.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-31.010` **Tracking:** Open a BG-31 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-31.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-31.002` **Dependency:** Review BG-30's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
+- [x] `BG-31.003` **Baseline:** Record the actual checkout or release candidate used for BG-31.
+- [x] `BG-31.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-31.005` **Evidence:** Check whether existing evidence already satisfies any BG-31 step; reference it instead of manufacturing work.
+- [x] `BG-31.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-31.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-31.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-31.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-31.010` **Tracking:** Open a BG-31 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-31 / 02 — Candidate identity
 
-- [ ] `BG-31.011` Record candidate Git SHA.
-- [ ] `BG-31.012` Record CI run reference.
+- [x] `BG-31.011` Record candidate Git SHA.
+- [x] `BG-31.012` Record CI run reference.
 - [ ] `BG-31.013` Record Node/tool versions.
 - [ ] `BG-31.014` Record Worker artifact identity.
 - [ ] `BG-31.015` Record matching Web artifact identity.
 - [ ] `BG-31.016` Record current migration head.
 - [ ] `BG-31.017` Record complete test evidence.
 - [ ] `BG-31.018` Record browser acceptance evidence.
-- [ ] `BG-31.019` Identify unresolved local qualification.
-- [ ] `BG-31.020` Freeze candidate manifest version.
+- [x] `BG-31.019` Identify unresolved local qualification.
+- [x] `BG-31.020` Freeze candidate manifest version.
 
 #### BG-31 / 03 — Production read-only inventory
 
@@ -4333,8 +4333,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [ ] `BG-31.026` Identify actual Web origin.
 - [ ] `BG-31.027` Identify configured Notion destination safely.
 - [ ] `BG-31.028` Identify Telegram destination safely.
-- [ ] `BG-31.029` Record only nonsecret identifiers.
-- [ ] `BG-31.030` Mark unverified live values explicitly.
+- [x] `BG-31.029` Record only nonsecret identifiers.
+- [x] `BG-31.030` Mark unverified live values explicitly.
 
 #### BG-31 / 04 — Migration plan
 
@@ -4344,10 +4344,10 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [ ] `BG-31.034` Identify affected indexes.
 - [ ] `BG-31.035` Identify data backfills.
 - [ ] `BG-31.036` Identify runtime compatibility assumptions.
-- [ ] `BG-31.037` Assess old-code compatibility.
-- [ ] `BG-31.038` Assess migration interruption behavior.
-- [ ] `BG-31.039` Define migration stop conditions.
-- [ ] `BG-31.040` Record schema rollback limitations.
+- [x] `BG-31.037` Assess old-code compatibility.
+- [x] `BG-31.038` Assess migration interruption behavior.
+- [x] `BG-31.039` Define migration stop conditions.
+- [x] `BG-31.040` Record schema rollback limitations.
 
 #### BG-31 / 05 — Configuration
 
@@ -4357,43 +4357,43 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [ ] `BG-31.044` Verify canonical Web origin.
 - [ ] `BG-31.045` Verify approved provider configuration.
 - [ ] `BG-31.046` Verify enabled implementation capabilities.
-- [ ] `BG-31.047` Verify model/free-tier guard configuration.
-- [ ] `BG-31.048` Verify privacy routing configuration.
-- [ ] `BG-31.049` Verify preview/production separation.
-- [ ] `BG-31.050` Record configuration validation result.
+- [x] `BG-31.047` Verify model/free-tier guard configuration.
+- [x] `BG-31.048` Verify privacy routing configuration.
+- [x] `BG-31.049` Verify preview/production separation.
+- [x] `BG-31.050` Record configuration validation result.
 
 #### BG-31 / 06 — Backup plan
 
-- [ ] `BG-31.051` Define pre-change D1 export.
-- [ ] `BG-31.052` Define attachment-byte backup scope.
-- [ ] `BG-31.053` Define purge-ledger preservation.
-- [ ] `BG-31.054` Define protected artifact destination.
-- [ ] `BG-31.055` Define checksum verification.
-- [ ] `BG-31.056` Define count verification.
-- [ ] `BG-31.057` Define restore target procedure.
-- [ ] `BG-31.058` Define restore operator.
-- [ ] `BG-31.059` Define recovery timing expectation.
-- [ ] `BG-31.060` Identify missing recovery prerequisite.
+- [x] `BG-31.051` Define pre-change D1 export.
+- [x] `BG-31.052` Define attachment-byte backup scope.
+- [x] `BG-31.053` Define purge-ledger preservation.
+- [x] `BG-31.054` Define protected artifact destination.
+- [x] `BG-31.055` Define checksum verification.
+- [x] `BG-31.056` Define count verification.
+- [x] `BG-31.057` Define restore target procedure.
+- [x] `BG-31.058` Define restore operator.
+- [x] `BG-31.059` Define recovery timing expectation.
+- [x] `BG-31.060` Identify missing recovery prerequisite.
 
 #### BG-31 / 07 — Smoke plan
 
-- [ ] `BG-31.061` List homepage smoke.
-- [ ] `BG-31.062` List deep-link smoke.
-- [ ] `BG-31.063` List login/session smoke.
-- [ ] `BG-31.064` List anonymous denial smoke.
-- [ ] `BG-31.065` List capture/replay smoke.
-- [ ] `BG-31.066` List private-download smoke.
-- [ ] `BG-31.067` List search smoke.
-- [ ] `BG-31.068` List privacy smoke.
-- [ ] `BG-31.069` List integration smoke.
-- [ ] `BG-31.070` List post-deploy log inspection.
+- [x] `BG-31.061` List homepage smoke.
+- [x] `BG-31.062` List deep-link smoke.
+- [x] `BG-31.063` List login/session smoke.
+- [x] `BG-31.064` List anonymous denial smoke.
+- [x] `BG-31.065` List capture/replay smoke.
+- [x] `BG-31.066` List private-download smoke.
+- [x] `BG-31.067` List search smoke.
+- [x] `BG-31.068` List privacy smoke.
+- [x] `BG-31.069` List integration smoke.
+- [x] `BG-31.070` List post-deploy log inspection.
 
 #### BG-31 / 08 — Rollback plan
 
-- [ ] `BG-31.071` Define auth failure trigger.
-- [ ] `BG-31.072` Define capture loss trigger.
-- [ ] `BG-31.073` Define privacy leak trigger.
-- [ ] `BG-31.074` Define migration failure trigger.
+- [x] `BG-31.071` Define auth failure trigger.
+- [x] `BG-31.072` Define capture loss trigger.
+- [x] `BG-31.073` Define privacy leak trigger.
+- [x] `BG-31.074` Define migration failure trigger.
 - [ ] `BG-31.075` Define deep-link failure trigger.
 - [ ] `BG-31.076` Identify compatible old artifact.
 - [ ] `BG-31.077` Identify schema-compatible rollback boundary.
@@ -4405,12 +4405,12 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 - [ ] `BG-31.081` Name intended release operator.
 - [ ] `BG-31.082` State exact production mutations.
-- [ ] `BG-31.083` State expected external test actions.
-- [ ] `BG-31.084` Separate messaging authorization.
-- [ ] `BG-31.085` Include backup verification prerequisites.
-- [ ] `BG-31.086` Include target identifiers.
-- [ ] `BG-31.087` Include stop/rollback plan.
-- [ ] `BG-31.088` Present reviewable manifest.
+- [x] `BG-31.083` State expected external test actions.
+- [x] `BG-31.084` Separate messaging authorization.
+- [x] `BG-31.085` Include backup verification prerequisites.
+- [x] `BG-31.086` Include target identifiers.
+- [x] `BG-31.087` Include stop/rollback plan.
+- [x] `BG-31.088` Present reviewable manifest.
 - [ ] `BG-31.089` Record actual release authorization reference.
 - [ ] `BG-31.090` Keep execution blocked without required approval.
 
@@ -4418,12 +4418,12 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 - [ ] `BG-31.091` **Review:** Compare the completed checklist with BG-31's stated outcome; identify uncovered behavior.
 - [ ] `BG-31.092` **Verification:** Run or inspect the focused proof required by BG-31; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-31.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-31.094` **Integrity:** Check that BG-31 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-31.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-31.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-31.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-31.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-31.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-31.094` **Integrity:** Check that BG-31 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-31.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-31.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-31.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-31.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [ ] `BG-31.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-31.100` **Gate:** Check the parent completion boundary and record whether BG-32 is unlocked.
 
