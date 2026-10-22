@@ -4,7 +4,7 @@
 **Baseline:** `1d932546e81daa806d68d91fbaf9f91c4b1e5d5f` on `main`.
 **Tracking:** [GitHub #116](https://github.com/anmolsansi/Recollect-Flow/issues/116);
 [Linear OPE-247](https://linear.app/openclaw-neutron/issue/OPE-247/complete-v1-security-observability-and-operational-hardening).
-**Status:** source/document reconciliation complete at review candidate; latest PR-head CI and merge-main checks are separate acceptance records. BG-29.078 and OPE-247 release-level work remain independently open. No production acceptance is implied.
+**Status:** BG-30 source/document reconciliation merged by PR #117. Final acceptance is recorded in [BG-30 final closeout](BG-30_FINAL_CLOSEOUT.md). BG-29.078 and OPE-247 remain independently open. No production acceptance is implied.
 
 The 100 source actions are paired as 50 meaningful review units. This file
 records review evidence, acceptance boundaries and unresolved work. The Build
