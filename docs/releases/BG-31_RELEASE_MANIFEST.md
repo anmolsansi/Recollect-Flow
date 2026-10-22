@@ -47,6 +47,23 @@ recovery, private download, search/workflow and digests. No hosted URL,
 physical-device or approved provider smoke was exercised. Subsequent changes
 require new exact-head green CI before review.
 
+**Verified exact-head CI fingerprint checkpoint (not archived or approved):**
+[run #39783592918](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39783592918)
+passed at source SHA `a8063204f15158aac5f7da5ef00ddc53820c7796`,
+rechecking out that exact source after PR-merge acceptance. Its offline
+`npm run release:package` and Wrangler dry-run recorded Web `release_id`
+`bd71d34b551d37eb0c5887d8d1b37d1f01ab874fa7beab48752f9c1978c05ee6`,
+Web `release-manifest.json` SHA-256
+`4a7cfc430adfda9cf3242f8170a6ee39d7c2c022fcf9c69b2e1ab134675648b1`,
+and Worker dry-run `index.js` SHA-256
+`97c6bbc88bb4c6c440871c9038e7580001c8ba6f5d52617c7ad4a74db2adb500`.
+The actual runner versions were Node `22.23.3`, npm `10.9.9` and
+Wrangler `4.116.0`. These values are also in the machine manifest's
+`ci_fingerprint_checkpoint` section. **No deployable bundle was uploaded,
+no immutable approved release candidate was frozen, and no Worker was deployed.**
+The source at a later documentation commit has a distinct Git SHA and requires
+its own verification rather than silently inheriting the checkpoint identity.
+
 **Artifact pairing invariant:** the Worker entry, `wrangler.toml`, lockfile and generated Web file hashes must agree with the release ID emitted by `scripts/web-release.mjs`. Its `source_revision`, `worker_entry_sha256`, `worker_config_sha256`, `lockfile_sha256`, individual `web_files[].sha256` and `release_id` belong in the frozen, owner-approved packet. The release ID is deterministic from these inputs, but **is not a deployed Worker version**. Build locally in an isolated checkout; do not silently rebuild a different candidate for deployment.
 
 The strict $0 [BG-29.078 exception](../verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md) permits documentation and safe CI only. BG-29.078 is **DEFERRED/NOT VERIFIED** (99/100). [OPE-247](https://linear.app/openclaw-neutron/issue/OPE-247/complete-v1-security-observability-and-operational-hardening) remains In Progress; V1 launch and BG-32 deployment are **NOT AUTHORIZED**.
