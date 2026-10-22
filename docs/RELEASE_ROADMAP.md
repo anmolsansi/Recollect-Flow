@@ -14,6 +14,20 @@ production deploy, device verification and charge-free billing signoff have
 not been waived. No V1 GO or BG-32 deploy authorization follows from this row.
 
 ## Roadmap rules
+## BG-31 release manifest preparation (2026-10-22)
+
+[BG-31 release packet](releases/BG-31_RELEASE_MANIFEST.md) and
+[NO-GO machine manifest](releases/BG-31_RELEASE_MANIFEST.json) now identify the
+reviewed baseline, Worker/Web packaging requirements, full ordered migrations,
+safe target and secret-name inventory, backup/original/receipt requirements,
+smoke stages and rollback triggers. [Verification evidence](verification/BG-31_RELEASE_MANIFEST_EVIDENCE.md)
+and [GitHub #119](https://github.com/anmolsansi/Recollect-Flow/issues/119)
+track exact source work. This is **source-only preparation** under the strict
+$0 development exception. The live production migration ledger, deployed
+artifact, previous compatible version, independent backup and release approval
+remain unverified. **BG-32 deploy and V1 release remain NO-GO.**
+
+
 
 Every phase ends with a user-demonstrable gate. Infrastructure does not count as progress when the real workflow remains unusable. A failed gate blocks dependent work. The [BG-30 evidence matrix](verification/BG-30_RELEASE_MATRIX.json) distinguishes current reviewed source from deployed and accepted versions. `BUILD_STATUS.md` contains dated historical snapshots and must not serve as a standalone current release attestation.
 
