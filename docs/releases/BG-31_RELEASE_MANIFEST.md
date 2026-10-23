@@ -233,7 +233,7 @@ Execute **only after** BG-32 grants operation-specific authorization, takes the 
 2. Preserve incident UTC timestamp, safe IDs, immutable artifact and ledger state, operation logs without raw content, and the last known good build/backup identities.
 3. If schema remains compatible, use the **verified** previous Worker/Web artifact and matching configuration to restore compatible code, then repeat auth/capture/private-download and consistency checks. **Previous artifact: NOT YET IDENTIFIED OR PROVED COMPATIBLE.**
 4. If migration changed schema incompatibly, **do not deploy old code blindly**. Prefer reviewed forward repair and re-verify. If that is unsafe, restore a verified independent backup into an isolated database/bucket, reconcile newer purge receipts and captured writes, and seek explicit owner approval before traffic cutover.
-5. Use the owner's designated **email-only** emergency channel after separately authorized notification. The destination inbox, sender permissions, reply acknowledgment, and retry/escalation timing are **NOT VERIFIED**. Do not send a live email, Telegram bot message, or other external notification without explicit approval.
+5. Follow the owner-approved **email-only** procedure: after separate authorization to send, email the privately verified owner inbox with the safe incident facts. An explicit reply acknowledging the incident is required; if no reply arrives within **15 minutes**, send **one** separately authorized follow-up email. Keep release activity **HALTED** until the owner acknowledges and explicitly approves the appropriate next action. There is no phone, SMS or Telegram fallback; delivery and acknowledgment have **not been tested** and no email or provider messaging is authorized by this plan.
 
 Auth failures, persistent capture loss, private route leak, migration inconsistency, deep-link failure, corruption/hash mismatch, missing backup/receipt evidence or any possible additional charge all block GO. No change to production or external messaging is authorized by writing these steps.
 
@@ -272,13 +272,20 @@ It must be transferred by the owner to an operator-accessible private
 operational record and independently verified before use. Once sending is
 separately authorized, the operator should email the verified owner inbox
 with the safe incident ID, UTC timestamp, stop trigger, and response needed.
-The owner should acknowledge by replying to the email. A follow-up email
-interval, verified sender/recipient, and escalation rule still require
-agreement. There is **no phone, SMS, or Telegram fallback**. If email delivery
-or acknowledgment fails, treat notification as unverified, maintain the
-release stop, and obtain a separately authorized recovery decision. Logging
-to GitHub #119 does not substitute for urgent notification. No email was sent
-or delivery tested by this source-only record.
+The owner explicitly approved this escalation procedure on October 23, 2026:
+1. Require the owner to acknowledge by **replying to the first incident email**.
+2. If there is **no acknowledgment after 15 minutes**, send **one follow-up
+   email** to the same verified private destination, but only if that external
+   send is separately authorized. Do not automatically schedule or send it.
+3. **Keep the release halted** if the email is undelivered or remains
+   unacknowledged. Resume only after owner acknowledgment **and** the
+   separately required operation-specific clearance; acknowledgment alone
+   does not override failed backup, privacy, security, cost or migration gates.
+
+There is **no phone, SMS, or Telegram fallback**. The sender's access,
+recipient delivery, and reply flow are **NOT TESTED**. Logging to GitHub
+#119 does not substitute for urgent notification. No emails were sent or
+scheduled by this source-only procedure.
 
 Record `PARTIALLY_APPLIED` for any durable partial change. An unsafe code
 rollback requires reviewed forward repair or isolated restore using verified
