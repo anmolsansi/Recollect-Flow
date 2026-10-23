@@ -94,3 +94,25 @@ Every micro-commit should reference [#119](https://github.com/anmolsansi/Recolle
 **Document-level judgment:** BG-31 has a substantive release packet, safe source-only validation and an explicit no-go decision. It cannot claim **100% operational checklist closure** or unlock a production deploy while the live inventory, frozen Web/Worker artifacts, independent recovery and owner approval fields remain missing. Deferred facts stay deferred; the $0 exception is not a pass.
 
 **Negative assertions:** no remote D1 or R2 call; no Cloudflare deploy; no hosted backup or restore; no AI/Notion/Telegram send; no device session; no billing change; no production data access; no private identifiers copied beyond already-committed source config; no migration state invented.
+
+## October 23 $0 source-only follow-up
+
+The [traffic-stop decision tree](../releases/BG-31_RELEASE_MANIFEST.md#bg-31078--traffic-stop-decision-tree-plan-not-executed) now spells out no-write abort,
+partial-migration response, non-destructive traffic containment, independent
+restore and owner notification requirements. This definition supports
+`BG-31.078` alone. The paired rollback compatibility requirement
+`BG-31.077`, actual emergency notification destination `BG-31.079`,
+verified prior artifact, named operator and owner authorization stay open.
+
+The offline `npm run bg31:readiness` utility reads the committed NO-GO
+manifest, produces missing-gate identifiers and never calls Cloudflare,
+D1, R2, Notion, Telegram, AI providers or billing APIs. It deliberately
+cannot output GO from user-entered status fields and is checked by
+`npm run bg31:readiness:test` as part of `npm run check`.
+
+**Source checkpoint:** 76/100 canonical actions are documented or supported
+by source tests; 24 live/approval/compatibility actions remain open. The
+GitHub paired checklist is still 35/50 fully complete, because both halves
+of a pair must satisfy their Definitions of Done. CI for this follow-up head
+is required before claiming it has passed. No production mutation, new
+hosted resource, live message or charge was authorized.
