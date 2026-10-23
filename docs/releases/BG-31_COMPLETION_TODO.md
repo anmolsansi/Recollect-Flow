@@ -1,8 +1,11 @@
 # BG-31: Ordered completion to-do list
 
 **As of:** 2026-10-23.
+
 **State:** 76/100 canonical steps supported; 24 remain unchecked. Production **NO-GO**.
+
 **Branch:** `feat/bg-31-release-manifest`.
+
 **Tracking:** [GitHub issue #119](https://github.com/anmolsansi/Recollect-Flow/issues/119), [draft PR #120](https://github.com/anmolsansi/Recollect-Flow/pull/120), [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345/bg-31-prepare-the-v1-release-manifest-without-production-changes).
 
 ## Rules before starting
