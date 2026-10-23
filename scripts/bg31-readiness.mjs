@@ -43,7 +43,7 @@ export function releaseReadiness(manifest) {
         sha64.test(candidate.worker_bundle_sha256 ?? '') &&
         sha64.test(candidate.web_release_id ?? '') &&
         sha64.test(candidate.web_release_manifest_sha256 ?? ''),
-      action: 'Store an immutable Worker bundle and matching Web asset manifest.',
+      action: 'Store matched immutable Worker and Web artifacts.',
     },
     {
       id: 'READ_LIVE_WORKER',
@@ -87,7 +87,7 @@ export function releaseReadiness(manifest) {
         ) &&
         recovery.newest_purge_receipts_verified === true &&
         recovery.source_loss_domain_separated === true,
-      action: 'Verify D1, independent original bytes and current purge receipts.',
+      action: 'Verify D1, original bytes and newest purge receipts.',
     },
     {
       id: 'REHEARSE_RESTORE',
@@ -122,7 +122,7 @@ export function releaseReadiness(manifest) {
       ready:
         manifest.approval_status === 'GRANTED' &&
         gates.bg32_production_authorized === true,
-      action: 'Obtain separate dated owner approval for exact artifacts and targets.',
+      action: 'Get dated owner approval for specific artifacts and targets.',
     },
   ];
 
@@ -139,7 +139,7 @@ export function releaseReadiness(manifest) {
     approval_inferred: false,
     missing_count: missing.length,
     missing,
-    note: 'Field presence is not independent proof. Owner review is mandatory.',
+    note: 'Fields alone cannot prove acceptance. Owner review is required.',
   };
 }
 
