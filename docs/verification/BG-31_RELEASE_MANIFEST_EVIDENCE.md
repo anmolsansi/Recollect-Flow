@@ -97,7 +97,7 @@ Every micro-commit should reference [#119](https://github.com/anmolsansi/Recolle
 
 ## October 23 $0 source-only follow-up
 
-The [traffic-stop decision tree](../releases/BG-31_RELEASE_MANIFEST.md#bg-31078--traffic-stop-decision-tree-plan-not-executed) now spells out no-write abort,
+The [traffic-stop decision tree](../releases/BG-31_RELEASE_MANIFEST.md#bg-31078--traffic-stop-plan-not-executed) now spells out no-write abort,
 partial-migration response, non-destructive traffic containment, independent
 restore and owner notification requirements. This definition supports
 `BG-31.078` alone. The paired rollback compatibility requirement
