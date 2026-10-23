@@ -11,7 +11,29 @@ BG-29.078 real elapsed hourly multistage Cron is **NOT VERIFIED**, and the
 does not authorize R2 billing exposure, provider sends, remote migrations,
 production changes or live incident drills. OPE-247 remains In Progress.
 
+### BG-31 release hold and readiness check
+
+Before an approved BG-32 change, run `npm run bg31:readiness` on the
+release-manifest branch. Its result is a **source-only NO-GO diagnostic**,
+not permission to deploy. For a mismatch, stop before any write. The
+[BG-31 traffic-stop decision tree](releases/BG-31_RELEASE_MANIFEST.md#bg-31078--traffic-stop-plan-not-executed)
+separates predeploy abort from partially applied SQL; never assume a code
+rollback undoes D1 schema changes. Direct owner emergency contact and prior
+compatible Worker artifact remain unassigned. No host, account or messaging
+change is authorized by this documentation.
+
 ## Reliability objectives
+
+## BG-31 release approval reference (2026-10-22)
+
+The [BG-31 release manifest](releases/BG-31_RELEASE_MANIFEST.md) specifies
+source candidate and packaging evidence, an explicitly **unverified** live
+migration ledger and target identity, verified-independent-backup prerequisites,
+smoke/stop stages, code-versus-schema rollback choices and owner signoff fields.
+Its [evidence ledger](verification/BG-31_RELEASE_MANIFEST_EVIDENCE.md)
+keeps the strict $0 NO-GO state visible. No runbook procedure described here
+may be treated as production or outbound-provider authorization. BG-32 is
+blocked until a separate, exact-build release approval is recorded.
 
 | Capability              | Target                                       | Degraded mode                       |
 | ----------------------- | -------------------------------------------- | ----------------------------------- |

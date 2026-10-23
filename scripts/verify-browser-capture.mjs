@@ -32,6 +32,13 @@ async function setValue(name, value) {
   );
 }
 async function selectMode(mode) {
+  // The capture form can render before its initially disabled fieldset is ready.
+  // Clicking a disabled radio silently does nothing and creates a timing failure.
+  await waitFor(
+    browser,
+    `Boolean(document.querySelector('input[name="mode"][value=${JSON.stringify(mode)}]:enabled'))`,
+    'enabled mode ' + mode,
+  );
   await evaluate(
     browser,
     `document.querySelector('input[name="mode"][value=${JSON.stringify(mode)}]').click()`,

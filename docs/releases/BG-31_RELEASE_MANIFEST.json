@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "manifest_id": "BG31-DRAFT-2026-10-22.1",
+  "generated_for": "BG-31",
+  "decision": "NO_GO",
+  "approval_status": "NOT_GRANTED",
+  "cost_boundary": "STRICT_ZERO_ADDITIONAL_COST_LOCAL_DEVELOPMENT_ONLY",
+  "source_baseline_sha": "195fcd65f6a75667228c718411a95b1c20a70679",
+  "source_baseline_ci": {
+    "run_id": 39752503664,
+    "url": "https://github.com/anmolsansi/Recollect-Flow/actions/runs/39752503664",
+    "conclusion": "success"
+  },
+  "release_candidate": {
+    "source_sha": null,
+    "exact_head_ci": null,
+    "worker_bundle_sha256": null,
+    "deployed_worker_version": null,
+    "web_release_id": null,
+    "web_release_manifest_sha256": null,
+    "prior_compatible_artifact": null
+  },
+  "live_inventory": {
+    "worker_version": null,
+    "production_account_verified": false,
+    "d1_ledger_verified": false,
+    "d1_database_id_verified": false,
+    "r2_binding_verified": false,
+    "web_origin_verified": false,
+    "notion_target_verified": false,
+    "telegram_target_verified": false,
+    "secret_presence_verified": false
+  },
+  "source_targets": {
+    "worker": "recollect-flow",
+    "d1_binding": "DB",
+    "d1_name": "recollect-flow-prod",
+    "d1_uuid": "5fcba514-d0f7-45e7-a632-d4c59233af71",
+    "r2_binding": "ATTACHMENTS",
+    "r2_bucket": "recollect-flow-attachments-prod",
+    "web_assets": "apps/web/dist",
+    "web_origin_secret_name": "WEB_INBOX_BASE_URL",
+    "notion_destination_var": "NOTION_DATABASE_ID",
+    "telegram_destination_secret_name": "TELEGRAM_CHAT_ID"
+  },
+  "required_secret_names": [
+    "CAPTURE_TOKEN",
+    "ADMIN_TOKEN",
+    "LOCAL_WORKER_TOKEN",
+    "NOTION_ACCESS_TOKEN",
+    "TELEGRAM_BOT_TOKEN",
+    "TELEGRAM_CHAT_ID",
+    "WEB_INBOX_BASE_URL"
+  ],
+  "conditional_secret_names": ["OPENROUTER_API_KEY"],
+  "source_migrations": [
+    "0001_initial.sql",
+    "0002_add_duplicate_of.sql",
+    "0003_add_attachments_table.sql",
+    "0004_add_policy_routing.sql",
+    "0005_update_hosted_ai_policy.sql",
+    "0006_add_capture_request_fingerprint.sql",
+    "0007_add_job_leases.sql",
+    "0008_add_sync_available_at.sql",
+    "0009_complete_jobs_and_notion_projection.sql",
+    "0010_add_enrichment_fields.sql",
+    "0014_allow_cloudflare_provider.sql",
+    "0015_add_extraction_records.sql",
+    "0016_add_item_search_fts.sql",
+    "0017_add_item_review_contract.sql",
+    "0018_add_item_duplicate_target.sql",
+    "0019_add_digest_jobs.sql",
+    "0020_add_ai_capacity_controls.sql",
+    "0021_add_recovery_workflows.sql",
+    "0022_add_url_acquisition_evidence.sql",
+    "0023_add_processing_generation.sql",
+    "0024_materialize_current_processing_status.sql",
+    "0025_bg28_scheduled_backups.sql"
+  ],
+  "pending_forward_migrations": null,
+  "recovery": {
+    "verified_d1_backup_id": null,
+    "verified_independent_originals_manifest_sha256": null,
+    "newest_purge_receipts_verified": false,
+    "isolated_restore_test_verified": false,
+    "source_loss_domain_separated": false,
+    "operator": null
+  },
+  "smoke_stages": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S05",
+    "S06",
+    "S07",
+    "S08",
+    "S09",
+    "S10",
+    "S11"
+  ],
+  "smoke_verified": false,
+  "gates": {
+    "bg29_078": "DEFERRED_NOT_VERIFIED",
+    "ope247": "IN_PROGRESS",
+    "bg32_production_authorized": false,
+    "production_deployment_performed": false,
+    "external_provider_tests_authorized": false,
+    "telegram_send_authorized": false,
+    "release_go": false
+  },
+  "references": {
+    "human_manifest": "docs/releases/BG-31_RELEASE_MANIFEST.md",
+    "build_guide": "docs/RECOLLECTFLOW_BUILD_GUIDE.md",
+    "migration_dir": "migrations",
+    "recovery_operator_procedure": "docs/RECOVERY_OPERATOR_PROCEDURE.md"
+  },
+  "ci_fingerprint_checkpoint": {
+    "source_sha": "a8063204f15158aac5f7da5ef00ddc53820c7796",
+    "github_ci_run_id": 39783592918,
+    "github_ci_run_url": "https://github.com/anmolsansi/Recollect-Flow/actions/runs/39783592918",
+    "conclusion": "success",
+    "toolchain": {
+      "node": "22.23.3",
+      "npm": "10.9.9",
+      "wrangler": "4.116.0"
+    },
+    "web_release_id": "bd71d34b551d37eb0c5887d8d1b37d1f01ab874fa7beab48752f9c1978c05ee6",
+    "web_release_manifest_sha256": "4a7cfc430adfda9cf3242f8170a6ee39d7c2c022fcf9c69b2e1ab134675648b1",
+    "worker_dry_run_index_js_sha256": "97c6bbc88bb4c6c440871c9038e7580001c8ba6f5d52617c7ad4a74db2adb500",
+    "uploaded_artifact": false,
+    "approved_for_deployment": false
+  }
+}

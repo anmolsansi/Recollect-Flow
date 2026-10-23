@@ -1,5 +1,19 @@
 # Verification Evidence Index
 
+## BG-31 — release manifest (development draft, NO-GO)
+
+[Human release packet](../releases/BG-31_RELEASE_MANIFEST.md) and
+[fail-closed JSON](../releases/BG-31_RELEASE_MANIFEST.json) record baseline
+source and CI, ordered source migrations, source-declared Worker/D1/R2 bindings,
+required secret names, independent backup and purge-receipt plan, smoke/stop
+conditions, and missing operator authorization. See
+[BG-31 evidence and blocker ledger](BG-31_RELEASE_MANIFEST_EVIDENCE.md),
+[GitHub #119](https://github.com/anmolsansi/Recollect-Flow/issues/119)
+and Linear OPE-345. `npm run bg31:manifest:test` is an offline source guard.
+**No production inventory, release, migration, hosted R2, provider call,
+external message or paid activity is proved or authorized.** BG-29.078
+remains deferred and OPE-247 remains In Progress.
+
 ## BG-15 — browser write authorization (merged)
 
 [PR #66](https://github.com/anmolsansi/Recollect-Flow/pull/66) merged

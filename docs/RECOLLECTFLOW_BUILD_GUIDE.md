@@ -3450,6 +3450,34 @@ will be checked and how data will be recovered if something fails.
 
 ### Name the exact release that is ready for approval
 
+### BG-31 implementation record, 2026-10-22
+
+The [BG-31 human release manifest](releases/BG-31_RELEASE_MANIFEST.md) and
+[machine-checkable NO-GO packet](releases/BG-31_RELEASE_MANIFEST.json) now
+identify the exact reviewed baseline, the complete source migration chain,
+the committed Worker and Web binding names, the required secret names, the
+independent-original/anti-resurrection backup plan, and explicit smoke, stop,
+rollback and owner authorization requirements. The
+[BG-31 evidence record](verification/BG-31_RELEASE_MANIFEST_EVIDENCE.md)
+separates verified source/CI facts from missing live inventory. A local
+`npm run bg31:manifest:test` regression protects this distinction.
+The offline regression also checks declared D1/R2 bindings, the AI and Web
+asset bindings, the login rate limiter, the nonsecret Notion configuration,
+selected source provider names, and disabled digest AI/automatic hosted backup
+switches. These checks catch source configuration drift. They cannot verify
+live credentials, deployed capability, provider quotas or a strict $0 billing
+ceiling.
+
+**This is a release-preparation draft, not an approved release.** The
+baseline is `195fcd65f6a75667228c718411a95b1c20a70679` with passed
+[CI #39752503664](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39752503664).
+Current deployed Worker version, migration ledger and pending delta, Web
+`release_id`, prior compatible binary, independently verified attachment
+backup/receipt set, restore operator and owner authorization are **NOT
+VERIFIED**. BG-29.078 is deferred and OPE-247 remains open. The standing
+owner-directed $0 exception allows source documentation and safe CI, not
+production changes, hosted R2 operations, paid provider tests or BG-32 GO.
+
 A release manifest turns “deploy the fixes” into a reviewable operation. Record
 the Git revision, Web artifact, Worker configuration, migration set, target
 bindings, required secret names and the validation already completed. Reference
@@ -3473,6 +3501,14 @@ The output is a concrete manifest the owner can approve without asking which cod
 which database or which tests are meant. BG-31 prepares that artifact; it does not
 itself authorize or execute BG-32. Keep the approval record associated with the
 manifest so later changes cannot silently inherit approval for a different build.
+
+The offline migration comparator in `scripts/bg31-migration-ledger.mjs` accepts
+only a caller-supplied ledger, rejects unknown or out-of-order filenames, and
+withholds unexpected ledger names in error output so private values accidentally
+included in operator input are not copied into logs. Its regression lives in
+`scripts/bg31-migration-ledger.test.mjs` and runs through
+`npm run bg31:ledger:test`. This is a source-only validation safeguard. It
+does not inspect live D1 or complete the production migration-inventory gate.
 
 ### Small implementation steps
 

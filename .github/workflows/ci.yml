@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -37,6 +41,22 @@ jobs:
       - run: npm run browser:digests:test
       - run: npm run browser:workflow:test
       - run: npm run browser:acquisition:test
+      - name: BG-31 release-head fingerprints (offline; no deploy)
+        if: github.event_name == 'pull_request' && github.head_ref == 'feat/bg-31-release-manifest'
+        env:
+          BG31_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git fetch --no-tags --depth=1 origin "$BG31_HEAD"
+          git checkout --detach "$BG31_HEAD"
+          npm run release:package
+          npx wrangler deploy --dry-run --outdir /tmp/bg31-worker
+          echo "BG31 source SHA: $BG31_HEAD"
+          node --version
+          npm --version
+          npx wrangler --version
+          sha256sum apps/web/dist/release-manifest.json
+          grep -E '"(source_revision|release_id)"' apps/web/dist/release-manifest.json
+          find /tmp/bg31-worker -type f -print0 | sort -z | xargs -0 -r sha256sum
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
