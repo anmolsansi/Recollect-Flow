@@ -233,7 +233,7 @@ Execute **only after** BG-32 grants operation-specific authorization, takes the 
 2. Preserve incident UTC timestamp, safe IDs, immutable artifact and ledger state, operation logs without raw content, and the last known good build/backup identities.
 3. If schema remains compatible, use the **verified** previous Worker/Web artifact and matching configuration to restore compatible code, then repeat auth/capture/private-download and consistency checks. **Previous artifact: NOT YET IDENTIFIED OR PROVED COMPATIBLE.**
 4. If migration changed schema incompatibly, **do not deploy old code blindly**. Prefer reviewed forward repair and re-verify. If that is unsafe, restore a verified independent backup into an isolated database/bucket, reconcile newer purge receipts and captured writes, and seek explicit owner approval before traffic cutover.
-5. Notify the owner through the pre-agreed **non-Telegram operational channel**. Escalation contact/channel **NOT DESIGNATED**. Do not send a live Telegram bot message as a substitute for approval.
+5. Use the owner's designated **email-only** emergency channel after separately authorized notification. The destination inbox, sender permissions, reply acknowledgment, and retry/escalation timing are **NOT VERIFIED**. Do not send a live email, Telegram bot message, or other external notification without explicit approval.
 
 Auth failures, persistent capture loss, private route leak, migration inconsistency, deep-link failure, corruption/hash mismatch, missing backup/receipt evidence or any possible additional charge all block GO. No change to production or external messaging is authorized by writing these steps.
 
@@ -265,10 +265,17 @@ integration tests. Preserve content-free incident facts. Resume only after an
 approved isolation or forward-repair plan passes live auth, replay,
 private-download, search and stored-status verification.
 
-**Notification:** Log the incident/halt on GitHub #119 and contact the owner
-through the separately agreed direct emergency channel. That primary channel,
-backup contact and acknowledgment rule remain **UNASSIGNED**. Issue comments
-alone do not meet urgent notification needs, and Telegram is not approved.
+**Notification:** The owner selected **email only** on October 23, 2026,
+for emergency release/restore communication. Once sending is separately
+authorized, the operator should email the privately verified owner inbox
+with the safe incident ID, UTC timestamp, stop trigger, and response needed.
+The owner should acknowledge by replying to the email. A follow-up email
+interval, verified sender/recipient, and escalation rule still require
+agreement. There is **no phone, SMS, or Telegram fallback**. If email delivery
+or acknowledgment fails, treat notification as unverified, maintain the
+release stop, and obtain a separately authorized recovery decision. Logging
+to GitHub #119 does not substitute for urgent notification. No email was sent
+or delivery tested by this source-only record.
 
 Record `PARTIALLY_APPLIED` for any durable partial change. An unsafe code
 rollback requires reviewed forward repair or isolated restore using verified
