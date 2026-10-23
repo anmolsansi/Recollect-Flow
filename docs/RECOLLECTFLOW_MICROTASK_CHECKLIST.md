@@ -4403,7 +4403,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-31 / 09 — Authorization packet
 
-- [ ] `BG-31.081` Name intended release operator.
+- [x] `BG-31.081` Name intended release operator.
 - [ ] `BG-31.082` State exact production mutations.
 - [x] `BG-31.083` State expected external test actions.
 - [x] `BG-31.084` Separate messaging authorization.
