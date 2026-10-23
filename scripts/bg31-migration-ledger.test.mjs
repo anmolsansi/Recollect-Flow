@@ -56,3 +56,16 @@ test('unknown, reordered and gapped migrations fail closed', () => {
   rejects([migrations[0], migrations[0]], /Duplicate/);
   rejects([...migrations, '9999_unknown.sql'], /more migrations/);
 });
+
+test('untrusted ledger filenames never appear in diagnostics', () => {
+  const untrusted = 'PRIVATE_TOKEN_should_not_be_logged';
+  assert.throws(
+    () => compareMigrationLedger([untrusted], migrations),
+    (error) => {
+      assert.match(error.message, /STOP/);
+      assert.match(error.message, /Supplied name withheld from logs/);
+      assert.doesNotMatch(error.message, /PRIVATE_TOKEN/);
+      return true;
+    },
+  );
+});
