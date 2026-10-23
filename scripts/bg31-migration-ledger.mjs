@@ -35,10 +35,9 @@ export function compareMigrationLedger(raw, source) {
       throw new Error(
         'STOP: ledger is unknown, out of order or non-prefix at index ' +
           i +
-          ': got ' +
-          names[i] +
-          '; expected ' +
-          source[i],
+          '; expected candidate migration ' +
+          source[i] +
+          '. Supplied name withheld from logs.',
       );
     }
   }
