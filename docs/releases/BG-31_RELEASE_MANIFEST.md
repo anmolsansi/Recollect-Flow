@@ -233,61 +233,53 @@ Execute **only after** BG-32 grants operation-specific authorization, takes the 
 
 Auth failures, persistent capture loss, private route leak, migration inconsistency, deep-link failure, corruption/hash mismatch, missing backup/receipt evidence or any possible additional charge all block GO. No change to production or external messaging is authorized by writing these steps.
 
-### BG-31.078 — Traffic-stop decision tree (plan, NOT EXECUTED)
+### BG-31.078 — Traffic stop plan (not executed)
 
-This is an operator hold procedure, not a request to change live traffic. A
-release begins in **hold**. Until the operator has a verified previous
-artifact, complete target inventory, independent restore evidence and signed
-owner authorization, no production command is eligible to start.
+**Default state:** Predeployment hold. Do not run production commands until the
+approved source/artifact fingerprints, live account, D1 ledger, R2 target,
+independent backup, previous compatible Worker, owner permission and strict $0
+controls agree with the frozen manifest.
 
-1. **Before the first write:** compare the approved SHA and hashes to the
-   exact dry-run bundle, live account/DB/bucket/origin, migration prefix,
-   rollback compatibility, privacy policy and enforced $0 controls. On any
-   missing or mismatched field, stop the release **without modifying traffic**
-   and log the aborted stage in GitHub issue #119.
-2. **After any approved write:** halt *subsequent* migration and deploy
-   commands on failure. Record which forward SQL operations already committed,
-   the still-running Worker revision, the observed health result, and the
-   backup/receipt identities. Do not rerun the full deploy script or assume a
-   failed step rolled back the schema.
-3. **Traffic containment:** the assigned operator must use an
-   account-specific, separately approved Cloudflare traffic/route or version
-   control procedure, with recorded action and rollback target. If no such
-   procedure has been verified, do **not** improvise disabling the Worker,
-   changing DNS, deleting objects, rotating secrets, or clearing jobs.
-   Escalate to the owner with current traffic state recorded. A code rollback
-   is permitted only if a verified immutable previous artifact is compatible
-   with the **already-applied** migrations.
-4. **Privacy or durability incident:** do not perform further synthetic
-   captures, sends or external calls. Preserve content-free incident evidence
-   and use the approved isolation plan once the operator and owner confirm it.
-   Resume traffic only after live auth, capture/replay, private-download,
-   search and status consistency checks pass against the final schema.
-5. **Notification:** write an incident/halt record on #119, referencing the
-   exact candidate and stage. The primary direct-to-owner contact method and
-   backup contact remain **UNASSIGNED**, so an incident requiring immediate
-   contact blocks deployment until both the channel and acknowledgement
-   protocol are agreed. GitHub issue tracking is **not** a substitute for
-   time-critical notification. No Telegram notification is authorized.
+**Before the first write:** Abort the release on a missing/mismatched field.
+Record `STOPPED_PREDEPLOY`, the exact candidate, failed condition and
+confirmation that no traffic or production state changed. Record the
+non-sensitive decision in GitHub issue #119.
 
-A safe stopping point before any write is a completed operation: record
-`STOPPED_PREDEPLOY`, why it stopped, and that no production state changed.
-After a partial write, record `PARTIALLY_APPLIED`, then follow a separate
-owner-approved forward-repair or isolated restore plan. Do not label the
-production environment rolled back until its actual revision and schema are
-verified.
+**After a partly applied migration:** Stop all further migration and deployment
+steps. Record every applied SQL migration, running Worker identity, schema
+version, observed health and independent backup/receipt evidence. Do not rerun
+the whole release or assume the database rolled back.
 
-### Deterministic offline readiness report
+**Traffic containment:** Only the named operator can use a previously reviewed,
+account-specific route/version control procedure. If no such mechanism has been
+tested and authorized, do not improvise DNS changes, Worker disablement,
+credential rotation or deletion. Code rollback is safe only when a known-good
+immutable Worker/Web artifact is compatible with the schema already applied.
 
-Run `npm run bg31:readiness` for a **local-only** machine-readable list of
-missing readiness gates. It reads this repository's release JSON and performs
-no network requests, secrets lookup, migrations, deployment or account access.
-The report always has `decision: NO_GO` and
-`external_verification_performed: false`, even if an operator manually fills
-fields. Evidence must still be independently verified and approved by the
-repository owner. Run `npm run bg31:readiness:test` to check its fail-closed
-behavior. This report is a preparation aid and does not replace the real
-hosted inventory or the owner release authorization.
+**Privacy or data loss:** Stop additional synthetic capture and outbound
+integration tests. Preserve content-free incident facts. Resume only after an
+approved isolation or forward-repair plan passes live auth, replay,
+private-download, search and stored-status verification.
+
+**Notification:** Log the incident/halt on GitHub #119 and contact the owner
+through the separately agreed direct emergency channel. That primary channel,
+backup contact and acknowledgment rule remain **UNASSIGNED**. Issue comments
+alone do not meet urgent notification needs, and Telegram is not approved.
+
+Record `PARTIALLY_APPLIED` for any durable partial change. An unsafe code
+rollback requires reviewed forward repair or isolated restore using verified
+originals and up-to-date purge receipts. Never declare restored production
+until the actual version, schema and privacy tests are verified.
+
+### Offline readiness check
+
+Run `npm run bg31:readiness` to list currently missing release evidence from
+the local manifest. This command has no Cloudflare, D1, R2, provider, messaging,
+migration or deployment side effects. It always reports `decision: NO_GO`
+and `external_verification_performed: false`, even if a person manually fills
+the manifest fields. Run `npm run bg31:readiness:test` for the fail-closed
+regression. Neither a self-reported field nor this report replaces independent
+account, backup, cost or owner authorization evidence.
 
 ## 7. BG-32 owner approval packet
 
