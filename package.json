@@ -8,6 +8,8 @@
     "packages/contracts"
   ],
   "scripts": {
+    "bg31:readiness": "node scripts/bg31-readiness.mjs",
+    "bg31:readiness:test": "node --test scripts/bg31-readiness.test.mjs",
     "bg30:evidence:test": "node --test scripts/bg30-evidence.test.mjs",
     "auth:rotation:test": "vitest run --config vitest.node.config.ts apps/worker-api/test/token-rotation.test.ts && vitest run --config vitest.d1.config.ts apps/worker-api/test/token-rotation.d1.spec.ts",
     "dev:api": "wrangler dev",
@@ -24,7 +26,7 @@
     "release:smoke:test": "node --test scripts/verify-production-release.test.mjs",
     "recovery:bundle:test": "node --test scripts/recovery-bundle.test.mjs",
     "test": "npm run release:smoke:test && vitest run --config vitest.node.config.ts && vitest run --config vitest.d1.config.ts",
-    "check": "npm run bg30:evidence:test && npm run bg31:manifest:test && npm run bg31:ledger:test && npm run recovery:bundle:test && npm run bg29:latency:test && npm run format && npm run lint && npm run typecheck && npm test && npm run contracts:check && npm run web:lint && npm run web:test && npm run web:build",
+    "check": "npm run bg30:evidence:test && npm run bg31:readiness:test && npm run bg31:manifest:test && npm run bg31:ledger:test && npm run recovery:bundle:test && npm run bg29:latency:test && npm run format && npm run lint && npm run typecheck && npm test && npm run contracts:check && npm run web:lint && npm run web:test && npm run web:build",
     "db:migrate:local": "wrangler d1 migrations apply recollect-flow-prod --local",
     "db:migrate:remote": "wrangler d1 migrations apply recollect-flow-prod --remote",
     "browser:capture:test": "node scripts/verify-browser-capture.mjs",
