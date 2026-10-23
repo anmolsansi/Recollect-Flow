@@ -4398,7 +4398,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [ ] `BG-31.076` Identify compatible old artifact.
 - [ ] `BG-31.077` Identify schema-compatible rollback boundary.
 - [x] `BG-31.078` Define traffic stop procedure.
-- [ ] `BG-31.079` Define operator notification path.
+- [x] `BG-31.079` Define operator notification path.
 - [x] `BG-31.080` Record recovery fallback if rollback unsafe.
 
 #### BG-31 / 09 — Authorization packet
