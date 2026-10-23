@@ -2,13 +2,13 @@
 
 **Updated:** October 23, 2026.
 
-**Status:** 76 of 100 verified. Production NO-GO.
+**Status:** 77 of 100 source/evidence actions verified. Production NO-GO.
 
 **Safety:** Source-only work, with zero additional cost.
 
 See [GitHub issue #119](https://github.com/anmolsansi/Recollect-Flow/issues/119).
 
-See [draft PR #120](https://github.com/anmolsansi/Recollect-Flow/pull/120).
+See [merged source-only PR #120](https://github.com/anmolsansi/Recollect-Flow/pull/120).
 
 See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
 
@@ -24,11 +24,11 @@ See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
 
 ## 1. Choose operators and emergency contact
 
-- [ ] Name the future release operator.
-- [ ] Name the future restore operator.
+- [x] Name intended release operator, repository owner (@anmolsansi), self-designated October 23, 2026.
+- [x] Name intended restore operator, repository owner (@anmolsansi), self-designated October 23, 2026.
 - [ ] Choose a private primary and backup emergency contact method.
 - [ ] Confirm an acknowledgement and escalation procedure.
-- Owner action. No contacts or private numbers in GitHub.
+- Owner nomination is recorded. Operational authority, independent backup read access, recovery rehearsal, and emergency contacts are still unverified. No contacts or private numbers in GitHub.
 - Checklist: `BG-31.079`, `BG-31.081`.
 
 ## 2. Inspect live deployment metadata
