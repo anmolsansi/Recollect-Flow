@@ -25,7 +25,7 @@ test('offline readiness lists missing observations without claiming approval', (
 });
 
 test('source data is never independent production verification', () => {
-  const edited = structuredClone(source);
+  const edited = JSON.parse(JSON.stringify(source));
   edited.release_candidate.source_sha = 'a'.repeat(40);
   edited.live_inventory.worker_version = 'manual-entry';
   edited.live_inventory.production_account_verified = true;
