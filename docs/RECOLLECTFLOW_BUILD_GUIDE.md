@@ -3502,6 +3502,14 @@ which database or which tests are meant. BG-31 prepares that artifact; it does n
 itself authorize or execute BG-32. Keep the approval record associated with the
 manifest so later changes cannot silently inherit approval for a different build.
 
+The offline migration comparator in `scripts/bg31-migration-ledger.mjs` accepts
+only a caller-supplied ledger, rejects unknown or out-of-order filenames, and
+withholds unexpected ledger names in error output so private values accidentally
+included in operator input are not copied into logs. Its regression lives in
+`scripts/bg31-migration-ledger.test.mjs` and runs through
+`npm run bg31:ledger:test`. This is a source-only validation safeguard. It
+does not inspect live D1 or complete the production migration-inventory gate.
+
 ### Small implementation steps
 
 1. Name the candidate Git SHA, CI run, Worker bundle and matching Web assets.
