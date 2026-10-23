@@ -2,7 +2,7 @@
 
 **Updated:** October 23, 2026.
 
-**Status:** 77 of 100 source/evidence actions verified. Production NO-GO.
+**Status:** 78 of 100 actions source/evidence-supported on this draft branch, including a defined, unexecuted operator notification procedure. Production NO-GO.
 
 **Safety:** Source-only work, with zero additional cost.
 
@@ -29,8 +29,9 @@ See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
 - [x] Choose the emergency communication method: **email only**, confirmed by the owner October 23, 2026. No phone, SMS, or Telegram fallback.
 - [x] Owner supplied the intended recipient email in a private conversation on October 23, 2026. Its literal address is **deliberately excluded** from GitHub, Linear, commits, and CI.
 - [ ] Independently verify the recipient's inbox and authorized sender/delivery access, and place the intended destination in an owner-controlled private operational record accessible to the release/restore operator. Chat history alone is not a guaranteed operational vault.
-- [ ] Confirm reply acknowledgment, a retry/escalation interval, and the risk of no independent backup communication channel.
-- Owner nomination, email-only channel and intended destination have been supplied, **not delivery verified**. Operational authority, independent backup read access, recovery rehearsal and acknowledgment rules remain unverified. This record does not authorize sending any message.
+- [x] Define owner-approved email incident procedure (October 23, 2026): send one email **only with separate send authorization**; require an explicit owner reply acknowledging the incident; if there is no reply after **15 minutes**, send **exactly one follow-up**, also subject to send authorization; keep the release halted until the owner replies and gives the required operation-specific decision. No phone, SMS, or Telegram fallback.
+- [ ] Independently verify sender/recipient delivery and operability of the acknowledgment flow without incurring costs, and only with separate permission for any test email. No delivery test has been run.
+- Owner nomination, email-only channel, private intended destination and **notification procedure** are documented, but delivery is **not verified**. Operational authority, independent backup read access and recovery rehearsal remain unverified. Lack of email delivery or reply never grants permission to resume. This record does not authorize sending any message.
 - Checklist: `BG-31.079`, `BG-31.081`.
 
 ## 2. Inspect live deployment metadata
