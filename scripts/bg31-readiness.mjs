@@ -66,8 +66,9 @@ export function releaseReadiness(manifest) {
     gates.bg29_078 === 'VERIFIED' && gates.ope247 === 'DONE',
     'Address inherited release-level gates; the $0 development exception is not acceptance.');
   requireField('CONFIRM_FINANCIAL_BOUNDARY',
-    manifest.cost_boundary !== 'STRICT_ZERO_ADDITIONAL_COST_LOCAL_DEVELOPMENT_ONLY',
-    'Obtain separate confirmation that the exact operation cannot create additional charges.');
+    manifest.cost_boundary === 'STRICT_ZERO_ADDITIONAL_COST_LOCAL_DEVELOPMENT_ONLY' &&
+      gates.zero_additional_cost_independently_verified === true,
+    'Prove a hard zero-additional-cost ceiling with independent evidence. Never relax the owner-defined $0 restriction.');
   requireField('EXPLICIT_OWNER_AUTHORIZATION',
     manifest.approval_status === 'GRANTED' && gates.bg32_production_authorized === true,
     'Obtain a separate dated owner approval for exact immutable artifacts and targets.');
