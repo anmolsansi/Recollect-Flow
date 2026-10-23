@@ -27,9 +27,10 @@ See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
 - [x] Name intended release operator, repository owner (@anmolsansi), self-designated October 23, 2026.
 - [x] Name intended restore operator, repository owner (@anmolsansi), self-designated October 23, 2026.
 - [x] Choose the emergency communication method: **email only**, confirmed by the owner October 23, 2026. No phone, SMS, or Telegram fallback.
-- [ ] Privately verify the intended recipient email, authorized sender, and delivery access. Do not put email addresses or message content in the public repository.
-- [ ] Confirm an email reply acknowledgment procedure, an escalation/retry interval, and the risk of having no independent backup communication channel.
-- Owner nomination and channel preference are recorded. Operational authority, independent backup read access, recovery rehearsal, verified email delivery and acknowledgment rules remain unverified. This record does not authorize sending any message.
+- [x] Owner supplied the intended recipient email in a private conversation on October 23, 2026. Its literal address is **deliberately excluded** from GitHub, Linear, commits, and CI.
+- [ ] Independently verify the recipient's inbox and authorized sender/delivery access, and place the intended destination in an owner-controlled private operational record accessible to the release/restore operator. Chat history alone is not a guaranteed operational vault.
+- [ ] Confirm reply acknowledgment, a retry/escalation interval, and the risk of no independent backup communication channel.
+- Owner nomination, email-only channel and intended destination have been supplied, **not delivery verified**. Operational authority, independent backup read access, recovery rehearsal and acknowledgment rules remain unverified. This record does not authorize sending any message.
 - Checklist: `BG-31.079`, `BG-31.081`.
 
 ## 2. Inspect live deployment metadata
