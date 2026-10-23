@@ -1,91 +1,109 @@
-# BG-31: Ordered completion to-do list
+# BG-31 completion plan
 
-**As of:** 2026-10-23.
+**Updated:** October 23, 2026.
 
-**State:** 76/100 canonical steps supported; 24 remain unchecked. Production **NO-GO**.
+**Status:** 76 of 100 verified. Production NO-GO.
 
-**Branch:** `feat/bg-31-release-manifest`.
+**Safety:** Source-only work, with zero additional cost.
 
-**Tracking:** [GitHub issue #119](https://github.com/anmolsansi/Recollect-Flow/issues/119), [draft PR #120](https://github.com/anmolsansi/Recollect-Flow/pull/120), [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345/bg-31-prepare-the-v1-release-manifest-without-production-changes).
+See [GitHub issue #119](https://github.com/anmolsansi/Recollect-Flow/issues/119).
 
-## Rules before starting
+See [draft PR #120](https://github.com/anmolsansi/Recollect-Flow/pull/120).
 
-- Strict **$0 additional spend**. No deployment, remote mutation, R2 object operations, provider calls, messaging, or billing-risk testing.
-- The owner's BG-29.078 downstream exception permits **development**, not an acceptance waiver or release authorization.
-- Never share tokens, full credentials, private Telegram chat IDs, personal URLs, attachment bytes, or source content in this issue.
-- An unknown check stays open. Approval must name an immutable exact release, not a branch label or general permission.
-- Read-only account inventory is a *separate proposed step*. It has **not** been authorized by this to-do list.
+See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
 
-## Work in this order
+## Rules
 
-### 01. Confirm release operator and direct emergency contact
+- Do not deploy, migrate, modify traffic, or incur charges.
+- Do not read or write hosted R2 objects.
+- Do not call AI, Notion, or Telegram providers.
+- Never paste tokens, secret values, chat IDs, or sensitive content.
+- The BG-29.078 exception permits development, not a live release.
+- Production metadata inspection needs separate scoped authorization.
+- Keep unknown checks open until their real evidence is verified.
 
-- [ ] **Status:** awaiting required evidence.
-- **Responsible:** Owner.
-- **Checklist:** `BG-31.079`, `BG-31.081`.
-- **Provide or verify:** Named execution operator, direct emergency contact and fallback channel, acknowledgement protocol. No telephone numbers or secrets in GitHub.
-- **Current blocker:** No channel chosen or tested.
+## 1. Choose operators and emergency contact
 
-### 02. Authorize metadata-only inventory
+- [ ] Name the future release operator.
+- [ ] Name the future restore operator.
+- [ ] Choose a private primary and backup emergency contact method.
+- [ ] Confirm an acknowledgement and escalation procedure.
+- Owner action. No contacts or private numbers in GitHub.
+- Checklist: `BG-31.079`, `BG-31.081`.
 
-- [ ] **Status:** awaiting required evidence.
-- **Responsible:** Owner + operator.
-- **Checklist:** `BG-31.021`, `BG-31.024`, `BG-31.025`, `BG-31.026`.
-- **Provide or verify:** Account/Worker revision; D1 UUID; R2 bucket identity, without listing or reading objects; current HTTPS Web origin and timestamp.
-- **Current blocker:** Explicit scoped read-only permission required; no live calls yet.
+## 2. Inspect live deployment metadata
 
-### 03. Inspect D1 applied migrations without writing
+- [ ] Authorize metadata-only, read-only Cloudflare inventory.
+- [ ] Record the Worker version and verified account identity.
+- [ ] Confirm the D1 UUID and R2 bucket identity.
+- [ ] Confirm the actual HTTPS Web origin.
+- Owner and operator action. Do not list or read R2 objects.
+- Checklist: `BG-31.021`, `BG-31.024`, `BG-31.025`, `BG-31.026`.
 
-- [ ] **Status:** awaiting required evidence.
-- **Responsible:** Owner + engineer.
-- **Checklist:** `BG-31.022`, `BG-31.023`, `BG-31.031`, `BG-31.032`, `BG-31.033`, `BG-31.034`, `BG-31.035`, `BG-31.036`.
-- **Provide or verify:** Applied filenames ordered from verified D1 account/UUID with UTC timestamp, then run offline `node scripts/bg31-migration-ledger.mjs` and review only actual pending SQL for tables, indexes, data backfills and code compatibility.
-- **Current blocker:** Read-only live ledger currently prohibited until separately authorized; no remote migration.
+## 3. Compare the actual D1 migration ledger
 
-### 04. Confirm configured destinations, secrets and approved features
+- [ ] Obtain the ordered applied migration names, read-only.
+- [ ] Verify their source account, D1 UUID, and observation time.
+- [ ] Run the offline BG-31 migration comparator.
+- [ ] Analyze only genuinely pending forward SQL migrations.
+- [ ] Review affected tables, indexes, backfills, and compatibility.
+- Owner supplies authorized metadata. Engineer reviews offline.
+- Checklist: `BG-31.022`, `BG-31.023`, `BG-31.031`, `BG-31.032`.
+- Checklist: `BG-31.033`, `BG-31.034`, `BG-31.035`, `BG-31.036`.
 
-- [ ] **Status:** awaiting required evidence.
-- **Responsible:** Owner + operator.
-- **Checklist:** `BG-31.027`, `BG-31.028`, `BG-31.042`, `BG-31.044`, `BG-31.045`, `BG-31.046`.
-- **Provide or verify:** Notion destination label/fingerprint; Telegram destination description only; secret *name/presence* matrix, Web origin, enabled providers and model/permission status. Never paste secret values, provider tokens or chat IDs.
-- **Current blocker:** Presence/permission checks only after separate owner read authorization; no AI, Notion or Telegram sends.
+## 4. Verify configured destinations and capability
 
-### 05. Prove previous-artifact and schema rollback safety
+- [ ] Confirm the intended Notion destination safely.
+- [ ] Confirm the intended private Telegram destination safely.
+- [ ] Confirm secret presence by name, never by value.
+- [ ] Verify the actual Web origin.
+- [ ] Verify approved AI providers and enabled capabilities.
+- Owner grants any metadata-only inspection separately.
+- No test messages or provider invocations are authorized.
+- Checklist: `BG-31.027`, `BG-31.028`, `BG-31.042`, `BG-31.044`.
+- Checklist: `BG-31.045`, `BG-31.046`.
 
-- [ ] **Status:** awaiting required evidence.
-- **Responsible:** Engineer + operator.
-- **Checklist:** `BG-31.076`, `BG-31.077`.
-- **Provide or verify:** Exact last-known-good immutable Worker/Web asset identity; hash and config; recorded compatibility against the *actual* applied D1 ledger. If no safe old build exists, document tested forward repair/restore and keep GO blocked.
-- **Current blocker:** Historic Git commit alone is not a preserved deployable artifact.
+## 5. Establish safe rollback compatibility
 
-### 06. Freeze exact mutation scope and approval reference
+- [ ] Identify a preserved previous Worker and Web artifact.
+- [ ] Verify its exact bundle identity, configuration, and hash.
+- [ ] Check compatibility against the actual live D1 migration delta.
+- [ ] If incompatible, document a verified forward-repair path.
+- A historic Git commit is not a deployable rollback artifact.
+- Checklist: `BG-31.076`, `BG-31.077`.
 
-- [ ] **Status:** awaiting required evidence.
-- **Responsible:** Owner.
-- **Checklist:** `BG-31.082`, `BG-31.089`.
-- **Provide or verify:** Dated authorization reference explicitly naming final release SHA, Worker/Web hashes, target account/DB/bucket, reviewed migration delta, backup receipt proof, approved commands, emergency owner/operator, financial guard and allowed messages (if any).
-- **Current blocker:** The existing BG-29 $0 development exception is NOT production authorization.
+## 6. Finalize the release approval packet
 
-## Independent recovery and release blockers
+- [ ] Record exactly which production mutations would be made.
+- [ ] Identify the final reviewed Worker and Web release artifacts.
+- [ ] Prove independently preserved D1, attachment, and purge backups.
+- [ ] Identify the tested restore procedure and approved operators.
+- [ ] Confirm the strict zero-additional-cost condition.
+- [ ] Obtain dated, exact-build owner authorization when appropriate.
+- Checklist: `BG-31.082`, `BG-31.089`.
 
-- [ ] A current D1 export and an **independent** verified copy of original R2 attachment bytes with newest anti-resurrection purge receipts. Store in approved protected storage. A JSON export alone is insufficient. **No copy or restore has been performed here.**
-- [ ] An authorized isolated restore dry run, source-compatible code fallback, and measured recovery evidence. This is a separately authorized BG-28/BG-37 operation, not a source-only check.
-- [ ] BG-29.078 real-hosted multistage hourly proof remains **DEFERRED / NOT VERIFIED**. Do not incur R2 charges for it without a guaranteed $0 procedure.
-- [ ] OPE-247 consolidated operational hardening remains **In Progress**. BG-31 source work does not close it.
-- [ ] BG-32 release operation requires an **independent** signed-off manifest and cost proof. This plan does not authorize BG-32.
+## Independent blockers
 
-## Completed preparation (do not repeat)
+- [ ] BG-29.078 hosted hourly multistage proof remains deferred.
+- [ ] OPE-247 hardening acceptance remains incomplete.
+- [ ] Independent original-byte and purge-receipt recovery is unverified.
+- [ ] BG-32 production deployment is not authorized.
+- [ ] V1 launch remains NO-GO.
 
-- [x] Human and machine-readable NO-GO release manifests with full source migration order, required binding names, stop/smoke stages, recovery plan and missing live proof.
-- [x] Offline `npm run bg31:manifest:test`, `npm run bg31:ledger:test`, `npm run bg31:readiness:test` integrated into `npm run check`.
-- [x] [Source-only exact-head CI #39882760894](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39882760894) passed at `8d4836a769edf58c18af4b6849b6ef111bee90aa` before this planning addendum.
+## Completed source preparation
 
-## The first action for the owner
+- [x] Human and JSON release manifests document the missing facts.
+- [x] Migration, rollback, recovery, and smoke plans exist.
+- [x] Offline manifest, ledger, and readiness tests exist.
+- [x] Source-only CI #39882760894 passed on October 23.
 
-Confirm **who** will act as the future release operator and restore operator, and identify a direct emergency contact method privately. Then decide whether to grant **metadata-only, read-only** Cloudflare inventory authorization, with no D1/R2 writes, no object downloads, no provider calls and no spending risk. No owner response is treated as blanket deploy permission.
+## Evidence rules
 
-## Evidence receipt per action
+Record each task ID, observer, UTC time, safe source identity, result,
+approved scope, and evidence reference in a private record.
 
-Record the task ID, observer, UTC timestamp, source account/resource identity in a **private** record, command or source used, exact nonsecret result, whether cost risk was excluded, and the immutable evidence reference. Recheck against the final candidate SHA before claiming a step verified.
+Do not mark live checks complete based only on documents or simulations.
+Owner approval must reference exact build hashes and target identities.
 
-**Close BG-31 only when every canonical required action is actually evidenced or the task's acceptance scope is explicitly revised by the owner.** A source-complete draft can be reviewed earlier, but it must not claim operational acceptance or unlock deployment.
+BG-31 remains incomplete until its required evidence is verified.
+Preparation does not authorize BG-32 or change the strict $0 decision.
