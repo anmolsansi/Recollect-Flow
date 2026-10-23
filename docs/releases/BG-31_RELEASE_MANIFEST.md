@@ -266,8 +266,11 @@ approved isolation or forward-repair plan passes live auth, replay,
 private-download, search and stored-status verification.
 
 **Notification:** The owner selected **email only** on October 23, 2026,
-for emergency release/restore communication. Once sending is separately
-authorized, the operator should email the privately verified owner inbox
+and provided the intended receiving address in the private conversation.
+The literal address is intentionally **not in the repository, Linear, or CI**.
+It must be transferred by the owner to an operator-accessible private
+operational record and independently verified before use. Once sending is
+separately authorized, the operator should email the verified owner inbox
 with the safe incident ID, UTC timestamp, stop trigger, and response needed.
 The owner should acknowledge by replying to the email. A follow-up email
 interval, verified sender/recipient, and escalation rule still require
