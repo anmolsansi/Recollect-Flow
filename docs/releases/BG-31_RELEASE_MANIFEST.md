@@ -6,6 +6,10 @@
 **Tracking:** [GitHub #119](https://github.com/anmolsansi/Recollect-Flow/issues/119) · [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345/bg-31-prepare-the-v1-release-manifest-without-production-changes).  
 **Change class:** $0 local/source/CI preparation. No production deployment, hosted resource operation, remote D1/R2 query/write, provider call, external message or billing change was made.
 
+The [ordered owner action plan](BG-31_COMPLETION_TODO.md) maps the 24 unverified
+canonical actions to six evidence packages. Begin with the operator and
+metadata-only inspection authorization, not with a deployment.
+
 This is the owner-review packet for the **future** BG-32 production operation, not its approval. Any later release authorization must identify this exact revision and its subsequently frozen artifact identities. GitHub PR review, a passing local test, a green CI run and this document never grant deployment authorization.
 
 ## 1. Candidate identity and evidence

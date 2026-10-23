@@ -116,3 +116,19 @@ GitHub paired checklist is still 35/50 fully complete, because both halves
 of a pair must satisfy their Definitions of Done. CI for this follow-up head
 is required before claiming it has passed. No production mutation, new
 hosted resource, live message or charge was authorized.
+
+## Owner action sequencing, 2026-10-23
+
+The [BG-31 completion to-do list](../releases/BG-31_COMPLETION_TODO.md)
+assigns every remaining canonical action to a specific evidence package.
+This sequencing does not mark any production read or acceptance as performed.
+The last verified source-only PR-head checkpoint was
+[CI #39882760894](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39882760894)
+on `8d4836a769edf58c18af4b6849b6ef111bee90aa`. The new planning
+commits require fresh exact-head CI before claiming their acceptance.
+
+The first owner action is to name execution and restore operators and
+privately establish direct incident contact. A separate, scoped authorization
+is then needed for metadata-only live inventory, without hosted R2 object
+reads or writes, provider sends, migrations, deploys or costs. The remaining
+BG-29.078, OPE-247 and BG-32 GO gates stay blocked.
