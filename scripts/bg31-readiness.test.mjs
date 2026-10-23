@@ -39,4 +39,3 @@ test('invalid manifest fails closed', () => {
   assert.throws(() => releaseReadiness(null), /Invalid BG-31/);
   assert.throws(() => releaseReadiness({ schema_version: 2 }), /Invalid BG-31/);
 });
-
