@@ -300,10 +300,10 @@ account, backup, cost or owner authorization evidence.
 | Approve V1 release GO                                                          | **NO-GO**                                              |
 
 **Release owner:** repository owner, approval needed in an explicit dated record referencing the immutable completed manifest revision, exact artifact hashes, approved targets, intended commands, maximum scope and rollback plan.  
-**Execution operator:** **UNASSIGNED**. Must be named and authorized by the owner before any deployment.  
-**Restore operator:** **UNASSIGNED**. Must have independently verified backup read access and documented recovery procedure.  
+**Intended execution operator:** repository owner (@anmolsansi), self-designated October 23, 2026. This nomination does **not** verify live access or authorize any release command.  
+**Intended restore operator:** repository owner (@anmolsansi), self-designated October 23, 2026. Independent backup read access, restore rehearsal, and recovery authority are **NOT VERIFIED**.  
 **Approval evidence/reference:** **NONE**.  
-**Next release action:** only review this draft and safely complete source/CI/manifest checks. Missing operator identities, live migration diff, independent backup, candidate Web/Worker artifacts, provider/billing capacity and operational gates keep BG-32 blocked.
+**Next release action:** only review this draft and safely complete source/CI/manifest checks. Missing operator capability proof, live migration diff, independent backup, candidate Web/Worker artifacts, provider/billing capacity and operational gates keep BG-32 blocked.
 
 ### Acceptance and handoff
 
