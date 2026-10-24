@@ -84,6 +84,32 @@ The strict $0 [BG-29.078 exception](../verification/BG-29_078_ZERO_COST_DOWNSTRE
 | Telegram          | Secret `TELEGRAM_CHAT_ID`; `TELEGRAM_BOT_TOKEN`                                                     | Private destination **NOT VERIFIED**                      | Owner identifies approved private destination, separate approval for any send                          |
 | AI                | `AI` binding and configured OpenRouter/Cloudflare provider routing                                  | Provider account access, quota and terms **NOT VERIFIED** | Verify explicit approved capabilities and no unexpected metered path                                   |
 
+### October 24, 2026: Account-scoped Worker listing observation
+
+The owner provided a screenshot of **Workers & Pages** for one selected
+Cloudflare account and explicitly confirmed this finding:
+
+- The listing contained the BG-29 probe Worker
+  `recollect-flow-bg29-d1-cron-probe`.
+- The expected main Worker `recollect-flow` was **not found in that inspected
+  account listing**.
+- No additional Cloudflare accounts, production Worker deployment versions,
+  deployed assets, routing identities, D1 migration ledgers, or R2 bucket
+  identities were inspected or independently verified.
+- The visible listing is a limited owner-provided UI observation, **not**
+  evidence that the main Worker is absent across all accounts, that no main
+  deployment ever occurred, or that source-only `wrangler.toml` names are live.
+  Do not deploy or create a Worker to resolve this absence under BG-31.
+
+Outcome: `WORKER_NOT_FOUND_IN_INSPECTED_ACCOUNT_ONLY`. Preserve
+`live_inventory.worker_version = null` and
+`production_account_verified = false`. **BG-31.021 remains unchecked** until
+a real deployed Worker version is observed in a verified target account, or
+the owner explicitly documents a fresh-deployment/no-live-version plan.
+All other production inventory and BG-32 authorization gates remain blocked.
+The screenshot was provided in the private conversation; no account identifier,
+user details, credentials or screenshot content was copied into GitHub.
+
 Source configuration is **not** live proof. These values describe committed configuration only. Never infer the Cloudflare account, provisioned resource state, deployed version, environment secret presence, hosted Web origin, current DB schema, or provider permission from `main`.
 
 ### Read-only inventory worksheet (NOT EXECUTED)
