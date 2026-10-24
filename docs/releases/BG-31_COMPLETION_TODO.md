@@ -1,8 +1,8 @@
 # BG-31 completion plan
 
-**Updated:** October 23, 2026.
+**Updated:** October 24, 2026.
 
-**Status:** 78 of 100 actions source/evidence-supported on this draft branch, including a defined, unexecuted operator notification procedure. Production NO-GO.
+**Status:** 78 of 100 canonical actions verified, 22 open. One-account Worker listing shows main Worker NOT FOUND IN INSPECTED ACCOUNT ONLY; production NO-GO.
 
 **Safety:** Source-only work, with zero additional cost.
 
@@ -36,8 +36,10 @@ See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
 
 ## 2. Inspect live deployment metadata
 
-- [ ] Authorize metadata-only, read-only Cloudflare inventory.
-- [ ] Record the Worker version and verified account identity.
+- [x] Owner authorized strictly read-only, metadata-only, **zero-additional-charge** Cloudflare inventory, October 24, 2026. No deployment, remote writes, R2 object reads/listing or paid operations.
+- [x] Record limited **negative observation**: owner-provided Workers & Pages screenshot showed `recollect-flow-bg29-d1-cron-probe` but **not** the main `recollect-flow` Worker in the selected account. Other accounts not inspected; do not infer that the Worker never existed or that any configured production resources are real.
+- [ ] Confirm intended production Cloudflare account and the nature of this release (existing Worker elsewhere versus first deployment), without modifying resources.
+- [ ] Record an actual deployed Worker version and verified account identity **if a main Worker exists**; otherwise document a separate first-deploy prerequisite/plan. BG-31.021 remains unchecked.
 - [ ] Confirm the D1 UUID and R2 bucket identity.
 - [ ] Confirm the actual HTTPS Web origin.
 - Owner and operator action. Do not list or read R2 objects.
