@@ -233,7 +233,7 @@ Execute **only after** BG-32 grants operation-specific authorization, takes the 
 2. Preserve incident UTC timestamp, safe IDs, immutable artifact and ledger state, operation logs without raw content, and the last known good build/backup identities.
 3. If schema remains compatible, use the **verified** previous Worker/Web artifact and matching configuration to restore compatible code, then repeat auth/capture/private-download and consistency checks. **Previous artifact: NOT YET IDENTIFIED OR PROVED COMPATIBLE.**
 4. If migration changed schema incompatibly, **do not deploy old code blindly**. Prefer reviewed forward repair and re-verify. If that is unsafe, restore a verified independent backup into an isolated database/bucket, reconcile newer purge receipts and captured writes, and seek explicit owner approval before traffic cutover.
-5. Notify the owner through the pre-agreed **non-Telegram operational channel**. Escalation contact/channel **NOT DESIGNATED**. Do not send a live Telegram bot message as a substitute for approval.
+5. Follow the owner-approved **email-only** procedure: after separate authorization to send, email the privately verified owner inbox with the safe incident facts. An explicit reply acknowledging the incident is required; if no reply arrives within **15 minutes**, send **one** separately authorized follow-up email. Keep release activity **HALTED** until the owner acknowledges and explicitly approves the appropriate next action. There is no phone, SMS or Telegram fallback; delivery and acknowledgment have **not been tested** and no email or provider messaging is authorized by this plan.
 
 Auth failures, persistent capture loss, private route leak, migration inconsistency, deep-link failure, corruption/hash mismatch, missing backup/receipt evidence or any possible additional charge all block GO. No change to production or external messaging is authorized by writing these steps.
 
@@ -265,10 +265,27 @@ integration tests. Preserve content-free incident facts. Resume only after an
 approved isolation or forward-repair plan passes live auth, replay,
 private-download, search and stored-status verification.
 
-**Notification:** Log the incident/halt on GitHub #119 and contact the owner
-through the separately agreed direct emergency channel. That primary channel,
-backup contact and acknowledgment rule remain **UNASSIGNED**. Issue comments
-alone do not meet urgent notification needs, and Telegram is not approved.
+**Notification:** The owner selected **email only** on October 23, 2026,
+and provided the intended receiving address in the private conversation.
+The literal address is intentionally **not in the repository, Linear, or CI**.
+It must be transferred by the owner to an operator-accessible private
+operational record and independently verified before use. Once sending is
+separately authorized, the operator should email the verified owner inbox
+with the safe incident ID, UTC timestamp, stop trigger, and response needed.
+The owner explicitly approved this escalation procedure on October 23, 2026:
+1. Require the owner to acknowledge by **replying to the first incident email**.
+2. If there is **no acknowledgment after 15 minutes**, send **one follow-up
+   email** to the same verified private destination, but only if that external
+   send is separately authorized. Do not automatically schedule or send it.
+3. **Keep the release halted** if the email is undelivered or remains
+   unacknowledged. Resume only after owner acknowledgment **and** the
+   separately required operation-specific clearance; acknowledgment alone
+   does not override failed backup, privacy, security, cost or migration gates.
+
+There is **no phone, SMS, or Telegram fallback**. The sender's access,
+recipient delivery, and reply flow are **NOT TESTED**. Logging to GitHub
+#119 does not substitute for urgent notification. No emails were sent or
+scheduled by this source-only procedure.
 
 Record `PARTIALLY_APPLIED` for any durable partial change. An unsafe code
 rollback requires reviewed forward repair or isolated restore using verified
@@ -300,10 +317,10 @@ account, backup, cost or owner authorization evidence.
 | Approve V1 release GO                                                          | **NO-GO**                                              |
 
 **Release owner:** repository owner, approval needed in an explicit dated record referencing the immutable completed manifest revision, exact artifact hashes, approved targets, intended commands, maximum scope and rollback plan.  
-**Execution operator:** **UNASSIGNED**. Must be named and authorized by the owner before any deployment.  
-**Restore operator:** **UNASSIGNED**. Must have independently verified backup read access and documented recovery procedure.  
+**Intended execution operator:** repository owner (@anmolsansi), self-designated October 23, 2026. This nomination does **not** verify live access or authorize any release command.  
+**Intended restore operator:** repository owner (@anmolsansi), self-designated October 23, 2026. Independent backup read access, restore rehearsal, and recovery authority are **NOT VERIFIED**.  
 **Approval evidence/reference:** **NONE**.  
-**Next release action:** only review this draft and safely complete source/CI/manifest checks. Missing operator identities, live migration diff, independent backup, candidate Web/Worker artifacts, provider/billing capacity and operational gates keep BG-32 blocked.
+**Next release action:** only review this draft and safely complete source/CI/manifest checks. Missing operator capability proof, live migration diff, independent backup, candidate Web/Worker artifacts, provider/billing capacity and operational gates keep BG-32 blocked.
 
 ### Acceptance and handoff
 
