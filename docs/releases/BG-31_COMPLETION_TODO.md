@@ -22,95 +22,30 @@ See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
 - Production metadata inspection needs separate scoped authorization.
 - Keep unknown checks open until their real evidence is verified.
 
-## Account decision: target confirmed, resources not listed
+## Confirmed Cloudflare account and zero-cost provisioning gate
 
-**Owner confirmation:** October 24, 2026. The Cloudflare account
-`a9482fbfb91ace26dee097cbd41293f9` is the **intended** RecollectFlow
-production account. The owner authorized read-only, metadata-only inspection
-within strict $0. This is **not** authorization to provision, deploy, change
-routes, run SQL, touch R2 objects, invoke providers or spend.
+**Owner confirmation (October 24, 2026):** Cloudflare account `a9482fbfb91ace26dee097cbd41293f9` is the intended RecollectFlow production account. The owner authorized metadata-only inspection, not provisioning, deployment, paid usage or messages.
 
-The owner-opened overview pages in this account report:
+**Observed account overview:**
 
-- Workers & Pages: 1/1 listed, `recollect-flow-bg29-d1-cron-probe`; no
-  `recollect-flow` production Worker listed.
-- D1: 1/1 listed, `recollect-flow-bg29-staging`, UUID
-  `b5cbeccc-92fb-4bbc-9597-f0174b84e57d`; no
-  `recollect-flow-prod` database listed.
-- R2: only `propertyos-media` listed; no
-  `recollect-flow-attachments-prod` bucket listed. **No R2 objects were
-  opened.**
+- Workers: only `recollect-flow-bg29-d1-cron-probe` (1/1). Intended production Worker `recollect-flow` is not listed.
+- D1: only `recollect-flow-bg29-staging` (1/1), UUID `b5cbeccc-92fb-4bbc-9597-f0174b84e57d`. Intended `recollect-flow-prod` is not listed.
+- R2: only `propertyos-media` listed. Intended `recollect-flow-attachments-prod` is not listed. No R2 objects were opened.
 
-The currently committed `wrangler.toml` names `recollect-flow`, production
-D1 UUID `5fcba514-d0f7-45e7-a632-d4c59233af71`, and
-`recollect-flow-attachments-prod`. These are **intended source bindings**,
-not observed resources in the confirmed account. Never attach production
-code to the BG-29 staging database or the PropertyOS bucket. Do not assume
-the configured D1 UUID is a valid new database UUID.
+**Important:** The D1 UUID `5fcba514-d0f7-45e7-a632-d4c59233af71` in `wrangler.toml` is a source-declared target, not an observed database in this account. Never reuse the BG-29 staging resources or PropertyOS media bucket for RecollectFlow production.
 
-### Gated zero-additional-cost provisioning preparation
+**Gated preparation tasks:**
 
-- [x] **P0 — Account reconciliation (Assistant):** Confirm intended account,
-  compare the three account listings against committed names and UUIDs,
-  and preserve the missing-resource outcome. Only safe account metadata
-  was viewed.
-- [ ] **P1 — Financial hard stop (Owner + Assistant):** Require a verified
-  enforceable **zero-additional-charge boundary** for **every** intended
-  provider and resource. Workers Free and D1 Free have limit failures;
-  R2 Standard has free allowances but metered overage. An estimate,
-  free allocation, bill showing $0, budget alert or manual monitoring
-  does **not** satisfy a hard $0 guarantee. Existing BG-29.078 financial
-  decision prohibits hosted R2 provisioning. If no proven hard stop,
-  keep hosting/attachment activation and release **NO-GO**.
-- [ ] **P2 — Offline release guardrails (Assistant):** Inspect source and
-  prepare a separate later patch/CI proof that prevents real external
-  OpenRouter, Notion, Telegram and other unexpected provider calls,
-  prevents scheduled/background execution, disables any unapproved
-  paid or optional integration path, and makes invalid bindings fail
-  closed. Do not weaken required capture, privacy or recovery semantics.
-  Do **not** deploy today's `wrangler.toml` unchanged: it declares three
-  Cron triggers and a default `openrouter` AI provider.
-- [ ] **P3 — Resource creation proposal (Owner later):** Only after P1/P2
-  and a separately scoped operation-specific approval, consider a new,
-  isolated `recollect-flow-prod` D1 database and
-  `recollect-flow-attachments-prod` R2 bucket, without touching the
-  staging DB or `propertyos-media`. Check free plan/account eligibility
-  before any account or billing action. No resource creation is
-  authorized by this document.
-- [ ] **P4 — Identity reconciliation (Assistant after approval):** Record
-  each genuinely created resource identity. A new D1 database receives
-  its own actual UUID; separately review replacing the stale source
-  `database_id`, binding/target checks, and a frozen revision. Never
-  invent or reuse the current configured UUID. A freshly created
-  empty D1 has **no prior production migration history**; do not
-  fabricate an applied ledger or claim pending migrations until an
-  authorized observation proves the exact state.
-- [ ] **P5 — Migration, recovery and release gate (Owner + Assistant):**
-  Independently verify original-byte/purge-receipt recovery, backup
-  location and restore rehearsal, real migrations, production artifacts,
-  provider-free/cost controls, BG-29.078 and OPE-247, and the exact
-  operation-specific authorization. Production D1 writes, hosted R2,
-  Worker publish, enabled Cron, real AI/providers, messages and BG-32
-  require separate approvals. **Do not convert this plan into GO.**
+- [x] **P0 (Assistant):** Confirm the intended account and record resource-list mismatches using only read-only metadata.
+- [ ] **P1 (Owner and Assistant):** Prove enforceable zero-additional-charge controls for all required services. Workers Free/D1 Free fail at daily limits; R2 Standard has billable usage beyond its free allowance. Free quota, alerts and a current $0 invoice do not constitute a hard cap. BG-29.078 expressly prohibits hosted R2 provisioning under the current exception. Keep NO-GO if a hard $0 stop is impossible.
+- [ ] **P2 (Assistant):** Review and locally test fail-closed configuration with scheduled Cron and real OpenRouter/Notion/Telegram calls disabled. Current `wrangler.toml` declares three Cron triggers and default provider `openrouter`. Do not deploy unchanged configuration or weaken original-attachment and recovery guarantees.
+- [ ] **P3 (Owner, separately authorized):** Only after P1/P2 and a new operation-specific approval, assess new isolated production Worker/D1/R2 resources. Do not create resources or change billing by following this document.
+- [ ] **P4 (Assistant, after authorized creation):** Record actual created resource identities; update the source D1 UUID only from the verified new database ID. Do not fabricate a live migration ledger or assume an empty ledger without authenticated evidence.
+- [ ] **P5 (Owner and Assistant):** Verify actual migration order, independent original-byte and purge-receipt backups, isolated recovery, prior deployable artifacts, cost controls, BG-29.078, OPE-247 and explicit exact-release approval. BG-32/V1 stays NO-GO.
 
-**Current disposition:** account selected; the expected production
-resources are not listed in that account; **no live production version,
-production D1 ledger or Web origin exists in the reviewed evidence**.
-Keep the canonical BG-31.021–.028 and migration-dependent actions open.
-The zero-cost BG-29 downstream exception supports **source-only work**,
-not hosted R2 provisioning or deployment.
+**Disposition:** BG-31 remains 78/100 with 22 open actions. Actual deployed production version, D1 applied ledger and Web origin are unknown. Source-only work may proceed; provisioning, SQL, R2 operations, Cron activation, external providers, billing changes and deployment remain unauthorized.
 
-### Authoritative references
-
-- Source: [Wrangler bindings](../../wrangler.toml) and
-  [BG-29 $0 exception](../verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md).
-- [Workers Free limits](https://developers.cloudflare.com/workers/platform/limits/),
-  [D1 Free pricing](https://developers.cloudflare.com/d1/platform/pricing/),
-  [R2 pricing](https://developers.cloudflare.com/r2/pricing/), and
-  [R2 prerequisite](https://developers.cloudflare.com/r2/get-started/).
-- [GitHub BG-31 issue](https://github.com/anmolsansi/Recollect-Flow/issues/119)
-  contains the private-account viewer provenance and authorization
-  disposition, without copying credentials or sensitive objects.
+**References:** [Wrangler source](../../wrangler.toml), [BG-29 zero-cost exception](../verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md), [Workers limits](https://developers.cloudflare.com/workers/platform/limits/), [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/), and [R2 pricing](https://developers.cloudflare.com/r2/pricing/).
 
 ## 1. Choose operators and emergency contact
 
