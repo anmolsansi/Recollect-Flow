@@ -132,3 +132,33 @@ privately establish direct incident contact. A separate, scoped authorization
 is then needed for metadata-only live inventory, without hosted R2 object
 reads or writes, provider sends, migrations, deploys or costs. The remaining
 BG-29.078, OPE-247 and BG-32 GO gates stay blocked.
+
+## October 24: Main Worker not found in inspected account listing
+
+**Evidence type:** owner-provided Cloudflare Workers & Pages screenshot,
+followed by the owner's explicit confirmation that the main Worker should be
+recorded as not found in the inspected account. **Observation scope:** the
+application listing of one selected account, not an exhaustive account or
+deployment search.
+
+- Visible application: `recollect-flow-bg29-d1-cron-probe` (BG-29
+  diagnostic Worker, not the main `recollect-flow` application).
+- Expected application: `recollect-flow`, **not visible** in that listing.
+- The screenshot does not display an actual deployment version of the main
+  Worker. Account authorization, alternate account selection, production
+  routes, D1 applied migrations, R2 bucket presence and Web origin were
+  **not independently inspected**.
+- No private Cloudflare account ID, login, email, tokens or dashboard
+  screenshot was copied to GitHub. Source-only `wrangler.toml` is still
+  an intended configuration, not evidence of an existing deployment.
+- **Canonical status:** BG-31.021, .022, .024, .025 and .026 remain unchecked;
+  main Worker version remains `null`, account provenance unverified.
+  Canonical progress unchanged at **78/100**.
+- **Next safe operator step:** verify the correct target account and determine
+  whether the main Worker is in another authorized account or represents a
+  first deployment. Only then establish a zero-cost-safe, read-only D1/R2
+  identity and migration inventory. This is not permission to create a
+  Worker, deploy, run remote D1 SQL, inspect R2 objects, or incur charges.
+- **Decision:** BG-31 and BG-32 remain **NO-GO**. BG-29.078, OPE-247 and
+  independent backup/restore conditions remain outstanding.
+
