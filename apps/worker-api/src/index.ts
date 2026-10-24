@@ -22,7 +22,7 @@ const app = createApp();
  * production services. Staging creates a separate scheduler instance via
  * createScheduledHandler; it never patches this instance or global services.
  */
-export const handleScheduled = createScheduledHandler({
+const productionScheduledHandler = createScheduledHandler({
   cleanupAttachments: (env) =>
     cleanupExpiredAttachments(
       new D1AttachmentRepository(env.DB),
@@ -44,6 +44,41 @@ export const handleScheduled = createScheduledHandler({
   weeklyBackup: (env, at) =>
     createWeeklyHostedBackup(env.DB, env.ATTACHMENTS, at),
 });
+
+/**
+ * BG-31: production Cron must fail closed before starting even cleanup jobs.
+ * Both owner-reviewed switches are required because the background pipeline
+ * includes outbound URL/AI/Notion and digest/Telegram provider work.
+ *
+ * Staging's isolated createScheduledHandler instance is unchanged.
+ * Neither this code nor setting the flags authorizes production deployment.
+ */
+export async function handleScheduled(
+  controller: ScheduledController,
+  env: Cloudflare.Env,
+  context: ExecutionContext,
+): Promise<void> {
+  const flags = env as Cloudflare.Env & {
+    HOSTED_SCHEDULED_WORK_ENABLED?: string;
+    HOSTED_EXTERNAL_DISPATCH_ENABLED?: string;
+  };
+  if (
+    flags.HOSTED_SCHEDULED_WORK_ENABLED !== 'true' ||
+    flags.HOSTED_EXTERNAL_DISPATCH_ENABLED !== 'true'
+  ) {
+    console.warn(
+      JSON.stringify({
+        event: 'bg31_hosted_schedule_blocked',
+        cron: controller.cron,
+      }),
+    );
+    return;
+  }
+  if (!env.DB || !env.ATTACHMENTS) {
+    throw new Error('BG31_PRODUCTION_BINDINGS_MISSING');
+  }
+  await productionScheduledHandler(controller, env, context);
+}
 
 /**
  * Route the API before any static fallback, regardless of Accept or navigation
