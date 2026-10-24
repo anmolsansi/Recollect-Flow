@@ -164,7 +164,8 @@ describe('BG-31 production scheduler fail-closed admission', () => {
       },
       'explicitly disabled schedule',
     ],
-  ])('does no work for %s (%s)', async (flags, _reason) => {
+  ])('does no work for %s (%s)', async (flags, reason) => {
+    expect(reason).not.toBe('');
     vi.clearAllMocks();
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     try {
