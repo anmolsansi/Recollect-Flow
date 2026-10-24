@@ -273,6 +273,7 @@ operational record and independently verified before use. Once sending is
 separately authorized, the operator should email the verified owner inbox
 with the safe incident ID, UTC timestamp, stop trigger, and response needed.
 The owner explicitly approved this escalation procedure on October 23, 2026:
+
 1. Require the owner to acknowledge by **replying to the first incident email**.
 2. If there is **no acknowledgment after 15 minutes**, send **one follow-up
    email** to the same verified private destination, but only if that external
