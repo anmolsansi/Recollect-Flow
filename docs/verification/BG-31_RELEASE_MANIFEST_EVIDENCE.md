@@ -161,4 +161,3 @@ deployment search.
   Worker, deploy, run remote D1 SQL, inspect R2 objects, or incur charges.
 - **Decision:** BG-31 and BG-32 remain **NO-GO**. BG-29.078, OPE-247 and
   independent backup/restore conditions remain outstanding.
-
