@@ -34,6 +34,15 @@ function controller(cron: string, scheduledTime: string): ScheduledController {
   } as unknown as ScheduledController;
 }
 
+function enabledSyntheticEnv(): Cloudflare.Env {
+  return {
+    DB: {},
+    ATTACHMENTS: {},
+    HOSTED_SCHEDULED_WORK_ENABLED: 'true',
+    HOSTED_EXTERNAL_DISPATCH_ENABLED: 'true',
+  } as unknown as Cloudflare.Env;
+}
+
 describe('digest scheduled handler', () => {
   beforeEach(() => {
     mocks.processScheduledDigest.mockClear();
@@ -50,7 +59,7 @@ describe('digest scheduled handler', () => {
 
       await handleScheduled(
         controller(cron, scheduledAt),
-        {} as Cloudflare.Env,
+        enabledSyntheticEnv(),
         context,
       );
       await Promise.all(promises);
@@ -69,7 +78,7 @@ describe('digest scheduled handler', () => {
     const { context } = executionContext();
     await handleScheduled(
       controller('0 * * * *', '2026-08-03T02:00:00.000Z'),
-      {} as Cloudflare.Env,
+      enabledSyntheticEnv(),
       context,
     );
 
