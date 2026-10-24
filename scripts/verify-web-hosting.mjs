@@ -43,6 +43,7 @@ try {
     '/capture',
     '/capture/file',
     '/operations',
+    '/digests',
     '/items/' + marker,
   ]) {
     const response = await inspect(route);
@@ -212,6 +213,20 @@ try {
     'History forward to capture',
   );
   report('BG21-SPA-browser-back-forward', { back: '/', forward: '/capture' });
+
+  await navigate(browser, runtime.webOrigin + '/operations');
+  await waitFor(
+    browser,
+    'document.body.innerText.includes("AI usage and quota")',
+    'bundled Worker operations page',
+  );
+  await navigate(browser, runtime.webOrigin + '/digests');
+  await waitFor(
+    browser,
+    'document.body.innerText.includes("Digest review")',
+    'bundled Worker digest review page',
+  );
+  report('BG21-operator-and-digest-browser-routes');
 
   await navigate(browser, runtime.webOrigin + '/');
   await waitFor(

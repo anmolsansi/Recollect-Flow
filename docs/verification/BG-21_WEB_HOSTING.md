@@ -127,3 +127,46 @@ evidence that any of those gates passed. In particular, `BG-21.059`,
 `.061`, `.062`, `.065`, `.077`, and `.080` remain open until real
 hosted proof exists. Operator-specific UI routing (`.044`) is a deliberate
 scope decision, not an implicitly implemented page.
+
+## BG-21 operator route and post-BG-27 deep-link reconciliation (2026-10-22)
+
+This entry supersedes the **historical** October 11 statement that no approved
+operator UI route exists. BG-26 later implemented an authenticated
+`/operations` React route and tested its actual rendered dashboard in
+isolated Chrome (`scripts/verify-browser-operations.mjs`;
+[BG-26 evidence](BG-26_OPERATIONS_VISIBILITY.md)). The main Worker asset
+allowlist already contained `/operations`, but the BG-21.044 checklist had
+not been revisited.
+
+A separate regression was found during this review: BG-27 introduced the
+authenticated `/digests` page, yet `wrangler.toml` omitted `/digests` and
+`/operations` from `run_worker_first`, and the Worker asset-router
+allowlist omitted `/digests`. This branch fixes the Worker-first list and
+the shell allowlist without adding a fallback to unknown client or API paths.
+
+The focused source/tests in [BG-21 PR #121](https://github.com/anmolsansi/Recollect-Flow/pull/121)
+cover:
+
+- The React page and Worker-first route parity for all current SPA entry paths.
+- Public shell delivery for `/operations` and `/digests` without permitting
+  unauthenticated private API access.
+- Direct packaged-Worker Chrome navigation to authenticated Operations and
+  Digest review screens, in addition to root/capture/item/browser history.
+- Existing immutable-hash, JSON-API, missing-asset and logout/private-cache
+  behavior, without changing any D1 migration, external provider or secret.
+
+**Verified source CI:** [Run #39769262188](https://github.com/anmolsansi/Recollect-Flow/actions/runs/39769262188)
+passed on exact route-fix/test SHA `9ae1045ecff05d865da92f68d9778f195ecfbbbd`.
+The complete repository gate included formatting, lint, unit tests, local D1,
+clean packaged Worker/Web, Wrangler dry-run and the isolated Chrome browser
+suite. BG-21.044 is now checked, bringing the source record to **94/100**
+and GitHub issue #83 to **45/50 pairs**. Subsequent documentation changes
+require their own exact-head CI before merge.
+
+**Remaining acceptance:** These tests use the isolated local Worker/Chrome
+and CI environment. BG-21.059/.061/.062/.065/.077/.080 remain
+**NOT VERIFIED**, because no authorized isolated remote HTTPS release,
+real Secure cookie observation, cross-release cache invalidation/rollback
+rehearsal or actual publication was performed. The owner-directed strict
+$0 condition and BG-32 production NO-GO remain unchanged. Source route
+completion cannot grant hosted acceptance or release authorization.

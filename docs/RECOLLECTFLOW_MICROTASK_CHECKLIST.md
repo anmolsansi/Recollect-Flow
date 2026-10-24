@@ -2943,7 +2943,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-21.041` Serve root entry document.
 - [x] `BG-21.042` Serve direct item route.
 - [x] `BG-21.043` Serve capture route.
-- [ ] `BG-21.044` Serve approved operator route.
+- [x] `BG-21.044` Serve approved operator route.
 - [x] `BG-21.045` Support hard reload.
 - [x] `BG-21.046` Preserve browser history navigation.
 - [x] `BG-21.047` Handle unknown client path intentionally.
