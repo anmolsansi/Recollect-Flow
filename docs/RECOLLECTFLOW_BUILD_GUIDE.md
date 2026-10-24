@@ -3510,6 +3510,35 @@ included in operator input are not copied into logs. Its regression lives in
 `npm run bg31:ledger:test`. This is a source-only validation safeguard. It
 does not inspect live D1 or complete the production migration-inventory gate.
 
+### BG-31 P2 production scheduled dispatch admission, October 24, 2026
+
+The production `handleScheduled` entry now requires both
+`HOSTED_SCHEDULED_WORK_ENABLED` and `HOSTED_EXTERNAL_DISPATCH_ENABLED`
+to equal the exact string `true`. Missing, false or malformed values return
+without scheduling even cleanup jobs. This protects the background, daily
+digest and weekly digest paths before they can reach URL acquisition, AI,
+Notion or Telegram. If both switches are true but D1 or R2 is not bound,
+the production handler rejects the invocation before scheduling jobs.
+The BG-29 isolated staging scheduler still uses its own injected handler.
+
+The current `wrangler.toml` does not opt in to either switch. Its
+three Cron declarations and OpenRouter default remain source-defined,
+however; a no-op scheduled handler is **not** a guarantee that scheduled
+invocations cannot incur charges. Before a hosted release, separately review
+removing unapproved Cron triggers and disabling all external providers.
+
+Negative tests in `apps/worker-api/test/bg29-scheduler-production.test.ts`
+cover the missing/malformed-switch cases on all three schedules, missing
+bindings and the explicitly opted-in existing production dispatch behavior.
+They run as part of the regular `npm run check` gate. These tests show
+local execution behavior, not production billing or provider reachability.
+
+**Residual risk:** This guard is at the scheduled Worker entry, not a
+global network firewall for explicitly invoked HTTP/manual AI, Notion,
+Telegram or URL acquisition routes. Those paths need a separate audit and
+negative proof before any live approval. BG-31 stays NO-GO, and no source
+change authorizes provisioning, deployment or billing.
+
 ### Small implementation steps
 
 1. Name the candidate Git SHA, CI run, Worker bundle and matching Web assets.
