@@ -40,16 +40,20 @@ vi.mock('../src/sync/sync.worker', () => ({
 }));
 
 import worker, { handleScheduled } from '../src/index';
-import { BACKGROUND_CRON } from '../src/digests/digest-schedule';
+import {
+  BACKGROUND_CRON,
+  DAILY_DIGEST_CRON,
+  WEEKLY_DIGEST_CRON,
+} from '../src/digests/digest-schedule';
 import { D1AttachmentRepository } from '../src/attachments/attachment.repository';
 import {
   createScheduledHandler,
   type ScheduledHandlerDependencies,
 } from '../src/scheduled-handler';
 
-function controller(): ScheduledController {
+function controller(cron = BACKGROUND_CRON): ScheduledController {
   return {
-    cron: BACKGROUND_CRON,
+    cron,
     scheduledTime: Date.parse('2026-10-18T05:17:37.889Z'),
     noRetry: vi.fn(),
   } as unknown as ScheduledController;
@@ -169,10 +173,16 @@ describe('BG-31 production scheduler fail-closed admission', () => {
         ATTACHMENTS: {},
         ...flags,
       } as unknown as Cloudflare.Env;
-      const { context, promises } = executionContext();
-      await handleScheduled(controller(), env, context);
-      expect(context.waitUntil).not.toHaveBeenCalled();
-      expect(promises).toEqual([]);
+      for (const cron of [
+        BACKGROUND_CRON,
+        DAILY_DIGEST_CRON,
+        WEEKLY_DIGEST_CRON,
+      ]) {
+        const { context, promises } = executionContext();
+        await handleScheduled(controller(cron), env, context);
+        expect(context.waitUntil).not.toHaveBeenCalled();
+        expect(promises).toEqual([]);
+      }
       for (const mock of Object.values(production)) {
         expect(mock).not.toHaveBeenCalled();
       }
