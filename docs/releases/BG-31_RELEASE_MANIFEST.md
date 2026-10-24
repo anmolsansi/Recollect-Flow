@@ -6,11 +6,60 @@
 **Tracking:** [GitHub #119](https://github.com/anmolsansi/Recollect-Flow/issues/119) · [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345/bg-31-prepare-the-v1-release-manifest-without-production-changes).  
 **Change class:** $0 local/source/CI preparation. No production deployment, hosted resource operation, remote D1/R2 query/write, provider call, external message or billing change was made.
 
-The [ordered owner action plan](BG-31_COMPLETION_TODO.md) maps the 24 unverified
-canonical actions to six evidence packages. Begin with the operator and
-metadata-only inspection authorization, not with a deployment.
+The [ordered owner action plan](BG-31_COMPLETION_TODO.md) maps the **22
+remaining canonical actions** to the existing evidence packages and a
+gated **missing-resource / strict $0 preparation** sequence. The owner
+confirmed the Cloudflare target account and granted a scoped read-only
+account-overview inspection; neither action grants production operations.
 
 This is the owner-review packet for the **future** BG-32 production operation, not its approval. Any later release authorization must identify this exact revision and its subsequently frozen artifact identities. GitHub PR review, a passing local test, a green CI run and this document never grant deployment authorization.
+
+## October 24 account confirmation: live inventory mismatch
+
+The owner confirmed Cloudflare account
+`a9482fbfb91ace26dee097cbd41293f9` as the intended production account
+and explicitly permitted **read-only, metadata-only** inspection within
+strict $0. The owner-opened Cloudflare overview tabs showed:
+
+| Resource | Listed in confirmed account | Intended in `wrangler.toml` | Disposition |
+| --- | --- | --- | --- |
+| Worker | `recollect-flow-bg29-d1-cron-probe` (1/1 applications listed) | `recollect-flow` | Production Worker **not listed** |
+| D1 | `recollect-flow-bg29-staging`, UUID `b5cbeccc-92fb-4bbc-9597-f0174b84e57d` (1/1 databases) | `recollect-flow-prod`, UUID `5fcba514-d0f7-45e7-a632-d4c59233af71` | Production D1 **not listed** |
+| R2 | `propertyos-media` (only displayed bucket) | `recollect-flow-attachments-prod` | Production R2 **not listed** |
+
+The staging Worker, staging D1 and PropertyOS R2 bucket are **not**
+production substitutes. Do not attach the production application to any
+of them, invent an applied D1 migration ledger, or assume that the
+committed production D1 UUID belongs to a provisioned resource.
+No Worker production deployment version, production D1 applied ledger,
+R2 production bucket, or production HTTPS Web origin was observed.
+
+This observation is enough to **block** a production rollout; it does
+**not** satisfy all canonical live-version / applied-migration /
+correct-binding verification actions. They remain unchecked. The
+source-only migration comparator can analyze a future, authenticated
+ledger only after the actual production database is independently
+identified or created under a **new** explicit approval.
+
+**Financial and operational gate:** Workers and D1 Free quotas are
+subject to enforcement, whereas R2 Standard storage/operations can be
+metered beyond their free allowances. Existing
+[BG-29.078 zero-cost policy](../verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md)
+prohibits hosted R2 provisioning under the standing exception.
+The current Worker configuration also declares **three Cron triggers**
+and `AI_PROVIDER_DEFAULT=openrouter`; deploying it unchanged could
+activate background/external operations. Free allowances, $0 historic
+usage and alert budgets are **not** a hard charge cutoff. No
+production resource should be created, no billing/subscription settings
+changed, no Cron deployed and no remote migrations attempted under
+this inspection authorization.
+
+**Next authorized class of work:** local/source-only resource-plan
+reconciliation, disabled-by-default integration/Cron strategy,
+offline dry runs and code review. The
+[ordered completion plan](BG-31_COMPLETION_TODO.md) details the
+separately gated future account, D1, R2, migration, backup and
+release steps. **No provisioning or BG-32 operation is authorized.**
 
 ## 1. Candidate identity and evidence
 
