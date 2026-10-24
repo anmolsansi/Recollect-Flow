@@ -148,3 +148,27 @@ test('BG-31 CI checkpoint is distinct from a frozen deployable artifact', () => 
   assert.equal(manifest.release_candidate.source_sha, null);
   assert.equal(manifest.gates.bg32_production_authorized, false);
 });
+
+test('BG-31 worker absence is limited to one inspected account, not live proof', () => {
+  const observations = manifest.inventory_observations;
+  assert.equal(observations.length, 1);
+  const observed = observations[0];
+  assert.equal(
+    observed.conclusion,
+    'WORKER_NOT_FOUND_IN_INSPECTED_ACCOUNT_ONLY',
+  );
+  assert.equal(
+    observed.inspected_scope,
+    'ONE_VISIBLE_CLOUDFLARE_ACCOUNT_WORKERS_AND_PAGES_LISTING',
+  );
+  assert.equal(observed.expected_worker, manifest.source_targets.worker);
+  assert.equal(observed.expected_worker_visible, false);
+  assert.equal(observed.other_accounts_inspected, false);
+  assert.equal(observed.account_identity_privately_verified, false);
+  assert.equal(observed.deployed_worker_version_verified, false);
+  assert.equal(observed.cloudflare_account_api_access_performed, false);
+  assert.equal(manifest.live_inventory.worker_version, null);
+  assert.equal(manifest.live_inventory.production_account_verified, false);
+  assert.equal(manifest.decision, 'NO_GO');
+  assert.equal(manifest.gates.bg32_production_authorized, false);
+});
