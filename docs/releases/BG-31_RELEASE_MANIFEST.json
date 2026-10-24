@@ -52,9 +52,7 @@
     "TELEGRAM_CHAT_ID",
     "WEB_INBOX_BASE_URL"
   ],
-  "conditional_secret_names": [
-    "OPENROUTER_API_KEY"
-  ],
+  "conditional_secret_names": ["OPENROUTER_API_KEY"],
   "source_migrations": [
     "0001_initial.sql",
     "0002_add_duplicate_of.sql",
@@ -132,21 +130,5 @@
     "worker_dry_run_index_js_sha256": "97c6bbc88bb4c6c440871c9038e7580001c8ba6f5d52617c7ad4a74db2adb500",
     "uploaded_artifact": false,
     "approved_for_deployment": false
-  },
-  "inventory_observations": [
-    {
-      "observed_on": "2026-10-24",
-      "evidence_type": "OWNER_SUPPLIED_SCREENSHOT_AND_CONFIRMATION",
-      "inspected_scope": "ONE_VISIBLE_CLOUDFLARE_ACCOUNT_WORKERS_AND_PAGES_LISTING",
-      "expected_worker": "recollect-flow",
-      "expected_worker_visible": false,
-      "other_worker_visible": "recollect-flow-bg29-d1-cron-probe",
-      "account_identity_privately_verified": false,
-      "other_accounts_inspected": false,
-      "deployed_worker_version_verified": false,
-      "cloudflare_account_api_access_performed": false,
-      "conclusion": "WORKER_NOT_FOUND_IN_INSPECTED_ACCOUNT_ONLY",
-      "limitation": "Not proof that the main Worker is absent from all accounts or has never been deployed."
-    }
-  ]
+  }
 }
