@@ -1,8 +1,8 @@
 # BG-31 completion plan
 
-**Updated:** October 23, 2026.
+**Updated:** October 24, 2026.
 
-**Status:** 78 of 100 actions source/evidence-supported on this draft branch, including a defined, unexecuted operator notification procedure. Production NO-GO.
+**Status:** 78 of 100 canonical actions checked. Production NO-GO; 22 actions remain open.
 
 **Safety:** Source-only work, with zero additional cost.
 
@@ -22,6 +22,31 @@ See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
 - Production metadata inspection needs separate scoped authorization.
 - Keep unknown checks open until their real evidence is verified.
 
+## Confirmed Cloudflare account and zero-cost provisioning gate
+
+**Owner confirmation (October 24, 2026):** Cloudflare account `a9482fbfb91ace26dee097cbd41293f9` is the intended RecollectFlow production account. The owner authorized metadata-only inspection, not provisioning, deployment, paid usage or messages.
+
+**Observed account overview:**
+
+- Workers: only `recollect-flow-bg29-d1-cron-probe` (1/1). Intended production Worker `recollect-flow` is not listed.
+- D1: only `recollect-flow-bg29-staging` (1/1), UUID `b5cbeccc-92fb-4bbc-9597-f0174b84e57d`. Intended `recollect-flow-prod` is not listed.
+- R2: only `propertyos-media` listed. Intended `recollect-flow-attachments-prod` is not listed. No R2 objects were opened.
+
+**Important:** The D1 UUID `5fcba514-d0f7-45e7-a632-d4c59233af71` in `wrangler.toml` is a source-declared target, not an observed database in this account. Never reuse the BG-29 staging resources or PropertyOS media bucket for RecollectFlow production.
+
+**Gated preparation tasks:**
+
+- [x] **P0 (Assistant):** Confirm the intended account and record resource-list mismatches using only read-only metadata.
+- [ ] **P1 (Owner and Assistant):** Prove enforceable zero-additional-charge controls for all required services. Workers Free/D1 Free fail at daily limits; R2 Standard has billable usage beyond its free allowance. Free quota, alerts and a current $0 invoice do not constitute a hard cap. BG-29.078 expressly prohibits hosted R2 provisioning under the current exception. Keep NO-GO if a hard $0 stop is impossible.
+- [ ] **P2 (Assistant):** Review and locally test fail-closed configuration with scheduled Cron and real OpenRouter/Notion/Telegram calls disabled. Current `wrangler.toml` declares three Cron triggers and default provider `openrouter`. Do not deploy unchanged configuration or weaken original-attachment and recovery guarantees.
+- [ ] **P3 (Owner, separately authorized):** Only after P1/P2 and a new operation-specific approval, assess new isolated production Worker/D1/R2 resources. Do not create resources or change billing by following this document.
+- [ ] **P4 (Assistant, after authorized creation):** Record actual created resource identities; update the source D1 UUID only from the verified new database ID. Do not fabricate a live migration ledger or assume an empty ledger without authenticated evidence.
+- [ ] **P5 (Owner and Assistant):** Verify actual migration order, independent original-byte and purge-receipt backups, isolated recovery, prior deployable artifacts, cost controls, BG-29.078, OPE-247 and explicit exact-release approval. BG-32/V1 stays NO-GO.
+
+**Disposition:** BG-31 remains 78/100 with 22 open actions. Actual deployed production version, D1 applied ledger and Web origin are unknown. Source-only work may proceed; provisioning, SQL, R2 operations, Cron activation, external providers, billing changes and deployment remain unauthorized.
+
+**References:** [Wrangler source](../../wrangler.toml), [BG-29 zero-cost exception](../verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md), [Workers limits](https://developers.cloudflare.com/workers/platform/limits/), [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/), and [R2 pricing](https://developers.cloudflare.com/r2/pricing/).
+
 ## 1. Choose operators and emergency contact
 
 - [x] Name intended release operator, repository owner (@anmolsansi), self-designated October 23, 2026.
@@ -36,7 +61,7 @@ See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
 
 ## 2. Inspect live deployment metadata
 
-- [ ] Authorize metadata-only, read-only Cloudflare inventory.
+- [x] Authorize metadata-only, read-only Cloudflare inventory (owner approval, October 24, 2026; strictly $0).
 - [ ] Record the Worker version and verified account identity.
 - [ ] Confirm the D1 UUID and R2 bucket identity.
 - [ ] Confirm the actual HTTPS Web origin.
