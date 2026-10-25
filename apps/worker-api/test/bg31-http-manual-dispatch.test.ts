@@ -98,9 +98,7 @@ describe('BG-31 production HTTP manual-dispatch admission', () => {
           ctx,
         );
         expect(response.status).toBe(503);
-        expect(response.headers.get('Cache-Control')).toBe(
-          'private, no-store',
-        );
+        expect(response.headers.get('Cache-Control')).toBe('private, no-store');
         expect((await response.json()).error.code).toBe(
           'HOSTED_EXTERNAL_DISPATCH_DISABLED',
         );
