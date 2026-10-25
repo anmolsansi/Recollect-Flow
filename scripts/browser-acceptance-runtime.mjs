@@ -130,6 +130,9 @@ export async function createLocalAcceptanceRuntime({
   adminToken,
   localWorkerToken,
   enableScheduled = false,
+  // This is for synthetic local-only provider/queue admission tests.
+  // Never configure these flags on the hosted production Worker.
+  enableManualDispatch = false,
   fixtureWorker = false,
   inspectorPort = null,
 }) {
@@ -194,6 +197,14 @@ export async function createLocalAcceptanceRuntime({
       'TELEGRAM_CHAT_ID:bg07-local-chat',
       '--var',
       `WEB_INBOX_BASE_URL:${webOrigin}`,
+      ...(enableManualDispatch
+        ? [
+            '--var',
+            'HOSTED_EXTERNAL_DISPATCH_ENABLED:true',
+            '--var',
+            'HOSTED_HTTP_DISPATCH_ENABLED:true',
+          ]
+        : []),
     ],
     { cwd: rootDir },
   );
