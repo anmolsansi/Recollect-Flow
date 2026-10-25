@@ -23,10 +23,23 @@ export function requiresHostedHttpDispatch(
   method: string,
   pathname: string,
 ): boolean {
-  return (
-    method.toUpperCase() === 'POST' &&
-    MANUAL_DISPATCH_ROUTES.some((route) => route.test(pathname))
-  );
+  if (method.toUpperCase() !== 'POST') return false;
+
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(pathname);
+  } catch {
+    // A malformed encoded API path must never bypass admission.
+    return pathname.startsWith('/api/v1/');
+  }
+
+  // Hono may accept encoded path segments or optional trailing slashes.
+  // Check the original spelling and its decoded form; do not trust one
+  // interpretation of the requested route as an allow-list bypass.
+  return [pathname, decoded].some((candidate) => {
+    const canonical = candidate.replace(/\/+$/, '');
+    return MANUAL_DISPATCH_ROUTES.some((route) => route.test(canonical));
+  });
 }
 
 export function hostedHttpDispatchEnabled(env: unknown): boolean {
