@@ -99,9 +99,10 @@ describe('BG-31 production HTTP manual-dispatch admission', () => {
         );
         expect(response.status).toBe(503);
         expect(response.headers.get('Cache-Control')).toBe('private, no-store');
-        expect((await response.json()).error.code).toBe(
-          'HOSTED_EXTERNAL_DISPATCH_DISABLED',
-        );
+        const payload = (await response.json()) as {
+          error: { code: string };
+        };
+        expect(payload.error.code).toBe('HOSTED_EXTERNAL_DISPATCH_DISABLED');
       }
       expect(ctx.waitUntil).not.toHaveBeenCalled();
       expect(forbiddenFetch).not.toHaveBeenCalled();
@@ -114,7 +115,7 @@ describe('BG-31 production HTTP manual-dispatch admission', () => {
     const env = {
       HOSTED_HTTP_DISPATCH_ENABLED: 'true',
       HOSTED_EXTERNAL_DISPATCH_ENABLED: 'true',
-    } as Cloudflare.Env;
+    } as unknown as Cloudflare.Env;
     expect(hostedHttpDispatchEnabled(env)).toBe(true);
     const response = await handleFetch(
       new Request('https://production.example.test/api/v1/digests/generate', {
