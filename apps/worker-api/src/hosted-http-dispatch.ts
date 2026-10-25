@@ -29,12 +29,14 @@ export function requiresHostedHttpDispatch(
   );
 }
 
-export function hostedHttpDispatchEnabled(env: {
-  HOSTED_HTTP_DISPATCH_ENABLED?: string;
-  HOSTED_EXTERNAL_DISPATCH_ENABLED?: string;
-}): boolean {
+export function hostedHttpDispatchEnabled(env: unknown): boolean {
+  if (!env || typeof env !== 'object') return false;
+  const flags = env as {
+    HOSTED_HTTP_DISPATCH_ENABLED?: string;
+    HOSTED_EXTERNAL_DISPATCH_ENABLED?: string;
+  };
   return (
-    env.HOSTED_HTTP_DISPATCH_ENABLED === 'true' &&
-    env.HOSTED_EXTERNAL_DISPATCH_ENABLED === 'true'
+    flags.HOSTED_HTTP_DISPATCH_ENABLED === 'true' &&
+    flags.HOSTED_EXTERNAL_DISPATCH_ENABLED === 'true'
   );
 }
