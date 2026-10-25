@@ -22,6 +22,8 @@ try {
     captureToken: 'bg27-capture-' + randomUUID(),
     adminToken,
     localWorkerToken: 'bg27-worker-' + randomUUID(),
+    // Only the ephemeral local test Worker may exercise manual digest actions.
+    enableManualDispatch: true,
   });
   browser = await openBrowser(runtime);
   await login(browser, runtime.webOrigin, adminToken);

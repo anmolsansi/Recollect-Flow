@@ -3,6 +3,10 @@ import { servePublicAsset, type StaticAssets } from './assets/asset-router';
 import { D1AttachmentRepository } from './attachments/attachment.repository';
 import { cleanupExpiredAttachments } from './attachments/attachment.service';
 import { createScheduledHandler } from './scheduled-handler';
+import {
+  hostedHttpDispatchEnabled,
+  requiresHostedHttpDispatch,
+} from './hosted-http-dispatch';
 
 export { scheduledWork } from './scheduled-handler';
 import { processScheduledDigest } from './digests/digest.worker';
@@ -91,6 +95,30 @@ export async function handleFetch(
 ): Promise<Response> {
   const pathname = new URL(request.url).pathname;
   if (pathname === '/api' || pathname.startsWith('/api/')) {
+    // Direct/manual provider actions and job re-arming are distinct from the
+    // guarded scheduled entry. Reject them before auth, storage or providers
+    // run unless BOTH hosted dispatch switches are explicitly enabled.
+    if (
+      requiresHostedHttpDispatch(request.method, pathname) &&
+      !hostedHttpDispatchEnabled(env)
+    ) {
+      return new Response(
+        JSON.stringify({
+          error: {
+            code: 'HOSTED_EXTERNAL_DISPATCH_DISABLED',
+            message: 'Hosted external dispatch is not enabled.',
+          },
+        }),
+        {
+          status: 503,
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Cache-Control': 'private, no-store',
+            'X-Content-Type-Options': 'nosniff',
+          },
+        },
+      );
+    }
     const response = await app.fetch(request, env, context);
     const headers = new Headers(response.headers);
     headers.set('Cache-Control', 'private, no-store');
