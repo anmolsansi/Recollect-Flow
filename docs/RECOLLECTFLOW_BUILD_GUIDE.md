@@ -3539,6 +3539,43 @@ Telegram or URL acquisition routes. Those paths need a separate audit and
 negative proof before any live approval. BG-31 stays NO-GO, and no source
 change authorizes provisioning, deployment or billing.
 
+### BG-31 P2.4 manual provider and HTTP dispatch guard
+
+The production Worker `handleFetch` now requires the literal
+`HOSTED_EXTERNAL_DISPATCH_ENABLED=true` **and**
+`HOSTED_HTTP_DISPATCH_ENABLED=true` before dispatching any identified
+direct provider-capable or provider-job re-arming HTTP request. Missing,
+disabled and malformed flags return a no-store 503 before Hono handlers
+can read D1, queue a job or call a provider. These source switches are
+**not enabled in `wrangler.toml`**. Normal route authentication is still
+required after the guard admits a separately approved request.
+
+The reviewed API route inventory includes manual digest generation and
+regeneration (which can invoke AI), digest delivery/retry (which queues
+Telegram work), processing/sync retry, manual Notion recreation, URL source
+retry/reprocessing and local worker job lease. Source URL edits, captures
+and ordinary edits only queue durable work; the scheduled handler and
+worker lease admission protect subsequent hosted external dispatch. A
+manually approved job lease does not itself call a provider. The entry
+guard is intentionally narrower than every write route so local captures
+and the existing Hono access controls remain intact.
+
+Negative tests in
+`apps/worker-api/test/bg31-http-manual-dispatch.test.ts` prove that
+blocked provider-capable HTTP requests do not enter D1 or network code;
+positive tests verify both explicit flags alone do not bypass
+authentication. The test suite and GitHub CI must pass on the exact
+reviewed revision.
+
+**Boundary:** This is production HTTP-entry admission, not a network
+firewall. Future provider endpoints must be added to the explicit
+route inventory and verified. Independent Worker entry points and
+directly instantiated provider services remain separately scoped.
+No-hosted-Cron deployment configuration, independent recovery evidence,
+free-tier guarantees, and exact owner release permission are still
+mandatory. No external provider requests or deployment are authorized by
+source-only tests.
+
 ### Small implementation steps
 
 1. Name the candidate Git SHA, CI run, Worker bundle and matching Web assets.
