@@ -43,6 +43,8 @@ export type Env = Omit<Cloudflare.Env, ConfigurableAiVars> & {
   // An absent or malformed value must never start production background jobs.
   HOSTED_SCHEDULED_WORK_ENABLED?: string;
   HOSTED_EXTERNAL_DISPATCH_ENABLED?: string;
+  // BG-31: direct/manual provider actions require this *additional* opt-in.
+  HOSTED_HTTP_DISPATCH_ENABLED?: string;
   // BG-28: set explicitly to 'true' only after approving weekly JSON backups.
   HOSTED_BACKUP_AUTOCREATE_ENABLED?: string;
 };
