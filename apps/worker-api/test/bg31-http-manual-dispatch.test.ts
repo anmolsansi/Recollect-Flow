@@ -35,6 +35,18 @@ describe('BG-31 production HTTP manual-dispatch admission', () => {
   );
 
   it.each([
+    '/api/v1/digests/generate/',
+    '/api/v1/digests/%67enerate',
+    '/api/v1/%64igests/generate',
+    '/api/v1/digests/run-123/%72egenerate',
+    '/api/v1/items/abc/notion/recreate/',
+    '/api/v1/digest-deliveries/abc/%72etry',
+    '/api/v1/%ZZ',
+  ])('fails closed on noncanonical POST route %s', (pathname) => {
+    expect(requiresHostedHttpDispatch('POST', pathname)).toBe(true);
+  });
+
+  it.each([
     '/api/v1/health',
     '/api/v1/digests',
     '/api/v1/digests/run-123',
