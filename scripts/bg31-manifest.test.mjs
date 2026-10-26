@@ -161,7 +161,7 @@ test('BG-31 strict-$0 Worker config never schedules Cron or opts into hosted egr
   ]) {
     assert.doesNotMatch(
       config,
-      new RegExp('^\\s*' + flag + '\\s*=\\s*["\\\']?true\\b', 'm'),
+      new RegExp('^\\s*' + flag + '\\s*=\\s*"?true\\b', 'm'),
       flag + ' may not opt in to live work under the strict $0 default',
     );
   }
