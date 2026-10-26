@@ -149,7 +149,7 @@ test('BG-31 CI checkpoint is distinct from a frozen deployable artifact', () => 
   assert.equal(manifest.gates.bg32_production_authorized, false);
 });
 
-test('BG-31 strict-$0 Worker config never schedules Cron or opts into hosted egress', () => {
+test('BG-31 leaves Cron and hosted dispatch disabled by default', () => {
   // No production resource, provider, billing or network probe is performed.
   assert.doesNotMatch(config, /^\s*\[triggers\]\s*$/m);
   assert.doesNotMatch(config, /^\s*crons\s*=/m);
