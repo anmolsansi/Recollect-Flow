@@ -228,7 +228,6 @@ change needs its own exact-head PR CI and review. No email, AI, Notion,
 Telegram, Cloudflare read/write, deployment, Cron activation, or spending was
 performed as part of this follow-up.
 
-
 ## 5. Backup, originals, purge receipts and recovery prerequisite
 
 **This section is a plan, not a completed production backup.** The authoritative instructions are [BG-28 recovery procedure](../RECOVERY_OPERATOR_PROCEDURE.md). They require a separately authorized isolated target and distinguish hosted JSON, independently retained original attachment bytes, and independent purge receipts.
