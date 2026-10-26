@@ -148,3 +148,23 @@ test('BG-31 CI checkpoint is distinct from a frozen deployable artifact', () => 
   assert.equal(manifest.release_candidate.source_sha, null);
   assert.equal(manifest.gates.bg32_production_authorized, false);
 });
+
+test('BG-31 strict-$0 Worker config never schedules Cron or opts into hosted egress', () => {
+  // No production resource, provider, billing or network probe is performed.
+  assert.doesNotMatch(config, /^\s*\[triggers\]\s*$/m);
+  assert.doesNotMatch(config, /^\s*crons\s*=/m);
+  for (const flag of [
+    'HOSTED_SCHEDULED_WORK_ENABLED',
+    'HOSTED_EXTERNAL_DISPATCH_ENABLED',
+    'HOSTED_HTTP_DISPATCH_ENABLED',
+    'HOSTED_BACKUP_AUTOCREATE_ENABLED',
+  ]) {
+    assert.doesNotMatch(
+      config,
+      new RegExp('^\\s*' + flag + '\\s*=\\s*["\\\']?true\\b', 'm'),
+      flag + ' may not opt in to live work under the strict $0 default',
+    );
+  }
+  assert.equal(manifest.decision, 'NO_GO');
+  assert.equal(manifest.gates.bg32_production_authorized, false);
+});
