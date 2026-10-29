@@ -27,15 +27,24 @@ function inspectSourceSql(filename, sql) {
     creates[objectKind[kind]].push(name);
   }
 
-  const alteredColumns = [...stripped.matchAll(
-    /^ALTER\s+TABLE\s+(\w+)\s+ADD\s+COLUMN\s+(\w+)/gm,
-  )].map(([, table, column]) => ({ table, column }));
-  const renamedTables = [...stripped.matchAll(
-    /^ALTER\s+TABLE\s+(\w+)\s+RENAME\s+TO\s+(\w+)/gm,
-  )].map(([, from, to]) => ({ from, to }));
-  const droppedObjects = [...stripped.matchAll(
-    /^DROP\s+(TABLE|VIEW|INDEX|TRIGGER)\s+(?:IF\s+EXISTS\s+)?(\w+)/gm,
-  )].map(([, kind, name]) => ({ kind, name }));
+  const alteredColumns = [];
+  const alterPattern = /^ALTER\s+TABLE\s+(\w+)\s+ADD\s+COLUMN\s+(\w+)/gm;
+  for (const [, table, column] of stripped.matchAll(alterPattern)) {
+    alteredColumns.push({ table, column });
+  }
+
+  const renamedTables = [];
+  const renamePattern = /^ALTER\s+TABLE\s+(\w+)\s+RENAME\s+TO\s+(\w+)/gm;
+  for (const [, from, to] of stripped.matchAll(renamePattern)) {
+    renamedTables.push({ from, to });
+  }
+
+  const droppedObjects = [];
+  const dropPattern =
+    /^DROP\s+(TABLE|VIEW|INDEX|TRIGGER)\s+(?:IF\s+EXISTS\s+)?(\w+)/gm;
+  for (const [, kind, name] of stripped.matchAll(dropPattern)) {
+    droppedObjects.push({ kind, name });
+  }
 
   // Only unindented, top-level writes are classified. Trigger bodies are
   // deliberately excluded: they describe future runtime work, not a backfill.
@@ -57,8 +66,12 @@ function inspectSourceSql(filename, sql) {
     flags.push('OBJECT_DROP_OR_RENAME_REVIEW');
   }
   if (topLevelDataWrites.length) flags.push('DATA_REWRITE_REVIEW');
-  if (creates.triggers.length) flags.push('TRIGGER_RUNTIME_COMPATIBILITY_REVIEW');
-  if (alteredColumns.length) flags.push('OLD_CODE_COLUMN_COMPATIBILITY_REVIEW');
+  if (creates.triggers.length) {
+    flags.push('TRIGGER_RUNTIME_COMPATIBILITY_REVIEW');
+  }
+  if (alteredColumns.length) {
+    flags.push('OLD_CODE_COLUMN_COMPATIBILITY_REVIEW');
+  }
 
   return {
     filename,
@@ -73,7 +86,10 @@ function inspectSourceSql(filename, sql) {
   };
 }
 
-export function migrationSourceImpact(directory = defaultDirectory, suppliedLedger) {
+export function migrationSourceImpact(
+  directory = defaultDirectory,
+  suppliedLedger,
+) {
   const names = sourceMigrations(directory);
   const migrations = names.map((name) =>
     inspectSourceSql(name, readFileSync(join(directory, name), 'utf8')),
@@ -114,7 +130,9 @@ if (calledDirectly) {
       process.argv.length === 3
         ? JSON.parse(readFileSync(process.argv[2], 'utf8'))
         : undefined;
-    console.log(JSON.stringify(migrationSourceImpact(defaultDirectory, ledger), null, 2));
+    console.log(
+      JSON.stringify(migrationSourceImpact(defaultDirectory, ledger), null, 2),
+    );
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;
