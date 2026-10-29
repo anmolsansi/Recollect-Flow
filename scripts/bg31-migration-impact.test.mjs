@@ -49,7 +49,8 @@ test('generation and status triggers do not imply a backfill', () => {
 test('backup migration only creates the scheduled table', () => {
   const backup = migration('0025_');
   assert.ok(backup.creates.tables.includes('scheduled_backup_periods'));
-  assert.ok(backup.creates.indexes.includes('idx_scheduled_backup_periods_state'));
+  const indexes = backup.creates.indexes;
+  assert.ok(indexes.includes('idx_scheduled_backup_periods_state'));
   assert.deepEqual(backup.creates.triggers, []);
   assert.deepEqual(backup.top_level_data_writes, []);
 });
