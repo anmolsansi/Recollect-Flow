@@ -24,7 +24,7 @@ The owner confirmed account `a9482fbfb91ace26dee097cbd41293f9` as the intended p
 
 The staging Worker, staging D1 and PropertyOS R2 are **not production substitutes**. The source-declared D1 UUID `5fcba514-d0f7-45e7-a632-d4c59233af71` is not independently verified as an actual resource in this account. The production Worker version, applied D1 migration ledger and HTTPS Web origin are unverified. Do not fabricate a database, applied migration history or deployment from these source bindings.
 
-**Strict $0 / NO-GO:** The standing [BG-29 exemption](../verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md) prohibits hosted R2 provisioning. R2 Standard has metered usage above its free allocation; free quotas, budget alerts and a $0 past bill are not enforceable cost ceilings. The current Worker source declares three scheduled Cron triggers and default AI provider `openrouter`; deploying unchanged could activate unapproved background/provider work. No creation, migration, hosted R2 read/write, deployment, Cron activation, provider calls, billing changes or email send is authorized by the inspection consent.
+**Strict $0 / NO-GO:** The standing [BG-29 exemption](../verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md) prohibits hosted R2 provisioning. R2 Standard has metered usage above its free allocation; free quotas, budget alerts and a $0 past bill are not enforceable cost ceilings. At the October 24 account review, the source still declared three Cron triggers and default AI provider `openrouter`. The October 26 **source-only proposed change** removes the default Cron declarations and tests that no hosted-egress opt-in is enabled; this still does **not** establish a deployable zero-cost Worker, eliminate every possible provider path, or justify a deployment. No creation, migration, hosted R2 read/write, deployment, Cron activation, provider calls, billing changes or email send is authorized by the inspection consent.
 
 Continue only local/source CI, safe configuration work and offline evidence preparation under the [completion plan](BG-31_COMPLETION_TODO.md). Preserve BG-31's **78/100** canonical checked actions and **22** open steps. Require separately proven cost controls and operation-specific authorization before any future provisioning or BG-32 release activity. **Production remains NO-GO.**
 
@@ -199,13 +199,34 @@ approved backup before performing BG-32.
 
 **Required secret names declared by `wrangler.toml`:** `CAPTURE_TOKEN`, `ADMIN_TOKEN`, `LOCAL_WORKER_TOKEN`, `NOTION_ACCESS_TOKEN`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `WEB_INBOX_BASE_URL`. Conditional external-provider credentials, including `OPENROUTER_API_KEY` if that provider is actually enabled, require a separate source/config inventory. **Secret presence: NOT VERIFIED.** Do not print values or store fingerprints derived from weak tokens.
 
-**Nonsecret source configuration:** `NOTION_DATABASE_ID`, `MAX_ATTACHMENT_BYTES=25000000`, `UPLOAD_TTL_SECONDS=3600`, `AI_PROVIDER_DEFAULT=openrouter`, `AI_PROVIDERS_ENABLED=openrouter,cloudflare`, `AI_PROVIDER_IMPLEMENTATIONS`, `OPENROUTER_FREE_ACCOUNT_TIER=standard`, `CLOUDFLARE_AI_FREE_DAILY_NEURONS=10000`, `DIGEST_AI_ENABLED=false`. Wrangler has bindings `DB`, `ATTACHMENTS`, `AI`, `ASSETS`, `LOGIN_RATE_LIMITER`; published `workers_dev=true`, `preview_urls=false`. Three source-defined Cron expressions exist. These are **intended values**, not an observed live configuration.
+**Nonsecret source configuration:** `NOTION_DATABASE_ID`, `MAX_ATTACHMENT_BYTES=25000000`, `UPLOAD_TTL_SECONDS=3600`, `AI_PROVIDER_DEFAULT=openrouter`, `AI_PROVIDERS_ENABLED=openrouter,cloudflare`, `AI_PROVIDER_IMPLEMENTATIONS`, `OPENROUTER_FREE_ACCOUNT_TIER=standard`, `CLOUDFLARE_AI_FREE_DAILY_NEURONS=10000`, `DIGEST_AI_ENABLED=false`. Wrangler has bindings `DB`, `ATTACHMENTS`, `AI`, `ASSETS`, `LOGIN_RATE_LIMITER`; published `workers_dev=true`, `preview_urls=false`. The source-only BG-31 $0 follow-up **removes all default `[triggers]` Cron expressions** from `wrangler.toml`. This is an offline source choice, not an observation of a deployed Worker or an authorization to activate schedules.
 
 `HOSTED_BACKUP_AUTOCREATE_ENABLED` is an opt-in switch documented in [BG-28](../RECOVERY_OPERATOR_PROCEDURE.md), not enabled in this committed `[vars]` block. Keep it **off**. No new environment var, secret, provider access, account upgrade, Cron activation, route change or billing method is authorized by BG-31.
 
 Policy [`2026-07-31.2`](../SECURITY_PRIVACY_GOVERNANCE.md) governs Unknown/Public/Personal/Sensitive routing. Unknown fails closed, Sensitive never leaves the approved local boundary, and Personal requires the documented explicit consent and provider contract. Optional AI/Notion/Telegram failure cannot erase canonical captures. Confirm the production version actually enforces this rather than trusting a source default. Public-host requests remain subject to SSRF protections and retention controls.
 
 **Hard $0 check:** free-tier names and soft alerts do not guarantee no spend. The standing decision prohibits account/provider operations that expose the owner to additional charges. Do not enable pay-as-you-go, run billable remote probes, perform outbound AI/Notion/Telegram calls or activate hosted Cron based on this manifest. If an enforced $0 ceiling cannot be proved, retain **NO-GO**.
+
+### October 26 source-only strict-$0 hardening (proposed, not deployed)
+
+The default `wrangler.toml` is now deliberately **Cron-free** on the new
+source-only BG-31 follow-up branch. Existing `handleScheduled` and `handleFetch`
+entry points still refuse background or enumerated manual outbound dispatch
+without two explicit independent opt-in flags. New offline BG-31 manifest
+assertions prevent reintroducing default Cron triggers or enabling any of
+`HOSTED_SCHEDULED_WORK_ENABLED`, `HOSTED_EXTERNAL_DISPATCH_ENABLED`,
+`HOSTED_HTTP_DISPATCH_ENABLED`, or `HOSTED_BACKUP_AUTOCREATE_ENABLED`
+in the default Worker configuration. The direct HTTP admission guard was
+merged in [PR #127](https://github.com/anmolsansi/Recollect-Flow/pull/127)
+and `main` passed [CI #40167287305](https://github.com/anmolsansi/Recollect-Flow/actions/runs/40167287305).
+
+This intentionally **does not mark** any of the 22 remaining live/approval
+microtasks complete: no intended production Worker, D1 or R2 resource was
+observed in the confirmed account, and R2 Standard cost exposure and
+independent backup/restore proof remain unresolved. The Cron-free source
+change needs its own exact-head PR CI and review. No email, AI, Notion,
+Telegram, Cloudflare read/write, deployment, Cron activation, or spending was
+performed as part of this follow-up.
 
 ## 5. Backup, originals, purge receipts and recovery prerequisite
 

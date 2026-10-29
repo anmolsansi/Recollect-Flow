@@ -59,5 +59,8 @@ OPENROUTER_FREE_ACCOUNT_TIER = "standard"
 CLOUDFLARE_AI_FREE_DAILY_NEURONS = "10000"
 DIGEST_AI_ENABLED = "false"
 
-[triggers]
-crons = ["17 * * * *", "0 2 * * *", "15 2 * * 1"]
+# BG-31 strict-$0 release safety: no Cron triggers are configured by default.
+# The scheduled handler remains fail-closed for scheduled events unless BOTH
+# HOSTED_SCHEDULED_WORK_ENABLED and HOSTED_EXTERNAL_DISPATCH_ENABLED are true.
+# Do not restore Cron schedules or enable external dispatch without separate,
+# operation-specific approval and enforceable zero-additional-charge controls.
