@@ -34,8 +34,6 @@ See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
 
 **Important:** The D1 UUID `5fcba514-d0f7-45e7-a632-d4c59233af71` in `wrangler.toml` is a source-declared target, not an observed database in this account. Never reuse the BG-29 staging resources or PropertyOS media bucket for RecollectFlow production.
 
-**Gated preparation tasks:**
-
 ### October 29 cost-gate assessment (read-only, not a hard cap)
 
 - Owner-opened Cloudflare Billing showed a Workers Free subscription and an
@@ -60,6 +58,8 @@ and [budget alert behavior](https://developers.cloudflare.com/billing/manage/bud
 The reviewed account's live usage is a point-in-time observation, not an
 ongoing cost or quota guarantee.
 
+
+**Gated preparation tasks:**
 
 - [x] **P0 (Assistant):** Confirm the intended account and record resource-list mismatches using only read-only metadata.
 - [ ] **P1 (Owner and Assistant):** Prove enforceable zero-additional-charge controls for all required services. Workers Free/D1 Free fail at daily limits; R2 Standard has billable usage beyond its free allowance. Free quota, alerts and a current $0 invoice do not constitute a hard cap. BG-29.078 expressly prohibits hosted R2 provisioning under the current exception. Keep NO-GO if a hard $0 stop is impossible.
