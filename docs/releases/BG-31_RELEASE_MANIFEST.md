@@ -110,6 +110,11 @@ The required production schema delta is **UNKNOWN** until read-only live `d1_mig
 
 ## 3. Ordered migration inventory and compatibility gate
 
+The [offline SQL impact and rollback preflight](../verification/BG-31_SQL_SOURCE_IMPACT.md)
+records source-file hashes, DDL/data-copy risk signals and the exact evidence
+still required for a production migration/old-artifact compatibility decision.
+Its analyzer runs locally and cannot verify a live ledger or approve rollback.
+
 The source-controlled migration chain uses `migrations_dir = "migrations"` and applies in filename order. The complete current source order is:
 
 ```text
