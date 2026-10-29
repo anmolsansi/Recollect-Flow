@@ -105,10 +105,8 @@ ongoing cost or quota guarantee.
 
 ## 3. Compare the actual D1 migration ledger
 
-- [x] Source-only impact review and automated offline checks prepared in
-  [BG-31 SQL source preflight](../verification/BG-31_SQL_SOURCE_IMPACT.md).
-  This is additional preparation and **does not close** any of the eight live
-  ledger/compatibility canonical actions below.
+- [x] Prepared the [offline SQL impact preflight](../verification/BG-31_SQL_SOURCE_IMPACT.md).
+- Source-only work does **not** close the eight live verification actions below.
 
 - [ ] Obtain the ordered applied migration names, read-only.
 - [ ] Verify their source account, D1 UUID, and observation time.
