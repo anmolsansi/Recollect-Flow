@@ -132,3 +132,33 @@ privately establish direct incident contact. A separate, scoped authorization
 is then needed for metadata-only live inventory, without hosted R2 object
 reads or writes, provider sends, migrations, deploys or costs. The remaining
 BG-29.078, OPE-247 and BG-32 GO gates stay blocked.
+
+## October 29 review: merged source guard and $0 billing decision
+
+- [PR #128](https://github.com/anmolsansi/Recollect-Flow/pull/128)
+  merged into `main` as `2360407efce5879b224dce92ec785c269571fb68`.
+  Its exact PR-head
+  [CI #40292490848](https://github.com/anmolsansi/Recollect-Flow/actions/runs/40292490848)
+  passed on `049de09c09c235a58aafc93d59927b7553192b0b`.
+  This does not attest a new merged-main CI run.
+- A read-only owner-account billing inspection showed Workers Free and an
+  active metered R2 subscription. Usage-based charges showed no current
+  amount due at the observed point in the cycle. A configured budget alert
+  was visible, but Cloudflare documents that budget alerts **do not pause
+  or cap usage**.
+- R2 Standard free usage is an allowance, not a guaranteed spending ceiling.
+  Beyond the allowance, storage and operation charges apply.
+- The billing review used only displayed billing metadata. No payment details,
+  alert recipient addresses or invoice identifiers are published here.
+- **Gate result: FAIL CLOSED / NO-GO.** An enforceable account-wide hard
+  stop for additional R2 costs was **not verified**. P1 remains open,
+  BG-31 remains 78/100, and BG-32 remains unauthorized.
+- The production Worker, D1, R2 target and live migration ledger still lack
+  required proof. Do not interpret a proposed source config as deployed.
+
+References: [R2 pricing](https://developers.cloudflare.com/r2/pricing/)
+and [Cloudflare budget alert behavior](https://developers.cloudflare.com/billing/manage/budget-alerts/).
+
+No infrastructure creation, SQL, R2 object operation, backup, provider call,
+deployment, email, billing change, or production data access took place in
+this documentation-only work.
