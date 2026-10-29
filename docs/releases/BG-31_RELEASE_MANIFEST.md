@@ -24,7 +24,7 @@ The owner confirmed account `a9482fbfb91ace26dee097cbd41293f9` as the intended p
 
 The staging Worker, staging D1 and PropertyOS R2 are **not production substitutes**. The source-declared D1 UUID `5fcba514-d0f7-45e7-a632-d4c59233af71` is not independently verified as an actual resource in this account. The production Worker version, applied D1 migration ledger and HTTPS Web origin are unverified. Do not fabricate a database, applied migration history or deployment from these source bindings.
 
-**Strict $0 / NO-GO:** The standing [BG-29 exemption](../verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md) prohibits hosted R2 provisioning. R2 Standard has metered usage above its free allocation; free quotas, budget alerts and a $0 past bill are not enforceable cost ceilings. At the October 24 account review, the source still declared three Cron triggers and default AI provider `openrouter`. The October 26 **source-only proposed change** removes the default Cron declarations and tests that no hosted-egress opt-in is enabled; this still does **not** establish a deployable zero-cost Worker, eliminate every possible provider path, or justify a deployment. No creation, migration, hosted R2 read/write, deployment, Cron activation, provider calls, billing changes or email send is authorized by the inspection consent.
+**Strict $0 / NO-GO:** The standing [BG-29 exemption](../verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md) prohibits hosted R2 provisioning. R2 Standard has metered usage above its free allocation; free quotas, budget alerts and a $0 past bill are not enforceable cost ceilings. At the October 24 account review, the source still declared three Cron triggers and default AI provider `openrouter`. [Merged PR #128](https://github.com/anmolsansi/Recollect-Flow/pull/128) removed the default Cron declarations and tests that no hosted-egress opt-in is enabled; this still does **not** establish a deployable zero-cost Worker, eliminate every possible provider path, or justify a deployment. No creation, migration, hosted R2 read/write, deployment, Cron activation, provider calls, billing changes or email send is authorized by the inspection consent.
 
 Continue only local/source CI, safe configuration work and offline evidence preparation under the [completion plan](BG-31_COMPLETION_TODO.md). Preserve BG-31's **78/100** canonical checked actions and **22** open steps. Require separately proven cost controls and operation-specific authorization before any future provisioning or BG-32 release activity. **Production remains NO-GO.**
 
@@ -207,10 +207,10 @@ Policy [`2026-07-31.2`](../SECURITY_PRIVACY_GOVERNANCE.md) governs Unknown/Publi
 
 **Hard $0 check:** free-tier names and soft alerts do not guarantee no spend. The standing decision prohibits account/provider operations that expose the owner to additional charges. Do not enable pay-as-you-go, run billable remote probes, perform outbound AI/Notion/Telegram calls or activate hosted Cron based on this manifest. If an enforced $0 ceiling cannot be proved, retain **NO-GO**.
 
-### October 26 source-only strict-$0 hardening (proposed, not deployed)
+### October 29 source-only strict-$0 hardening (merged, not deployed)
 
 The default `wrangler.toml` is now deliberately **Cron-free** on the new
-source-only BG-31 follow-up branch. Existing `handleScheduled` and `handleFetch`
+merged `main`. Existing `handleScheduled` and `handleFetch`
 entry points still refuse background or enumerated manual outbound dispatch
 without two explicit independent opt-in flags. New offline BG-31 manifest
 assertions prevent reintroducing default Cron triggers or enabling any of
@@ -223,10 +223,27 @@ and `main` passed [CI #40167287305](https://github.com/anmolsansi/Recollect-Flow
 This intentionally **does not mark** any of the 22 remaining live/approval
 microtasks complete: no intended production Worker, D1 or R2 resource was
 observed in the confirmed account, and R2 Standard cost exposure and
-independent backup/restore proof remain unresolved. The Cron-free source
-change needs its own exact-head PR CI and review. No email, AI, Notion,
-Telegram, Cloudflare read/write, deployment, Cron activation, or spending was
-performed as part of this follow-up.
+independent backup/restore proof remain unresolved. The Cron-free change passed [PR #128 exact-head CI #40292490848](https://github.com/anmolsansi/Recollect-Flow/actions/runs/40292490848) on `049de09c09c235a58aafc93d59927b7553192b0b` and merged as `2360407efce5879b224dce92ec785c269571fb68`. No post-merge CI run is established by that PR-head result. No email, AI, Notion, Telegram, Cloudflare deployment, Cron activation, or spending was performed by the source change.
+
+### October 29 read-only billing evidence and strict-$0 release decision
+
+A read-only owner-account billing inspection showed the Workers Free plan, an
+active metered R2 subscription, no current billable usage charges and a
+configured budget alert. These observations establish the account's state
+**at inspection time only**. Budget alerts do not disable operations or cap
+charges. R2 Standard bills storage and operations beyond monthly free usage.
+Private payment, recipient and invoice details are not included here.
+
+**Decision: strict additional-$0 enforcement is NOT VERIFIED.** No
+account-level R2 hard-stop control was demonstrated. An alert and zero-cost
+invoices cannot substitute for that requirement. BG-31 P1 stays unchecked.
+The 22 outstanding canonical actions remain open, and the machine manifest
+remains `NO_GO`. Do not provision the intended R2 bucket, deploy, migrate,
+enable Cron or activate provider calls.
+
+Evidence and policy: [BG-31 completion plan](BG-31_COMPLETION_TODO.md),
+[Cloudflare R2 pricing](https://developers.cloudflare.com/r2/pricing/)
+and [Cloudflare budget alerts](https://developers.cloudflare.com/billing/manage/budget-alerts/).
 
 ## 5. Backup, originals, purge receipts and recovery prerequisite
 
