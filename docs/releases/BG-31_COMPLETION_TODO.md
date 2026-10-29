@@ -58,7 +58,6 @@ and [budget alert behavior](https://developers.cloudflare.com/billing/manage/bud
 The reviewed account's live usage is a point-in-time observation, not an
 ongoing cost or quota guarantee.
 
-
 **Gated preparation tasks:**
 
 - [x] **P0 (Assistant):** Confirm the intended account and record resource-list mismatches using only read-only metadata.
