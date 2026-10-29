@@ -1,6 +1,6 @@
 # BG-31 completion plan
 
-**Updated:** October 24, 2026.
+**Updated:** October 29, 2026.
 
 **Status:** 78 of 100 canonical actions checked. Production NO-GO; 22 actions remain open. Source-only Cron/HTTP-dispatch hardening is additional preparation, not closure of a live acceptance gate.
 
@@ -36,9 +36,34 @@ See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
 
 **Gated preparation tasks:**
 
+### October 29 cost-gate assessment (read-only, not a hard cap)
+
+- Owner-opened Cloudflare Billing showed a Workers Free subscription and an
+  active, usage-metered R2 subscription in the intended account.
+- The current cycle showed no billable usage charges at inspection time.
+  Previous visible invoices were also zero, but historical charges cannot
+  certify the price of future requests or storage.
+- An account-wide budget alert was configured. Cloudflare explicitly states
+  that alerts are informational and **do not pause or cap usage**.
+- R2 Standard has monthly included storage and operations, then metered rates
+  for any usage above those allowances. A paid R2 subscription with a payment
+  method on file cannot be treated as an enforced additional-$0 ceiling.
+- Private billing details, email recipients, payment information and invoice
+  identifiers are deliberately excluded from this public repository.
+- **P1 decision: BLOCKED / NOT VERIFIED.** This review did not identify an
+  enforceable hard-stop mechanism for the required R2 workload. Leave P1
+  unchecked. BG-31 and BG-32 remain **NO-GO**, with no R2 provisioning,
+  scheduled operations, remote migrations or deployment authorized.
+
+Sources: [Cloudflare R2 pricing](https://developers.cloudflare.com/r2/pricing/)
+and [budget alert behavior](https://developers.cloudflare.com/billing/manage/budget-alerts/).
+The reviewed account's live usage is a point-in-time observation, not an
+ongoing cost or quota guarantee.
+
+
 - [x] **P0 (Assistant):** Confirm the intended account and record resource-list mismatches using only read-only metadata.
 - [ ] **P1 (Owner and Assistant):** Prove enforceable zero-additional-charge controls for all required services. Workers Free/D1 Free fail at daily limits; R2 Standard has billable usage beyond its free allowance. Free quota, alerts and a current $0 invoice do not constitute a hard cap. BG-29.078 expressly prohibits hosted R2 provisioning under the current exception. Keep NO-GO if a hard $0 stop is impossible.
-- [ ] **P2 (Assistant):** Review and locally test fail-closed configuration with scheduled Cron and real OpenRouter/Notion/Telegram calls disabled. At the start of this review, `main` still declared three Cron triggers and default provider `openrouter`. The source-only P2.5a change removes the Cron declarations for a future default, but provider and paid-usage controls remain unverified. Do not deploy before independent strict-$0 proof or weaken original-attachment and recovery guarantees.
+- [ ] **P2 (Assistant):** Review and locally test fail-closed configuration with scheduled Cron and real OpenRouter/Notion/Telegram calls disabled. Merged PR #128 removes default Cron declarations; the source still names `openrouter` as its default AI provider. The real provider, network-egress, backup and paid-usage controls remain unverified. Do not deploy before independent strict-$0 proof or weaken original-attachment and recovery guarantees.
   - [x] **P2.1 — Source implementation:** The production `handleScheduled` entry requires **both** `HOSTED_SCHEDULED_WORK_ENABLED` and `HOSTED_EXTERNAL_DISPATCH_ENABLED` to equal exactly `true`. Missing, malformed or explicitly false flags return before any background job starts. All three Cron routes are covered. No flag is set to true in `wrangler.toml`; staging's independent scheduler is unchanged.
   - [x] **P2.2 — Scheduled path:** The same pre-dispatch gate protects scheduled cleanup, external URL acquisition, AI enrichment, Notion sync and digest/Telegram before any queued job starts. Missing D1/R2 bindings fail before calling dependencies when both flags are enabled.
   - [x] **P2.3 — CI proof:** The merged PR #126 scheduler guard passed exact-head CI #40109137736 (attempt 2). The initial run failed an unrelated browser follow-up evaluation; the full retry passed without skipped checks.
@@ -48,7 +73,7 @@ See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
     - **Not a global network firewall:** HTTP route inventory must be extended if new direct dispatch endpoints are added. This does not prohibit an independently deployed Worker, a code path bypassing the entry, or direct invocations of provider classes by tests/local worker processes. Zero-cost hosting and R2/backup gates are separate and still unresolved.
     - Never turn these opt-in flags on under the prior read-only Cloudflare authorization.
   - [ ] **P2.5 — Final deployment posture:** Ensure future deployment config has **no Cron triggers, real provider credentials or paid/outbound routes** before independent account-level strict-$0 checks. Do not turn either flag on under BG-31 inspection authorization.
-    - [x] **P2.5a — $0 source-only Cron disarm (proposed PR):** Remove the three default `wrangler.toml` Cron expressions and assert in the offline BG-31 manifest test that no Cron or hosted-egress opt-in flag is enabled. The production scheduled entry still fails closed. **Provisional until the PR's exact-head CI passes and the change is merged.**
+    - [x] **P2.5a — $0 source-only Cron disarm (merged):** [PR #128](https://github.com/anmolsansi/Recollect-Flow/pull/128) removed the three default `wrangler.toml` Cron expressions and added offline assertions that no Cron or hosted-egress opt-in is enabled. Its exact-head [CI #40292490848](https://github.com/anmolsansi/Recollect-Flow/actions/runs/40292490848) passed on `049de09c09c235a58aafc93d59927b7553192b0b`, and it merged into `main` as `2360407efce5879b224dce92ec785c269571fb68` on October 29. This verifies source behavior, not deployed configuration, billing or post-merge CI.
     - [ ] **P2.5b — Actual release/config proof:** Reinspect the exact future candidate and confirmed hosted account for scheduled triggers, secret material, provider/HTTP routes and enforceable additional-$0 controls. Source-only guards cannot establish paid-provider contracts, network egress policy, quota hard stops or real backup readiness. No production Worker exists in the observed target account.
 - [ ] **P3 (Owner, separately authorized):** Only after P1/P2 and a new operation-specific approval, assess new isolated production Worker/D1/R2 resources. Do not create resources or change billing by following this document.
 - [ ] **P4 (Assistant, after authorized creation):** Record actual created resource identities; update the source D1 UUID only from the verified new database ID. Do not fabricate a live migration ledger or assume an empty ledger without authenticated evidence.
