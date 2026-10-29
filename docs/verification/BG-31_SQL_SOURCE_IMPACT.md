@@ -17,15 +17,21 @@ The repository contains **22** versioned SQL migration files with source head
 in this repository; the exact filename order, not arithmetic suffixes, controls
 the preflight comparison.
 
-| Source | SQL-supported impact | Migration / compatibility concern |
-| --- | --- | --- |
-| `0016` | Creates `item_search_fts` and fills it from existing items, then installs synchronization triggers | Existing-data index copy and trigger changes must be tested on representative isolated data |
-| `0020` | Creates AI capacity windows, reservation and breaker tables, with indexes | New capacity state does not automatically establish the prior provider's quota state |
-| `0021` | Creates backup, purge, anti-resurrection receipt, restore and integrity tables/indexes | Independent newest purge receipts and original bytes must survive a restore and old-code fallback |
-| `0022` | Adds `items.source_revision`, URL acquisition evidence, indexes and triggers; rebuilds `item_search_fts` using a copied projection and table replacement | Table drop/rename and FTS rebuild are **not** safely reversed by rolling back Worker code |
-| `0023` | Adds `processing_generation` columns and indexes, plus generation triggers | Historical job/extraction generations remain intentionally `NULL`, not inferred or backfilled |
-| `0024` | Creates current-processing views and four status triggers | The status update occurs on future writes; no global historical data repair is performed here |
-| `0025` | Creates `scheduled_backup_periods` and its state index | Creating a table does **not** enable scheduled backups or hosted Cron work |
+- **0016:** Creates and fills `item_search_fts`, then installs triggers.
+  Verify the index copy and trigger behavior using isolated representative data.
+- **0020:** Creates AI capacity, reservation and breaker tables and indexes.
+  New tables do not establish historical provider quota state.
+- **0021:** Creates backup, purge, receipt, restore and integrity structures.
+  Independent newest purge receipts and original bytes must survive recovery.
+- **0022:** Adds `items.source_revision`, acquisition evidence and triggers.
+  Rebuilds `item_search_fts` with a copied projection and table replacement.
+  Worker code rollback alone cannot reverse the drop and rename.
+- **0023:** Adds processing-generation columns, indexes and triggers.
+  Historical job and extraction generations remain intentionally `NULL`.
+- **0024:** Creates current-processing views and four status triggers.
+  Future writes update status, but this is not a historical repair.
+- **0025:** Creates `scheduled_backup_periods` and its state index.
+  Schema creation does not activate scheduled backups or hosted Cron work.
 
 **Review scope:** These are highlighted risks, not the full migration delta and
 not a statement that any migration is pending in production. Review **every**
