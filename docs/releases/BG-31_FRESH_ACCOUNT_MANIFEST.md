@@ -126,7 +126,9 @@ repair or isolated restore when schema compatibility is unproven.
 
 See the [fresh-install applicability proposal](BG-31_FRESH_INSTALL_APPLICABILITY.md)
 and the [passing isolated local restore rehearsal](../verification/BG-31_LOCAL_RESTORE_2026-10-30.md).
-The proposal requires an explicit owner decision before changing acceptance criteria.
+The owner explicitly accepted `BG31-APPLICABILITY-2026-10-30.1` on October 30.
+Evidence and hosted authorization remain outstanding; see the
+[cost-gate finding](BG-31_COST_GATE_2026-10-30.md).
 
 BG-31 remains **78/100** and production **NO-GO**. The local pass does not close
 the 22 canonical live actions, BG-29.078, OPE-247 or V1 approval. Fresh-install

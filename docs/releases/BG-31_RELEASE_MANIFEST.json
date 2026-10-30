@@ -130,5 +130,14 @@
     "worker_dry_run_index_js_sha256": "97c6bbc88bb4c6c440871c9038e7580001c8ba6f5d52617c7ad4a74db2adb500",
     "uploaded_artifact": false,
     "approved_for_deployment": false
+  },
+  "acceptance_contract": {
+    "revision": "BG31-APPLICABILITY-2026-10-30.1",
+    "status": "OWNER_ACCEPTED",
+    "decision_date": "2026-10-30",
+    "decision_reference": "Owner chat continuation: I accept move to next step and how to complete that next step",
+    "document": "docs/releases/BG-31_FRESH_INSTALL_APPLICABILITY.md",
+    "release_authorized": false,
+    "cost_policy_changed": false
   }
 }
