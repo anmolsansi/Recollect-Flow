@@ -1,6 +1,6 @@
 # BG-31 completion plan
 
-**Updated:** October 29, 2026.
+**Updated:** October 30, 2026.
 
 **Status:** 78 of 100 canonical actions checked. Production NO-GO; 22 actions remain open. Source-only Cron/HTTP-dispatch hardening is additional preparation, not closure of a live acceptance gate.
 
@@ -11,6 +11,35 @@ See [GitHub issue #119](https://github.com/anmolsansi/Recollect-Flow/issues/119)
 See [merged source-only PR #120](https://github.com/anmolsansi/Recollect-Flow/pull/120).
 
 See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
+
+## October 30 account reconciliation
+
+The historical production API is still reachable: an unauthenticated
+`GET https://recollect-flow.recollectflow.workers.dev/api/v1/health`
+returned HTTP 200 with `data.status = "ok"` at 07:18:29 UTC. A separate
+homepage GET returned HTTP 404 with the JSON `NOT_FOUND` error. This proves
+public API reachability, not a deployed Web Inbox, account control, version,
+binding, migration or recovery state.
+
+The accessible account `a9482fbfb91ace26dee097cbd41293f9` has the Workers
+subdomain `openclawneutron.workers.dev`. Its complete, unfiltered Workers &
+Pages list showed one application, `recollect-flow-bg29-d1-cron-probe`, with
+no active routes. Its account switcher exposed only that account. The live
+historical API uses the different suffix `recollectflow.workers.dev`.
+The owner could not recall another Cloudflare login during this review.
+
+**Next action:** Recover access to the account that controls
+`recollectflow.workers.dev`, then authenticate its production metadata.
+Do not infer that the production resources do not exist, create replacements,
+change the source D1 UUID or reuse staging resources from the account above.
+The October 24 account nomination below is historical and does not verify
+ownership of the live historical production API. No canonical live check is
+closed by these public observations.
+
+The [October 30 evidence checkpoint](../verification/BG-31_RELEASE_MANIFEST_EVIDENCE.md#october-30-account-reconciliation-and-local-preparation)
+records local packaging, the failing main CI and focused browser-test repair.
+The strict $0 development exception remains in force; production release,
+R2 object operations and provider sends remain blocked.
 
 ## Rules
 

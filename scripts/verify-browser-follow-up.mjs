@@ -18,6 +18,11 @@ const marker = randomUUID().replaceAll('-', '');
 let runtime, browser;
 
 async function setValue(name, value) {
+  await waitFor(
+    browser,
+    `Boolean(document.querySelector('[name=${JSON.stringify(name)}]:enabled'))`,
+    'editable ' + name,
+  );
   return evaluate(
     browser,
     `(() => {
@@ -38,8 +43,8 @@ async function begin() {
   await navigate(browser, runtime.webOrigin + '/capture');
   await waitFor(
     browser,
-    'Boolean(document.querySelector("form.capture-form"))',
-    'BG19 capture form',
+    'Boolean(document.querySelector("form.capture-form input[name=mode][value=note]:enabled"))',
+    'BG19 capture form after draft restoration',
   );
 }
 async function note(value, project = '', reviewLocal = '', skipBegin = false) {
