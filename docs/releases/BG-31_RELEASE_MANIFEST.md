@@ -6,6 +6,15 @@
 **Tracking:** [GitHub #119](https://github.com/anmolsansi/Recollect-Flow/issues/119) · [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345/bg-31-prepare-the-v1-release-manifest-without-production-changes).  
 **Change class:** $0 local/source/CI preparation. No production deployment, hosted resource operation, remote D1/R2 query/write, provider call, external message or billing change was made.
 
+**Current owner direction, October 30:** Run locally now and prepare a fresh
+Cloudflare installation for later because the original account cannot be
+recovered. See the [fresh-account manifest](BG-31_FRESH_ACCOUNT_MANIFEST.md)
+and [local acceptance](../verification/BG-31_LOCAL_ACCEPTANCE_2026-10-30.md).
+Account recovery is no longer the required next step. This original packet
+and its JSON preserve the historical source targets and NO-GO boundary; they
+must not be executed against the new account without verified replacement
+identities, reviewed configuration, cost controls and exact-build authorization.
+
 The [ordered owner action plan](BG-31_COMPLETION_TODO.md) maps the **22
 remaining canonical actions** to the existing evidence packages and a
 gated **missing-resource / strict $0 preparation** sequence. The owner

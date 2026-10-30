@@ -4,13 +4,28 @@
 
 **Status:** 78 of 100 canonical actions checked. Production NO-GO; 22 actions remain open. Source-only Cron/HTTP-dispatch hardening is additional preparation, not closure of a live acceptance gate.
 
-**Safety:** Source-only work, with zero additional cost.
+**Safety:** Local execution and source preparation only, with zero additional cost.
 
 See [GitHub issue #119](https://github.com/anmolsansi/Recollect-Flow/issues/119).
 
 See [merged source-only PR #120](https://github.com/anmolsansi/Recollect-Flow/pull/120).
 
 See [Linear OPE-345](https://linear.app/openclaw-neutron/issue/OPE-345).
+
+## Current owner direction: local now, fresh Cloudflare account later
+
+The owner cannot recover the old Cloudflare account and chose to run locally
+now, deferring Cloudflare deployment. This supersedes account recovery as the
+required next action and the earlier blanket prohibition on planning a fresh
+installation. It does not authorize hosted provisioning, SQL, deployment,
+R2 operations, messages or spending now.
+
+The [local acceptance record](../verification/BG-31_LOCAL_ACCEPTANCE_2026-10-30.md)
+verifies note/URL/file capture, search, project and review-date edits, browser
+original download, protected JSON/CSV exports and the local bundle check.
+Use the [fresh-account manifest](BG-31_FRESH_ACCOUNT_MANIFEST.md) for the
+future targets, credential boundary, migration/recovery sequence and cost gates.
+All 22 canonical live actions remain open; no original data was imported.
 
 ## October 30 account reconciliation
 
@@ -28,10 +43,11 @@ no active routes. Its account switcher exposed only that account. The live
 historical API uses the different suffix `recollectflow.workers.dev`.
 The owner could not recall another Cloudflare login during this review.
 
-**Next action:** Recover access to the account that controls
-`recollectflow.workers.dev`, then authenticate its production metadata.
-Do not infer that the production resources do not exist, create replacements,
-change the source D1 UUID or reuse staging resources from the account above.
+**Historical next action, superseded by the owner direction above:** Recover
+access to the account that controls `recollectflow.workers.dev`. Do not infer
+that the old production resources do not exist or reuse staging resources.
+Fresh replacement targets are planned in the new manifest; creation and
+source-binding changes remain deferred until their gates are satisfied.
 The October 24 account nomination below is historical and does not verify
 ownership of the live historical production API. No canonical live check is
 closed by these public observations.
