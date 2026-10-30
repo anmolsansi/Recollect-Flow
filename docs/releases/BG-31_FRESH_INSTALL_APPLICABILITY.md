@@ -1,7 +1,7 @@
-# BG-31 fresh-install applicability addendum — proposal
+# BG-31 fresh-install applicability addendum — accepted criteria
 
 **Revision:** `BG31-APPLICABILITY-2026-10-30.1`.
-**Status:** Proposed for owner review, not an approved waiver or release authorization.
+**Status:** Owner accepted `BG31-APPLICABILITY-2026-10-30.1` on October 30, 2026, in the continuation of this chat: “I accept move to next step and how to complete that next step”. This accepts the immediately preceding fresh-install criteria request; it does not authorize hosted execution or change the strict-$0 policy.
 **Current gate:** 78/100 canonical actions; production NO-GO; BG-32 blocked.
 
 The owner cannot recover the old Cloudflare account and chose local execution
@@ -11,6 +11,8 @@ PR #132 is merged with passing PR CI. The
 [isolated local restore](../verification/BG-31_LOCAL_RESTORE_2026-10-30.md)
 now proves the local bundle can recover its synthetic records and original.
 Neither fact closes a live action.
+
+The accepted criteria govern the fresh-install path. Evidence requirements remain unsatisfied until observed; all 22 action boxes remain open. The dispositions below retain their original proposal wording for traceability, with acceptance established by this dated record.
 
 ## Disposition of all 22 unchecked actions
 
@@ -41,8 +43,7 @@ and human/JSON manifests before a changed criterion is used to close an action.
 
 ## Required closure packet
 
-1. Owner accepts or revises this applicability proposal explicitly. Record the
-   decision reference; do not infer acceptance merely from merging these docs.
+1. **Completed:** Owner accepted this revision explicitly in the October 30 chat continuation. This is distinct from the earlier document merge.
 2. Resolve strict additional-$0 storage/operations controls. Included allowances
    and budget alerts are not a verified hard cap. If no acceptable arrangement
    exists, hosted execution remains blocked; a different storage architecture
@@ -63,7 +64,7 @@ and human/JSON manifests before a changed criterion is used to close an action.
 ## What can proceed now
 
 Local acceptance, export validation and the isolated synthetic restore are
-complete. Retain their ignored state/evidence. The next owner decision is the
-applicability proposal above; the next hosted prerequisite is the cost gate.
+complete. Retain their ignored state/evidence. The applicability decision is accepted; the next hosted prerequisite is the
+[cost gate](BG-31_COST_GATE_2026-10-30.md).
 This document authorizes no provisioning, billing, remote SQL, deployment,
 provider calls, messages, deletion or traffic change.

@@ -30,8 +30,10 @@ All 22 canonical live actions remain open; no original data was imported.
 The [isolated local restore rehearsal](../verification/BG-31_LOCAL_RESTORE_2026-10-30.md)
 passed for three synthetic records and their original PDF. Review the
 [fresh-install applicability proposal](BG-31_FRESH_INSTALL_APPLICABILITY.md)
-for an explicit disposition of all 22 open actions. The proposal is not yet
-accepted and does not change the canonical completion count.
+for the accepted disposition of all 22 open actions. The owner explicitly
+accepted revision `BG31-APPLICABILITY-2026-10-30.1` on October 30; this does
+not change the canonical completion count. See the
+[cost-gate finding](BG-31_COST_GATE_2026-10-30.md) for the current next step.
 
 ## October 30 account reconciliation
 

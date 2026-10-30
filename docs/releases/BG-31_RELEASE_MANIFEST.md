@@ -15,6 +15,12 @@ and its JSON preserve the historical source targets and NO-GO boundary; they
 must not be executed against the new account without verified replacement
 identities, reviewed configuration, cost controls and exact-build authorization.
 
+**Accepted criteria, October 30:** The owner explicitly accepted
+[BG31-APPLICABILITY-2026-10-30.1](BG-31_FRESH_INSTALL_APPLICABILITY.md).
+This changes the fresh-install evidence contract, not the NO-GO decision or
+release authorization. All 22 actions remain open. See the
+[current cost decision](BG-31_COST_GATE_2026-10-30.md).
+
 The [ordered owner action plan](BG-31_COMPLETION_TODO.md) maps the **22
 remaining canonical actions** to the existing evidence packages and a
 gated **missing-resource / strict $0 preparation** sequence. The owner

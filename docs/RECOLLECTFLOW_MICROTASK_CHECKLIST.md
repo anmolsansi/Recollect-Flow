@@ -4291,6 +4291,11 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 ## BG-31 — 100 executable microtasks
 
+**October 30 accepted fresh-install criteria:** The owner explicitly accepted
+[BG31-APPLICABILITY-2026-10-30.1](releases/BG-31_FRESH_INSTALL_APPLICABILITY.md).
+Apply its dispositions when assessing the remaining actions. Acceptance is not
+proof of execution: the 22 unchecked actions remain open, production NO-GO.
+
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#37-bg-31--prepare-a-concrete-release-manifest).
 
 These unchecked steps inherit this task's **what, why, when, where and proof** above.
