@@ -162,3 +162,86 @@ and [Cloudflare budget alert behavior](https://developers.cloudflare.com/billing
 No infrastructure creation, SQL, R2 object operation, backup, provider call,
 deployment, email, billing change, or production data access took place in
 this documentation-only work.
+
+## October 30 account reconciliation and local preparation
+
+**Source inspected:** merged main
+`9149cc3a0c1fe9b4c39f9674536633d9f04c376c`. The supplied September
+documentation links at `2e32b6c` are historical and were not used as a
+current deployment attestation.
+
+### Public reachability and account mismatch
+
+At **2026-10-30 07:18:29 UTC**, one unauthenticated GET to
+`https://recollect-flow.recollectflow.workers.dev/api/v1/health` returned
+HTTP 200, JSON `data.status = "ok"`. One subsequent homepage GET returned
+HTTP 404, JSON `NOT_FOUND`. No authenticated content or R2 objects were read.
+This confirms an existing public API, not the Web Inbox or its deployed SHA.
+
+The signed-in Cloudflare dashboard showed account
+`a9482fbfb91ace26dee097cbd41293f9`, Workers subdomain
+`openclawneutron.workers.dev`, and one application in the complete unfiltered
+Workers & Pages list: `recollect-flow-bg29-d1-cron-probe`, with no active
+routes. The account switcher exposed only this account. Its subdomain differs
+from the reachable historical API's `recollectflow.workers.dev` suffix.
+The production owner account, email, Worker version, D1 ledger, bindings and
+secret presence remain unverified. The owner could not recall another login.
+Wrangler's saved OAuth session also failed to refresh; no credentials were
+printed or copied into this evidence.
+
+Recover the owning account before resource replacement, configuration edits,
+remote SQL, backup operations or deployment. An absent application in this
+accessible account is not proof that the production deployment does not exist.
+
+### Local source and artifact checkpoint
+
+On a clean checkout of `9149cc3`, `npm run release:package` and
+`wrangler deploy --dry-run` succeeded locally. Node was `v25.8.1` and
+Wrangler `4.116.0`; this local toolchain is distinct from CI's Node 22.
+The paired artifact fingerprints were:
+
+- Web release ID:
+  `bddcb14a2a20a24b35e1547cb60ac204cece327db1e3199c08272c151f1d992b`.
+- Web manifest SHA-256:
+  `196acd8074dc432e62e271f0c7ad4af0bcd22b25635c472c1d79069beb0b9eaf`.
+- Worker `index.js` SHA-256:
+  `ad838fb8427849726e905e869a9f4f41edd28e662886612a23782d3f3d147c8e`.
+
+The local ignored directory
+`.wrangler/bg31-release-candidates/9149cc3/` preserves the Worker output,
+Web assets, nonsecret source config, package/lockfile, focused test logs and
+`candidate.json` with file hashes. Fifteen files were checked against their
+recorded SHA-256 values, including the Web manifest's release-ID payload,
+individual public assets and source/config/lockfile references. This is a
+local checkpoint, not independent recovery storage, an approved immutable
+release or a deployed artifact. The runtime source and Web package above
+belong to `9149cc3`, not later test/documentation commits.
+
+All **23 focused BG-31 tests passed** locally. Offline readiness still
+reported **15 missing evidence groups** and `NO_GO`; these groups are not
+the same count as the **22 unchecked canonical actions**. The unmodified
+follow-up acceptance scenario passed locally in isolated Chrome/Worker/D1.
+
+### CI blocker and focused repair
+
+[Main CI #41013566648](https://github.com/anmolsansi/Recollect-Flow/actions/runs/41013566648)
+failed on `9149cc3` in `browser:follow-up:test`, both on its original attempt
+and one full-job retry. Both failed before the first capture request, with
+`Browser evaluation failed: Uncaught`. Earlier quality, packaging, dry-run,
+local migrations, hosting, upload and capture steps passed in those runs;
+later browser steps were not reached. Do not describe this main SHA as
+fully CI-verified.
+
+The focused test repair waits for the note-mode control to be enabled after
+asynchronous draft restoration, and for each requested field to be enabled
+and rendered before setting its value. Previously the test waited only for
+the form element, which can exist while its fieldset remains disabled.
+The repair changes only the acceptance driver; it does not bypass application
+validation, change runtime behavior or remove any acceptance assertion.
+Its own verification must be recorded separately from the failed main run.
+
+**Gate result:** BG-31 stays **78/100**, production **NO-GO**. No production
+resources were created, migrated, deployed, backed up or modified; no R2 object
+operation, provider send, email or billing change was performed. Public health
+and homepage GETs and dashboard metadata inspection are the only new live
+observations. The $0 exception permits preparation, not fabricated acceptance.
