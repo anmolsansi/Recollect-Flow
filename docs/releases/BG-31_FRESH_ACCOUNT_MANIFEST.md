@@ -124,6 +124,10 @@ repair or isolated restore when schema compatibility is unproven.
 
 ## 6. Completion and next decision
 
+See the [fresh-install applicability proposal](BG-31_FRESH_INSTALL_APPLICABILITY.md)
+and the [passing isolated local restore rehearsal](../verification/BG-31_LOCAL_RESTORE_2026-10-30.md).
+The proposal requires an explicit owner decision before changing acceptance criteria.
+
 BG-31 remains **78/100** and production **NO-GO**. The local pass does not close
 the 22 canonical live actions, BG-29.078, OPE-247 or V1 approval. Fresh-install
 checklist applicability and first-release recovery must be reconciled explicitly

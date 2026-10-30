@@ -27,6 +27,12 @@ Use the [fresh-account manifest](BG-31_FRESH_ACCOUNT_MANIFEST.md) for the
 future targets, credential boundary, migration/recovery sequence and cost gates.
 All 22 canonical live actions remain open; no original data was imported.
 
+The [isolated local restore rehearsal](../verification/BG-31_LOCAL_RESTORE_2026-10-30.md)
+passed for three synthetic records and their original PDF. Review the
+[fresh-install applicability proposal](BG-31_FRESH_INSTALL_APPLICABILITY.md)
+for an explicit disposition of all 22 open actions. The proposal is not yet
+accepted and does not change the canonical completion count.
+
 ## October 30 account reconciliation
 
 The historical production API is still reachable: an unauthenticated
