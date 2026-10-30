@@ -104,4 +104,4 @@ Use the [fresh-account manifest](BG-31_FRESH_ACCOUNT_MANIFEST.md). Its names are
 
 ## Immediate next action
 
-Merged-main CI and the explicit applicability decision are complete. Proceed to the [cost-gate decision](BG-31_COST_GATE_2026-10-30.md); stay local until step 3 has an acceptable outcome. Do not repeat the already-passing local capture/export/restore work unless source changes invalidate it.
+The owner chose strict-$0 local operation and explicitly deferred hosted completion. BG-31 stays 78/100; no further hosting decision is required while this choice holds. Use the [BG-32 local handoff](../verification/BG-32_LOCAL_ONLY_HANDOFF_2026-10-30.md) for local operating instructions, reusable downloaded-backup restore evidence and hosted resume conditions. Continue concrete local feature/bug work when requested; do not repeat passing rehearsals or mark hosted checks complete.
