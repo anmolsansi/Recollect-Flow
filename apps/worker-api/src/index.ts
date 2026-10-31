@@ -38,12 +38,16 @@ const productionScheduledHandler = createScheduledHandler({
   extractFiles: (env) => processExtractionJobs(env),
   acquireUrls: (env) => processSourceAcquisitionJobs(env),
   enrichItems: (env) => processEnrichJobs(env),
-  syncNotion: (env) =>
-    processNotionSyncJobs(
+  syncNotion: (env) => {
+    if (!env.NOTION_ACCESS_TOKEN || !env.NOTION_DATABASE_ID) {
+      throw new Error('NOTION_NOT_CONFIGURED');
+    }
+    return processNotionSyncJobs(
       env.DB,
       env.NOTION_ACCESS_TOKEN,
       env.NOTION_DATABASE_ID,
-    ),
+    );
+  },
   digest: (env, kind, at) => processScheduledDigest(env, kind, at),
   weeklyBackup: (env, at) =>
     createWeeklyHostedBackup(env.DB, env.ATTACHMENTS, at),

@@ -4,7 +4,7 @@
   "generated_for": "BG-31",
   "decision": "NO_GO",
   "approval_status": "NOT_GRANTED",
-  "cost_boundary": "STRICT_ZERO_ADDITIONAL_COST_LOCAL_DEVELOPMENT_ONLY",
+  "cost_boundary": "METERED_R2_RISK_ACCEPTED_PLAN_REVIEW_PENDING",
   "source_baseline_sha": "195fcd65f6a75667228c718411a95b1c20a70679",
   "source_baseline_ci": {
     "run_id": 39752503664,
@@ -22,9 +22,9 @@
   },
   "live_inventory": {
     "worker_version": null,
-    "production_account_verified": false,
-    "d1_ledger_verified": false,
-    "d1_database_id_verified": false,
+    "production_account_verified": true,
+    "d1_ledger_verified": true,
+    "d1_database_id_verified": true,
     "r2_binding_verified": false,
     "web_origin_verified": false,
     "notion_target_verified": false,
@@ -34,10 +34,10 @@
   "source_targets": {
     "worker": "recollect-flow",
     "d1_binding": "DB",
-    "d1_name": "recollect-flow-prod",
-    "d1_uuid": "5fcba514-d0f7-45e7-a632-d4c59233af71",
+    "d1_name": "recollect-flow-prod-v2",
+    "d1_uuid": "76bd35c6-c833-4987-a47e-6aa8238bb832",
     "r2_binding": "ATTACHMENTS",
-    "r2_bucket": "recollect-flow-attachments-prod",
+    "r2_bucket": "recollect-flow-attachments-prod-v2",
     "web_assets": "apps/web/dist",
     "web_origin_secret_name": "WEB_INBOX_BASE_URL",
     "notion_destination_var": "NOTION_DATABASE_ID",
@@ -47,12 +47,14 @@
     "CAPTURE_TOKEN",
     "ADMIN_TOKEN",
     "LOCAL_WORKER_TOKEN",
+    "WEB_INBOX_BASE_URL"
+  ],
+  "conditional_secret_names": [
     "NOTION_ACCESS_TOKEN",
     "TELEGRAM_BOT_TOKEN",
     "TELEGRAM_CHAT_ID",
-    "WEB_INBOX_BASE_URL"
+    "OPENROUTER_API_KEY"
   ],
-  "conditional_secret_names": ["OPENROUTER_API_KEY"],
   "source_migrations": [
     "0001_initial.sql",
     "0002_add_duplicate_of.sql",
@@ -77,7 +79,30 @@
     "0024_materialize_current_processing_status.sql",
     "0025_bg28_scheduled_backups.sql"
   ],
-  "pending_forward_migrations": null,
+  "pending_forward_migrations": [
+    "0001_initial.sql",
+    "0002_add_duplicate_of.sql",
+    "0003_add_attachments_table.sql",
+    "0004_add_policy_routing.sql",
+    "0005_update_hosted_ai_policy.sql",
+    "0006_add_capture_request_fingerprint.sql",
+    "0007_add_job_leases.sql",
+    "0008_add_sync_available_at.sql",
+    "0009_complete_jobs_and_notion_projection.sql",
+    "0010_add_enrichment_fields.sql",
+    "0014_allow_cloudflare_provider.sql",
+    "0015_add_extraction_records.sql",
+    "0016_add_item_search_fts.sql",
+    "0017_add_item_review_contract.sql",
+    "0018_add_item_duplicate_target.sql",
+    "0019_add_digest_jobs.sql",
+    "0020_add_ai_capacity_controls.sql",
+    "0021_add_recovery_workflows.sql",
+    "0022_add_url_acquisition_evidence.sql",
+    "0023_add_processing_generation.sql",
+    "0024_materialize_current_processing_status.sql",
+    "0025_bg28_scheduled_backups.sql"
+  ],
   "recovery": {
     "verified_d1_backup_id": null,
     "verified_independent_originals_manifest_sha256": null,
@@ -139,5 +164,20 @@
     "document": "docs/releases/BG-31_FRESH_INSTALL_APPLICABILITY.md",
     "release_authorized": false,
     "cost_policy_changed": false
+  },
+  "first_release_scope": {
+    "external_dispatch_enabled": false,
+    "ai_providers_enabled": [],
+    "notion_destination_configured": false,
+    "telegram_destination_configured": false,
+    "account_id": "a9482fbfb91ace26dee097cbd41293f9",
+    "provisioning_evidence": "docs/verification/BG-31_STAGE_A_PROVISIONING_2026-10-31.md",
+    "baseline_evidence": ".wrangler/bg31-stage-b-20261031/observed-ledger.json",
+    "remote_migrations_applied": false,
+    "r2_bucket_identity_verified": true,
+    "worker_absence_observed": true,
+    "account_subdomain": "openclawneutron",
+    "candidate_packet": ".wrangler/bg31-cloudflare-candidate/release-packet.json",
+    "review_chapter": "docs/releases/BG-31_FIRST_RELEASE_PACKET.md"
   }
 }

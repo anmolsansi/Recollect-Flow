@@ -1,5 +1,13 @@
 # BG-31 — RecollectFlow V1 release manifest
 
+**October 31 candidate update:** The new resources are created, the fresh D1
+baseline is authenticated, and canonical configuration now targets them with
+provider integrations disabled and only core secrets required. Metered R2 risk
+is accepted for release preparation. See the
+[first-release review packet](BG-31_FIRST_RELEASE_PACKET.md). The remaining
+sections preserve earlier dated checkpoints; old target IDs there are historical.
+The JSON records current target observations but leaves release approval NO-GO.
+
 **Manifest revision:** `BG31-DRAFT-2026-10-22.1`  
 **Decision:** **NO-GO for production. REVIEWABLE DEVELOPMENT DRAFT ONLY.**  
 **Prepared:** 2026-10-22 UTC (repository evidence reviewed).  

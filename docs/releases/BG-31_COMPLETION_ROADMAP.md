@@ -1,6 +1,12 @@
 # BG-31 progress checklist and small-step completion guide
 
 **Updated:** October 31, 2026 (America/New_York).
+
+**Latest owner direction:** Prepare a reviewed Cloudflare deployment plan with
+metered R2 billing risk accepted. See
+[BG31-CF-REVIEW-2026-10-31.1](BG-31_CLOUDFLARE_REVIEW_2026-10-31.md).
+This supersedes the local-only choice below for plan preparation; execution
+awaits review of the concrete scope. No hosted action is checked by this decision.
 **Canonical progress:** **78/100 complete; 22 deferred.**
 **Owner choice:** Strict additional-$0, local operation only. Hosted completion
 is deferred; production remains NO-GO. A request to finish quickly does not
@@ -26,7 +32,10 @@ action complete without its evidence.
 - [x] Restore from the downloaded encrypted copy into another isolated target; verify records, search, integrity, file hash and anonymous-download rejection.
 - [x] Accept the fresh-install criteria and record the explicit local-only deferral.
 - [x] Merge PR #135. Its [PR CI passed](https://github.com/anmolsansi/Recollect-Flow/actions/runs/41113864650); merge SHA `711204003ac22bcd0becdd81818431f673cced5b`.
-- [ ] Owner confirms the encryption password is independently recoverable without this Mac. No password needs to be shared with the agent.
+- [x] Owner confirmed password/account recovery works on October 31, 2026 (“Recovery works”). Owner-confirmed, not independently inspected; no password was shared with the agent.
+- [x] Merge PR #136. Its [PR CI passed](https://github.com/anmolsansi/Recollect-Flow/actions/runs/41212948339); merge SHA `dba812142bfc95fc078107751a8d812e18ec570a`.
+
+**Local follow-up complete:** No local acceptance or backup task remains in this tracker. Continue local use/development; full BG-31 remains deferred at 78/100. The remaining sequence below is conditional on later resuming hosted work.
 
 Evidence: [local acceptance](../verification/BG-31_LOCAL_ACCEPTANCE_2026-10-30.md),
 [initial restore](../verification/BG-31_LOCAL_RESTORE_2026-10-30.md), and

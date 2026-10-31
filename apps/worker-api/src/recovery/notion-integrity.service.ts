@@ -13,12 +13,15 @@ export class NotionIntegrityError extends Error {
 
 export class NotionIntegrityService {
   constructor(
-    private readonly token: string,
+    private readonly token: string | undefined,
     private readonly fetcher: typeof fetch = fetch,
     private readonly timeoutMs = DEFAULT_TIMEOUT_MS,
   ) {}
 
   async pageState(pageId: string): Promise<NotionProjectionState> {
+    if (!this.token?.trim()) {
+      throw new NotionIntegrityError('NOTION_NOT_CONFIGURED');
+    }
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
     try {

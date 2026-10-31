@@ -1,4 +1,5 @@
 name = "recollect-flow"
+account_id = "a9482fbfb91ace26dee097cbd41293f9"
 main = "apps/worker-api/src/index.ts"
 compatibility_date = "2026-08-01"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
@@ -22,13 +23,13 @@ simple = { limit = 8, period = 60 }
 
 [[d1_databases]]
 binding = "DB"
-database_name = "recollect-flow-prod"
-database_id = "5fcba514-d0f7-45e7-a632-d4c59233af71"
+database_name = "recollect-flow-prod-v2"
+database_id = "76bd35c6-c833-4987-a47e-6aa8238bb832"
 migrations_dir = "migrations"
 
 [[r2_buckets]]
 binding = "ATTACHMENTS"
-bucket_name = "recollect-flow-attachments-prod"
+bucket_name = "recollect-flow-attachments-prod-v2"
 
 [ai]
 binding = "AI"
@@ -46,21 +47,22 @@ enabled = true
 head_sampling_rate = 0.01
 
 [secrets]
-required = ["CAPTURE_TOKEN", "ADMIN_TOKEN", "LOCAL_WORKER_TOKEN", "NOTION_ACCESS_TOKEN", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID", "WEB_INBOX_BASE_URL"]
+required = ["CAPTURE_TOKEN", "ADMIN_TOKEN", "LOCAL_WORKER_TOKEN", "WEB_INBOX_BASE_URL"]
 
 [vars]
-NOTION_DATABASE_ID = "3a21b726-4ada-80a3-bfe1-ef808e3c293f"
+NOTION_DATABASE_ID = ""
 MAX_ATTACHMENT_BYTES = "25000000"
 UPLOAD_TTL_SECONDS = "3600"
 AI_PROVIDER_DEFAULT = "openrouter"
-AI_PROVIDERS_ENABLED = "openrouter,cloudflare"
-AI_PROVIDER_IMPLEMENTATIONS = '{"openrouter":"openrouter","cloudflare":"cloudflare"}'
+AI_PROVIDERS_ENABLED = ""
+AI_PROVIDER_IMPLEMENTATIONS = '{}'
 OPENROUTER_FREE_ACCOUNT_TIER = "standard"
 CLOUDFLARE_AI_FREE_DAILY_NEURONS = "10000"
 DIGEST_AI_ENABLED = "false"
 
-# BG-31 strict-$0 release safety: no Cron triggers are configured by default.
-# The scheduled handler remains fail-closed for scheduled events unless BOTH
-# HOSTED_SCHEDULED_WORK_ENABLED and HOSTED_EXTERNAL_DISPATCH_ENABLED are true.
-# Do not restore Cron schedules or enable external dispatch without separate,
-# operation-specific approval and enforceable zero-additional-charge controls.
+# First release: metered R2 accepted; provider work remains disabled.
+HOSTED_SCHEDULED_WORK_ENABLED = "false"
+HOSTED_EXTERNAL_DISPATCH_ENABLED = "false"
+HOSTED_HTTP_DISPATCH_ENABLED = "false"
+HOSTED_BACKUP_AUTOCREATE_ENABLED = "false"
+# No Cron. Provider credentials/configuration require a separate reviewed change.

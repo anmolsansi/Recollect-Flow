@@ -162,7 +162,7 @@ export async function createLocalAcceptanceRuntime({
       'd1',
       'migrations',
       'apply',
-      'recollect-flow-prod',
+      'DB',
       '--local',
       '--persist-to',
       persistDir,

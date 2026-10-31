@@ -37,7 +37,7 @@ export async function createBg21Preview({
         'd1',
         'migrations',
         'apply',
-        'recollect-flow-prod',
+        'DB',
         '--local',
         '--persist-to',
         persistDir,

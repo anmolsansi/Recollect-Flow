@@ -280,11 +280,7 @@ describe('follow-up migration contracts', () => {
     expect(searchRebuildScript).toContain('orphaned_or_deleted_in_fts');
     expect(searchRebuildScript).toContain('duplicate_item_ids');
     expect(searchRebuildScript).toContain('distinct_indexed_items');
-    expect(searchRebuildScript).toContain(
-      'd1 execute recollect-flow-prod --local',
-    );
-    expect(searchRebuildScript).toContain(
-      'd1 execute recollect-flow-prod --remote',
-    );
+    expect(searchRebuildScript).toContain('d1 execute DB --local');
+    expect(searchRebuildScript).toContain('d1 execute DB --remote');
   });
 });

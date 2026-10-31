@@ -5,7 +5,13 @@ type ConfigurableAiVars =
   | 'OPENROUTER_FREE_ACCOUNT_TIER'
   | 'CLOUDFLARE_AI_FREE_DAILY_NEURONS'
   | 'DIGEST_AI_ENABLED'
-  | 'WEB_INBOX_BASE_URL';
+  | 'WEB_INBOX_BASE_URL'
+  | 'LOGIN_RATE_LIMITER'
+  | 'ASSETS'
+  | 'HOSTED_SCHEDULED_WORK_ENABLED'
+  | 'HOSTED_EXTERNAL_DISPATCH_ENABLED'
+  | 'HOSTED_HTTP_DISPATCH_ENABLED'
+  | 'HOSTED_BACKUP_AUTOCREATE_ENABLED';
 
 export type Env = Omit<Cloudflare.Env, ConfigurableAiVars> & {
   // Generated Wrangler binding remains optional for existing local test fixtures.
@@ -13,6 +19,7 @@ export type Env = Omit<Cloudflare.Env, ConfigurableAiVars> & {
   LOGIN_RATE_LIMITER?: {
     limit(options: { key: string }): Promise<{ success: boolean }>;
   };
+  ASSETS?: Fetcher;
   CAPTURE_TOKEN_NEXT?: string;
   CAPTURE_TOKEN_ID?: string;
   CAPTURE_TOKEN_ROTATION?: string;
@@ -33,7 +40,7 @@ export type Env = Omit<Cloudflare.Env, ConfigurableAiVars> & {
   AI_PROVIDER_CLOUDFLARE_ENABLED?: string; // Legacy
 
   // OPE-227 capacity controls. `standard` is the fail-safe default.
-  OPENROUTER_FREE_ACCOUNT_TIER?: 'standard' | 'qualified';
+  OPENROUTER_FREE_ACCOUNT_TIER?: string;
   // Optional stricter cap. Values above the published free allocation are clamped.
   CLOUDFLARE_AI_FREE_DAILY_NEURONS?: string;
 

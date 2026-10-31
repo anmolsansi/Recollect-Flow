@@ -14,12 +14,15 @@ export class NotionPurgeError extends Error {
 
 export class NotionPurgeService {
   constructor(
-    private readonly token: string,
+    private readonly token: string | undefined,
     private readonly fetcher: typeof fetch = fetch,
     private readonly timeoutMs = DEFAULT_TIMEOUT_MS,
   ) {}
 
   async archivePage(pageId: string): Promise<'archived' | 'already_missing'> {
+    if (!this.token?.trim()) {
+      throw new NotionPurgeError('NOTION_NOT_CONFIGURED', false);
+    }
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
     let response: Response;

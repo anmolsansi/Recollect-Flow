@@ -21,7 +21,7 @@ test('BG-31 manifest remains explicitly NO-GO without live release evidence', ()
   assert.equal(manifest.approval_status, 'NOT_GRANTED');
   assert.equal(
     manifest.cost_boundary,
-    'STRICT_ZERO_ADDITIONAL_COST_LOCAL_DEVELOPMENT_ONLY',
+    'METERED_R2_RISK_ACCEPTED_PLAN_REVIEW_PENDING',
   );
   assert.equal(manifest.gates.bg29_078, 'DEFERRED_NOT_VERIFIED');
   assert.equal(manifest.gates.ope247, 'IN_PROGRESS');
@@ -39,7 +39,10 @@ test('BG-31 does not claim fabricated artifact, migration, approval, or backup p
   for (const value of Object.values(manifest.release_candidate)) {
     assert.equal(value, null);
   }
-  assert.equal(manifest.pending_forward_migrations, null);
+  assert.deepEqual(
+    manifest.pending_forward_migrations,
+    manifest.source_migrations,
+  );
   assert.equal(manifest.recovery.verified_d1_backup_id, null);
   assert.equal(
     manifest.recovery.verified_independent_originals_manifest_sha256,
@@ -51,7 +54,16 @@ test('BG-31 does not claim fabricated artifact, migration, approval, or backup p
   assert.equal(manifest.recovery.operator, null);
   for (const [key, value] of Object.entries(manifest.live_inventory)) {
     if (key === 'worker_version') assert.equal(value, null);
-    else assert.equal(value, false, key);
+    else
+      assert.equal(
+        value,
+        [
+          'production_account_verified',
+          'd1_ledger_verified',
+          'd1_database_id_verified',
+        ].includes(key),
+        key,
+      );
   }
 });
 
@@ -86,7 +98,7 @@ test('BG-31 declared target names and secrets match committed Worker config', ()
   assert.deepEqual([...manifest.required_secret_names].sort(), names.sort());
 });
 
-test('BG-31 source target and $0 config drift is detected', () => {
+test('BG-31 fresh target and disabled-provider config drift is detected', () => {
   const target = manifest.source_targets;
   assert.match(
     config,
@@ -101,10 +113,12 @@ test('BG-31 source target and $0 config drift is detected', () => {
   assert.match(config, /^name = "LOGIN_RATE_LIMITER"$/m);
   assert.match(
     config,
-    new RegExp('^' + target.notion_destination_var + ' = "[^"]+"$', 'm'),
+    new RegExp('^' + target.notion_destination_var + ' = ""$', 'm'),
   );
   assert.match(config, /^AI_PROVIDER_DEFAULT = "openrouter"$/m);
-  assert.match(config, /^AI_PROVIDERS_ENABLED = "openrouter,cloudflare"$/m);
+  assert.match(config, /^AI_PROVIDERS_ENABLED = ""$/m);
+  assert.match(config, /^AI_PROVIDER_IMPLEMENTATIONS = '\{\}'$/m);
+  assert.match(config, /^account_id = "a9482fbfb91ace26dee097cbd41293f9"$/m);
   assert.match(config, /^DIGEST_AI_ENABLED = "false"$/m);
   assert.doesNotMatch(config, /^HOSTED_BACKUP_AUTOCREATE_ENABLED = "true"$/m);
   assert.equal(manifest.live_inventory.secret_presence_verified, false);
@@ -123,7 +137,7 @@ test('BG-31 stage list and release safety boundary are complete', () => {
   assert.match(docs, /cannot be represented as a fully approved/);
 });
 
-test('BG-31 manifest contains no approval or credential values', () => {
+test('BG-31 manifest contains no release approval or credential values', () => {
   const serialized = JSON.stringify(manifest);
   assert.doesNotMatch(
     serialized,
@@ -162,7 +176,7 @@ test('BG-31 leaves Cron and hosted dispatch disabled by default', () => {
     assert.doesNotMatch(
       config,
       new RegExp('^\\s*' + flag + '\\s*=\\s*"?true\\b', 'm'),
-      flag + ' may not opt in to live work under the strict $0 default',
+      flag + ' may not opt in to provider work in the first release',
     );
   }
   assert.equal(manifest.decision, 'NO_GO');

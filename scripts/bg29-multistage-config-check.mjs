@@ -5,7 +5,10 @@ import { URL, fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
 const configPath = 'wrangler.bg29-multistage-staging.toml';
-const productionD1 = '5fcba514-d0f7-45e7-a632-d4c59233af71';
+const productionD1 = [
+  '5fcba514-d0f7-45e7-a632-d4c59233af71',
+  '76bd35c6-c833-4987-a47e-6aa8238bb832',
+];
 const stagingD1 = 'b5cbeccc-92fb-4bbc-9597-f0174b84e57d';
 
 function mustMatch(source, expression, description) {
@@ -84,7 +87,7 @@ export function validateBg29MultistageConfig(raw) {
   );
 
   if (
-    content.includes(productionD1) ||
+    productionD1.some((id) => content.includes(id)) ||
     /recollect-flow-attachments-prod/.test(content)
   ) {
     throw new Error('BG29_STAGING_CONFIG_DENIED: production binding');

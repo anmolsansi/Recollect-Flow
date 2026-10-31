@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -42,7 +44,7 @@ jobs:
       - run: npm run browser:workflow:test
       - run: npm run browser:acquisition:test
       - name: BG-31 release-head fingerprints (offline; no deploy)
-        if: github.event_name == 'pull_request' && github.head_ref == 'feat/bg-31-release-manifest'
+        if: github.event_name == 'pull_request' && (github.head_ref == 'feat/bg-31-release-manifest' || startsWith(github.head_ref, 'prep/cloudflare-review-'))
         env:
           BG31_HEAD: ${{ github.event.pull_request.head.sha }}
         run: |
