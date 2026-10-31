@@ -1,5 +1,14 @@
 # Complete release and development roadmap
 
+## Current owner direction — local only (October 30, 2026)
+
+The owner chose strict-$0 local operation. BG-31 hosted completion remains
+deferred at 78/100; production NO-GO. Local acceptance and a restore from the
+user-supplied downloaded encrypted backup passed. The
+[BG-32 local handoff](verification/BG-32_LOCAL_ONLY_HANDOFF_2026-10-30.md)
+records reusable evidence, 12 passing local tooling tests and the exact resume
+conditions. BG-32 deployment remains blocked; no live gate is waived.
+
 ## BG-30 reconciled evidence and strict $0 release boundary (2026-10-21)
 
 [BG-30 reconciliation](verification/BG-30_EVIDENCE.md) and the
