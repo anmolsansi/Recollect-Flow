@@ -1,5 +1,11 @@
 # BG-29.078 — Frozen multi-stage backlog acceptance contract
 
+**Prospective revision 2.0 for the separately authorized October 31 run:**
+[BG29-078-2026-10-31](BG-29_078_HOSTED_RUN_2026-10-31.md) records the owner's
+explicit staging-specific acceptance of metered R2 risk. Only that run's
+financial conditions are superseded; historical NO-GO decisions and every
+technical acceptance requirement below remain attributable and unchanged.
+
 **Contract version:** 1.0 (October 18, 2026)  
 **Scope:** BG-29.078 — Measure multi-stage backlog delay  
 **Decision:** Criteria defined and technically reviewed; **execution NOT accepted**.  
