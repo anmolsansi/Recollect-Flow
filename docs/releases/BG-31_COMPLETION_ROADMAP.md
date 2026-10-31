@@ -1,107 +1,130 @@
-# BG-31 completion roadmap
+# BG-31 progress checklist and small-step completion guide
 
-**Updated:** October 30, 2026.
-**Current status:** 78/100 canonical actions; 22 open. Local acceptance and isolated synthetic restore passed. Cloudflare execution deferred by the owner. Production remains NO-GO.
+**Updated:** October 31, 2026 (America/New_York).
+**Canonical progress:** **78/100 complete; 22 deferred.**
+**Owner choice:** Strict additional-$0, local operation only. Hosted completion
+is deferred; production remains NO-GO. A request to finish quickly does not
+change that choice or authorize deployment.
 
-BG-31 produces an evidenced, authorized release packet. BG-32 executes deployment and live acceptance. This roadmap does not authorize hosted operations or change acceptance criteria.
+Use this file as the single day-to-day tracker. The
+[canonical checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-31--100-executable-microtasks)
+remains the authority for the 100 action states. The
+[accepted fresh-install addendum](BG-31_FRESH_INSTALL_APPLICABILITY.md)
+defines how first-release evidence can satisfy the affected actions. Do not
+count the local checklist below as extra canonical actions or mark a deferred
+action complete without its evidence.
 
-## 1. Confirm the merged source is green
+## 1. Local work — reuse the completed evidence
 
-**Owner:** Engineer.
+- [x] Checkout and preserve the existing work; original preservation stash remains untouched.
+- [x] Establish the persistent local app with external dispatch and paid AI disabled.
+- [x] Verify note/URL/file capture, search, edits, protected original downloads and JSON/CSV exports.
+- [x] Verify an isolated local restore without overwriting the working app.
+- [x] Prepare a fresh recovery bundle with original bytes and separately read current local purge receipts.
+- [x] Create and unlock an AES-256 encrypted disk image; calculate its SHA-256.
+- [x] Owner reports uploading to Google Drive and downloading a separate copy; that downloaded file matches the recorded original checksum.
+- [x] Restore from the downloaded encrypted copy into another isolated target; verify records, search, integrity, file hash and anonymous-download rejection.
+- [x] Accept the fresh-install criteria and record the explicit local-only deferral.
+- [x] Merge PR #135. Its [PR CI passed](https://github.com/anmolsansi/Recollect-Flow/actions/runs/41113864650); merge SHA `711204003ac22bcd0becdd81818431f673cced5b`.
+- [ ] Owner confirms the encryption password is independently recoverable without this Mac. No password needs to be shared with the agent.
 
-PR #133 merged as `aab88010080b0ad9436b191a695a5436055e6633`.
-Its [PR CI](https://github.com/anmolsansi/Recollect-Flow/actions/runs/41026842166)
-failed with `Timed out waiting for Chrome DevTools endpoint` during BG21 hosting verification.
-The preceding static/API route matrix passed. This observation does not establish the root cause or prove the full suite passes.
-The [merged-main run](https://github.com/anmolsansi/Recollect-Flow/actions/runs/41051034420)
-completed successfully. The merge checkpoint is green; the preceding PR failure does not establish a reproducible application defect.
+Evidence: [local acceptance](../verification/BG-31_LOCAL_ACCEPTANCE_2026-10-30.md),
+[initial restore](../verification/BG-31_LOCAL_RESTORE_2026-10-30.md), and
+[downloaded-backup/local handoff](../verification/BG-32_LOCAL_ONLY_HANDOFF_2026-10-30.md).
+The latter includes the safe image checksum and private evidence locations.
+Drive metadata and off-Mac password recovery were not independently inspected.
+The purge ledger was empty; a nonempty anti-resurrection drill is not claimed.
 
-- [x] Inspect the merged-main result: SUCCESS. If it fails, investigate the failing check; repair a reproducible issue and rerun the appropriate checks.
-- [x] Record passing CI for the source used in subsequent preparation (`aab8801`, run `41051034420`). Final release-candidate CI will be needed again after configuration changes.
+## 2. What the owner should do now — no new hosting decision
 
-**Exit:** Verified green source checkpoint. Do not deploy or claim green CI from the merge alone.
+### Step A: Secure the recovery password
 
-## 2. Explicitly settle the fresh-install contract
+1. Open your existing password manager. Use one you can recover or access without this Mac; do not buy a new service for this task.
+2. Create an entry named `RecollectFlow backup — 2026-10-30`.
+3. Copy the password from the separate private local file at `.wrangler/bg31-upload/keys/2026-10-30T16-50-23-857Z.txt` into that entry. Do not paste it into chat or a ticket.
+4. Record which Google account/folder holds the encrypted backup, without putting the password in that Drive folder.
+5. On another device or an independently recoverable session, confirm you can access both the Drive account and the password entry. Account access that depends only on this Mac is insufficient for loss-of-Mac recovery.
+6. Tell the agent only: “The backup password and Google Drive account are recoverable without this Mac.” The agent can then check the owner-confirmation item above, labeling it owner-confirmed rather than independently observed.
+7. Keep the local password file until the independent entry is confirmed. Do not delete any backup or the only usable password to tidy up.
 
-**Owner:** Repository owner decides; engineer records it.
+If no independently recoverable password manager is available, leave the item
+open and choose a separate secure existing recovery method. Do not claim this
+step is done merely because the disk image unlocked on this Mac.
 
-Review [BG31-APPLICABILITY-2026-10-30.1](BG-31_FRESH_INSTALL_APPLICABILITY.md).
-Merging its proposal did not itself accept changed criteria.
+### Step B: Keep using the local app
 
-- [x] Owner explicitly accepted revision `BG31-APPLICABILITY-2026-10-30.1` in the October 30 chat continuation. A decision can say: “I accept BG31-APPLICABILITY-2026-10-30.1 for the fresh installation. Cloudflare execution stays deferred.”
-- [x] Record the decision in the applicability addendum and canonical checklist/human/JSON manifest; run existing consistency tests. Preserve evidence status; do not mark substitutes passed before their evidence exists.
-- [ ] Agree whether Notion, Telegram and AI remain disabled for this first release. Verify source/runtime requirements support that scope; placeholders are not provider readiness.
+1. If the app is stopped, open Terminal.
+2. Run the existing launcher:
 
-**Exit:** A single accepted set of criteria for the 22 remaining actions, including first-release recovery and intended-origin versus deployed-origin checks.
+   ```bash
+   /Users/mac/Documents/Projects/Recollect-Flow/.wrangler/bg31-local/start.sh
+   ```
 
-## 3. Resolve the strict-$0 hosting decision before provisioning
+3. Open `http://127.0.0.1:8787/`.
+4. Use the existing local login. Do not upload local credentials or simulator configs to Cloudflare.
+5. Keep the persistent `.wrangler/bg31-local/state` directory intact.
+6. After meaningful data changes, request a fresh dated encrypted backup. Retain the previous verified set until its replacement has been downloaded and verified.
 
-**Owner:** Owner sets the cost policy; engineer verifies a concrete arrangement.
+### Step C: Stop repeating completed preparation
 
-Current approved path is local now, Cloudflare later. Existing R2 included allowances and billing alerts do not establish an enforceable additional-$0 cap.
+The local workflow is ready for continued local use. No new packaging framework,
+backup script, browser rehearsal or documentation-only milestone is needed to
+pretend the remaining hosted checks have progressed. Continue a concrete local
+feature or bug task when requested. BG-31 remains deferred, not completed.
 
-- [ ] Verify a concrete storage/account arrangement satisfies the strict-$0 requirement before proposing hosted execution.
-- [ ] If none can be verified, choose between staying local, separately approving an alternative storage architecture, or explicitly changing the cost policy. No alternative has yet been selected or implemented.
-- [ ] Keep Cloudflare execution blocked while this is unresolved. Do not provision resources just to discover whether they are safe to use.
+## 3. All 22 remaining canonical checks
 
-**Exit:** Documented acceptable cost boundary, or a truthful local-only/hosted-blocked disposition. There is no verified shortcut that closes the cloud-ready gate today.
+**Every row is currently DEFERRED under the local-only decision.** These are the
+release-readiness actions that still need evidence. They are not steps to run
+now. Owner supplies policy/approvals and private access; engineer gathers safe
+evidence and prepares changes. New deployments/live smoke are BG-32 work.
 
-## 4. Establish actual fresh targets and migration evidence
+| Done | ID        | Evidence needed under the accepted fresh-install criteria                                                                   |
+| ---- | --------- | --------------------------------------------------------------------------------------------------------------------------- |
+| [ ]  | BG-31.021 | Authenticated target Worker version, or observed absence before a first release; never invent a previous version.           |
+| [ ]  | BG-31.022 | Actual target D1 schema/ledger, UUID and observation time.                                                                  |
+| [ ]  | BG-31.023 | Comparison of the observed ledger against the candidate migrations.                                                         |
+| [ ]  | BG-31.024 | Actual production D1 account/name/UUID.                                                                                     |
+| [ ]  | BG-31.025 | Actual private production R2 identity and accepted cost controls.                                                           |
+| [ ]  | BG-31.026 | Approved intended origin/routing under the accepted split; BG-32 later verifies the live origin.                            |
+| [ ]  | BG-31.027 | Verified Notion destination, or explicitly accepted disabled scope supported by runtime/config evidence.                    |
+| [ ]  | BG-31.028 | Verified Telegram destination, or explicitly accepted disabled scope supported by runtime/config evidence.                  |
+| [ ]  | BG-31.031 | Exact pending forward migration filenames from the observed baseline.                                                       |
+| [ ]  | BG-31.032 | Verified order of those pending migrations.                                                                                 |
+| [ ]  | BG-31.033 | Review of tables affected by the actual pending delta.                                                                      |
+| [ ]  | BG-31.034 | Review of indexes affected by that delta.                                                                                   |
+| [ ]  | BG-31.035 | Review of backfills/data rewrites in that delta.                                                                            |
+| [ ]  | BG-31.036 | Runtime/schema compatibility and interruption assumptions.                                                                  |
+| [ ]  | BG-31.042 | Required deployment secret-name presence, without values; no placeholder readiness.                                         |
+| [ ]  | BG-31.044 | Canonical origin/configuration verification and matched packaging.                                                          |
+| [ ]  | BG-31.045 | Approved provider configuration for the actual first-release scope.                                                         |
+| [ ]  | BG-31.046 | Evidence that enabled/disabled implementations match that approved scope.                                                   |
+| [ ]  | BG-31.076 | Compatible preserved prior artifact, or accepted first-release absence evidence plus preserved candidate and recovery plan. |
+| [ ]  | BG-31.077 | Schema-compatible rollback boundary or reviewed containment/forward-repair/isolated-restore plan.                           |
+| [ ]  | BG-31.082 | Exact production mutation packet with actual targets, commands, artifacts and stop conditions.                              |
+| [ ]  | BG-31.089 | Dated owner release authorization naming the exact packet, targets and artifact hashes.                                     |
 
-**Owner:** Engineer, after scoped owner authorization and step 3.
+## 4. Small steps for full BG-31 completion — only if hosted work resumes
 
-Use the [fresh-account manifest](BG-31_FRESH_ACCOUNT_MANIFEST.md). Its names are proposals, not created resources.
+There is no honest local-only sequence that turns the 22 deferred release checks
+into passes under the current contract. If the owner later chooses to resume,
+follow this sequence; none of it is authorized by this guide alone.
 
-- [ ] Prepare the exact provisioning scope for owner approval: account, new D1/private R2 names and operations. Keep deployment approval separate.
-- [ ] Once authorized, establish actual target identities without reusing staging/unrelated resources.
-- [ ] Record authenticated Worker absence/version evidence and the new D1 schema/ledger with UUID and observation time.
-- [ ] Compare the observed ledger with the candidate; list pending SQL in order and review affected tables, indexes, backfills and compatibility. There are 22 repository migration files, but the observed target determines the delta.
-- [ ] Record the intended origin/routing and approved integration capability/destination state.
+1. **Resolve cost protection first.** Review a concrete arrangement against strict $0. Follow the [cost-gate guide](BG-31_COST_GATE_2026-10-30.md). Existing allowances and alerts are not the verified cutoff required by the current policy. Do not create resources to experiment with billing.
+2. **Approve a precise provisioning scope.** Engineer presents the account, new resource names and operations; owner approves that concrete scope. This is not deployment approval.
+3. **Establish actual new targets.** Engineer records authenticated account/Worker/D1/R2/origin identities. Do not reuse unrelated resources, old account IDs by assumption, or local simulator UUIDs.
+4. **Inspect and compare the actual D1 baseline.** Engineer reads schema/ledger, computes the pending delta, orders it and reviews every affected table/index/backfill and compatibility assumption. Local migrations do not substitute for this target observation.
+5. **Set the first-release integration scope.** Owner decides which providers, if any, are enabled; engineer verifies runtime requirements and config. Disabled integrations must truly be disabled, rather than using dummy credentials to claim readiness. Outbound tests require their own scope.
+6. **Prepare fresh credentials and recovery.** Engineer verifies secret names privately and records the applicable independent backup/operator/containment evidence. Reuse the downloaded local restore only for what it actually demonstrated; refresh data/receipts if an import is proposed. Code rollback does not undo SQL.
+7. **Freeze the exact candidate.** Engineer updates canonical config/manifests using actual identities, builds matching Worker/Web artifacts, records hashes/toolchain and obtains green exact-candidate CI. No deploy yet.
+8. **Review and authorize the packet.** Owner reviews the immutable artifacts, target identities, exact mutations, stop/recovery plan and remaining independent gates. Record the dated decision. Approving this tracker or merging its PR is insufficient.
+9. **Reconcile the 22 rows.** Engineer links each row to its accepted criterion and observed proof, updates the canonical checklist/manifests consistently and runs their focused checks. Close BG-31 only when its required evidence exists; otherwise keep the exact blocker visible.
+10. **Hand off to BG-32.** Actual migrations/deployment and live acceptance follow separately only when authorized and unblocked. BG-29.078, OPE-247 and V1 launch gates are not waived by BG-31 planning or local success.
 
-**Exit:** Real evidence for target identity, baseline and migration delta; proposed names and local simulator IDs cannot satisfy this step.
+## 5. Tracking rules
 
-**Action coverage:** BG-31.021–.028, .031–.036, subject to the accepted addendum.
-
-## 5. Finish credentials, recovery and first-release containment
-
-**Owner:** Engineer and designated release/restore operator; owner supplies private storage/access decisions.
-
-- [ ] Generate new deployment credentials; verify required secret names privately. Never upload local simulator credentials or publish values.
-- [ ] Verify approved provider settings, disabled dispatch/Cron and canonical origin configuration.
-- [ ] Preserve the required export, original bytes and newest purge receipts in verified encrypted owner-controlled storage outside the source failure domain. Verify restore operator access.
-- [ ] Reuse the [passing synthetic local restore](../verification/BG-31_LOCAL_RESTORE_2026-10-30.md) for its demonstrated scope. It does not prove independent storage, remote restore or a nonempty purge anti-resurrection scenario; satisfy any remaining recovery requirements explicitly.
-- [ ] Record the fresh-install pre-change state and containment procedure. Preserve D1/R2 data on failure; define reviewed forward repair or isolated restore. No previous artifact exists in a genuinely new installation, and rolling back code never reverses SQL.
-- [ ] Verify the existing private operational contact/access prerequisites. Any test message requires separate send authorization.
-
-**Exit:** Credential/config evidence and an accepted, operable recovery/containment plan.
-
-**Action coverage:** BG-31.042, .044–.046, .076–.077, plus recovery/operational prerequisites.
-
-## 6. Freeze and approve the exact release packet
-
-**Owner:** Engineer prepares; repository owner authorizes.
-
-- [ ] Review canonical config using actual target identities. Never deploy `.wrangler/bg31-local/` or `.wrangler/bg31-restore-20261030/` configs.
-- [ ] Freeze source SHA, matched Worker/Web artifacts, hashes, release ID, toolchain/config identity and passing exact-candidate CI. Use existing `npm run release:package` tooling; do not run the deploy command at this stage.
-- [ ] Record exact planned mutations, migration filenames/commands, smoke scope, stop conditions and recovery references in the canonical human/JSON release packet.
-- [ ] Reconcile every remaining action to accepted criteria and concrete evidence. Re-run focused manifest/readiness/ledger/impact checks after updates.
-- [ ] Obtain dated owner authorization naming the packet revision, target identities and exact artifact hashes. Approval of a roadmap or addendum is insufficient.
-
-**Exit:** BG-31 can close only when its accepted required evidence and authorization exist. If an independent release prerequisite remains open, record the resulting NO-GO; do not imply a launch waiver.
-
-**Action coverage:** BG-31.082 and .089, final artifact/manifest consistency and completion gate.
-
-## 7. Hand off to BG-32
-
-**Owner:** Authorized release operator.
-
-- [ ] Hand the immutable packet and explicit gate status to BG-32.
-- [ ] Resolve BG-29.078, OPE-247 and other applicable release prerequisites before a production GO. Their development exception does not waive live acceptance.
-- [ ] Only when authorized and unblocked, BG-32 performs forward migrations, deployment and live checks: actual version/origin, authentication, capture/replay, download privacy, search, deep links and logs.
-- [ ] Keep any provider tests separately scoped and authorized.
-
-**Exit:** Deployment/live acceptance has its own evidence; completing release planning does not establish a deployed application.
-
-## Immediate next action
-
-The owner chose strict-$0 local operation and explicitly deferred hosted completion. BG-31 stays 78/100; no further hosting decision is required while this choice holds. Use the [BG-32 local handoff](../verification/BG-32_LOCAL_ONLY_HANDOFF_2026-10-30.md) for local operating instructions, reusable downloaded-backup restore evidence and hosted resume conditions. Continue concrete local feature/bug work when requested; do not repeat passing rehearsals or mark hosted checks complete.
+For each changed row, record evidence link/private identifier, date, observer,
+source/target identity and result. Update the canonical checklist in the same
+change. Keep user-confirmed facts distinct from independently observed facts.
+A merge, green test, local emulator pass or checklist acceptance is not a live
+release observation. Reuse valid evidence; do not rerun it to create activity.
