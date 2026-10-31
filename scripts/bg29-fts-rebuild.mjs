@@ -23,7 +23,7 @@ function localWrangler(args, persistDir) {
 
 function sql(sqlText, dir) {
   const raw = localWrangler(
-    ['execute', 'recollect-flow-prod', '--command', sqlText, '--json'],
+    ['execute', 'DB', '--command', sqlText, '--json'],
     dir,
   );
   const result = JSON.parse(raw);
@@ -40,7 +40,7 @@ function sql(sqlText, dir) {
 const dir = await mkdtemp(join(tmpdir(), 'bg29-fts-smoke-'));
 try {
   // Every invocation is --local with a brand-new persistence directory.
-  localWrangler(['migrations', 'apply', 'recollect-flow-prod'], dir);
+  localWrangler(['migrations', 'apply', 'DB'], dir);
   const itemId = 'bg29-local-fts-rebuild';
   sql(
     `INSERT INTO items (
@@ -65,7 +65,7 @@ try {
     const fileRaw = localWrangler(
       [
         'execute',
-        'recollect-flow-prod',
+        'DB',
         '--file',
         'scripts/rebuild-item-search-index.sql',
         '--json',

@@ -113,9 +113,17 @@ export function releaseReadiness(manifest) {
       id: 'CONFIRM_FINANCIAL_BOUNDARY',
       ready:
         manifest.cost_boundary ===
-          'STRICT_ZERO_ADDITIONAL_COST_LOCAL_DEVELOPMENT_ONLY' &&
-        gates.zero_additional_cost_independently_verified === true,
-      action: 'Prove zero additional cost without relaxing the $0 restriction.',
+        'METERED_R2_RISK_ACCEPTED_PLAN_REVIEW_PENDING'
+          ? gates.r2_cost_plan_approved === true &&
+            gates.workers_plan_confirmed === true
+          : manifest.cost_boundary ===
+              'STRICT_ZERO_ADDITIONAL_COST_LOCAL_DEVELOPMENT_ONLY' &&
+            gates.zero_additional_cost_independently_verified === true,
+      action:
+        manifest.cost_boundary ===
+        'METERED_R2_RISK_ACCEPTED_PLAN_REVIEW_PENDING'
+          ? 'Review the metered R2 cost plan and confirm the current Workers plan; alerts are not spending caps.'
+          : 'Prove zero additional cost without relaxing the $0 restriction.',
     },
     {
       id: 'EXPLICIT_OWNER_AUTHORIZATION',

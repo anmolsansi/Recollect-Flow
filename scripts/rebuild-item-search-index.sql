@@ -1,9 +1,9 @@
 -- OPE-225: Rebuild item_search_fts index
 -- Use this script to recover from index drift or corruption.
 -- Local rehearsal:
--- npx wrangler d1 execute recollect-flow-prod --local --file=scripts/rebuild-item-search-index.sql
+-- npx wrangler d1 execute DB --local --file=scripts/rebuild-item-search-index.sql
 -- Production requires a backup and explicit approval:
--- npx wrangler d1 execute recollect-flow-prod --remote --file=scripts/rebuild-item-search-index.sql
+-- npx wrangler d1 execute DB --remote --file=scripts/rebuild-item-search-index.sql
 
 BEGIN TRANSACTION;
 

@@ -7,6 +7,7 @@ const PRODUCTION_IDENTIFIERS = [
   'recollect-flow-prod',
   'recollect-flow-attachments-prod',
   '5fcba514-d0f7-45e7-a632-d4c59233af71',
+  '76bd35c6-c833-4987-a47e-6aa8238bb832',
 ];
 
 export function assessZeroCostTemplate(config) {

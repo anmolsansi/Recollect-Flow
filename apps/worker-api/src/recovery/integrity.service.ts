@@ -35,7 +35,7 @@ export class IntegrityService {
   constructor(
     private readonly db: D1Database,
     private readonly bucket: R2Bucket,
-    private readonly notionToken: string,
+    private readonly notionToken: string | undefined,
     private readonly options: IntegrityServiceOptions = {},
   ) {
     this.repository = new IntegrityRepository(db);
