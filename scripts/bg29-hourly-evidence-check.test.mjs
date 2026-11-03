@@ -44,6 +44,15 @@ function fixture() {
 
 const options = { now: Date.parse('2026-10-17T00:00:00.000Z') };
 
+test('recognizes the dedicated multistage Worker only for full scope', () => {
+  const input = fixture();
+  input.worker_name = 'recollect-flow-bg29-multistage-staging';
+  assert.equal(
+    assessBg29HourlyEvidence(input, options).structurally_valid,
+    false,
+  );
+});
+
 test('a structurally valid D1-only ledger can never close full BG-29', () => {
   const result = assessBg29HourlyEvidence(fixture(), options);
   assert.equal(result.structurally_valid, true, result.errors.join('; '));
@@ -178,6 +187,36 @@ function fullFixture() {
   }
   return input;
 }
+
+test('metered staging evidence requires the approved identity and actual cost reconciliation', () => {
+  const input = fullFixture();
+  input.worker_name = 'recollect-flow-bg29-multistage-staging';
+  input.financial_policy = 'METERED_R2_RISK_ACCEPTED';
+  input.authorization_reference = 'BG29-078-2026-10-31';
+  input.additional_cost_usd = 0.01;
+  const result = assessBg29HourlyEvidence(input, options);
+  assert.equal(result.structurally_valid, true, result.errors.join('; '));
+  assert.equal(result.bg29_078_verified, false);
+  for (const cost of [null, -1, NaN]) {
+    assert.equal(
+      assessBg29HourlyEvidence({ ...input, additional_cost_usd: cost }, options)
+        .structurally_valid,
+      false,
+    );
+  }
+  assert.equal(
+    assessBg29HourlyEvidence(
+      { ...input, authorization_reference: 'unapproved' },
+      options,
+    ).structurally_valid,
+    false,
+  );
+  assert.equal(
+    assessBg29HourlyEvidence({ ...input, financial_policy: 'unknown' }, options)
+      .structurally_valid,
+    false,
+  );
+});
 
 test('complete-shaped full-stage data still requires independent reviewer authentication', () => {
   const result = assessBg29HourlyEvidence(fullFixture(), options);

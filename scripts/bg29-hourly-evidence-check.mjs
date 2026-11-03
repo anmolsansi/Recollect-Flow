@@ -45,7 +45,9 @@ export function assessBg29HourlyEvidence(data, { now = Date.now() } = {}) {
     'Cloudflare account identity must be verified',
   );
   requireField(
-    data.worker_name === 'recollect-flow-bg29-staging',
+    data.worker_name === 'recollect-flow-bg29-staging' ||
+      (data.scope === 'full' &&
+        data.worker_name === 'recollect-flow-bg29-multistage-staging'),
     'Only an isolated BG29 staging Worker is permitted',
   );
   requireField(
@@ -64,10 +66,31 @@ export function assessBg29HourlyEvidence(data, { now = Date.now() } = {}) {
     data.external_provider_calls === 0,
     'No external provider calls may occur',
   );
+  const meteredRun = data.financial_policy === 'METERED_R2_RISK_ACCEPTED';
   requireField(
-    data.additional_cost_usd === 0,
-    'The total additional cost must be independently verified as zero',
+    data.financial_policy === undefined ||
+      data.financial_policy === 'STRICT_ZERO' ||
+      meteredRun,
+    'Unknown financial policy',
   );
+  if (meteredRun) {
+    requireField(
+      data.scope === 'full' &&
+        data.worker_name === 'recollect-flow-bg29-multistage-staging' &&
+        data.authorization_reference === 'BG29-078-2026-10-31',
+      'Metered R2 requires the separately approved full staging run',
+    );
+    requireField(
+      Number.isFinite(data.additional_cost_usd) &&
+        data.additional_cost_usd >= 0,
+      'The actual additional cost must be independently reconciled',
+    );
+  } else {
+    requireField(
+      data.additional_cost_usd === 0,
+      'The total additional cost must be independently verified as zero',
+    );
+  }
   requireField(
     typeof data.evidence_url === 'string' &&
       /^https:\/\//.test(data.evidence_url),

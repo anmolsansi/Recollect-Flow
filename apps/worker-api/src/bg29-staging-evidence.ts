@@ -63,7 +63,10 @@ export function createBg29StagingEvidenceLedger(db: D1Database) {
       const id = crypto.randomUUID();
       await db
         .prepare(
-          'INSERT INTO bg29_evidence_sweeps (id, cron, scheduled_at, observed_at) VALUES (?1, ?2, ?3, ?4)',
+          `INSERT INTO bg29_evidence_sweeps (id, cron, scheduled_at, observed_at)
+           SELECT ?1, ?2, ?3, ?4
+           WHERE (SELECT COUNT(*) FROM bg29_evidence_sweeps) < 10
+             AND NOT EXISTS (SELECT 1 FROM bg29_evidence_sweeps WHERE cron = ?2 AND scheduled_at = ?3)`,
         )
         .bind(
           id,
@@ -71,7 +74,11 @@ export function createBg29StagingEvidenceLedger(db: D1Database) {
           new Date(scheduledTime).toISOString(),
           new Date().toISOString(),
         )
-        .run();
+        .run()
+        .then((result) => {
+          if (result.meta.changes !== 1)
+            throw new Error('BG29_STAGING_SWEEP_LIMIT_OR_DUPLICATE');
+        });
       return id;
     },
 

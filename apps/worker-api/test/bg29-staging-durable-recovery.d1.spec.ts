@@ -2,6 +2,11 @@ import { applyD1Migrations, env } from 'cloudflare:test';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createBg29StagingScheduler } from '../src/bg29-staging-scheduler';
+import { stagingScheduled } from '../src/bg29-staging-entry';
+import {
+  createBg29StagingEvidenceLedger,
+  provisionBg29StagingEvidenceSchema,
+} from '../src/bg29-staging-evidence';
 import { BACKGROUND_CRON } from '../src/digests/digest-schedule';
 import { BG29_STAGING_URLS } from '../src/jobs/extraction/bg29-staging-source';
 import { provisionBg29StagingNotionSchema } from '../src/sync/bg29-staging-durable-notion';
@@ -25,6 +30,9 @@ function bindings(): Cloudflare.Env {
 
 async function reset(): Promise<void> {
   await env.DB.batch([
+    env.DB.prepare('DELETE FROM bg29_evidence_snapshots'),
+    env.DB.prepare('DELETE FROM bg29_evidence_stages'),
+    env.DB.prepare('DELETE FROM bg29_evidence_sweeps'),
     env.DB.prepare('DELETE FROM bg29_mock_notion_requests'),
     env.DB.prepare('DELETE FROM bg29_mock_notion_pages'),
     env.DB.prepare('DELETE FROM bg29_mock_failure_injections'),
@@ -78,11 +86,81 @@ describe('BG-29.078 durable isolated 503 / 429 / stale lease recovery', () => {
   beforeAll(async () => {
     await applyD1Migrations(env.DB, env.TEST_MIGRATIONS!);
     await provisionBg29StagingNotionSchema(env.DB);
+    await provisionBg29StagingEvidenceSchema(env.DB);
   });
   beforeEach(async () => {
     await reset();
     bindingsWithSharedDb = bindings();
   });
+
+  it('atomically rejects duplicate events and dispatch beyond ten sweeps', async () => {
+    const ledger = createBg29StagingEvidenceLedger(env.DB);
+    const start = Date.now();
+    await ledger.start(BACKGROUND_CRON, start);
+    await expect(ledger.start(BACKGROUND_CRON, start)).rejects.toThrow(
+      'BG29_STAGING_SWEEP_LIMIT_OR_DUPLICATE',
+    );
+    for (let index = 1; index < 9; index++)
+      await ledger.start(BACKGROUND_CRON, start + index * 3_600_000);
+    const last = await Promise.allSettled([
+      ledger.start(BACKGROUND_CRON, start + 9 * 3_600_000),
+      ledger.start(BACKGROUND_CRON, start + 10 * 3_600_000),
+    ]);
+    expect(last.filter((result) => result.status === 'fulfilled')).toHaveLength(
+      1,
+    );
+    expect(
+      await env.DB.prepare(
+        'SELECT COUNT(*) AS total FROM bg29_evidence_sweeps',
+      ).first(),
+    ).toEqual({ total: 10 });
+  });
+
+  it('records real retry transitions through the deployed entry without live providers', async () => {
+    await seedBg29TwentyFour(env.DB, env.ATTACHMENTS);
+    const network = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new Error('BG29_LIVE_NETWORK_FORBIDDEN'));
+    try {
+      const pending: Promise<unknown>[] = [];
+      await stagingScheduled(
+        {
+          cron: BACKGROUND_CRON,
+          scheduledTime: Date.now(),
+        } as ScheduledController,
+        bindings(),
+        {
+          waitUntil: (promise: Promise<unknown>) => pending.push(promise),
+        } as unknown as ExecutionContext,
+      );
+      expect(pending).toHaveLength(9);
+      expect(
+        (await Promise.allSettled(pending)).every(
+          (result) => result.status === 'fulfilled',
+        ),
+      ).toBe(true);
+      const url = await env.DB.prepare(
+        "SELECT status, attempts, last_error_code FROM processing_jobs WHERE item_id = 'bg29-078-url-01' AND job_type = 'acquire_url'",
+      ).first();
+      expect(url).toMatchObject({
+        status: 'pending',
+        attempts: 1,
+        last_error_code: 'SOURCE_SERVER_ERROR',
+      });
+      const notion = await env.DB.prepare(
+        "SELECT status, attempts, last_error_code, retry_after_at, available_at FROM sync_attempts WHERE id = 'bg29-078-sync-bg29-078-url-01'",
+      ).first();
+      expect(notion).toMatchObject({
+        status: 'pending',
+        attempts: 1,
+        last_error_code: 'NOTION_RATE_LIMITED',
+      });
+      expect(notion?.retry_after_at).toBe(notion?.available_at);
+      expect(network).not.toHaveBeenCalled();
+    } finally {
+      network.mockRestore();
+    }
+  }, 120_000);
 
   it('recovers bounded one-shot failures across independent Worker isolates and preserves originals', async () => {
     const originals = await seedBg29TwentyFour(env.DB, env.ATTACHMENTS);

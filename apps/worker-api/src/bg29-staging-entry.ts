@@ -1,4 +1,5 @@
 import { BACKGROUND_CRON } from './digests/digest-schedule';
+import { BG29_STAGING_URLS } from './jobs/extraction/bg29-staging-source';
 import { createBg29StagingEvidenceLedger } from './bg29-staging-evidence';
 import {
   assertBg29StagingBindings,
@@ -30,7 +31,10 @@ export async function stagingScheduled(
   ctx: ExecutionContext,
 ): Promise<void> {
   // Reject bad Cron/bindings before even writing measurement metadata.
-  const scheduler = createBg29StagingScheduler(env);
+  const scheduler = createBg29StagingScheduler(env, {
+    url503For: BG29_STAGING_URLS[0],
+    notion429For: 'bg29-078-url-01',
+  });
   if (controller.cron !== BACKGROUND_CRON) {
     throw new Error('BG29_STAGING_EGRESS_DENIED: unapproved Cron schedule');
   }
