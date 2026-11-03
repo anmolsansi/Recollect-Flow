@@ -13,12 +13,12 @@ export async function cleanupExpiredHostedBackups(
     try {
       await bucket.delete(backup.objectKey);
       if (await repository.markExpired(backup.id, now)) completed += 1;
-    } catch (error) {
+    } catch {
       console.warn(
         JSON.stringify({
           event: 'backup_retention_cleanup_failed',
           backup_id: backup.id,
-          error_name: error instanceof Error ? error.name : 'UnknownError',
+          error_code: 'BACKUP_RETENTION_CLEANUP_FAILED',
         }),
       );
     }
