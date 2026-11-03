@@ -298,8 +298,7 @@ export class NotionSyncService {
       console.warn(
         JSON.stringify({
           event: 'notion_request_network_error',
-          error_name:
-            error instanceof Error ? error.name : 'NonErrorThrownValue',
+          error_code: 'NOTION_NETWORK_ERROR',
         }),
       );
       throw new NotionSyncError('NOTION_NETWORK_ERROR', true);

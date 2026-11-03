@@ -1,5 +1,5 @@
 import { applyD1Migrations, env } from 'cloudflare:test';
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { cleanupExpiredHostedBackups } from '../src/recovery/backup-cleanup';
 
@@ -49,20 +49,30 @@ describe('BG-28 hosted backup retention and failure isolation', () => {
     ]);
   });
 
-  it('keeps failed deletions retryable without marking content expired', async () => {
+  it('redacts failed deletion errors and keeps verified bytes retryable', async () => {
+    const marker = 'SYNTHETIC_PRIVATE_CLEANUP_ERROR';
+    const error = new Error(marker);
+    error.name = marker;
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const failingBucket = {
       delete: async () => {
-        throw new Error('synthetic cleanup outage');
+        throw error;
       },
     } as unknown as R2Bucket;
-    expect(await cleanupExpiredHostedBackups(env.DB, failingBucket, NOW)).toBe(
-      0,
-    );
-    const row = await env.DB.prepare(
-      "SELECT state FROM backup_artifacts WHERE id = 'bg28-expired'",
-    ).first<{ state: string }>();
-    expect(row?.state).toBe('complete');
-    expect(await env.ATTACHMENTS.get(EXPIRED)).not.toBeNull();
-    expect(await env.ATTACHMENTS.get(RETAINED)).not.toBeNull();
+    try {
+      expect(
+        await cleanupExpiredHostedBackups(env.DB, failingBucket, NOW),
+      ).toBe(0);
+      const row = await env.DB.prepare(
+        "SELECT state FROM backup_artifacts WHERE id = 'bg28-expired'",
+      ).first<{ state: string }>();
+      expect(row?.state).toBe('complete');
+      expect(await env.ATTACHMENTS.get(EXPIRED)).not.toBeNull();
+      expect(await env.ATTACHMENTS.get(RETAINED)).not.toBeNull();
+      expect(warning).toHaveBeenCalled();
+      expect(JSON.stringify(warning.mock.calls)).not.toContain(marker);
+    } finally {
+      warning.mockRestore();
+    }
   });
 });

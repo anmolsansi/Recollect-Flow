@@ -15,7 +15,7 @@ export function searchRoutes() {
 
     if (!result.success) {
       const fields: Record<string, string> = {};
-      for (const err of result.error.errors) {
+      for (const err of result.error.issues) {
         if (err.path.length > 0) {
           fields[err.path.join('.')] = err.message;
         }

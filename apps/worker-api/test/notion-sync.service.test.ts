@@ -41,6 +41,20 @@ function response(
 describe('NotionSyncService', () => {
   afterEach(() => vi.restoreAllMocks());
 
+  it('redacts arbitrary upstream error names and messages while preserving retry semantics', async () => {
+    const marker = 'SYNTHETIC_PRIVATE_UPSTREAM_ERROR';
+    const error = new Error(marker);
+    error.name = marker;
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const fetcher = vi.fn<typeof fetch>().mockRejectedValue(error);
+    await expect(
+      new NotionSyncService('test-token', 'test-db-id', fetcher).syncItem(item),
+    ).rejects.toMatchObject({ code: 'NOTION_NETWORK_ERROR', retryable: true });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(warning).toHaveBeenCalled();
+    expect(JSON.stringify(warning.mock.calls)).not.toContain(marker);
+  });
+
   it('queries by exact Capture ID before creating a page', async () => {
     const fetcher = vi
       .fn<typeof fetch>()

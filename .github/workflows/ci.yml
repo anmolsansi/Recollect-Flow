@@ -21,6 +21,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Dependency security audit
+        run: npm audit --audit-level=low
       - run: npm run check
       - run: npm run release:package:test
       - run: npm run release:package
@@ -44,7 +46,7 @@ jobs:
       - run: npm run browser:workflow:test
       - run: npm run browser:acquisition:test
       - name: BG-31 release-head fingerprints (offline; no deploy)
-        if: github.event_name == 'pull_request' && (github.head_ref == 'feat/bg-31-release-manifest' || startsWith(github.head_ref, 'prep/cloudflare-review-'))
+        if: github.event_name == 'pull_request' && (github.head_ref == 'feat/bg-31-release-manifest' || startsWith(github.head_ref, 'prep/cloudflare-review-') || startsWith(github.head_ref, 'fix/security-release-'))
         env:
           BG31_HEAD: ${{ github.event.pull_request.head.sha }}
         run: |

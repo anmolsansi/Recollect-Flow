@@ -77,7 +77,7 @@ export const processingResultSchema = z
     submission_id: z.string().uuid(),
     input_hash: z.string().trim().min(8).max(128),
     result_version: z.string().trim().min(1).max(80),
-    result: z.record(z.unknown()),
+    result: z.record(z.string(), z.unknown()),
   })
   .strict()
   .superRefine((value, context) => {
