@@ -4291,6 +4291,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 ## BG-31 — 100 executable microtasks
 
+**November 3 closeout: 100/100 under accepted fresh-install/core-only criteria.** See the [exact approval, criterion dispositions and actual rollout evidence](releases/BG-31_CORE_RELEASE_2026-11-03.md). Old-artifact/destination/secret-presence criteria use the explicitly accepted first-install treatment; skipped BG-29 and full OPE-247/V1 are not passed. BG-32 was authorized only for the packet's bounded core deployment, not its whole checklist.
+
 **October 30 accepted fresh-install criteria:** The owner explicitly accepted
 [BG31-APPLICABILITY-2026-10-30.1](releases/BG-31_FRESH_INSTALL_APPLICABILITY.md).
 Apply its dispositions when assessing the remaining actions. Acceptance is not
@@ -4330,25 +4332,25 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-31 / 03 — Production read-only inventory
 
-- [ ] `BG-31.021` Read live Worker version.
-- [ ] `BG-31.022` Read live migration ledger.
-- [ ] `BG-31.023` Compare live versus candidate migrations.
-- [ ] `BG-31.024` Identify production D1 target.
-- [ ] `BG-31.025` Identify production R2 target.
-- [ ] `BG-31.026` Identify actual Web origin.
-- [ ] `BG-31.027` Identify configured Notion destination safely.
-- [ ] `BG-31.028` Identify Telegram destination safely.
+- [x] `BG-31.021` Read live Worker version.
+- [x] `BG-31.022` Read live migration ledger.
+- [x] `BG-31.023` Compare live versus candidate migrations.
+- [x] `BG-31.024` Identify production D1 target.
+- [x] `BG-31.025` Identify production R2 target.
+- [x] `BG-31.026` Identify actual Web origin.
+- [x] `BG-31.027` Identify configured Notion destination safely.
+- [x] `BG-31.028` Identify Telegram destination safely.
 - [x] `BG-31.029` Record only nonsecret identifiers.
 - [x] `BG-31.030` Mark unverified live values explicitly.
 
 #### BG-31 / 04 — Migration plan
 
-- [ ] `BG-31.031` List pending forward migrations.
-- [ ] `BG-31.032` Order pending migrations.
-- [ ] `BG-31.033` Identify affected tables.
-- [ ] `BG-31.034` Identify affected indexes.
-- [ ] `BG-31.035` Identify data backfills.
-- [ ] `BG-31.036` Identify runtime compatibility assumptions.
+- [x] `BG-31.031` List pending forward migrations.
+- [x] `BG-31.032` Order pending migrations.
+- [x] `BG-31.033` Identify affected tables.
+- [x] `BG-31.034` Identify affected indexes.
+- [x] `BG-31.035` Identify data backfills.
+- [x] `BG-31.036` Identify runtime compatibility assumptions.
 - [x] `BG-31.037` Assess old-code compatibility.
 - [x] `BG-31.038` Assess migration interruption behavior.
 - [x] `BG-31.039` Define migration stop conditions.
@@ -4357,11 +4359,11 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-31 / 05 — Configuration
 
 - [x] `BG-31.041` Inventory required secret names.
-- [ ] `BG-31.042` Verify presence without values.
+- [x] `BG-31.042` Verify presence without values.
 - [x] `BG-31.043` Inventory required nonsecret variables.
-- [ ] `BG-31.044` Verify canonical Web origin.
-- [ ] `BG-31.045` Verify approved provider configuration.
-- [ ] `BG-31.046` Verify enabled implementation capabilities.
+- [x] `BG-31.044` Verify canonical Web origin.
+- [x] `BG-31.045` Verify approved provider configuration.
+- [x] `BG-31.046` Verify enabled implementation capabilities.
 - [x] `BG-31.047` Verify model/free-tier guard configuration.
 - [x] `BG-31.048` Verify privacy routing configuration.
 - [x] `BG-31.049` Verify preview/production separation.
@@ -4400,8 +4402,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-31.073` Define privacy leak trigger.
 - [x] `BG-31.074` Define migration failure trigger.
 - [x] `BG-31.075` Define deep-link failure trigger.
-- [ ] `BG-31.076` Identify compatible old artifact.
-- [ ] `BG-31.077` Identify schema-compatible rollback boundary.
+- [x] `BG-31.076` Identify compatible old artifact.
+- [x] `BG-31.077` Identify schema-compatible rollback boundary.
 - [x] `BG-31.078` Define traffic stop procedure.
 - [x] `BG-31.079` Define operator notification path.
 - [x] `BG-31.080` Record recovery fallback if rollback unsafe.
@@ -4409,14 +4411,14 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-31 / 09 — Authorization packet
 
 - [x] `BG-31.081` Name intended release operator.
-- [ ] `BG-31.082` State exact production mutations.
+- [x] `BG-31.082` State exact production mutations.
 - [x] `BG-31.083` State expected external test actions.
 - [x] `BG-31.084` Separate messaging authorization.
 - [x] `BG-31.085` Include backup verification prerequisites.
 - [x] `BG-31.086` Include target identifiers.
 - [x] `BG-31.087` Include stop/rollback plan.
 - [x] `BG-31.088` Present reviewable manifest.
-- [ ] `BG-31.089` Record actual release authorization reference.
+- [x] `BG-31.089` Record actual release authorization reference.
 - [x] `BG-31.090` Keep execution blocked without required approval.
 
 #### BG-31 / 10 — Verify and close this task

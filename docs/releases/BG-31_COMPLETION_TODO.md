@@ -1,5 +1,7 @@
 # BG-31 completion plan
 
+**November 3 superseding record:** [Approved core-only release closeout](BG-31_CORE_RELEASE_2026-11-03.md) records the accepted first-install/scoped operations decision, 100/100 BG-31 manifest reconciliation and actual bounded deployment. The dated NO-GO/count/cost statements below are historical; they do not revoke or expand that exact approval. BG-29, full OPE-247 and V1 acceptance remain incomplete.
+
 **Updated:** October 30, 2026.
 
 **Status:** 78 of 100 canonical actions checked. Production NO-GO; 22 actions remain open. Source-only Cron/HTTP-dispatch hardening is additional preparation, not closure of a live acceptance gate.

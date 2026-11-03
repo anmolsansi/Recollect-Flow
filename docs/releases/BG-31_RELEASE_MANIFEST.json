@@ -179,5 +179,7 @@
     "account_subdomain": "openclawneutron",
     "candidate_packet": ".wrangler/bg31-cloudflare-candidate/release-packet.json",
     "review_chapter": "docs/releases/BG-31_FIRST_RELEASE_PACKET.md"
-  }
+  },
+  "historical_snapshot": true,
+  "superseded_by": "BG-31_CORE_RELEASE_2026-11-03.json"
 }
