@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "revision": "BG31-CORE-81e828067005-2026-11-03.3",
+  "scope": "CORE_ONLY_FRESH_INSTALL",
+  "bg31_manifest_status": "COMPLETE_UNDER_ACCEPTED_FRESH_INSTALL_AND_SCOPED_OPERATIONS_CRITERIA",
+  "canonical_actions": {
+    "checked": 100,
+    "total": 100,
+    "basis": "BG31-APPLICABILITY-2026-10-30.1 plus owner-approved November 3 core operations exceptions and atomic secret phase ordering; no unperformed V1 action passed"
+  },
+  "approval": {
+    "recorded_at": "2026-11-03T11:12:10.059912+00:00",
+    "owner_statement": "Done, complete it fast",
+    "context": "Direct response to exact revision and stated core-only migration, atomic secret/deploy, bounded smoke and operations-exception approval request.",
+    "approved_packet_sha256": "4cdd5899325e398ef2fd785fa4729872cc7830afa7200a78ffdc09a6ebcef839",
+    "scope_exceptions_accepted": true
+  },
+  "candidate": {
+    "source_sha": "81e82806700519b90b6fbd5c1ebb233ed5def9d2",
+    "exact_source_ci": "https://github.com/anmolsansi/Recollect-Flow/actions/runs/41606982016",
+    "merged_main_ci": "https://github.com/anmolsansi/Recollect-Flow/actions/runs/41613173405",
+    "worker_bundle_sha256": "84d88810e2ca8a2c9508aa834fb72175291eef6e9866cb98af73eca4125cd8e7",
+    "web_manifest_sha256": "27f1c9c3773798b9fc0b1ba466271a0949ee3daab161375f02f506d7139c7865",
+    "web_release_id": "3b455e5d2150e5a38c24f340164b220fe74b05163604c2e159572affbdd8def6",
+    "config_sha256": "57bc8b847ca8bf746e62a2f266064bb3f4036b5b21edc2100df96dd4aa22ebe0",
+    "archive_sha256": "e478950087158a02616af3ff13e22e4167fd207f7b556db5e38b4f6c89e0feb0"
+  },
+  "deployment": {
+    "account_id": "a9482fbfb91ace26dee097cbd41293f9",
+    "worker": "recollect-flow",
+    "origin": "https://recollect-flow.openclawneutron.workers.dev",
+    "version_id": "ff5ba1ce-32b0-499c-ae67-f561ec09c93a",
+    "deployment_id": "b5146a95-1252-4a56-b01c-dfcca31e105d",
+    "created_at": "2026-11-03T11:13:00.742663Z",
+    "d1_name": "recollect-flow-prod-v2",
+    "d1_uuid": "76bd35c6-c833-4987-a47e-6aa8238bb832",
+    "r2_bucket": "recollect-flow-attachments-prod-v2",
+    "r2_access": "PRIVATE_STANDARD",
+    "migration_count": 22,
+    "migration_ledger_verified": true,
+    "foreign_keys": "PASS",
+    "quick_check": "ok",
+    "required_secret_names_verified": [
+      "ADMIN_TOKEN",
+      "CAPTURE_TOKEN",
+      "LOCAL_WORKER_TOKEN",
+      "WEB_INBOX_BASE_URL"
+    ],
+    "cron": [],
+    "provider_dispatch_enabled": false
+  },
+  "core_acceptance": {
+    "status": "PASSED_WITH_RECORDED_INITIAL_SEARCH_MISS",
+    "synthetic_items": 3,
+    "synthetic_pdf_count": 1,
+    "pdf_bytes": 639,
+    "pdf_sha256": "b9e46d9bb5dda15caef690fcda522cc286ce7c0d32e39c3d654be187eb34842a",
+    "capture_replay": true,
+    "login_cookie_and_scope_denials": true,
+    "search_eventually_matched": true,
+    "edit": true,
+    "private_original_readback_and_anonymous_denial": true,
+    "json_csv_export": true,
+    "sampled_safe_logs": true,
+    "provider_usage_rows": 0,
+    "url_acquisition_rows": 0,
+    "extraction_rows": 0,
+    "initial_immediate_search_miss": true,
+    "python_default_user_agent": "Cloudflare error 1010/403; explicit application User-Agent returned 200",
+    "physical_owner_device_acceptance": "NOT_VERIFIED"
+  },
+  "remaining": {
+    "BG-29.078": "SKIPPED_BY_OWNER_NOT_PASSED",
+    "OPE-247": "IN_PROGRESS_FULL_HOSTED_OPERATIONS_ACCEPTANCE_DEFERRED",
+    "BG-32": "BOUNDED_CORE_DEPLOYMENT_EXECUTED_FULL_CHECKLIST_NOT_CLOSED",
+    "V1": "NOT_ACCEPTED",
+    "recurring_monitoring": "NOT_AUTHORIZED",
+    "automatic_hosted_backups": "DISABLED",
+    "cost": "Workers Free and alerts owner-reported; metered R2 risk accepted; no hard invoice cap"
+  },
+  "migrations": [
+    {
+      "name": "0001_initial.sql",
+      "sha256": "7a09870093628311397bf0ac79ce879440b8263cc4109573da0cdacaef8c9126"
+    },
+    {
+      "name": "0002_add_duplicate_of.sql",
+      "sha256": "c01f43ba8d9ec23c5e3a29d4f0d5624ad403371fb86ece3494998d58ddfa435f"
+    },
+    {
+      "name": "0003_add_attachments_table.sql",
+      "sha256": "e9991c72cce8ea177dbe2004e371acf465b2d6c27eafdd4126cb373f7a1226a9"
+    },
+    {
+      "name": "0004_add_policy_routing.sql",
+      "sha256": "ca1fc627bdb4b9417aeeee6e7a7495517c7d9fddec2a39927a989044b2c5bd7d"
+    },
+    {
+      "name": "0005_update_hosted_ai_policy.sql",
+      "sha256": "7bb811140d2c7030ac56e21d1e1679b115efcd80a119896806503554404e427e"
+    },
+    {
+      "name": "0006_add_capture_request_fingerprint.sql",
+      "sha256": "19bfd51564b256cfe3466ebc2fe709e39a200bb8a2bf3bf4fd2cdf30e0100fdb"
+    },
+    {
+      "name": "0007_add_job_leases.sql",
+      "sha256": "be2196c76741c2e177fde6bbb9c6ebeabcf00fb9f9f32f27312cbaceadfe51cb"
+    },
+    {
+      "name": "0008_add_sync_available_at.sql",
+      "sha256": "c99ebd0b14f55a51a806e08bb708340ee1fc8ad54aa64161e1274af8025a41ba"
+    },
+    {
+      "name": "0009_complete_jobs_and_notion_projection.sql",
+      "sha256": "9293a0356d1b3111758216c723988f2a7abff938c57a302d47a7920815a6e9a1"
+    },
+    {
+      "name": "0010_add_enrichment_fields.sql",
+      "sha256": "be200ed57d43019e8bbef5a9428e73527851d976125b3b22e0a0b21d034837e8"
+    },
+    {
+      "name": "0014_allow_cloudflare_provider.sql",
+      "sha256": "06cb494e6d54a0d70e9352a53e88e2cc414eaff9e651ce4776d43896186c5e48"
+    },
+    {
+      "name": "0015_add_extraction_records.sql",
+      "sha256": "73162a0673dbd80f82c95be9907ae29eb31949fc0de6271205a9467c449cc53c"
+    },
+    {
+      "name": "0016_add_item_search_fts.sql",
+      "sha256": "38add64c3ffe8eef1ccf1c2ea87b91380dca249eab8a9a7acd28dc11d1552d31"
+    },
+    {
+      "name": "0017_add_item_review_contract.sql",
+      "sha256": "3ae94da68ea2491fa2a901327962129930fa943a54d491888243fe3993d0bbda"
+    },
+    {
+      "name": "0018_add_item_duplicate_target.sql",
+      "sha256": "56d69bae236b9477c7cd9755c074e682746950a60a56a9b221d0e0248968a336"
+    },
+    {
+      "name": "0019_add_digest_jobs.sql",
+      "sha256": "f893c1eef81d98e7c3f43bd2ce90613f8aa8df40e82bf3de286df3dc259f0f67"
+    },
+    {
+      "name": "0020_add_ai_capacity_controls.sql",
+      "sha256": "a9c8e6c51d8452ed5f7e969f9dda2d5c791b034be17212e4e78da1c405c88bb1"
+    },
+    {
+      "name": "0021_add_recovery_workflows.sql",
+      "sha256": "ec08462d15fe74e64424204e633d13745c7925a309252617b2500c28965281ad"
+    },
+    {
+      "name": "0022_add_url_acquisition_evidence.sql",
+      "sha256": "dbcefda866d066c3fbc0f9816342cf82b1bbca29199f8320663d38f76381cff0"
+    },
+    {
+      "name": "0023_add_processing_generation.sql",
+      "sha256": "554e0583ac3360e773fe45b10b10c46ae09542ef327fa9027f02065fc0f6c986"
+    },
+    {
+      "name": "0024_materialize_current_processing_status.sql",
+      "sha256": "4658538ddd331759428f01987775a3e4d84a2cf366e0934d037b76b4bb765066"
+    },
+    {
+      "name": "0025_bg28_scheduled_backups.sql",
+      "sha256": "ad04f7bee12acf78ba9f5b7286b9b16204ecb46b98b48e2ca943b69bb24861f9"
+    }
+  ],
+  "evidence_sha256": {
+    "execution-state.json": "ceadb5be737fb8f672fe8f9c3232a8ff0dfaadd8a8141efffda2369d961ca9ce",
+    "post-migration-verification.json": "7e79957d21b486ba94445c490d58978f732f85e317511cb964c60e70e63aa875",
+    "post-deployment-metadata.json": "8c4da3e414b03bcbd99d9abd7c42e3185249e6f732b39b0069cb7e5db0626cea",
+    "live-smoke.json": "ee253015c86e80851d02f33ab3d59a78fd3dd7976896009109bf6dcc0ffdf025",
+    "post-smoke-d1.json": "1517255dcea9b9232e98cf2fe5d16ba4cc68d28c04ea3b0c7208b022d1044628",
+    "safe-log-review.json": "73889852b8c4c62c405eec8032d23385670cb8966ef2446cb95d96d9de644bf6",
+    "python-client-diagnostic.json": "2b0bfb42c26b3298dcad6b841b546c6c38e0a6eaac992d5a21ba0f2e7b3237ea"
+  },
+  "recorded_at": "2026-11-03T11:20:39.118728+00:00"
+}

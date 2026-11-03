@@ -1,5 +1,7 @@
 # BG-31 fresh-install applicability addendum — accepted criteria
 
+**November 3 superseding record:** [Approved core-only release closeout](BG-31_CORE_RELEASE_2026-11-03.md) records the accepted first-install/scoped operations decision, 100/100 BG-31 manifest reconciliation and actual bounded deployment. The dated NO-GO/count/cost statements below are historical; they do not revoke or expand that exact approval. BG-29, full OPE-247 and V1 acceptance remain incomplete.
+
 **Revision:** `BG31-APPLICABILITY-2026-10-30.1`.
 **Status:** Owner accepted `BG31-APPLICABILITY-2026-10-30.1` on October 30, 2026, in the continuation of this chat: “I accept move to next step and how to complete that next step”. This accepts the immediately preceding fresh-install criteria request; it does not authorize hosted execution or change the strict-$0 policy.
 **Current gate:** 78/100 canonical actions; production NO-GO; BG-32 blocked.

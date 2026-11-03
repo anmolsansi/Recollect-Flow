@@ -1,5 +1,7 @@
 # BG-31 — RecollectFlow V1 release manifest
 
+**November 3 superseding record:** [Approved core-only release closeout](BG-31_CORE_RELEASE_2026-11-03.md) records the accepted first-install/scoped operations decision, 100/100 BG-31 manifest reconciliation and actual bounded deployment. The dated NO-GO/count/cost statements below are historical; they do not revoke or expand that exact approval. BG-29, full OPE-247 and V1 acceptance remain incomplete.
+
 **October 31 candidate update:** The new resources are created, the fresh D1
 baseline is authenticated, and canonical configuration now targets them with
 provider integrations disabled and only core secrets required. Metered R2 risk
