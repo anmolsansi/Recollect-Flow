@@ -4460,7 +4460,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-32.011` Verify approved manifest revision.
 - [x] `BG-32.012` Verify current candidate SHA.
 - [ ] `BG-32.013` Verify authorized operation scope.
-- [ ] `BG-32.014` Verify actual target Worker.
+- [x] `BG-32.014` Verify actual target Worker.
 - [ ] `BG-32.015` Verify actual D1 identifier.
 - [ ] `BG-32.016` Verify actual R2 identifier.
 - [x] `BG-32.017` Verify canonical Web origin.
