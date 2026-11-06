@@ -60,6 +60,30 @@ export function validateFrozenRelease(record, originOverride) {
     'Wrong release Worker.',
   );
   assert.equal(
+    record?.deployment?.account_id,
+    'a9482fbfb91ace26dee097cbd41293f9',
+  );
+  assert.equal(record?.deployment?.d1_name, 'recollect-flow-prod-v2');
+  assert.equal(
+    record?.deployment?.d1_uuid,
+    '76bd35c6-c833-4987-a47e-6aa8238bb832',
+  );
+  assert.equal(
+    record?.deployment?.r2_bucket,
+    'recollect-flow-attachments-prod-v2',
+  );
+  assert.equal(record?.deployment?.r2_access, 'PRIVATE_STANDARD');
+  assert.equal(
+    record?.deployment?.version_id,
+    'ff5ba1ce-32b0-499c-ae67-f561ec09c93a',
+  );
+  assert.equal(
+    record?.deployment?.deployment_id,
+    'b5146a95-1252-4a56-b01c-dfcca31e105d',
+  );
+  assert.equal(record?.deployment?.migration_count, 22);
+  assert.deepEqual(record?.deployment?.cron, []);
+  assert.equal(
     record?.deployment?.migration_ledger_verified,
     true,
     'Historical migration proof absent.',
