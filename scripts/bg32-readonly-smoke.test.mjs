@@ -3,11 +3,17 @@ import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { runReadOnlySmoke, validateFrozenRelease } from './bg32-readonly-smoke.mjs';
+import {
+  runReadOnlySmoke,
+  validateFrozenRelease,
+} from './bg32-readonly-smoke.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const approved = JSON.parse(
-  readFileSync(join(root, 'docs/releases/BG-31_CORE_RELEASE_2026-11-03.json'), 'utf8'),
+  readFileSync(
+    join(root, 'docs/releases/BG-31_CORE_RELEASE_2026-11-03.json'),
+    'utf8',
+  ),
 );
 
 function fixtureResponse(path, overrides = {}) {
@@ -48,7 +54,9 @@ function fixtureResponse(path, overrides = {}) {
         return null;
       },
     },
-    async json() { return overrides.json ?? json; },
+    async json() {
+      return overrides.json ?? json;
+    },
   };
 }
 
@@ -57,7 +65,8 @@ function fakeFetch(overrides = {}) {
   async function send(url, opts) {
     const path = new URL(url).pathname;
     calls.push({ path, opts });
-    if (overrides.throwPath === path) throw new Error('synthetic transport failure');
+    if (overrides.throwPath === path)
+      throw new Error('synthetic transport failure');
     return fixtureResponse(path, overrides.responses?.[path] ?? {});
   }
   return { send, calls };
@@ -66,17 +75,28 @@ function fakeFetch(overrides = {}) {
 test('reuses exact approved identity and rejects alternate origins', () => {
   const target = validateFrozenRelease(approved);
   assert.equal(target.origin, approved.deployment.origin);
-  assert.equal(target.historical_worker_version, approved.deployment.version_id);
+  assert.equal(
+    target.historical_worker_version,
+    approved.deployment.version_id,
+  );
   assert.throws(
     () => validateFrozenRelease(approved, 'https://wrong.example'),
     /must match/,
   );
   assert.throws(
-    () => validateFrozenRelease({ ...approved, deployment: { ...approved.deployment, provider_dispatch_enabled: true } }),
+    () =>
+      validateFrozenRelease({
+        ...approved,
+        deployment: { ...approved.deployment, provider_dispatch_enabled: true },
+      }),
     /Provider dispatch/,
   );
   assert.throws(
-    () => validateFrozenRelease({ ...approved, approval: { scope_exceptions_accepted: false } }),
+    () =>
+      validateFrozenRelease({
+        ...approved,
+        approval: { scope_exceptions_accepted: false },
+      }),
     /owner decision/,
   );
 });
@@ -90,8 +110,14 @@ test('public smoke uses GET-only requests with no credential headers or mutation
   assert.equal(result.owner_device_verified, false);
   assert.equal(result.full_v1_accepted, false);
   assert.ok(calls.every(({ opts }) => opts.method === 'GET'));
-  assert.ok(calls.every(({ opts }) => opts.credentials === 'omit' && opts.redirect === 'manual'));
-  assert.ok(calls.every(({ opts }) => !('headers' in opts) && !('body' in opts)));
+  assert.ok(
+    calls.every(
+      ({ opts }) => opts.credentials === 'omit' && opts.redirect === 'manual',
+    ),
+  );
+  assert.ok(
+    calls.every(({ opts }) => !('headers' in opts) && !('body' in opts)),
+  );
 });
 
 test('failure on public route short-circuits without further network activity', async () => {
@@ -109,22 +135,33 @@ test('rejects redirected responses, unsafe private caching, and anonymous succes
     { '/api/v1/items/bg32-readonly-route-probe': { status: 200 } },
     { '/assets/bg32-missing-aBcD1234.js': { contentType: 'text/html' } },
   ]) {
-    const result = await runReadOnlySmoke(approved, { fetchImpl: fakeFetch({ responses }).send });
+    const result = await runReadOnlySmoke(approved, {
+      fetchImpl: fakeFetch({ responses }).send,
+    });
     assert.equal(result.decision, 'STOP');
     assert.ok(result.stages.some((stage) => stage.status === 'failed'));
   }
 });
 
 test('rejects wrong published Web revision and reports transport failure without proceeding', async () => {
-  const wrong = fakeFetch({ responses: {
-    '/release-manifest.json': { json: { release_id: 'a'.repeat(64), source_revision: approved.candidate.source_sha } },
-  } });
+  const wrong = fakeFetch({
+    responses: {
+      '/release-manifest.json': {
+        json: {
+          release_id: 'a'.repeat(64),
+          source_revision: approved.candidate.source_sha,
+        },
+      },
+    },
+  });
   const release = await runReadOnlySmoke(approved, { fetchImpl: wrong.send });
   assert.equal(release.decision, 'STOP');
   assert.equal(release.stages.at(-1).stage, 'published-web-release');
 
   const unavailable = fakeFetch({ throwPath: '/api/v1/health' });
-  const health = await runReadOnlySmoke(approved, { fetchImpl: unavailable.send });
+  const health = await runReadOnlySmoke(approved, {
+    fetchImpl: unavailable.send,
+  });
   assert.equal(health.decision, 'STOP');
   assert.equal(unavailable.calls.length, 1);
 });
