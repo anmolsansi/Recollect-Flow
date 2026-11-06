@@ -76,8 +76,18 @@ production mutation was performed**.
 - **D1:** `recollect-flow-prod-v2` has the approved UUID
   `76bd35c6-c833-4987-a47e-6aa8238bb832`. The dashboard shows 35
   tables and about 602 kB of storage.
-- **Migration ledger:** D1 Studio lists `d1_migrations`, but its rows were
-  not read and the current 22-file applied sequence was not rechecked.
+- **Migration ledger:** The owner opened `d1_migrations` in the
+  authenticated D1 Studio dashboard. Opera observed entries 1–20 from
+  the first page and later independently observed entries 21–22 from
+  the visible table. The owner also supplied the complete ordered
+  22-row ledger. All IDs are sequential from 1 through 22, and all
+  filenames match the 22 files in the current repository
+  `migrations/` directory, in exact order. The first migration is
+  `0001_initial.sql` at `2026-11-03 11:11:57`, and the last is
+  `0025_bg28_scheduled_backups.sql` at `2026-11-03 11:12:05`.
+  `0024_materialize_current_processing_status.sql` appears at ID 21.
+  This verifies the hosted migration ledger's **names and order**, not
+  schema integrity or backup recoverability. No SQL or migration was run.
 - **R2:** `recollect-flow-attachments-prod-v2` uses Standard storage;
   public access is disabled. Its reported size is about 824 B. No original
   object bytes or checksums were inspected.
@@ -94,13 +104,15 @@ production mutation was performed**.
 - **Scheduled triggers:** Worker Settings says
   `No cron triggers configured`.
 
-**Remaining limits:** The live D1 ledger's rows, full active Worker version UUID,
-R2 original-object checksums, end-to-end runtime binding access, private
-session verification, authenticated operational logs, and independent hosted
-backup/recovery proof have **not** been verified by this inventory. The
-November 3 BG-31 record provides earlier 22-migration and full-version proof,
-but cannot be relabeled as a current SQL read. No BG-32 production deployment
-or new-operation authorization follows from this audit.
+**Remaining limits:** The full active Worker version UUID, R2 original-object
+checksums, end-to-end runtime binding access, private session verification,
+authenticated operational logs, and independent hosted backup/recovery proof
+have **not** been verified by this inventory. The November 3 BG-31 record
+provides earlier full-version and release proof. The current migration
+ledger has now been checked separately from the live, read-only D1 Studio
+table and the owner's supplied 22-row list, without SQL execution. No BG-32
+production deployment or new-operation authorization follows from this
+audit.
 
 ## Verification approach
 
