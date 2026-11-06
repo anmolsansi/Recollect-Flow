@@ -3675,7 +3675,7 @@ npm run bg32:readonly
 ```
 
 The first command uses local test doubles; it does not contact production.
-The second fetches only from the *exact* approved HTTPS origin stored in
+The second fetches only from the _exact_ approved HTTPS origin stored in
 `docs/releases/BG-31_CORE_RELEASE_2026-11-03.json`. An optional `BG32_ORIGIN`
 must match that approved origin exactly. It performs no login or API mutation;
 it checks health, HTML routing, anonymous private denial, API and missing-asset
