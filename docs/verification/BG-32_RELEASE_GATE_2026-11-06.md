@@ -102,6 +102,8 @@ November 3 BG-31 record provides earlier 22-migration and full-version proof,
 but cannot be relabeled as a current SQL read. No BG-32 production deployment
 or new-operation authorization follows from this audit.
 
+<!-- prettier-ignore-start -->
+
 ## November 6 owner-device authentication and PDF metadata (read-only)
 
 The owner reported logging in privately on the connected Opera browser. The
@@ -158,6 +160,8 @@ No new capture, update, deletion, migration, deployment, R2 write, billing,
 provider call, secret read, or scheduled task was performed. The historical
 BG-31 PDF download proof remains distinct from this new owner-device check.
 Do not close BG-32 or claim full V1 acceptance from these two checklist passes.
+
+<!-- prettier-ignore-end -->
 
 ## Verification approach
 
