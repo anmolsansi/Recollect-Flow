@@ -102,6 +102,63 @@ November 3 BG-31 record provides earlier 22-migration and full-version proof,
 but cannot be relabeled as a current SQL read. No BG-32 production deployment
 or new-operation authorization follows from this audit.
 
+## November 6 owner-device authentication and PDF metadata (read-only)
+
+The owner reported logging in privately on the connected Opera browser. The
+verification assistant neither received nor read the admin token, session cookie,
+or secret values. These are observed browser/UI and authenticated API results,
+not a claim that the complete download security contract is accepted.
+
+- **BG-32.054 / admin login — PASS (observed):** the previously anonymous
+  landing page changed to the logged-in Web Inbox, with navigation and a
+  Logout control rather than the Admin Access form. Three existing synthetic
+  items were visible. No login credential was exposed to the assistant.
+- **BG-32.055 / session persistence — PASS (observed):** same-tab navigation
+  back to the canonical home origin caused a fresh page load and then
+  returned the authenticated Inbox. New Opera tabs opened direct item URLs
+  without showing the Admin Access form. This verifies same-browser reload
+  and new-tab persistence, not cookie attributes or cross-device lifetime.
+- **Authenticated read — PASS (observed):** a read-only GET in the
+  authenticated browser to
+  `/api/v1/items/302e4bea-3225-4708-8b41-9c5661bf4d17`
+  returned a file-source synthetic item with a linked PDF attachment. The
+  detail page showed the same attachment and a Download link. The PDF
+  attachment ID is `2a8afecc-eab3-4f43-a3aa-e430013435fd`,
+  size `639` bytes, declared and detected type `application/pdf`, and
+  stored SHA-256
+  `b9e46d9bb5dda15caef690fcda522cc286ce7c0d32e39c3d654be187eb34842a`.
+  The synthetic filename is
+  `bg31core663c3ef516e6480da9e0ab2cdfccbeae.pdf`.
+  These are *stored metadata*, not an independently rehashed download.
+- **Private unauthenticated denial — observed earlier on November 6:** before
+  the owner logged in, a GET to
+  `/api/v1/attachments/bg32-anonymous-probe/content`
+  returned JSON `UNAUTHENTICATED`, with safe request ID
+  `ef785ae9-0f21-4543-815a-2f078045e885`.
+  This uses a nonexistent probe ID, so it verifies authentication is enforced
+  before exposing unknown attachment content. It is not a replacement for
+  anonymous denial on the *actual* attachment URL.
+- **Actual private original download — NOT YET VERIFIED:** navigating to the
+  real PDF content URL triggered a transient new tab that Opera's connector
+  could not inspect (`Tab with id 295029052 was not found`). This may be a
+  browser-managed download, but neither an HTTP 200 response nor saved PDF
+  bytes/size/hash was exposed. Do not label this attempt a successful or
+  failed byte-integrity download solely on that browser-connector error.
+
+**Remaining device-side proof:** on the owner's Mac, use the existing
+synthetic item detail page to download its PDF, then verify the downloaded
+file is exactly 639 bytes with SHA-256
+`b9e46d9bb5dda15caef690fcda522cc286ce7c0d32e39c3d654be187eb34842a`.
+Verify unauthorized access to the *actual attachment ID* in a separate logged-out
+or private browser session, without logging out the owner's existing session.
+Record results without tokens, cookies, private PDF contents, or personal file
+paths. This test did not inspect HTTP status/headers or cookie attributes.
+
+No new capture, update, deletion, migration, deployment, R2 write, billing,
+provider call, secret read, or scheduled task was performed. The historical
+BG-31 PDF download proof remains distinct from this new owner-device check.
+Do not close BG-32 or claim full V1 acceptance from these two checklist passes.
+
 ## Verification approach
 
 Keep the historical evidence separate from new observations. Use a read-only checker for health, public routing, exact published Web release ID, anonymous private denial and missing asset behavior. The checker must never make a mutating request or use credentials. A passed public check supports reachability and routing only, not private session, DB inventory, billing, backup or final release acceptance.
