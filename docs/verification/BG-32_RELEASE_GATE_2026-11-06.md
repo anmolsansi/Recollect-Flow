@@ -161,6 +161,58 @@ provider call, secret read, or scheduled task was performed. The historical
 BG-31 PDF download proof remains distinct from this new owner-device check.
 Do not close BG-32 or claim full V1 acceptance from these two checklist passes.
 
+## November 6 owner-confirmed downloaded PDF integrity
+
+The owner supplied macOS Terminal output for the downloaded existing BG-31
+synthetic PDF after clicking its authenticated Download link. The file's reported
+byte length was **639**, and `shasum -a 256` returned
+`b9e46d9bb5dda15caef690fcda522cc286ce7c0d32e39c3d654be187eb34842a`.
+Both values **exactly match** the previously observed production attachment
+metadata. This confirms owner-device download integrity for the synthetic
+original. The assistant did not directly read local bytes or file contents.
+The owner's private home path is deliberately omitted.
+
+An additional read-only probe against the **actual** attachment URL from a
+separate unauthenticated browser was **inconclusive**. The browser showed
+`ERR_QUIC_PROTOCOL_ERROR` and no HTTP status or JSON error was available.
+This did not expose the PDF, but it cannot prove the server denied anonymous
+access. Retest the exact URL in an Opera private window without session
+cookies, expecting a JSON `UNAUTHENTICATED` response and no PDF body. Do
+not replace the pending actual-object security check with the earlier
+unknown-ID unauthenticated probe.
+
+**Outcome:** authenticated PDF bytes/length/hash **PASS (owner-confirmed)**;
+actual-object anonymous denial, HTTP status/headers, and cookie attribute
+inspection remain **OPEN**. No production change or credential handling
+occurred.
+
+## November 6 owner-confirmed anonymous denial for actual synthetic PDF
+
+After the inconclusive independent browser attempt above, the owner supplied
+the JSON response from the requested unauthenticated/private-window check
+against the **existing synthetic attachment content URL** ending in
+`/api/v1/attachments/2a8afecc-eab3-4f43-a3aa-e430013435fd/content`:
+
+```json
+{"error":{"code":"UNAUTHENTICATED","message":"A valid capture token is required."},"meta":{"request_id":"963929e1-85e8-4517-90d4-1c05687f2026"}}
+```
+
+This is **owner-reported confirmation**, consistent with the earlier request
+to open the actual attachment URL in an Opera private window without logging
+in. The response contains an authentication error, not PDF bytes. It
+supersedes the earlier **pending** actual-object anonymous-denial status,
+but does not turn the separate browser's `ERR_QUIC_PROTOCOL_ERROR` into an
+HTTP response. The assistant did not independently inspect that private
+window or verify response status/headers.
+
+**Updated Step 3 outcome:** admin login, authenticated session persistence,
+private synthetic PDF download (639 bytes with exact expected SHA-256), and
+unauthenticated denial of the actual PDF attachment **PASS** based on
+direct Opera inspection and owner-supplied device evidence as identified.
+HTTP status/headers, cookie attributes, and the **remaining BG-32 release
+gates** are outside this completed functional Step 3 verification. Do not
+close BG-32, BG-33, or full V1 based solely on this section.
+
 <!-- prettier-ignore-end -->
 
 ## Verification approach
