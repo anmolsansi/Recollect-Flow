@@ -15,6 +15,20 @@ const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 
 export function validateFrozenRelease(record, originOverride) {
   assert.equal(record?.schema_version, 1, 'Invalid BG-31 core record version.');
+  // Fail closed if the local JSON is replaced with another valid-looking release.
+  assert.equal(record?.revision, 'BG31-CORE-81e828067005-2026-11-03.3');
+  assert.equal(
+    record?.approval?.approved_packet_sha256,
+    '4cdd5899325e398ef2fd785fa4729872cc7830afa7200a78ffdc09a6ebcef839',
+  );
+  assert.equal(
+    record?.candidate?.source_sha,
+    '81e82806700519b90b6fbd5c1ebb233ed5def9d2',
+  );
+  assert.equal(
+    record?.candidate?.web_release_id,
+    '3b455e5d2150e5a38c24f340164b220fe74b05163604c2e159572affbdd8def6',
+  );
   assert.equal(
     record?.scope,
     'CORE_ONLY_FRESH_INSTALL',
