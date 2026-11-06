@@ -14,7 +14,7 @@ No checkbox is pre-checked by this exception.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#7-bg-01--freeze-a-reproducible-starting-point).
 
-These steps inherit this task's **what, why, when, where and proof** above.
+These unchecked steps inherit this task's **what, why, when, where and proof** above.
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
@@ -4438,7 +4438,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#38-bg-32--apply-the-authorized-production-release).
 
-These unchecked steps inherit this task's **what, why, when, where and proof** above.
+These steps inherit this task's **what, why, when, where and proof** above.
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
