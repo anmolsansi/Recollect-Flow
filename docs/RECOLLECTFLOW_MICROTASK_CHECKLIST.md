@@ -4512,8 +4512,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-32.051` Request health endpoint.
 - [x] `BG-32.052` Request homepage.
 - [x] `BG-32.053` Open direct item route.
-- [ ] `BG-32.054` Test admin login.
-- [ ] `BG-32.055` Test session persistence.
+- [x] `BG-32.054` Test admin login.
+- [x] `BG-32.055` Test session persistence.
 - [x] `BG-32.056` Test anonymous item denial.
 - [x] `BG-32.057` Test private download authorization.
 - [x] `BG-32.058` Run synthetic capture/replay.
