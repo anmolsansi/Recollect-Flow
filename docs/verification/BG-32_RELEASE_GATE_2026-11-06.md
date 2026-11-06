@@ -58,6 +58,35 @@ IDs, D1 identity, private R2 bucket and disabled Cron scope. Regression tests
 cover these substitutions and verify that a failed step stops subsequent
 requests. These are local deterministic tests, not fresh platform facts.
 
+## November 6 authenticated Cloudflare dashboard inventory (read-only)
+
+This inspection used the owner's existing signed-in Opera Cloudflare dashboard
+for account `a9482fbfb91ace26dee097cbd41293f9`. It involved only page
+navigation and reading visible metadata; **no deployment, SQL query, object
+read/write, configuration edit, secret disclosure, token usage, or other
+production mutation was performed**.
+
+| Item | Live observation | Scope of proof |
+| --- | --- | --- |
+| Account | Dashboard shows the exact intended account ID `a9482fbfb91ace26dee097cbd41293f9`. | Account selection verified |
+| Worker | `recollect-flow` appears as a production Worker at the approved `workers.dev` hostname. | Live Worker identity verified |
+| Active deployment | Cloudflare deployments shows `ff5ba1ce`, `100% Ready` and `100%` traffic, deployed manually via Wrangler. | Matches the historical version prefix; the dashboard did **not** expose the complete UUID in this inspection |
+| D1 | `recollect-flow-prod-v2`, exact UUID `76bd35c6-c833-4987-a47e-6aa8238bb832`; dashboard reports 35 tables and about 602 kB current storage. | Live database identity verified |
+| D1 migrations | D1 Studio lists `d1_migrations` among the tables. | Ledger table exists, but no ledger rows were read and the current 22-file applied sequence was **not** independently rechecked |
+| R2 | `recollect-flow-attachments-prod-v2`; Standard storage, public access **Disabled**, approximately 824 B at inspection. | Bucket identity and public-access state verified, not individual original bytes |
+| Worker bindings | Five names: `AI`, `ASSETS`, `ATTACHMENTS`, `DB`, `LOGIN_RATE_LIMITER`. D1/R2 targets match the approved names. | Binding names and targets verified; no runtime access/permission test made |
+| Required secrets | `ADMIN_TOKEN`, `CAPTURE_TOKEN`, `LOCAL_WORKER_TOKEN`, `WEB_INBOX_BASE_URL` listed as encrypted secrets. | Presence of names verified; no values viewed or exposed |
+| Dispatch gates | `HOSTED_EXTERNAL_DISPATCH_ENABLED=false`, `HOSTED_HTTP_DISPATCH_ENABLED=false`, `HOSTED_SCHEDULED_WORK_ENABLED=false`, `HOSTED_BACKUP_AUTOCREATE_ENABLED=false`, and `DIGEST_AI_ENABLED=false`. | Dashboard configuration values verified |
+| Scheduled triggers | Worker Settings explicitly says `No cron triggers configured`. | No Worker Cron triggers visible in this production configuration |
+
+**Remaining limits:** The live D1 ledger's rows, full active Worker version UUID,
+R2 original-object checksums, end-to-end runtime binding access, private
+session verification, authenticated operational logs, and independent hosted
+backup/recovery proof have **not** been verified by this inventory. The
+November 3 BG-31 record provides earlier 22-migration and full-version proof,
+but cannot be relabeled as a current SQL read. No BG-32 production deployment
+or new-operation authorization follows from this audit.
+
 ## Verification approach
 
 Keep the historical evidence separate from new observations. Use a read-only checker for health, public routing, exact published Web release ID, anonymous private denial and missing asset behavior. The checker must never make a mutating request or use credentials. A passed public check supports reachability and routing only, not private session, DB inventory, billing, backup or final release acceptance.
