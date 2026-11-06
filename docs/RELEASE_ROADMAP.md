@@ -1,5 +1,26 @@
 # Complete release and development roadmap
 
+## Current November 6 status — core deployed, BG-32 verification in progress
+
+The [November 3 approved core-only release](releases/BG-31_CORE_RELEASE_2026-11-03.md)
+supersedes the October 30 local-only BG-31 deferral **for that specific
+first-install scope only**. BG-31 completed its 100 scoped manifest actions
+under the recorded owner acceptance, and the first production Worker/Web,
+22 D1 migrations and bounded synthetic core smoke were performed. This does
+**not** constitute full V1 launch. The [BG-32 gate record](verification/BG-32_RELEASE_GATE_2026-11-06.md)
+and [GitHub #141](https://github.com/anmolsansi/Recollect-Flow/issues/141)
+track the remaining actual production-release checks.
+
+The November 3 approved deployment must not be repeated to advance checklist
+percentages. BG-32 public GET-only follow-up smoke requires separate observed
+results; owner-device acceptance, fresh independent hosted backup/recovery,
+BG-29 hourly proof and OPE-247 remain independent. No new deployment, migration,
+hosted backup mutation, provider send, scheduled job activation or paid operation
+is implied by this status. Metered R2 remains without a verified hard cap.
+
+The dated October 30 and October 22 sections below are historical, not current
+NO-GO decisions for the already approved November 3 core-only install.
+
 ## Current owner direction — local only (October 30, 2026)
 
 The owner chose strict-$0 local operation. BG-31 hosted completion remains
