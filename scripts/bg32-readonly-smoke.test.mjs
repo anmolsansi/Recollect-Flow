@@ -95,7 +95,7 @@ test('reuses exact approved identity and rejects alternate origins', () => {
     () =>
       validateFrozenRelease({
         ...approved,
-        approval: { scope_exceptions_accepted: false },
+        approval: { ...approved.approval, scope_exceptions_accepted: false },
       }),
     /owner decision/,
   );
