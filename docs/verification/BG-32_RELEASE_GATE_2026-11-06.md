@@ -66,18 +66,33 @@ navigation and reading visible metadata; **no deployment, SQL query, object
 read/write, configuration edit, secret disclosure, token usage, or other
 production mutation was performed**.
 
-| Item | Live observation | Scope of proof |
-| --- | --- | --- |
-| Account | Dashboard shows the exact intended account ID `a9482fbfb91ace26dee097cbd41293f9`. | Account selection verified |
-| Worker | `recollect-flow` appears as a production Worker at the approved `workers.dev` hostname. | Live Worker identity verified |
-| Active deployment | Cloudflare deployments shows `ff5ba1ce`, `100% Ready` and `100%` traffic, deployed manually via Wrangler. | Matches the historical version prefix; the dashboard did **not** expose the complete UUID in this inspection |
-| D1 | `recollect-flow-prod-v2`, exact UUID `76bd35c6-c833-4987-a47e-6aa8238bb832`; dashboard reports 35 tables and about 602 kB current storage. | Live database identity verified |
-| D1 migrations | D1 Studio lists `d1_migrations` among the tables. | Ledger table exists, but no ledger rows were read and the current 22-file applied sequence was **not** independently rechecked |
-| R2 | `recollect-flow-attachments-prod-v2`; Standard storage, public access **Disabled**, approximately 824 B at inspection. | Bucket identity and public-access state verified, not individual original bytes |
-| Worker bindings | Five names: `AI`, `ASSETS`, `ATTACHMENTS`, `DB`, `LOGIN_RATE_LIMITER`. D1/R2 targets match the approved names. | Binding names and targets verified; no runtime access/permission test made |
-| Required secrets | `ADMIN_TOKEN`, `CAPTURE_TOKEN`, `LOCAL_WORKER_TOKEN`, `WEB_INBOX_BASE_URL` listed as encrypted secrets. | Presence of names verified; no values viewed or exposed |
-| Dispatch gates | `HOSTED_EXTERNAL_DISPATCH_ENABLED=false`, `HOSTED_HTTP_DISPATCH_ENABLED=false`, `HOSTED_SCHEDULED_WORK_ENABLED=false`, `HOSTED_BACKUP_AUTOCREATE_ENABLED=false`, and `DIGEST_AI_ENABLED=false`. | Dashboard configuration values verified |
-| Scheduled triggers | Worker Settings explicitly says `No cron triggers configured`. | No Worker Cron triggers visible in this production configuration |
+- **Account:** The dashboard shows exact intended account ID
+  `a9482fbfb91ace26dee097cbd41293f9`.
+- **Worker:** `recollect-flow` is present under the approved `workers.dev`
+  hostname.
+- **Deployment:** Active version prefix `ff5ba1ce` is `100% Ready` and
+  receives `100%` of traffic. Wrangler is listed as the deployment source.
+  The full active version UUID was not exposed.
+- **D1:** `recollect-flow-prod-v2` has the approved UUID
+  `76bd35c6-c833-4987-a47e-6aa8238bb832`. The dashboard shows 35
+  tables and about 602 kB of storage.
+- **Migration ledger:** D1 Studio lists `d1_migrations`, but its rows were
+  not read and the current 22-file applied sequence was not rechecked.
+- **R2:** `recollect-flow-attachments-prod-v2` uses Standard storage;
+  public access is disabled. Its reported size is about 824 B. No original
+  object bytes or checksums were inspected.
+- **Worker bindings:** `AI`, `ASSETS`, `ATTACHMENTS`, `DB`, and
+  `LOGIN_RATE_LIMITER` are present. The named D1/R2 targets match.
+  Runtime binding access was not tested.
+- **Secret names:** `ADMIN_TOKEN`, `CAPTURE_TOKEN`, `LOCAL_WORKER_TOKEN`,
+  and `WEB_INBOX_BASE_URL` are present as encrypted secrets. No secret
+  values were viewed.
+- **Disabled operations:** `HOSTED_EXTERNAL_DISPATCH_ENABLED`,
+  `HOSTED_HTTP_DISPATCH_ENABLED`, `HOSTED_SCHEDULED_WORK_ENABLED`,
+  `HOSTED_BACKUP_AUTOCREATE_ENABLED`, and `DIGEST_AI_ENABLED` all
+  display `false`.
+- **Scheduled triggers:** Worker Settings says
+  `No cron triggers configured`.
 
 **Remaining limits:** The live D1 ledger's rows, full active Worker version UUID,
 R2 original-object checksums, end-to-end runtime binding access, private
