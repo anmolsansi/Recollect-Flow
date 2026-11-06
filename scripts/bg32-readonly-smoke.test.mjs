@@ -1,3 +1,4 @@
+/* global URL */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
