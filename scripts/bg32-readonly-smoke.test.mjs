@@ -106,7 +106,10 @@ test('rejects substituted packet, frozen source, and Web release identity', () =
     { ...approved, revision: 'BG31-CORE-OTHER' },
     {
       ...approved,
-      approval: { ...approved.approval, approved_packet_sha256: '0'.repeat(64) },
+      approval: {
+        ...approved.approval,
+        approved_packet_sha256: '0'.repeat(64),
+      },
     },
     {
       ...approved,
@@ -140,9 +143,13 @@ test('rejects substituted deployment, storage, and scheduling identities', () =>
       ...approved,
       deployment: { ...approved.deployment, [field]: value },
     };
-    assert.throws(() => validateFrozenRelease(changed), {
-      name: 'AssertionError',
-    }, `Field must be pinned: ${field}`);
+    assert.throws(
+      () => validateFrozenRelease(changed),
+      {
+        name: 'AssertionError',
+      },
+      `Field must be pinned: ${field}`,
+    );
   }
 });
 
