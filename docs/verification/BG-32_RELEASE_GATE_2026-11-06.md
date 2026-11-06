@@ -161,6 +161,31 @@ provider call, secret read, or scheduled task was performed. The historical
 BG-31 PDF download proof remains distinct from this new owner-device check.
 Do not close BG-32 or claim full V1 acceptance from these two checklist passes.
 
+## November 6 owner-confirmed downloaded PDF integrity
+
+The owner supplied macOS Terminal output for the downloaded existing BG-31
+synthetic PDF after clicking its authenticated Download link. The file's reported
+byte length was **639**, and `shasum -a 256` returned
+`b9e46d9bb5dda15caef690fcda522cc286ce7c0d32e39c3d654be187eb34842a`.
+Both values **exactly match** the previously observed production attachment
+metadata. This confirms owner-device download integrity for the synthetic
+original. The assistant did not directly read local bytes or file contents.
+The owner's private home path is deliberately omitted.
+
+An additional read-only probe against the **actual** attachment URL from a
+separate unauthenticated browser was **inconclusive**. The browser showed
+`ERR_QUIC_PROTOCOL_ERROR` and no HTTP status or JSON error was available.
+This did not expose the PDF, but it cannot prove the server denied anonymous
+access. Retest the exact URL in an Opera private window without session
+cookies, expecting a JSON `UNAUTHENTICATED` response and no PDF body. Do
+not replace the pending actual-object security check with the earlier
+unknown-ID unauthenticated probe.
+
+**Outcome:** authenticated PDF bytes/length/hash **PASS (owner-confirmed)**;
+actual-object anonymous denial, HTTP status/headers, and cookie attribute
+inspection remain **OPEN**. No production change or credential handling
+occurred.
+
 <!-- prettier-ignore-end -->
 
 ## Verification approach
