@@ -58,6 +58,50 @@ IDs, D1 identity, private R2 bucket and disabled Cron scope. Regression tests
 cover these substitutions and verify that a failed step stops subsequent
 requests. These are local deterministic tests, not fresh platform facts.
 
+## November 6 authenticated Cloudflare dashboard inventory (read-only)
+
+This inspection used the owner's existing signed-in Opera Cloudflare dashboard
+for account `a9482fbfb91ace26dee097cbd41293f9`. It involved only page
+navigation and reading visible metadata; **no deployment, SQL query, object
+read/write, configuration edit, secret disclosure, token usage, or other
+production mutation was performed**.
+
+- **Account:** The dashboard shows exact intended account ID
+  `a9482fbfb91ace26dee097cbd41293f9`.
+- **Worker:** `recollect-flow` is present under the approved `workers.dev`
+  hostname.
+- **Deployment:** Active version prefix `ff5ba1ce` is `100% Ready` and
+  receives `100%` of traffic. Wrangler is listed as the deployment source.
+  The full active version UUID was not exposed.
+- **D1:** `recollect-flow-prod-v2` has the approved UUID
+  `76bd35c6-c833-4987-a47e-6aa8238bb832`. The dashboard shows 35
+  tables and about 602 kB of storage.
+- **Migration ledger:** D1 Studio lists `d1_migrations`, but its rows were
+  not read and the current 22-file applied sequence was not rechecked.
+- **R2:** `recollect-flow-attachments-prod-v2` uses Standard storage;
+  public access is disabled. Its reported size is about 824 B. No original
+  object bytes or checksums were inspected.
+- **Worker bindings:** `AI`, `ASSETS`, `ATTACHMENTS`, `DB`, and
+  `LOGIN_RATE_LIMITER` are present. The named D1/R2 targets match.
+  Runtime binding access was not tested.
+- **Secret names:** `ADMIN_TOKEN`, `CAPTURE_TOKEN`, `LOCAL_WORKER_TOKEN`,
+  and `WEB_INBOX_BASE_URL` are present as encrypted secrets. No secret
+  values were viewed.
+- **Disabled operations:** `HOSTED_EXTERNAL_DISPATCH_ENABLED`,
+  `HOSTED_HTTP_DISPATCH_ENABLED`, `HOSTED_SCHEDULED_WORK_ENABLED`,
+  `HOSTED_BACKUP_AUTOCREATE_ENABLED`, and `DIGEST_AI_ENABLED` all
+  display `false`.
+- **Scheduled triggers:** Worker Settings says
+  `No cron triggers configured`.
+
+**Remaining limits:** The live D1 ledger's rows, full active Worker version UUID,
+R2 original-object checksums, end-to-end runtime binding access, private
+session verification, authenticated operational logs, and independent hosted
+backup/recovery proof have **not** been verified by this inventory. The
+November 3 BG-31 record provides earlier 22-migration and full-version proof,
+but cannot be relabeled as a current SQL read. No BG-32 production deployment
+or new-operation authorization follows from this audit.
+
 ## Verification approach
 
 Keep the historical evidence separate from new observations. Use a read-only checker for health, public routing, exact published Web release ID, anonymous private denial and missing asset behavior. The checker must never make a mutating request or use credentials. A passed public check supports reachability and routing only, not private session, DB inventory, billing, backup or final release acceptance.
