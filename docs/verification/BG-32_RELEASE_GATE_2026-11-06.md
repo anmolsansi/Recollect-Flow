@@ -70,9 +70,15 @@ production mutation was performed**.
   `a9482fbfb91ace26dee097cbd41293f9`.
 - **Worker:** `recollect-flow` is present under the approved `workers.dev`
   hostname.
-- **Deployment:** Active version prefix `ff5ba1ce` is `100% Ready` and
-  receives `100%` of traffic. Wrangler is listed as the deployment source.
-  The full active version UUID was not exposed.
+- **Deployment:** The earlier authenticated Opera dashboard inspection
+  confirmed active version prefix `ff5ba1ce`, `100% Ready`, and `100%`
+  traffic, with Wrangler listed as the deployment source. The owner
+  subsequently selected the active version in the Cloudflare Deployments
+  view and confirmed that its complete ID matches the approved BG-31
+  release record: `ff5ba1ce-32b0-499c-ae67-f561ec09c93a`.
+  This exact UUID check is **owner-confirmed**, not independently read
+  through Opera during the subsequent message because the connector
+  was disconnected.
 - **D1:** `recollect-flow-prod-v2` has the approved UUID
   `76bd35c6-c833-4987-a47e-6aa8238bb832`. The dashboard shows 35
   tables and about 602 kB of storage.
@@ -104,15 +110,15 @@ production mutation was performed**.
 - **Scheduled triggers:** Worker Settings says
   `No cron triggers configured`.
 
-**Remaining limits:** The full active Worker version UUID, R2 original-object
-checksums, end-to-end runtime binding access, private session verification,
-authenticated operational logs, and independent hosted backup/recovery proof
-have **not** been verified by this inventory. The November 3 BG-31 record
-provides earlier full-version and release proof. The current migration
-ledger has now been checked separately from the live, read-only D1 Studio
-table and the owner's supplied 22-row list, without SQL execution. No BG-32
-production deployment or new-operation authorization follows from this
-audit.
+**Remaining limits:** The complete Worker UUID is owner-confirmed and
+agrees with the approved November 3 release record, but it was not independently
+re-observed through Opera after that confirmation. R2 original-object checksums,
+end-to-end runtime binding access, private session verification, authenticated
+operational logs, and independent hosted backup/recovery proof remain unverified.
+The current migration ledger was separately checked against the live,
+read-only D1 Studio table and the owner's supplied 22-row list, without SQL
+execution. No BG-32 production deployment or new-operation authorization
+follows from this audit.
 
 ## Verification approach
 
