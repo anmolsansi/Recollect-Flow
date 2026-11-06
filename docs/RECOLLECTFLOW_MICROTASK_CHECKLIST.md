@@ -4438,32 +4438,32 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#38-bg-32--apply-the-authorized-production-release).
 
-These unchecked steps inherit this task's **what, why, when, where and proof** above.
+These steps inherit this task's **what, why, when, where and proof** above.
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-32 / 01 — Establish task context
 
-- [ ] `BG-32.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
-- [ ] `BG-32.002` **Dependency:** Review BG-31's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
-- [ ] `BG-32.003` **Baseline:** Record the actual checkout or release candidate used for BG-32.
-- [ ] `BG-32.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
-- [ ] `BG-32.005` **Evidence:** Check whether existing evidence already satisfies any BG-32 step; reference it instead of manufacturing work.
-- [ ] `BG-32.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
-- [ ] `BG-32.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
-- [ ] `BG-32.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
-- [ ] `BG-32.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
-- [ ] `BG-32.010` **Tracking:** Open a BG-32 evidence record and distinguish planned, performed, verified and blocked work.
+- [x] `BG-32.001` **Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.
+- [x] `BG-32.002` **Dependency:** Review BG-31's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.
+- [x] `BG-32.003` **Baseline:** Record the actual checkout or release candidate used for BG-32.
+- [x] `BG-32.004` **Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.
+- [x] `BG-32.005` **Evidence:** Check whether existing evidence already satisfies any BG-32 step; reference it instead of manufacturing work.
+- [x] `BG-32.006` **Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.
+- [x] `BG-32.007` **Environment:** Select the local, preview, production or physical-device environment required by this task.
+- [x] `BG-32.008` **Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.
+- [x] `BG-32.009` **Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.
+- [x] `BG-32.010` **Tracking:** Open a BG-32 evidence record and distinguish planned, performed, verified and blocked work.
 
 #### BG-32 / 02 — Preflight
 
-- [ ] `BG-32.011` Verify approved manifest revision.
-- [ ] `BG-32.012` Verify current candidate SHA.
+- [x] `BG-32.011` Verify approved manifest revision.
+- [x] `BG-32.012` Verify current candidate SHA.
 - [ ] `BG-32.013` Verify authorized operation scope.
 - [ ] `BG-32.014` Verify actual target Worker.
 - [ ] `BG-32.015` Verify actual D1 identifier.
 - [ ] `BG-32.016` Verify actual R2 identifier.
-- [ ] `BG-32.017` Verify canonical Web origin.
+- [x] `BG-32.017` Verify canonical Web origin.
 - [ ] `BG-32.018` Verify correct account context.
 - [ ] `BG-32.019` Verify no pending unreviewed changes.
 - [ ] `BG-32.020` Record preflight timestamp.
@@ -4483,46 +4483,46 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-32 / 04 — Migration execution
 
-- [ ] `BG-32.031` Read pending migration list again.
-- [ ] `BG-32.032` Compare with approved list.
-- [ ] `BG-32.033` Select explicit remote mode.
-- [ ] `BG-32.034` Apply authorized forward chain.
+- [x] `BG-32.031` Read pending migration list again.
+- [x] `BG-32.032` Compare with approved list.
+- [x] `BG-32.033` Select explicit remote mode.
+- [x] `BG-32.034` Apply authorized forward chain.
 - [ ] `BG-32.035` Capture actual command exit.
-- [ ] `BG-32.036` Inspect migration ledger afterward.
+- [x] `BG-32.036` Inspect migration ledger afterward.
 - [ ] `BG-32.037` Inspect schema after failure.
-- [ ] `BG-32.038` Avoid blind SQL replay.
+- [x] `BG-32.038` Avoid blind SQL replay.
 - [ ] `BG-32.039` Verify required indexes.
-- [ ] `BG-32.040` Record applied migration evidence.
+- [x] `BG-32.040` Record applied migration evidence.
 
 #### BG-32 / 05 — Artifact deployment
 
-- [ ] `BG-32.041` Select matching Worker bundle.
-- [ ] `BG-32.042` Select matching Web assets.
-- [ ] `BG-32.043` Verify candidate configuration.
-- [ ] `BG-32.044` Deploy approved artifact.
-- [ ] `BG-32.045` Capture deployed version identifier.
-- [ ] `BG-32.046` Record actual deployed SHA mapping.
-- [ ] `BG-32.047` Verify binding configuration safely.
-- [ ] `BG-32.048` Confirm secret values not printed.
-- [ ] `BG-32.049` Confirm canonical origin unchanged as planned.
-- [ ] `BG-32.050` Record deployment timestamp.
+- [x] `BG-32.041` Select matching Worker bundle.
+- [x] `BG-32.042` Select matching Web assets.
+- [x] `BG-32.043` Verify candidate configuration.
+- [x] `BG-32.044` Deploy approved artifact.
+- [x] `BG-32.045` Capture deployed version identifier.
+- [x] `BG-32.046` Record actual deployed SHA mapping.
+- [x] `BG-32.047` Verify binding configuration safely.
+- [x] `BG-32.048` Confirm secret values not printed.
+- [x] `BG-32.049` Confirm canonical origin unchanged as planned.
+- [x] `BG-32.050` Record deployment timestamp.
 
 #### BG-32 / 06 — Immediate smoke
 
-- [ ] `BG-32.051` Request health endpoint.
-- [ ] `BG-32.052` Request homepage.
-- [ ] `BG-32.053` Open direct item route.
+- [x] `BG-32.051` Request health endpoint.
+- [x] `BG-32.052` Request homepage.
+- [x] `BG-32.053` Open direct item route.
 - [ ] `BG-32.054` Test admin login.
 - [ ] `BG-32.055` Test session persistence.
-- [ ] `BG-32.056` Test anonymous item denial.
-- [ ] `BG-32.057` Test private download authorization.
-- [ ] `BG-32.058` Run synthetic capture/replay.
-- [ ] `BG-32.059` Run exact search.
-- [ ] `BG-32.060` Preserve stage failures accurately.
+- [x] `BG-32.056` Test anonymous item denial.
+- [x] `BG-32.057` Test private download authorization.
+- [x] `BG-32.058` Run synthetic capture/replay.
+- [x] `BG-32.059` Run exact search.
+- [x] `BG-32.060` Preserve stage failures accurately.
 
 #### BG-32 / 07 — Operational inspection
 
-- [ ] `BG-32.061` Inspect safe request logs.
+- [x] `BG-32.061` Inspect safe request logs.
 - [ ] `BG-32.062` Inspect migration error signals.
 - [ ] `BG-32.063` Inspect Worker runtime errors.
 - [ ] `BG-32.064` Inspect binding failures.
@@ -4530,8 +4530,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [ ] `BG-32.066` Inspect initial job backlog.
 - [ ] `BG-32.067` Inspect private response caching.
 - [ ] `BG-32.068` Inspect asset loading failures.
-- [ ] `BG-32.069` Compare observed versus manifest expectations.
-- [ ] `BG-32.070` Record unexpected deviations.
+- [x] `BG-32.069` Compare observed versus manifest expectations.
+- [x] `BG-32.070` Record unexpected deviations.
 
 #### BG-32 / 08 — Failure response
 
@@ -4542,34 +4542,34 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [ ] `BG-32.075` Select approved code rollback if safe.
 - [ ] `BG-32.076` Execute recovery plan if required.
 - [ ] `BG-32.077` Verify rollback/recovery behavior.
-- [ ] `BG-32.078` Avoid unauthorized destructive repair.
-- [ ] `BG-32.079` Document remaining production impact.
-- [ ] `BG-32.080` Keep launch acceptance unapproved.
+- [x] `BG-32.078` Avoid unauthorized destructive repair.
+- [x] `BG-32.079` Document remaining production impact.
+- [x] `BG-32.080` Keep launch acceptance unapproved.
 
 #### BG-32 / 09 — Release record
 
 - [ ] `BG-32.081` Record final deployed version.
 - [ ] `BG-32.082` Record final migration ledger.
-- [ ] `BG-32.083` Record smoke stage results.
-- [ ] `BG-32.084` Record backup evidence reference.
+- [x] `BG-32.083` Record smoke stage results.
+- [x] `BG-32.084` Record backup evidence reference.
 - [ ] `BG-32.085` Record any rollback action.
-- [ ] `BG-32.086` Record unresolved integration gates.
-- [ ] `BG-32.087` Preserve synthetic fixture ownership.
-- [ ] `BG-32.088` Record operator and timestamps.
+- [x] `BG-32.086` Record unresolved integration gates.
+- [x] `BG-32.087` Preserve synthetic fixture ownership.
+- [x] `BG-32.088` Record operator and timestamps.
 - [ ] `BG-32.089` Update manifest actuals.
-- [ ] `BG-32.090` Prepare live acceptance handoff.
+- [x] `BG-32.090` Prepare live acceptance handoff.
 
 #### BG-32 / 10 — Verify and close this task
 
 - [ ] `BG-32.091` **Review:** Compare the completed checklist with BG-32's stated outcome; identify uncovered behavior.
-- [ ] `BG-32.092` **Verification:** Run or inspect the focused proof required by BG-32; reuse a valid existing run rather than repeating it gratuitously.
-- [ ] `BG-32.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
-- [ ] `BG-32.094` **Integrity:** Check that BG-32 has not weakened its stated data, privacy, scope or recovery guarantees.
+- [x] `BG-32.092` **Verification:** Run or inspect the focused proof required by BG-32; reuse a valid existing run rather than repeating it gratuitously.
+- [x] `BG-32.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
+- [x] `BG-32.094` **Integrity:** Check that BG-32 has not weakened its stated data, privacy, scope or recovery guarantees.
 - [ ] `BG-32.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
 - [ ] `BG-32.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
-- [ ] `BG-32.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
-- [ ] `BG-32.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
-- [ ] `BG-32.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
+- [x] `BG-32.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
+- [x] `BG-32.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
+- [x] `BG-32.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
 - [ ] `BG-32.100` **Gate:** Check the parent completion boundary and record whether BG-33 is unlocked.
 
 ## BG-33 — 100 executable microtasks

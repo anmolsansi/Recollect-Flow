@@ -3657,6 +3657,43 @@ recorded rollback outcome and remaining blocker.
 **Done when:** the manifest's deployed artifact and basic production smoke agree.
 Live integration and device acceptance are separate tasks below.
 
+### November 6 BG-32 handoff: first core release already deployed
+
+The November 3 scoped core-first deployment was completed under a separate,
+exact owner approval. See [BG-31 frozen deployment evidence](releases/BG-31_CORE_RELEASE_2026-11-03.md)
+and the [BG-32 evidence reconciliation](verification/BG-32_RELEASE_GATE_2026-11-06.md).
+It applied 22 first-install D1 migrations and deployed frozen source
+`81e82806700519b90b6fbd5c1ebb233ed5def9d2` as Worker version
+`ff5ba1ce-32b0-499c-ae67-f561ec09c93a`. This does not authorize repeating
+the deployment, replaying SQL, or writing test fixtures again.
+
+For a public **GET-only** post-release check, run:
+
+```sh
+npm run bg32:readonly:test
+npm run bg32:readonly
+```
+
+The first command uses local test doubles; it does not contact production.
+The second fetches only from the _exact_ approved HTTPS origin stored in
+`docs/releases/BG-31_CORE_RELEASE_2026-11-03.json`. An optional `BG32_ORIGIN`
+must match that approved origin exactly. It performs no login or API mutation;
+it checks health, HTML routing, anonymous private denial, API and missing-asset
+404 behavior, cache-control, and the published Web release ID/source revision.
+Any failure stops later requests and sets a nonzero exit. Its success means
+**public boundary smoke only**, not current Worker-version inventory, recovery,
+owner-device verification, billing, external integrations, or V1 release approval.
+
+The approved **first-install** artifact and current docs/branch SHA differ
+intentionally. Do not republish the current branch as a substitute artifact.
+Before any further hosted mutation, independently verify current account,
+bindings and D1 ledger, take and verify a new recoverable hosted-data backup,
+and obtain specific owner authorization. The old BG-31 draft NO-GO manifest is a
+historical source record, superseded for the initial deployment by the November 3
+signed-off closeout. OPE-247, BG-29.078 and user-device acceptance remain open.
+Known qualifications include a first immediate search miss, Python default
+User-Agent Cloudflare error 1010 and metered R2 without a hard spending cap.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-32](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-32--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.
