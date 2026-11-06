@@ -24,6 +24,40 @@ Target: `https://recollect-flow.openclawneutron.workers.dev`, account `a9482fbfb
 
 **Authorization:** The November 3 approval applied to the exact first-install core packet and bounded operations. It does **not** permit another deploy, remote SQL mutation, R2 write, destructive restore, provider/notification send, Cron activation or billing change. Stop if artifact/target checks mismatch or a new operation lacks explicit scoped approval.
 
+## November 6 public browser observations
+
+A connected Opera browser made direct, unauthenticated navigations to the
+approved origin. These are **new public UI/body observations**, not a full
+protocol/header smoke or authenticated Cloudflare inventory.
+
+- `/`: the SPA showed an Admin Access form. No credential was entered.
+- `/api/v1/health`: the JSON body reported `data.status = "ok"`.
+- `/items/bg32-readonly-route-probe`: the direct route showed the
+  Admin Access form rather than a route-not-found page.
+- `/api/v1/items/bg32-readonly-route-probe`: anonymous JSON returned
+  `error.code = "FORBIDDEN"`.
+- `/api/v1/bg32-readonly-no-route`: JSON returned
+  `error.code = "NOT_FOUND"`.
+- `/assets/bg32-missing-aBcD1234.js`: the page displayed
+  `Asset unavailable`, not the SPA login form.
+- `/release-manifest.json`: the displayed source SHA and Web release ID
+  matched the approved frozen record.
+
+No login, mutation, provider call, SQL, secret read or billed action was made.
+The browser accessibility view does **not** establish exact HTTP statuses,
+`Cache-Control`, `Content-Type`, redirect policy, currently deployed Worker
+version, live binding state, or private file access. Those checks remain open
+until directly verified. This evidence must not be labeled an end-to-end pass.
+
+## Source-level hardening on the BG-32 branch
+
+The public GET-only verifier now rejects a substituted local release record
+even if that record contains syntactically valid hashes and UUIDs. It pins the
+owner-approved packet, exact source/Web revision, account, Worker/deployment
+IDs, D1 identity, private R2 bucket and disabled Cron scope. Regression tests
+cover these substitutions and verify that a failed step stops subsequent
+requests. These are local deterministic tests, not fresh platform facts.
+
 ## Verification approach
 
 Keep the historical evidence separate from new observations. Use a read-only checker for health, public routing, exact published Web release ID, anonymous private denial and missing asset behavior. The checker must never make a mutating request or use credentials. A passed public check supports reachability and routing only, not private session, DB inventory, billing, backup or final release acceptance.
