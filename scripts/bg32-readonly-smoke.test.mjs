@@ -123,6 +123,29 @@ test('rejects substituted packet, frozen source, and Web release identity', () =
   }
 });
 
+test('rejects substituted deployment, storage, and scheduling identities', () => {
+  const fields = {
+    account_id: 'wrong-account',
+    d1_name: 'wrong-d1',
+    d1_uuid: '00000000-0000-0000-0000-000000000000',
+    r2_bucket: 'wrong-r2',
+    r2_access: 'PUBLIC',
+    version_id: '00000000-0000-0000-0000-000000000000',
+    deployment_id: '00000000-0000-0000-0000-000000000000',
+    migration_count: 21,
+    cron: ['* * * * *'],
+  };
+  for (const [field, value] of Object.entries(fields)) {
+    const changed = {
+      ...approved,
+      deployment: { ...approved.deployment, [field]: value },
+    };
+    assert.throws(() => validateFrozenRelease(changed), {
+      name: 'AssertionError',
+    }, `Field must be pinned: ${field}`);
+  }
+});
+
 test('public smoke uses GET-only requests with no credential headers or mutations', async () => {
   const { send, calls } = fakeFetch();
   const result = await runReadOnlySmoke(approved, { fetchImpl: send });
