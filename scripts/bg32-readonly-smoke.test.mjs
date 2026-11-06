@@ -101,6 +101,28 @@ test('reuses exact approved identity and rejects alternate origins', () => {
   );
 });
 
+test('rejects substituted packet, frozen source, and Web release identity', () => {
+  for (const altered of [
+    { ...approved, revision: 'BG31-CORE-OTHER' },
+    {
+      ...approved,
+      approval: { ...approved.approval, approved_packet_sha256: '0'.repeat(64) },
+    },
+    {
+      ...approved,
+      candidate: { ...approved.candidate, source_sha: 'a'.repeat(40) },
+    },
+    {
+      ...approved,
+      candidate: { ...approved.candidate, web_release_id: 'b'.repeat(64) },
+    },
+  ]) {
+    assert.throws(() => validateFrozenRelease(altered), {
+      name: 'AssertionError',
+    });
+  }
+});
+
 test('public smoke uses GET-only requests with no credential headers or mutations', async () => {
   const { send, calls } = fakeFetch();
   const result = await runReadOnlySmoke(approved, { fetchImpl: send });
