@@ -186,6 +186,33 @@ actual-object anonymous denial, HTTP status/headers, and cookie attribute
 inspection remain **OPEN**. No production change or credential handling
 occurred.
 
+## November 6 owner-confirmed anonymous denial for actual synthetic PDF
+
+After the inconclusive independent browser attempt above, the owner supplied
+the JSON response from the requested unauthenticated/private-window check
+against the **existing synthetic attachment content URL** ending in
+`/api/v1/attachments/2a8afecc-eab3-4f43-a3aa-e430013435fd/content`:
+
+```json
+{"error":{"code":"UNAUTHENTICATED","message":"A valid capture token is required."},"meta":{"request_id":"963929e1-85e8-4517-90d4-1c05687f2026"}}
+```
+
+This is **owner-reported confirmation**, consistent with the earlier request
+to open the actual attachment URL in an Opera private window without logging
+in. The response contains an authentication error, not PDF bytes. It
+supersedes the earlier **pending** actual-object anonymous-denial status,
+but does not turn the separate browser's `ERR_QUIC_PROTOCOL_ERROR` into an
+HTTP response. The assistant did not independently inspect that private
+window or verify response status/headers.
+
+**Updated Step 3 outcome:** admin login, authenticated session persistence,
+private synthetic PDF download (639 bytes with exact expected SHA-256), and
+unauthenticated denial of the actual PDF attachment **PASS** based on
+direct Opera inspection and owner-supplied device evidence as identified.
+HTTP status/headers, cookie attributes, and the **remaining BG-32 release
+gates** are outside this completed functional Step 3 verification. Do not
+close BG-32, BG-33, or full V1 based solely on this section.
+
 <!-- prettier-ignore-end -->
 
 ## Verification approach
