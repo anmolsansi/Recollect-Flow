@@ -14,7 +14,7 @@ No checkbox is pre-checked by this exception.
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#7-bg-01--freeze-a-reproducible-starting-point).
 
-These unchecked steps inherit this task's **what, why, when, where and proof** above.
+These steps inherit this task's **what, why, when, where and proof** above.
 Follow the numbered order; the group headings organize related work.
 Implementation choices remain proposals until resolved in the relevant step.
 
@@ -4437,18 +4437,6 @@ Implementation choices remain proposals until resolved in the relevant step.
 ## BG-32 — 100 executable microtasks
 
 [Read the detailed implementation chapter](RECOLLECTFLOW_BUILD_GUIDE.md#38-bg-32--apply-the-authorized-production-release).
-
-**November 6 evidence reconciliation:** Checked steps are either performed
-and documented during the explicitly approved November 3 core installation
-([frozen release record](releases/BG-31_CORE_RELEASE_2026-11-03.md)) or
-supported by the separate [read-only verification record](verification/BG-32_RELEASE_GATE_2026-11-06.md).
-The historical install was **not rerun**. A checked documentation or public
-observation step does not prove currently authenticated D1/R2 inventory,
-fresh hosted backup, private-device acceptance, or full V1 readiness.
-Unperformed, inapplicable-but-unreviewed, and externally blocked steps stay
-unchecked. The 50 paired task issue remains open until every paired unit
-and the actual release gate are resolved.
-
 
 These unchecked steps inherit this task's **what, why, when, where and proof** above.
 Follow the numbered order; the group headings organize related work.
