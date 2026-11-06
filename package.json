@@ -10,7 +10,7 @@
   "scripts": {
     "bg31:readiness": "node scripts/bg31-readiness.mjs",
     "bg32:readonly": "node scripts/bg32-readonly-smoke.mjs",
-    "bg32:readonly:test": "node --input-type=module -e 'import fs from \"node:fs\"; import * as p from \"prettier\"; for (const file of [\"docs/RECOLLECTFLOW_BUILD_GUIDE.md\",\"scripts/bg32-readonly-smoke.mjs\",\"scripts/bg32-readonly-smoke.test.mjs\"]) { let value=await p.format(fs.readFileSync(file,\"utf8\"),{...(await p.resolveConfig(file)),filepath:file}); if(file.includes(\"BUILD_GUIDE\")) { const a=value.indexOf(\"## 38. BG-32\"); const b=value.indexOf(\"## 39. BG-33\",a);value=value.slice(a,b); } console.log(\"BG32_FORMAT_JSON \"+JSON.stringify({file,content:value})); }' && node --test scripts/bg32-readonly-smoke.test.mjs",
+    "bg32:readonly:test": "node --test scripts/bg32-readonly-smoke.test.mjs",
     "bg31:readiness:test": "node --test scripts/bg31-readiness.test.mjs",
     "bg30:evidence:test": "node --test scripts/bg30-evidence.test.mjs",
     "auth:rotation:test": "vitest run --config vitest.node.config.ts apps/worker-api/test/token-rotation.test.ts && vitest run --config vitest.d1.config.ts apps/worker-api/test/token-rotation.d1.spec.ts",
