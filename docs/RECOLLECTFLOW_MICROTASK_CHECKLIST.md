@@ -4524,12 +4524,12 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 - [x] `BG-32.061` Inspect safe request logs.
 - [ ] `BG-32.062` Inspect migration error signals.
-- [ ] `BG-32.063` Inspect Worker runtime errors.
+- [x] `BG-32.063` Inspect Worker runtime errors.
 - [ ] `BG-32.064` Inspect binding failures.
 - [ ] `BG-32.065` Inspect unexpected auth failures.
-- [ ] `BG-32.066` Inspect initial job backlog.
+- [x] `BG-32.066` Inspect initial job backlog.
 - [ ] `BG-32.067` Inspect private response caching.
-- [ ] `BG-32.068` Inspect asset loading failures.
+- [x] `BG-32.068` Inspect asset loading failures.
 - [x] `BG-32.069` Compare observed versus manifest expectations.
 - [x] `BG-32.070` Record unexpected deviations.
 
