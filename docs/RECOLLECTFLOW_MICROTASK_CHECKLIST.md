@@ -4548,8 +4548,8 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-32 / 09 — Release record
 
-- [ ] `BG-32.081` Record final deployed version.
-- [ ] `BG-32.082` Record final migration ledger.
+- [x] `BG-32.081` Record final deployed version.
+- [x] `BG-32.082` Record final migration ledger.
 - [x] `BG-32.083` Record smoke stage results.
 - [x] `BG-32.084` Record backup evidence reference.
 - [ ] `BG-32.085` Record any rollback action.
