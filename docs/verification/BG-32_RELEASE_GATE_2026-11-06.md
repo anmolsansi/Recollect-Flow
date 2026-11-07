@@ -222,32 +222,32 @@ close BG-32, BG-33, or full V1 based solely on this section.
 
 ### Fresh, directly observed evidence
 
-- **Deployment and baseline:** Cloudflare still lists \`recollect-flow\` as Ready at active Worker prefix \`ff5ba1ce\` with 100% traffic. The public \`/release-manifest.json\` still shows approved source \`81e82806700519b90b6fbd5c1ebb233ed5def9d2\` and Web release \`3b455e5d2150e5a38c24f340164b220fe74b05163604c2e159572affbdd8def6\`. These checks do not independently prove full active Worker UUID.
-- **Public health:** a new browser GET to \`/api/v1/health\` returned \`data.status: ok\` with safe request ID \`f775fd8c-768d-4930-b304-ab2612ccdd30\`. Opera supplied the body, not independently inspected HTTP response status, cache or content-type headers.
-- **Worker error counts:** Cloudflare Worker Overview listed 40 invocations and zero errors over the last 24 hours. The dedicated Errors chart for active version \`ff5ba1ce\` also showed 0 in its last-24-hours window. This **does not** prove no application-level errors or failures outside that window.
+- **Deployment and baseline:** Cloudflare still lists `recollect-flow` as Ready at active Worker prefix `ff5ba1ce` with 100% traffic. The public `/release-manifest.json` still shows approved source `81e82806700519b90b6fbd5c1ebb233ed5def9d2` and Web release `3b455e5d2150e5a38c24f340164b220fe74b05163604c2e159572affbdd8def6`. These checks do not independently prove full active Worker UUID.
+- **Public health:** a new browser GET to `/api/v1/health` returned `data.status: ok` with safe request ID `f775fd8c-768d-4930-b304-ab2612ccdd30`. Opera supplied the body, not independently inspected HTTP response status, cache or content-type headers.
+- **Worker error counts:** Cloudflare Worker Overview listed 40 invocations and zero errors over the last 24 hours. The dedicated Errors chart for active version `ff5ba1ce` also showed 0 in its last-24-hours window. This **does not** prove no application-level errors or failures outside that window.
 - **Logs and issues:** Workers Logs and Traces are displayed as Enabled, but the Worker Observability view returned **No events found** for its selected last-one-hour window, and the Worker Issues page offered **Enable issue detection** (not enabled). Thus no individual runtime, auth, migration or binding-failure events were available for review through these displays. Do not label these failure signals cleared. Enabling issue detection would change production settings and was not attempted.
-- **Hosted operational summary:** an authenticated, read-only GET to \`/api/v1/operations/summary\` returned an application-generated timestamp of \`2026-11-07T08:39:26.206Z\` and safe request ID \`43d78bbf-8a79-4e7c-86c7-ab54940fbec0\`. The D1-backed summary proves this particular DB read route worked, not every binding or job execution path. It reported:
-  - Processing \`acquire_url\`: **1 pending**, oldest 2026-11-03T11:14:22.376Z.
-  - Processing \`enrich\`: **1 pending**, oldest 2026-11-03T11:14:21.243Z.
-  - Processing \`extract\`: **1 pending**, oldest 2026-11-03T11:14:26.869Z.
+- **Hosted operational summary:** an authenticated, read-only GET to `/api/v1/operations/summary` returned an application-generated timestamp of `2026-11-07T08:39:26.206Z` and safe request ID `43d78bbf-8a79-4e7c-86c7-ab54940fbec0`. The D1-backed summary proves this particular DB read route worked, not every binding or job execution path. It reported:
+  - Processing `acquire_url`: **1 pending**, oldest 2026-11-03T11:14:22.376Z.
+  - Processing `enrich`: **1 pending**, oldest 2026-11-03T11:14:21.243Z.
+  - Processing `extract`: **1 pending**, oldest 2026-11-03T11:14:26.869Z.
   - Notion sync: **3 pending**, oldest 2026-11-03T11:14:21.243Z.
-  - All backlog groups showed no sample error code and no next-available timestamp; \`truncated: false\`. The known intentionally disabled Cron/provider/Notion dispatch explains why this backlog is not progressing, but that is **not** proof the jobs will succeed once enabled.
-  - Recovery summary: **0 partial purges**, **0 failed backups**, **0 ambiguous digests** and **0 missing Notion projections** reported. Latest stored verified backup was recorded at \`2026-11-06T19:58:20.854Z\` with 11,746 bytes and expiry \`2026-12-06T19:58:17.633Z\`. This is application-state evidence only; the independent encrypted off-device backup and complete isolated restore remain **OPEN**.
+  - All backlog groups showed no sample error code and no next-available timestamp; `truncated: false`. The known intentionally disabled Cron/provider/Notion dispatch explains why this backlog is not progressing, but that is **not** proof the jobs will succeed once enabled.
+  - Recovery summary: **0 partial purges**, **0 failed backups**, **0 ambiguous digests** and **0 missing Notion projections** reported. Latest stored verified backup was recorded at `2026-11-06T19:58:20.854Z` with 11,746 bytes and expiry `2026-12-06T19:58:17.633Z`. This is application-state evidence only; the independent encrypted off-device backup and complete isolated restore remain **OPEN**.
   - D1 attachment metadata showed **1 recorded object / 639 bytes**, **0 recorded orphan objects**. The endpoint explicitly disclaims authoritative R2 provider inventory, and its R2 object count/byte fields were null.
-- **Web assets:** the exact CSS \`/assets/index-DWlwdqDW.css\` and JS \`/assets/index-Vu2u9WfB.js\` from the frozen manifest both displayed nonempty source content in direct Opera GETs. The intentionally absent \`/assets/bg32-missing-aBcD1234.js\` displayed \`Asset unavailable\`, not the SPA login shell. These are body/UI observations, **not** independent HTTP 200/404, cache header, integrity or full real-browser asset-loading proofs.
+- **Web assets:** the exact CSS `/assets/index-DWlwdqDW.css` and JS `/assets/index-Vu2u9WfB.js` from the frozen manifest both displayed nonempty source content in direct Opera GETs. The intentionally absent `/assets/bg32-missing-aBcD1234.js` displayed `Asset unavailable`, not the SPA login shell. These are body/UI observations, **not** independent HTTP 200/404, cache header, integrity or full real-browser asset-loading proofs.
 
 ### Known failures and incomplete investigations
 
 1. The November 3 immediate search miss before a later successful read-only retry remains documented; do not claim immediate search consistency or a latency SLO from this review.
-2. The historical Python \`urllib\` default User-Agent encountered Cloudflare 1010/403 while an application User-Agent worked. This read-only review did not reproduce or fix it. Universal client compatibility remains unaccepted.
+2. The historical Python `urllib` default User-Agent encountered Cloudflare 1010/403 while an application User-Agent worked. This read-only review did not reproduce or fix it. Universal client compatibility remains unaccepted.
 3. No detailed live log events were available in the observed one-hour window. Migration error signals, specific Worker exceptions, unexpected auth failures and binding-failure events remain **unverified**, even though the aggregate 24-hour Worker error count was zero.
-4. Exact private-response \`Cache-Control\` / \`Content-Type\` / redirect headers were **not measured** in Opera. Source-code expectations are not production header proof.
+4. Exact private-response `Cache-Control` / `Content-Type` / redirect headers were **not measured** in Opera. Source-code expectations are not production header proof.
 5. Six pending jobs are intentionally held while scheduled work and third-party dispatch remain disabled. Do not enable Cron/Notion/providers as a diagnostic without separately approved scope.
 6. The independent recoverable off-device export/isolated restore, complete runtime binding and migration/inventory corroboration, BG-29.078, OPE-247 and final V1 acceptance remain separate gates. Owner-confirmed Step 3 private-file verification is not reclassified as incomplete by this review.
 
 ### Step 4 disposition and safety
 
-**Completed bounded checks:** production reachability and manifest comparison, last-24-hour runtime-error metrics inspection, read-only D1-backed job backlog and recovery-status inspection, and public asset availability/missing-asset behavior. Corresponding BG-32 checklist actions \`.063\`, \`.066\` and \`.068\` can be marked performed with the evidence limits above.
+**Completed bounded checks:** production reachability and manifest comparison, last-24-hour runtime-error metrics inspection, read-only D1-backed job backlog and recovery-status inspection, and public asset availability/missing-asset behavior. Corresponding BG-32 checklist actions `.063`, `.066` and `.068` can be marked performed with the evidence limits above.
 
 **Still OPEN:** BG-32.062, .064, .065 and .067 need relevant detailed logs / binding signal / authentication failure evidence / actual cache headers. A missing event stream is not a pass. This review records the absence of evidence, preserves the existing **NO-GO** gate, and does not authorize new production changes.
 
