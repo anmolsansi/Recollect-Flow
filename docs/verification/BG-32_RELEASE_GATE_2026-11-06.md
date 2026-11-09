@@ -266,6 +266,24 @@ No deployment, D1 query in Studio, remote SQL mutation, private R2 read/write, s
 
 No new migration, Studio SQL execution, secret read, paid/logging setting change, Worker deployment, Cron activation, provider send, R2 write, backup restore or other production mutation was performed.
 
+
+### November 9 private caching inspection: source verified, live header gate still open
+
+- Read the exact approved/deployed source revision `81e82806700519b90b6fbd5c1ebb233ed5def9d2`: the production `handleFetch()` wrapper adds `Cache-Control: private, no-store` and `X-Content-Type-Options: nosniff` to `/api/*`; the private PDF route sets these headers plus PDF `Content-Type` and length. The existing private PDF route test and production-release smoke contract explicitly assert these headers.
+- Prior BG-31 release smoke was approved and recorded as passing, and the synthetic PDF was subsequently verified on the owner's Mac as 639 bytes with matching SHA-256. The Cloudflare Worker version prefix `ff5ba1ce` remains consistent with the frozen core release.
+- An independent standard-browser, anonymous read-only attempt on November 9 to inspect GET response headers for `/api/v1/health` and the existing synthetic attachment encountered `net::ERR_QUIC_PROTOCOL_ERROR`, **before receiving any HTTP response**. No actual current HTTP status or response headers were observed. This is a transport/access limitation in the separate browser environment, not evidence of a cache defect.
+- **BG-32.067 remains OPEN** because current private HTTP response headers have not been captured from the authenticated owner-device browser. The safe 3-GET, header-only, no-credential owner-browser check is in [BG-32_PRIVATE_CACHE_BROWSER_CHECK.md](BG-32_PRIVATE_CACHE_BROWSER_CHECK.md). Do not claim a live cache-header pass until its sanitized results are inspected.
+- No deployment, data mutation, new credential or logging/billing/config change was undertaken; the broader BG-32 and V1 **NO-GO** status remains unchanged.
+
+
+### November 9 owner-session cache header verification (BG-32.067 PASS)
+
+The owner performed a read-only, same-origin, authenticated Opera Console `fetch()` check and supplied the sanitized three-row header result. These are owner-confirmed actual **response headers**, not independently captured browser network records. All requests returned HTTP 200. `/api/v1/admin/session` and the existing synthetic `/api/v1/items/302e4bea-3225-4708-8b41-9c5661bf4d17` returned `Content-Type: application/json`, `Cache-Control: private, no-store`, `X-Content-Type-Options: nosniff`, and no declared Content-Length. The existing `/api/v1/attachments/2a8afecc-eab3-4f43-a3aa-e430013435fd/content` returned `Content-Type: application/pdf`, `Content-Length: 639`, `Cache-Control: private, no-store`, and `X-Content-Type-Options: nosniff`.
+
+This satisfies the scoped private-response caching inspection `BG-32.067`, corroborated by the frozen deployed Worker implementation and existing prior original-file integrity/anonymous-access evidence. Missing Content-Length on JSON is acceptable. Neither private CDN-cache metadata nor a new SHA-256 computation is implied. The earlier isolated browser `net::ERR_QUIC_PROTOCOL_ERROR` produced no HTTP response and was not an application cache failure.
+
+**BG-32 / 07 Step 4 is now 10/10 inspections performed when the checklist update merges.** This does **not** accept the overall BG-32 release, backup/recovery, disabled providers/Cron, BG-29.078, OPE-247 or V1 GO. No production state/configuration change was made.
+
 <!-- prettier-ignore-end -->
 
 ## Verification approach
