@@ -284,6 +284,14 @@ This satisfies the scoped private-response caching inspection `BG-32.067`, corro
 
 **BG-32 / 07 Step 4 is now 10/10 inspections performed when the checklist update merges.** This does **not** accept the overall BG-32 release, backup/recovery, disabled providers/Cron, BG-29.078, OPE-247 or V1 GO. No production state/configuration change was made.
 
+### November 9 owner-reported anonymous PDF and CDN-cache follow-up (BG-32.067 corroboration)
+
+The owner supplied **sanitized Opera Network results** after the authenticated cache-header verification above. An unauthenticated request for the **existing synthetic private PDF** returned **HTTP 401 Unauthorized** and **no private PDF body**. For the authenticated private requests already observed as HTTP 200 with `Cache-Control: private, no-store` (session, item, PDF), the owner reported **`CF-Cache-Status: DYNAMIC`** and an **absent `Age` header**. The existing PDF response was `Content-Type: application/pdf`. No cookies, auth headers, private URL or document contents were collected or included here.
+
+**Assessment:** BG-32.067 is complete as an evidence-bounded inspection. The tested unauthenticated request denied PDF access, and the checked authenticated responses neither permitted shared caching by HTTP directive nor showed a Cloudflare cached HIT. `DYNAMIC` with no `Age` supports non-cached treatment for **these observed responses**. This is user-reported sanitized header evidence, not an independently reproduced network capture, a comprehensive Cloudflare Cache Rules audit, or proof across every authenticated endpoint, user, edge region, signed-URL variant or future deployment. It does not certify all intermediary caches, and a single observed 401 does not exhaust authorization edge cases. Investigate any later `HIT`, `public`, `s-maxage`, unexpected PDF 200 while unauthenticated, or caching-rule change before relying on this gate for release.
+
+**Release posture:** BG-32 Step 4 remains **10/10 scoped inspections checked**, while full BG-32 / V1 remains **NO-GO** due to separate backup/recovery, disabled provider/Cron and other outstanding release gates. This evidence update involved no deployment, production data write, Cloudflare settings change or paid operation.
+
 <!-- prettier-ignore-end -->
 
 ## Verification approach
