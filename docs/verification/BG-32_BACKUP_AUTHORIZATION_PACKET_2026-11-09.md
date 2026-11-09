@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # BG-32 Task 2 — backup authorization and safety-boundary packet
 
 **Status: PREPARED, NOT APPROVED, NOT EXECUTED.** Prepared November 9, 2026. Tracks [BG-32 #141](https://github.com/anmolsansi/Recollect-Flow/issues/141) and [Linear OPE-346](https://linear.app/openclaw-neutron/issue/OPE-346/bg-32-verify-deployed-core-release-boundaries-and-close-production). This file is a public, non-secret approval template, **not** a permission to execute any hosted operation.
@@ -9,8 +11,6 @@ Authorize only the minimum specifically identified operations to preserve an ind
 The November 3 scope was explicitly approved for that **one first install**. It does not carry over to this backup phase. Task 1 and Task 5 were reconciled in merged PR #152. The 100-step BG-32 checklist now has 80 checked and 20 open, including authorization and independent-backup actions.
 
 ### Frozen source and production target
-
-<!-- prettier-ignore-start -->
 
 | Identity | Approved existing value |
 | --- | --- |
@@ -24,7 +24,6 @@ The November 3 scope was explicitly approved for that **one first install**. It 
 | Applied migrations | 22/22 through `0025_bg28_scheduled_backups.sql` |
 | Current application doc head | Separate from frozen deployed source. Documentation commits do not change the deployed Worker. |
 
-<!-- prettier-ignore-end -->
 
 The last documented hosted state includes **three synthetic items, one original PDF of 639 bytes, zero observed purge receipts, and a hosted JSON backup marked complete and verified November 6** (recorded as 11,746 bytes in the November 7 operational evidence, with expiration December 6). These are **historical observations**, not a freshly retrieved November 9 backup ID, complete export, or independently verified object listing. The earlier local isolated restore test did not establish complete off-device disaster recovery.
 
@@ -100,3 +99,5 @@ Until then: **TASK 2 AWAITING OWNER APPROVAL, BG-32 RELEASE NO-GO.** Continue sa
 - [BG-28 recovery operator procedure](../RECOVERY_OPERATOR_PROCEDURE.md).
 - [BG-32 source checklist](../RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-32--100-executable-microtasks).
 - [Cloudflare R2 pricing](https://developers.cloudflare.com/r2/pricing/).
+
+<!-- prettier-ignore-end -->
