@@ -4566,7 +4566,7 @@ Implementation choices remain proposals until resolved in the relevant step.
 - [x] `BG-32.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
 - [x] `BG-32.094` **Integrity:** Check that BG-32 has not weakened its stated data, privacy, scope or recovery guarantees.
 - [x] `BG-32.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-32.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-32.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
 - [x] `BG-32.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-32.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-32.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
