@@ -3694,6 +3694,38 @@ signed-off closeout. OPE-247, BG-29.078 and user-device acceptance remain open.
 Known qualifications include a first immediate search miss, Python default
 User-Agent Cloudflare error 1010 and metered R2 without a hard spending cap.
 
+### November 9 BG-32 documentation reconciliation and remaining gate
+
+The November 3 core-only release remains deployed from the **frozen source**, not
+the current documentation branch. The live D1 Studio/owner ledger comparison
+covered all 22 migration filenames in order through `0025`. The owner
+confirmed the full approved Worker UUID, while earlier authenticated Opera
+inspection independently saw the matching version **prefix**, not the full
+UUID. Those distinct proof levels are preserved in the
+[BG-32 release-gate ledger](verification/BG-32_RELEASE_GATE_2026-11-06.md).
+
+The already performed, scoped admin session, synthetic private PDF, anonymous
+denial, cache-header, and read-only operational tests support the first-install
+release boundary. Step 4 contains ten completed bounded inspections. Step 5
+contains seven completed failure-response checks, with no production rollback
+executed or justified. A prior first-search miss and the default Python
+User-Agent's Cloudflare 1010 response remain recorded qualifications.
+
+A superseded, older-base [PR #144](https://github.com/anmolsansi/Recollect-Flow/pull/144)
+contained the Worker-version and D1-ledger evidence. Reconcile those two
+facts on a branch based on current `main` rather than merging historical
+changes over newer Step 4/5 records. The BG-32 checklist is the current
+action-by-action truth, not an approval for new production work.
+
+**Still open:** an independently retained encrypted hosted-data copy with
+original R2 bytes and latest purge receipts, a complete isolated application
+restore, unsupported historical migration-command/index evidence, and an
+approved recovery option or explicit conditional nonapplicability decision.
+BG-29.078 and OPE-247 are separate acceptance gates. Any new production
+operation needs fresh scope-specific approval; backup planning and source CI
+cannot substitute for it. Keep BG-32 and BG-33 acceptance gates open until
+their distinct criteria have been met.
+
 ### Execution checklist
 
 Follow the [100 microtasks for BG-32](RECOLLECTFLOW_MICROTASK_CHECKLIST.md#bg-32--100-executable-microtasks) after reading this chapter. Preserve the explanation and proof requirements when recording each result.

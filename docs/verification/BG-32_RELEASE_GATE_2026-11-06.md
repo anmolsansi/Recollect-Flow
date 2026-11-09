@@ -8,6 +8,36 @@ The current source baseline for this work is main at `f7c487808539cc0809cd407f4b
 
 Target: `https://recollect-flow.openclawneutron.workers.dev`, account `a9482fbfb91ace26dee097cbd41293f9`, D1 `recollect-flow-prod-v2` / `76bd35c6-c833-4987-a47e-6aa8238bb832`, private R2 `recollect-flow-attachments-prod-v2`. This is a **fresh installation** with no earlier compatible application artifact. The historical 22-migration ledger, required secret-name presence, safe auth and routing smoke, three synthetic items and one 639-byte PDF are recorded by BG-31. Do not reapply migrations or rerun its write-bearing smoke to inflate BG-32 progress.
 
+## November 9 task 1 / task 5 reconciliation (documentation only)
+
+This section records the latest **evidence classification and release actuals**, without amending the frozen November 3 deployment, the historical BG-31 draft NO-GO packet or any production resource. The already approved core-only installation is **still running**. The current GitHub documentation revision is not its deployed source.
+
+### Historical release and current observations
+
+- **Frozen source and deployment:** approved source `81e82806700519b90b6fbd5c1ebb233ed5def9d2`, Worker version `ff5ba1ce-32b0-499c-ae67-f561ec09c93a`, and Web release ID `3b455e5d2150e5a38c24f340164b220fe74b05163604c2e159572affbdd8def6`, as preserved in [the immutable core release record](../releases/BG-31_CORE_RELEASE_2026-11-03.json). The complete active Worker version is **owner-confirmed** from Cloudflare, while an earlier authenticated Opera read independently confirmed the matching prefix at 100% traffic. Do not turn the latter observation into an independent full-UUID reading.
+- **D1:** `recollect-flow-prod-v2`, UUID `76bd35c6-c833-4987-a47e-6aa8238bb832`. The previously authenticated D1 Studio read covered the first 20 rows and then rows 21–22. The owner also provided all 22 sequential rows, matching the tracked 22 migration filenames through `0025_bg28_scheduled_backups.sql`; application times were November 3, 11:11:57–11:12:05 UTC. This is **current ledger name/order evidence**, not a fresh D1 schema-integrity or index survey.
+- **R2:** `recollect-flow-attachments-prod-v2` remains private Standard storage. Previously tested synthetic PDF size is 639 bytes with matching original SHA-256. This **does not** prove complete independent off-device original-byte and purge-receipt backup.
+- **Functional and operational boundaries:** owner-session login/persistence and private PDF download/anonymous denial were verified with stated owner-evidence limitations. Step 4 completed 10/10 bounded inspections, including private `Cache-Control: private, no-store` observations. Step 5 completed 7/10, without live rollback. The first immediate search miss, Cloudflare error 1010 for default Python User-Agent, untested external providers/Cron, BG-29.078 and OPE-247 remain explicit qualifications.
+- **Source CI:** [main CI run #42596015097](https://github.com/anmolsansi/Recollect-Flow/actions/runs/42596015097) passed against `fbc37da02932942b841877cc5990b489d07b83aa` before this reconciliation branch. It is source verification, **not** a new production smoke or permission to deploy. Recheck exact-head CI for any later documentation PR.
+
+### PR #144 disposition and checklist review
+
+[PR #144](https://github.com/anmolsansi/Recollect-Flow/pull/144) was created from an older documentation base. Its two valid changes were to check `BG-32.081` (owner-confirmed active full Worker UUID) and `BG-32.082` (22/22 D1 migration ledger), with precisely scoped supporting evidence. Rather than merge an old branch over newer Step 4/5 details, these facts are reconciled into the current main-based documentation branch. Review/close the obsolete PR as **superseded**, not merged as if it had executed any new release operation.
+
+The entire BG-32 100-action source checklist and 50-pair GitHub issue were compared with the [build guide](../RECOLLECTFLOW_BUILD_GUIDE.md#38-bg-32--apply-the-authorized-production-release), the frozen release packet, and the November 6–9 evidence. Conditional actions retain their truthful disposition:
+
+- `BG-32.035`: all 22 migrations were recorded as successful, but a separately verifiable **actual process exit code** has not been located. Keep open pending the historical command result, not a repeat migration.
+- `BG-32.037`: no migration failure requiring post-failure schema inspection was reported. Record **not triggered**, without inventing an inspection or marking it performed.
+- `BG-32.039`: source/local migration tests are recorded, but exact current hosted required-index evidence remains unverified. Keep open; use an approved read-only inspection if later needed.
+- `BG-32.075–.077`: no compatible previous Worker or independently restored off-device application backup is proved. No incident recovery was approved, required or executed. Keep open and retain the **NO-GO** recovery decision.
+- `BG-32.085`: **no rollback was performed**. This is an explicit zero-action release record and qualifies only as documentary treatment of this conditional step.
+- `BG-32.089`: actual deployed source, Worker, Web release, D1 ledger, R2 target, smoke results and excluded gates are recorded above and cross-referenced to the frozen core manifest; **no historical approval or release artifact has been changed**.
+- `BG-32.091`: the outcome-and-gap review was performed. Unresolved backup/preflight proof, historical command/index inspection, recovery, and BG-33 handoff prevent BG-32 closure.
+- `BG-32.095`: this documentation reconciliation created **no temporary worker process or production synthetic fixture** requiring shutdown or deletion. Existing owner fixtures and backup evidence are retained; do not remove owner resources.
+- `BG-32.096`: the [PR #152](https://github.com/anmolsansi/Recollect-Flow/pull/152) diff was reviewed file-by-file. It changes only the BG-32 build guide, canonical checklist, and release-gate evidence ledger. No runtime code, migration, secret, production configuration or unrelated owner file is changed. This completes the **scoped diff review**; PR merge still requires exact-head CI to pass.
+
+The previously deployed core is not rolled back and remains unchanged. **No** new D1 migration, R2 mutation, provider send, Cron activation, secret change, billing operation, traffic cutover or production deploy is authorized by this reconciliation. Independent recoverable backup/isolated restore and new operation-specific approval remain hard gates. Keep BG-32, BG-33 and V1 acceptance open until their individual completion conditions are proved.
+
 ## Already performed, with scoped evidence
 
 - Approved core-only forward migrations through `0025`, first Worker/Web deployment and runtime secret installation.

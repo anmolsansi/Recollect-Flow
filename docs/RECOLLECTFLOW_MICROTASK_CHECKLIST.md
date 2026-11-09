@@ -4548,25 +4548,25 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-32 / 09 — Release record
 
-- [ ] `BG-32.081` Record final deployed version.
-- [ ] `BG-32.082` Record final migration ledger.
+- [x] `BG-32.081` Record final deployed version.
+- [x] `BG-32.082` Record final migration ledger.
 - [x] `BG-32.083` Record smoke stage results.
 - [x] `BG-32.084` Record backup evidence reference.
-- [ ] `BG-32.085` Record any rollback action.
+- [x] `BG-32.085` Record any rollback action.
 - [x] `BG-32.086` Record unresolved integration gates.
 - [x] `BG-32.087` Preserve synthetic fixture ownership.
 - [x] `BG-32.088` Record operator and timestamps.
-- [ ] `BG-32.089` Update manifest actuals.
+- [x] `BG-32.089` Update manifest actuals.
 - [x] `BG-32.090` Prepare live acceptance handoff.
 
 #### BG-32 / 10 — Verify and close this task
 
-- [ ] `BG-32.091` **Review:** Compare the completed checklist with BG-32's stated outcome; identify uncovered behavior.
+- [x] `BG-32.091` **Review:** Compare the completed checklist with BG-32's stated outcome; identify uncovered behavior.
 - [x] `BG-32.092` **Verification:** Run or inspect the focused proof required by BG-32; reuse a valid existing run rather than repeating it gratuitously.
 - [x] `BG-32.093` **Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.
 - [x] `BG-32.094` **Integrity:** Check that BG-32 has not weakened its stated data, privacy, scope or recovery guarantees.
-- [ ] `BG-32.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
-- [ ] `BG-32.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
+- [x] `BG-32.095` **Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.
+- [x] `BG-32.096` **Change review:** Review task-owned code or document changes and preserve unrelated owner work.
 - [x] `BG-32.097` **Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.
 - [x] `BG-32.098` **Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.
 - [x] `BG-32.099` **Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.
