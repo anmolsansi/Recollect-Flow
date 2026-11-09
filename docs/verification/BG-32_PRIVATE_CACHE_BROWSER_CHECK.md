@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # BG-32.067 — Private response caching verification
 
 Status: **OPEN, awaiting owner-session live HTTP response headers**. No production change or acceptance claim.
@@ -70,3 +72,5 @@ Required results: all three calls return HTTP `200`, `privateNoStore = true`, `c
 **Keep BG-32.067 unchecked** until actual live owner-session response headers are observed and recorded. If all checks pass, append the safe status/header values with UTC timestamp and request context to the BG-32 release-gate documentation, check `BG-32.067` and submit a documentation-only PR. Step 4 then becomes 10/10 *inspections performed*, not full BG-32 release approval.
 
 Broader backups, independent off-device storage, isolated restore, integration gates, BG-29.078, OPE-247 and full V1 acceptance remain separate and not approved.
+
+<!-- prettier-ignore-end -->
