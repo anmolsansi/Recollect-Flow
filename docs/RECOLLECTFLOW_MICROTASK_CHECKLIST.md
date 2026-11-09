@@ -4523,10 +4523,10 @@ Implementation choices remain proposals until resolved in the relevant step.
 #### BG-32 / 07 — Operational inspection
 
 - [x] `BG-32.061` Inspect safe request logs.
-- [ ] `BG-32.062` Inspect migration error signals.
+- [x] `BG-32.062` Inspect migration error signals.
 - [x] `BG-32.063` Inspect Worker runtime errors.
-- [ ] `BG-32.064` Inspect binding failures.
-- [ ] `BG-32.065` Inspect unexpected auth failures.
+- [x] `BG-32.064` Inspect binding failures.
+- [x] `BG-32.065` Inspect unexpected auth failures.
 - [x] `BG-32.066` Inspect initial job backlog.
 - [ ] `BG-32.067` Inspect private response caching.
 - [x] `BG-32.068` Inspect asset loading failures.
