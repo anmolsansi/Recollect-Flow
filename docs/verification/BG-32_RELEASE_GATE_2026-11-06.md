@@ -294,6 +294,16 @@ The owner supplied **sanitized Opera Network results** after the authenticated c
 
 <!-- prettier-ignore-end -->
 
+## November 9 Step 5 — failure-response assessment, no production rollback
+
+Reviewed the approved BG-31 release manifest's S01–S11 mandatory stop conditions against November 3 approved deployment facts and the November 6–9 bounded runtime/owner-session inspections. A fresh anonymous Opera health GET displayed `data.status=ok` with safe request ID `fa43c1e1-0276-4084-93ba-0c0f512c4aed`. This is browser body evidence, not a new all-route or authenticated platform audit.
+
+**Disposition:** BG-32.071–.074 are now reviewed and evidenced. Preserve the existing **NO-GO / halt on dependent releases**: incomplete independent recoverable off-device backup/full isolated restore, BG-29.078, OPE-247, disabled Cron/provider paths and pending jobs, unverified old-code/schema rollback compatibility and lack of a new operation-specific production approval. Known initial search visibility and default Python User-Agent deviations remain recorded. The approved core-only Worker was **not** rolled back or disabled, and no new production change or incident email was executed.
+
+There is no earlier verified compatible Worker/Web artifact for this **fresh install**. A code-only rollback cannot reverse 22 applied D1 migrations. BG-32.075–.077 remain **unchecked**, not silently marked completed for a recovery/rollback that never occurred. BG-32 / 08 is **7/10 evidence-checked** (.071–.074 plus existing .078–.080), with the three conditional recovery actions open.
+
+See the [full trigger-by-trigger matrix, safe request-ID record, schema judgment and recovery authorization boundary](BG-32_STEP5_FAILURE_RESPONSE_2026-11-09.md). This is documentation only and is not full BG-32, BG-33 or V1 release sign-off.
+
 ## Verification approach
 
 Keep the historical evidence separate from new observations. Use a read-only checker for health, public routing, exact published Web release ID, anonymous private denial and missing asset behavior. The checker must never make a mutating request or use credentials. A passed public check supports reachability and routing only, not private session, DB inventory, billing, backup or final release acceptance.
