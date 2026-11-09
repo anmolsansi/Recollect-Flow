@@ -252,6 +252,8 @@ close BG-32, BG-33, or full V1 based solely on this section.
 
 No deployment, D1 query in Studio, remote SQL mutation, private R2 read/write, secret exposure, paid change, logging-setting update, synthetic capture, provider/notification call, Cron activation, rollback or destructive recovery was performed.
 
+<!-- prettier-ignore-start -->
+
 ## November 8–9 seven-day log and operational inspection (read-only)
 
 **Disposition: BG-32.062, .064 and .065 inspected at the available evidence level; this is not a blanket absence-of-errors claim or BG-32/V1 acceptance.** The owner selected **Last 7 days** on the production `recollect-flow` Worker Observability Events page in authenticated Opera. The resulting URL had `timeframe=7d` and showed **258 events** and **0 in the Errors counter**. The default visible event rows were informational request logs, including GETs for the session, item and operations-summary routes. No event-level error was identified in that visible sample. This is a seven-day dashboard summary, **not** a complete filter-by-status audit of all 258 invocations, and not a substitute for historical Wrangler migration command output.
@@ -263,6 +265,8 @@ No deployment, D1 query in Studio, remote SQL mutation, private R2 read/write, s
 **Tracking decision:** BG-32.062, .064 and .065 are marked checked solely because their scoped inspections were performed and the available historical/current evidence reviewed. An unchecked item is not converted into a full system pass by a lack of error logs. BG-32.067 (live private cache and content-type response headers) remains **OPEN**. All broader hosted backup, isolated recovery, disabled integration, BG-29.078, OPE-247, and launch NO-GO gates remain unchanged.
 
 No new migration, Studio SQL execution, secret read, paid/logging setting change, Worker deployment, Cron activation, provider send, R2 write, backup restore or other production mutation was performed.
+
+<!-- prettier-ignore-end -->
 
 ## Verification approach
 
