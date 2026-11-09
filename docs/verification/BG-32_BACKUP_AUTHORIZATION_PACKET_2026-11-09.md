@@ -10,6 +10,8 @@ The November 3 scope was explicitly approved for that **one first install**. It 
 
 ### Frozen source and production target
 
+<!-- prettier-ignore-start -->
+
 | Identity | Approved existing value |
 | --- | --- |
 | Approved first-install packet | `BG31-CORE-81e828067005-2026-11-03.3` |
@@ -21,6 +23,8 @@ The November 3 scope was explicitly approved for that **one first install**. It 
 | Private R2 source | `recollect-flow-attachments-prod-v2`, Standard storage |
 | Applied migrations | 22/22 through `0025_bg28_scheduled_backups.sql` |
 | Current application doc head | Separate from frozen deployed source. Documentation commits do not change the deployed Worker. |
+
+<!-- prettier-ignore-end -->
 
 The last documented hosted state includes **three synthetic items, one original PDF of 639 bytes, zero observed purge receipts, and a hosted JSON backup marked complete and verified November 6** (recorded as 11,746 bytes in the November 7 operational evidence, with expiration December 6). These are **historical observations**, not a freshly retrieved November 9 backup ID, complete export, or independently verified object listing. The earlier local isolated restore test did not establish complete off-device disaster recovery.
 
