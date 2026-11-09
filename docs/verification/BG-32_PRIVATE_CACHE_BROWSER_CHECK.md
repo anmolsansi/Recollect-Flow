@@ -66,7 +66,7 @@ In the **already authenticated** Opera session:
         contentType,
         contentLength: length || '(not present)',
         nosniff,
-        privateNoStore: /\\bprivate\\b/i.test(cacheControl) && /\\bno-store\\b/i.test(cacheControl),
+        privateNoStore: /\bprivate\b/i.test(cacheControl) && /\bno-store\b/i.test(cacheControl),
         correctType: contentType.toLowerCase().includes(expectedType),
         pdfLength639: name === 'private-pdf' ? length === '639' : 'n/a',
       });
