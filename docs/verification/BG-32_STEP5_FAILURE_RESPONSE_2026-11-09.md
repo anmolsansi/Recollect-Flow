@@ -11,6 +11,8 @@
 
 ## .071 — Stop-trigger evaluation
 
+<!-- prettier-ignore-start -->
+
 | Approved stage | Evidence-backed disposition | Decision |
 | --- | --- | --- |
 | S01 identity/config/ledger | Approved frozen manifest/Web identity and owner-confirmed current Worker version; authenticated D1 ledger previously reconciled 22/22. No new mutation preflight or independently re-read full Worker UUID on November 9. | No demonstrated mismatch for deployed core; **new release not authorized** |
@@ -24,6 +26,8 @@
 | S09 privacy/optional degradation | Disabled dispatch flags and no Cron. Unexecuted hosted provider failure/degradation paths. | **Not exercised**; no permission to enable |
 | S10 external integrations | Notion/Telegram/AI provider tests were excluded from core-only approval and remain disabled. | **Not executed / gate open**, never implied PASS |
 | S11 operational inspection | November 8–9 Cloudflare seven-day dashboard: 258 events, Errors counter 0; bounded item/DB reads worked, six known pending jobs remained intentionally undispatched. No exhaustive event-status, billing, R2 or logging audit. | **Qualified inspection** only; no broad operational GO |
+
+<!-- prettier-ignore-end -->
 
 **Cross-cutting mandatory holds:** independently retained encrypted hosted-data export with original bytes and latest purge receipts, a verified *complete* isolated recovery rehearsal, unclosed BG-29.078 and OPE-247, no blanket cost cap for metered R2, and no fresh operation-specific approval. These block **future release/promotion or mutation**, not proof that a live disaster occurred. The initial search miss and Python default User-Agent's historical Cloudflare 1010/403 remain documented deviations.
 
