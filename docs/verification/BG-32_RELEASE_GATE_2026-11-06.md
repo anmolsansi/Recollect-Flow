@@ -275,6 +275,15 @@ No new migration, Studio SQL execution, secret read, paid/logging setting change
 - **BG-32.067 remains OPEN** because current private HTTP response headers have not been captured from the authenticated owner-device browser. The safe 3-GET, header-only, no-credential owner-browser check is in [BG-32_PRIVATE_CACHE_BROWSER_CHECK.md](BG-32_PRIVATE_CACHE_BROWSER_CHECK.md). Do not claim a live cache-header pass until its sanitized results are inspected.
 - No deployment, data mutation, new credential or logging/billing/config change was undertaken; the broader BG-32 and V1 **NO-GO** status remains unchanged.
 
+
+### November 9 owner-session cache header verification (BG-32.067 PASS)
+
+The owner performed a read-only, same-origin, authenticated Opera Console `fetch()` check and supplied the sanitized three-row header result. These are owner-confirmed actual **response headers**, not independently captured browser network records. All requests returned HTTP 200. `/api/v1/admin/session` and the existing synthetic `/api/v1/items/302e4bea-3225-4708-8b41-9c5661bf4d17` returned `Content-Type: application/json`, `Cache-Control: private, no-store`, `X-Content-Type-Options: nosniff`, and no declared Content-Length. The existing `/api/v1/attachments/2a8afecc-eab3-4f43-a3aa-e430013435fd/content` returned `Content-Type: application/pdf`, `Content-Length: 639`, `Cache-Control: private, no-store`, and `X-Content-Type-Options: nosniff`.
+
+This satisfies the scoped private-response caching inspection `BG-32.067`, corroborated by the frozen deployed Worker implementation and existing prior original-file integrity/anonymous-access evidence. Missing Content-Length on JSON is acceptable. Neither private CDN-cache metadata nor a new SHA-256 computation is implied. The earlier isolated browser `net::ERR_QUIC_PROTOCOL_ERROR` produced no HTTP response and was not an application cache failure.
+
+**BG-32 / 07 Step 4 is now 10/10 inspections performed when the checklist update merges.** This does **not** accept the overall BG-32 release, backup/recovery, disabled providers/Cron, BG-29.078, OPE-247 or V1 GO. No production state/configuration change was made.
+
 <!-- prettier-ignore-end -->
 
 ## Verification approach
