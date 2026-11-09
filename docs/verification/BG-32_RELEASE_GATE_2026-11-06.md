@@ -34,7 +34,7 @@ The entire BG-32 100-action source checklist and 50-pair GitHub issue were compa
 - `BG-32.089`: actual deployed source, Worker, Web release, D1 ledger, R2 target, smoke results and excluded gates are recorded above and cross-referenced to the frozen core manifest; **no historical approval or release artifact has been changed**.
 - `BG-32.091`: the outcome-and-gap review was performed. Unresolved backup/preflight proof, historical command/index inspection, recovery, and BG-33 handoff prevent BG-32 closure.
 - `BG-32.095`: this documentation reconciliation created **no temporary worker process or production synthetic fixture** requiring shutdown or deletion. Existing owner fixtures and backup evidence are retained; do not remove owner resources.
-- `BG-32.096`: review of the eventual documentation-only branch diff and exact-head CI is required before declaring the change review finished.
+- `BG-32.096`: the [PR #152](https://github.com/anmolsansi/Recollect-Flow/pull/152) diff was reviewed file-by-file. It changes only the BG-32 build guide, canonical checklist, and release-gate evidence ledger. No runtime code, migration, secret, production configuration or unrelated owner file is changed. This completes the **scoped diff review**; PR merge still requires exact-head CI to pass.
 
 The previously deployed core is not rolled back and remains unchanged. **No** new D1 migration, R2 mutation, provider send, Cron activation, secret change, billing operation, traffic cutover or production deploy is authorized by this reconciliation. Independent recoverable backup/isolated restore and new operation-specific approval remain hard gates. Keep BG-32, BG-33 and V1 acceptance open until their individual completion conditions are proved.
 
