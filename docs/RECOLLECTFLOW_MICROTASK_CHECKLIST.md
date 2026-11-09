@@ -4535,10 +4535,10 @@ Implementation choices remain proposals until resolved in the relevant step.
 
 #### BG-32 / 08 — Failure response
 
-- [ ] `BG-32.071` Evaluate each stop trigger.
-- [ ] `BG-32.072` Stop dependent release actions on failure.
-- [ ] `BG-32.073` Preserve failure request IDs.
-- [ ] `BG-32.074` Determine schema compatibility.
+- [x] `BG-32.071` Evaluate each stop trigger.
+- [x] `BG-32.072` Stop dependent release actions on failure.
+- [x] `BG-32.073` Preserve failure request IDs.
+- [x] `BG-32.074` Determine schema compatibility.
 - [ ] `BG-32.075` Select approved code rollback if safe.
 - [ ] `BG-32.076` Execute recovery plan if required.
 - [ ] `BG-32.077` Verify rollback/recovery behavior.
