@@ -16,7 +16,7 @@ Status: **OPEN, awaiting owner-session live HTTP response headers**. No producti
 
 In the **already authenticated** Opera session:
 
-1. Open `https://recollect-flow.openclawneutron.workers.dev/`. Do not open DevTools on the Cloudflare dashboard or GitHub tab.
+1. Open `https://recollect-flow.openclawneutron.workers.dev/`. The latest Opera navigation showed the **Admin Access** form, so if that still appears, sign in privately with your already prepared credential on your own device first. Never paste or send it to the assistant. Do not open DevTools on the Cloudflare dashboard or GitHub tab.
 2. Open Opera DevTools with `Option + Command + I`, go to **Console**, then paste the self-contained snippet below. It sends only three same-origin, read-only GETs using your existing browser session, prints only a short response-header report and does not print or read credentials, cookies, PDF contents, other private content or response bodies. It does not change data.
 3. Copy the resulting `console.table` values, with no cookie/Authorization headers, into the BG-32 issue evidence.
 
