@@ -1,5 +1,7 @@
 # RecollectFlow — Microtask Execution Checklist
 
+> **November 10 execution redesign:** Start with [remaining-work execution contract](tickets/REMAINING_WORK.md) and its 52 packets. The older sequences/counts below are historical requirements and evidence, not the current pick-next queue. Existing acceptance requirements and frozen approvals remain; remapping is not completion.
+
 Read the [build guide](RECOLLECTFLOW_BUILD_GUIDE.md) for the detailed feature explanations, design reasoning, examples, source references and completion boundaries. This companion preserves the original 100 microtasks for each of the 40 tasks, in priority order. Boxes remain planned work until task-specific evidence proves completion, at which point the corresponding checklist may be checked.
 
 **Owner-directed 2026-10-21 BG-29.078 exception:**
