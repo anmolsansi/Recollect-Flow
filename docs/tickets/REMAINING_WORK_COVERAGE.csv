@@ -1,0 +1,1237 @@
+legacy_id,legacy_requirement,replacement_packets,disposition
+BG-01.001,"**Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.",R01,RECONCILE_EVIDENCE
+BG-01.002,**Dependency:** Verify the baseline starting conditions; preserve any unresolved prerequisite as a blocker.,R01,RECONCILE_EVIDENCE
+BG-01.003,**Baseline:** Record the actual checkout or release candidate used for BG-01.,R01,RECONCILE_EVIDENCE
+BG-01.004,**Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.,R01,RECONCILE_EVIDENCE
+BG-01.005,**Evidence:** Check whether existing evidence already satisfies any BG-01 step; reference it instead of manufacturing work.,R01,RECONCILE_EVIDENCE
+BG-01.006,"**Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.",R01,RECONCILE_EVIDENCE
+BG-01.007,"**Environment:** Select the local, preview, production or physical-device environment required by this task.",R01,RECONCILE_EVIDENCE
+BG-01.008,**Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.,R01,RECONCILE_EVIDENCE
+BG-01.009,**Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.,R01,RECONCILE_EVIDENCE
+BG-01.010,"**Tracking:** Open a BG-01 evidence record and distinguish planned, performed, verified and blocked work.",R01,RECONCILE_EVIDENCE
+BG-01.011,Read current Git SHA.,R01,RECONCILE_EVIDENCE
+BG-01.012,Record detached or branch state.,R01,RECONCILE_EVIDENCE
+BG-01.013,Read tracked-file change summary.,R01,RECONCILE_EVIDENCE
+BG-01.014,List untracked files safely.,R01,RECONCILE_EVIDENCE
+BG-01.015,Identify owner-created local files.,R01,RECONCILE_EVIDENCE
+BG-01.016,Preserve the previous audit.,R01,RECONCILE_EVIDENCE
+BG-01.017,Compare against audited SHA.,R01,RECONCILE_EVIDENCE
+BG-01.018,Read applicable repository instructions.,R01,RECONCILE_EVIDENCE
+BG-01.019,Record checkout comparison result.,R01,RECONCILE_EVIDENCE
+BG-01.020,Identify baseline drift requiring reproduction.,R01,RECONCILE_EVIDENCE
+BG-01.021,Read CI Node version.,R01,RECONCILE_EVIDENCE
+BG-01.022,Select compatible Node runtime.,R01,RECONCILE_EVIDENCE
+BG-01.023,Record actual Node version.,R01,RECONCILE_EVIDENCE
+BG-01.024,Read npm version.,R01,RECONCILE_EVIDENCE
+BG-01.025,Confirm root package identity.,R01,RECONCILE_EVIDENCE
+BG-01.026,Confirm workspace package membership.,R01,RECONCILE_EVIDENCE
+BG-01.027,Confirm lockfile is present.,R01,RECONCILE_EVIDENCE
+BG-01.028,Run lockfile-based dependency installation.,R01,RECONCILE_EVIDENCE
+BG-01.029,Check unexpected lockfile changes.,R01,RECONCILE_EVIDENCE
+BG-01.030,Record dependency installation outcome.,R01,RECONCILE_EVIDENCE
+BG-01.031,Read root check sequence.,R01,RECONCILE_EVIDENCE
+BG-01.032,Locate Node test configuration.,R01,RECONCILE_EVIDENCE
+BG-01.033,Locate D1 test configuration.,R01,RECONCILE_EVIDENCE
+BG-01.034,Locate Web test command.,R01,RECONCILE_EVIDENCE
+BG-01.035,Identify contract checking command.,R01,RECONCILE_EVIDENCE
+BG-01.036,Identify migration checking command.,R01,RECONCILE_EVIDENCE
+BG-01.037,Identify Worker bundling command.,R01,RECONCILE_EVIDENCE
+BG-01.038,Identify browser startup commands.,R01,RECONCILE_EVIDENCE
+BG-01.039,Distinguish tests from live probes.,R01,RECONCILE_EVIDENCE
+BG-01.040,Map failures to execution layers.,R01,RECONCILE_EVIDENCE
+BG-01.041,Choose isolated configuration location.,R01,RECONCILE_EVIDENCE
+BG-01.042,Choose fresh persistence directory.,R01,RECONCILE_EVIDENCE
+BG-01.043,Set dummy capture credential.,R01,RECONCILE_EVIDENCE
+BG-01.044,Set dummy admin credential.,R01,RECONCILE_EVIDENCE
+BG-01.045,Set dummy worker credential.,R01,RECONCILE_EVIDENCE
+BG-01.046,Remove live messaging credentials.,R01,RECONCILE_EVIDENCE
+BG-01.047,Select mocked AI implementations.,R01,RECONCILE_EVIDENCE
+BG-01.048,Record nonsecret binding names.,R01,RECONCILE_EVIDENCE
+BG-01.049,Check environment-file loading behavior.,R01,RECONCILE_EVIDENCE
+BG-01.050,Prevent production setting inheritance.,R01,RECONCILE_EVIDENCE
+BG-01.051,Confirm local D1 target.,R01,RECONCILE_EVIDENCE
+BG-01.052,Confirm local R2 target.,R01,RECONCILE_EVIDENCE
+BG-01.053,Inspect pending migration filenames.,R01,RECONCILE_EVIDENCE
+BG-01.054,Apply migrations locally.,R01,RECONCILE_EVIDENCE
+BG-01.055,Record applied migration list.,R01,RECONCILE_EVIDENCE
+BG-01.056,Start matching Worker configuration.,R01,RECONCILE_EVIDENCE
+BG-01.057,Verify Worker persistence directory.,R01,RECONCILE_EVIDENCE
+BG-01.058,Create synthetic baseline capture.,R01,RECONCILE_EVIDENCE
+BG-01.059,Read synthetic capture back.,R01,RECONCILE_EVIDENCE
+BG-01.060,Confirm production state was untouched.,R01,RECONCILE_EVIDENCE
+BG-01.061,Choose available API port.,R01,RECONCILE_EVIDENCE
+BG-01.062,Choose available Web port.,R01,RECONCILE_EVIDENCE
+BG-01.063,Configure matching API proxy.,R01,RECONCILE_EVIDENCE
+BG-01.064,Start API process.,R01,RECONCILE_EVIDENCE
+BG-01.065,Record owned process identifier.,R01,RECONCILE_EVIDENCE
+BG-01.066,Start Web process.,R01,RECONCILE_EVIDENCE
+BG-01.067,Record Web process identifier.,R01,RECONCILE_EVIDENCE
+BG-01.068,Verify local health response.,R01,RECONCILE_EVIDENCE
+BG-01.069,Verify Web reaches local API.,R01,RECONCILE_EVIDENCE
+BG-01.070,Define owned-process cleanup command.,R01,RECONCILE_EVIDENCE
+BG-01.071,Run formatting check.,R01,RECONCILE_EVIDENCE
+BG-01.072,Run root lint check.,R01,RECONCILE_EVIDENCE
+BG-01.073,Run TypeScript check.,R01,RECONCILE_EVIDENCE
+BG-01.074,Run Node suite.,R01,RECONCILE_EVIDENCE
+BG-01.075,Run Worker D1 suite.,R01,RECONCILE_EVIDENCE
+BG-01.076,Capture expired-window failure.,R01,RECONCILE_EVIDENCE
+BG-01.077,Run remaining Web gates separately.,R01,RECONCILE_EVIDENCE
+BG-01.078,Reproduce obsolete smoke payload.,R01,RECONCILE_EVIDENCE
+BG-01.079,Classify environment-only failures.,R01,RECONCILE_EVIDENCE
+BG-01.080,Preserve actual process exit codes.,R01,RECONCILE_EVIDENCE
+BG-01.081,Create baseline evidence directory.,R01,RECONCILE_EVIDENCE
+BG-01.082,Save sanitized command logs.,R01,RECONCILE_EVIDENCE
+BG-01.083,Record timestamps and timezone.,R01,RECONCILE_EVIDENCE
+BG-01.084,Record fixture identifiers only.,R01,RECONCILE_EVIDENCE
+BG-01.085,Scan logs for dummy-secret reflection.,R01,RECONCILE_EVIDENCE
+BG-01.086,Remove accidental sensitive output.,R01,RECONCILE_EVIDENCE
+BG-01.087,Record test counts accurately.,R01,RECONCILE_EVIDENCE
+BG-01.088,Distinguish skipped from passed checks.,R01,RECONCILE_EVIDENCE
+BG-01.089,List unreproduced audit findings.,R01,RECONCILE_EVIDENCE
+BG-01.090,Prepare baseline failure ledger.,R01,RECONCILE_EVIDENCE
+BG-01.091,**Review:** Compare the completed checklist with BG-01's stated outcome; identify uncovered behavior.,R01,RECONCILE_EVIDENCE
+BG-01.092,**Verification:** Run or inspect the focused proof required by BG-01; reuse a valid existing run rather than repeating it gratuitously.,R01,RECONCILE_EVIDENCE
+BG-01.093,"**Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.",R01,RECONCILE_EVIDENCE
+BG-01.094,"**Integrity:** Check that BG-01 has not weakened its stated data, privacy, scope or recovery guarantees.",R01,RECONCILE_EVIDENCE
+BG-01.095,**Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.,R01,RECONCILE_EVIDENCE
+BG-01.096,**Change review:** Review task-owned code or document changes and preserve unrelated owner work.,R01,RECONCILE_EVIDENCE
+BG-01.097,"**Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.",R01,RECONCILE_EVIDENCE
+BG-01.098,**Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.,R01,RECONCILE_EVIDENCE
+BG-01.099,**Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.,R01,RECONCILE_EVIDENCE
+BG-01.100,**Gate:** Check the parent completion boundary and record whether BG-02 is unlocked.,R01,RECONCILE_EVIDENCE
+BG-02.001,"**Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.",R01,RECONCILE_EVIDENCE
+BG-02.002,**Dependency:** Verify BG-01's required completion evidence; preserve any unresolved prerequisite as a blocker.,R01,RECONCILE_EVIDENCE
+BG-02.003,**Baseline:** Record the actual checkout or release candidate used for BG-02.,R01,RECONCILE_EVIDENCE
+BG-02.004,**Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.,R01,RECONCILE_EVIDENCE
+BG-02.005,**Evidence:** Check whether existing evidence already satisfies any BG-02 step; reference it instead of manufacturing work.,R01,RECONCILE_EVIDENCE
+BG-02.006,"**Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.",R01,RECONCILE_EVIDENCE
+BG-02.007,"**Environment:** Select the local, preview, production or physical-device environment required by this task.",R01,RECONCILE_EVIDENCE
+BG-02.008,**Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.,R01,RECONCILE_EVIDENCE
+BG-02.009,**Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.,R01,RECONCILE_EVIDENCE
+BG-02.010,"**Tracking:** Open a BG-02 evidence record and distinguish planned, performed, verified and blocked work.",R01,RECONCILE_EVIDENCE
+BG-02.011,Open failing usage test.,R01,RECONCILE_EVIDENCE
+BG-02.012,Identify fixed fixture date.,R01,RECONCILE_EVIDENCE
+BG-02.013,Locate reservation clock argument.,R01,RECONCILE_EVIDENCE
+BG-02.014,Trace quota-window creation.,R01,RECONCILE_EVIDENCE
+BG-02.015,Trace usage HTTP handler.,R01,RECONCILE_EVIDENCE
+BG-02.016,Locate status clock default.,R01,RECONCILE_EVIDENCE
+BG-02.017,Locate active-window SQL predicate.,R01,RECONCILE_EVIDENCE
+BG-02.018,Identify runtime clock boundary.,R01,RECONCILE_EVIDENCE
+BG-02.019,Record expiry comparison operator.,R01,RECONCILE_EVIDENCE
+BG-02.020,Confirm expected active-window semantics.,R01,RECONCILE_EVIDENCE
+BG-02.021,Choose deterministic reference instant.,R01,RECONCILE_EVIDENCE
+BG-02.022,Choose matching minute window.,R01,RECONCILE_EVIDENCE
+BG-02.023,Choose matching daily window.,R01,RECONCILE_EVIDENCE
+BG-02.024,Choose pre-expiry query instant.,R01,RECONCILE_EVIDENCE
+BG-02.025,Choose exact-expiry query instant.,R01,RECONCILE_EVIDENCE
+BG-02.026,Choose post-expiry query instant.,R01,RECONCILE_EVIDENCE
+BG-02.027,Keep synthetic usage text.,R01,RECONCILE_EVIDENCE
+BG-02.028,Keep isolated provider scope.,R01,RECONCILE_EVIDENCE
+BG-02.029,Preserve test authorization fixtures.,R01,RECONCILE_EVIDENCE
+BG-02.030,Document expected window membership.,R01,RECONCILE_EVIDENCE
+BG-02.031,Inspect existing clock utilities.,R01,RECONCILE_EVIDENCE
+BG-02.032,Check workerd fake-clock support.,R01,RECONCILE_EVIDENCE
+BG-02.033,Verify inner-runtime Date behavior.,R01,RECONCILE_EVIDENCE
+BG-02.034,Distinguish timers from wall clock.,R01,RECONCILE_EVIDENCE
+BG-02.035,Prefer existing injection seam.,R01,RECONCILE_EVIDENCE
+BG-02.036,Define narrow clock interface if needed.,R01,RECONCILE_EVIDENCE
+BG-02.037,Keep production default unchanged.,R01,RECONCILE_EVIDENCE
+BG-02.038,Avoid public time override parameter.,R01,RECONCILE_EVIDENCE
+BG-02.039,Ensure clock reset in cleanup.,R01,RECONCILE_EVIDENCE
+BG-02.040,Record chosen clock mechanism.,R01,RECONCILE_EVIDENCE
+BG-02.041,Create reservation at controlled instant.,R01,RECONCILE_EVIDENCE
+BG-02.042,Query through actual usage route.,R01,RECONCILE_EVIDENCE
+BG-02.043,Assert successful admin response.,R01,RECONCILE_EVIDENCE
+BG-02.044,Assert expected provider row.,R01,RECONCILE_EVIDENCE
+BG-02.045,Assert expected shared scope.,R01,RECONCILE_EVIDENCE
+BG-02.046,Assert expected quota dimensions.,R01,RECONCILE_EVIDENCE
+BG-02.047,Assert reservation counters remain visible.,R01,RECONCILE_EVIDENCE
+BG-02.048,Assert policy version remains correct.,R01,RECONCILE_EVIDENCE
+BG-02.049,Assert warning thresholds remain correct.,R01,RECONCILE_EVIDENCE
+BG-02.050,Assert no unrelated fixture rows.,R01,RECONCILE_EVIDENCE
+BG-02.051,Advance to before expiry.,R01,RECONCILE_EVIDENCE
+BG-02.052,Assert window still appears.,R01,RECONCILE_EVIDENCE
+BG-02.053,Advance to exact expiry.,R01,RECONCILE_EVIDENCE
+BG-02.054,Assert expired window disappears.,R01,RECONCILE_EVIDENCE
+BG-02.055,Advance beyond expiry.,R01,RECONCILE_EVIDENCE
+BG-02.056,Assert no stale window returns.,R01,RECONCILE_EVIDENCE
+BG-02.057,Check minute versus daily expiry.,R01,RECONCILE_EVIDENCE
+BG-02.058,Check new-window reservation creation.,R01,RECONCILE_EVIDENCE
+BG-02.059,Assert old consumption stays historical.,R01,RECONCILE_EVIDENCE
+BG-02.060,Preserve repository expiry predicate.,R01,RECONCILE_EVIDENCE
+BG-02.061,Query usage without identity.,R01,RECONCILE_EVIDENCE
+BG-02.062,Assert anonymous denial.,R01,RECONCILE_EVIDENCE
+BG-02.063,Query with capture token.,R01,RECONCILE_EVIDENCE
+BG-02.064,Assert scope denial.,R01,RECONCILE_EVIDENCE
+BG-02.065,Query with admin token.,R01,RECONCILE_EVIDENCE
+BG-02.066,Assert admin success.,R01,RECONCILE_EVIDENCE
+BG-02.067,Inspect serialized response fields.,R01,RECONCILE_EVIDENCE
+BG-02.068,Assert dummy credential absent.,R01,RECONCILE_EVIDENCE
+BG-02.069,Assert fixture source text absent.,R01,RECONCILE_EVIDENCE
+BG-02.070,Assert provider key names absent.,R01,RECONCILE_EVIDENCE
+BG-02.071,Run usage file alone.,R01,RECONCILE_EVIDENCE
+BG-02.072,Run usage file twice.,R01,RECONCILE_EVIDENCE
+BG-02.073,Run alongside capacity tests.,R01,RECONCILE_EVIDENCE
+BG-02.074,Check fake clock restoration.,R01,RECONCILE_EVIDENCE
+BG-02.075,Check lease timer behavior.,R01,RECONCILE_EVIDENCE
+BG-02.076,Check migrations still finish.,R01,RECONCILE_EVIDENCE
+BG-02.077,Check timezone-independent instants.,R01,RECONCILE_EVIDENCE
+BG-02.078,Check midnight reset fixture.,R01,RECONCILE_EVIDENCE
+BG-02.079,Check no real provider request.,R01,RECONCILE_EVIDENCE
+BG-02.080,Review unnecessary production edits.,R01,RECONCILE_EVIDENCE
+BG-02.081,Remove obsolete date assumption.,R01,RECONCILE_EVIDENCE
+BG-02.082,Avoid empty-array fallback assertion.,R01,RECONCILE_EVIDENCE
+BG-02.083,Keep meaningful provider assertions.,R01,RECONCILE_EVIDENCE
+BG-02.084,Capture focused passing output.,R01,RECONCILE_EVIDENCE
+BG-02.085,Run complete D1 suite.,R01,RECONCILE_EVIDENCE
+BG-02.086,Compare unrelated failure counts.,R01,RECONCILE_EVIDENCE
+BG-02.087,Record runtime version used.,R01,RECONCILE_EVIDENCE
+BG-02.088,Record exact fixed test line.,R01,RECONCILE_EVIDENCE
+BG-02.089,Record expiry regression evidence.,R01,RECONCILE_EVIDENCE
+BG-02.090,Link evidence to candidate SHA.,R01,RECONCILE_EVIDENCE
+BG-02.091,**Review:** Compare the completed checklist with BG-02's stated outcome; identify uncovered behavior.,R01,RECONCILE_EVIDENCE
+BG-02.092,**Verification:** Run or inspect the focused proof required by BG-02; reuse a valid existing run rather than repeating it gratuitously.,R01,RECONCILE_EVIDENCE
+BG-02.093,"**Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.",R01,RECONCILE_EVIDENCE
+BG-02.094,"**Integrity:** Check that BG-02 has not weakened its stated data, privacy, scope or recovery guarantees.",R01,RECONCILE_EVIDENCE
+BG-02.095,**Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.,R01,RECONCILE_EVIDENCE
+BG-02.096,**Change review:** Review task-owned code or document changes and preserve unrelated owner work.,R01,RECONCILE_EVIDENCE
+BG-02.097,"**Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.",R01,RECONCILE_EVIDENCE
+BG-02.098,**Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.,R01,RECONCILE_EVIDENCE
+BG-02.099,**Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.,R01,RECONCILE_EVIDENCE
+BG-02.100,**Gate:** Check the parent completion boundary and record whether BG-03 is unlocked.,R01,RECONCILE_EVIDENCE
+BG-03.001,"**Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.",R01,RECONCILE_EVIDENCE
+BG-03.002,**Dependency:** Verify BG-02's required completion evidence; preserve any unresolved prerequisite as a blocker.,R01,RECONCILE_EVIDENCE
+BG-03.003,**Baseline:** Record the actual checkout or release candidate used for BG-03.,R01,RECONCILE_EVIDENCE
+BG-03.004,**Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.,R01,RECONCILE_EVIDENCE
+BG-03.005,**Evidence:** Check whether existing evidence already satisfies any BG-03 step; reference it instead of manufacturing work.,R01,RECONCILE_EVIDENCE
+BG-03.006,"**Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.",R01,RECONCILE_EVIDENCE
+BG-03.007,"**Environment:** Select the local, preview, production or physical-device environment required by this task.",R01,RECONCILE_EVIDENCE
+BG-03.008,**Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.,R01,RECONCILE_EVIDENCE
+BG-03.009,**Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.,R01,RECONCILE_EVIDENCE
+BG-03.010,"**Tracking:** Open a BG-03 evidence record and distinguish planned, performed, verified and blocked work.",R01,RECONCILE_EVIDENCE
+BG-03.011,Open smoke privacy mutations.,R01,RECONCILE_EVIDENCE
+BG-03.012,Open current privacy schema.,R01,RECONCILE_EVIDENCE
+BG-03.013,Locate detail item envelope.,R01,RECONCILE_EVIDENCE
+BG-03.014,Identify edit_version field.,R01,RECONCILE_EVIDENCE
+BG-03.015,Identify version minimum.,R01,RECONCILE_EVIDENCE
+BG-03.016,Inspect success response shape.,R01,RECONCILE_EVIDENCE
+BG-03.017,Inspect conflict error vocabulary.,R01,RECONCILE_EVIDENCE
+BG-03.018,Inspect derived-action requirements.,R01,RECONCILE_EVIDENCE
+BG-03.019,List successive privacy scenarios.,R01,RECONCILE_EVIDENCE
+BG-03.020,Record current mutation contract.,R01,RECONCILE_EVIDENCE
+BG-03.021,Add reusable detail request helper.,R01,RECONCILE_EVIDENCE
+BG-03.022,Pass admin authentication safely.,R01,RECONCILE_EVIDENCE
+BG-03.023,Request exact synthetic item.,R01,RECONCILE_EVIDENCE
+BG-03.024,Check HTTP status first.,R01,RECONCILE_EVIDENCE
+BG-03.025,Parse JSON response safely.,R01,RECONCILE_EVIDENCE
+BG-03.026,Read data.item explicitly.,R01,RECONCILE_EVIDENCE
+BG-03.027,Validate positive integer version.,R01,RECONCILE_EVIDENCE
+BG-03.028,Reject missing item envelope.,R01,RECONCILE_EVIDENCE
+BG-03.029,Reject malformed version values.,R01,RECONCILE_EVIDENCE
+BG-03.030,Return only needed detail fields.,R01,RECONCILE_EVIDENCE
+BG-03.031,Create unique synthetic capture.,R01,RECONCILE_EVIDENCE
+BG-03.032,Read initial authoritative version.,R01,RECONCILE_EVIDENCE
+BG-03.033,Build public privacy payload.,R01,RECONCILE_EVIDENCE
+BG-03.034,Include explicit reprocess action.,R01,RECONCILE_EVIDENCE
+BG-03.035,Include current edit version.,R01,RECONCILE_EVIDENCE
+BG-03.036,Send first privacy PATCH.,R01,RECONCILE_EVIDENCE
+BG-03.037,Verify expected success status.,R01,RECONCILE_EVIDENCE
+BG-03.038,Verify policy result fields.,R01,RECONCILE_EVIDENCE
+BG-03.039,Refetch authoritative item.,R01,RECONCILE_EVIDENCE
+BG-03.040,Retain returned current version.,R01,RECONCILE_EVIDENCE
+BG-03.041,Build Personal without-consent case.,R01,RECONCILE_EVIDENCE
+BG-03.042,Include current item version.,R01,RECONCILE_EVIDENCE
+BG-03.043,Send no-consent mutation.,R01,RECONCILE_EVIDENCE
+BG-03.044,Assert no-AI eligibility.,R01,RECONCILE_EVIDENCE
+BG-03.045,Refetch item before next mutation.,R01,RECONCILE_EVIDENCE
+BG-03.046,Build compliant Personal case.,R01,RECONCILE_EVIDENCE
+BG-03.047,Include explicit consent controls.,R01,RECONCILE_EVIDENCE
+BG-03.048,Send consent mutation.,R01,RECONCILE_EVIDENCE
+BG-03.049,Assert required privacy controls.,R01,RECONCILE_EVIDENCE
+BG-03.050,Refetch version after consent case.,R01,RECONCILE_EVIDENCE
+BG-03.051,Build Sensitive privacy case.,R01,RECONCILE_EVIDENCE
+BG-03.052,Include explicit purge-derived action.,R01,RECONCILE_EVIDENCE
+BG-03.053,Include current edit version.,R01,RECONCILE_EVIDENCE
+BG-03.054,Send Sensitive mutation.,R01,RECONCILE_EVIDENCE
+BG-03.055,Assert hosted provider denied.,R01,RECONCILE_EVIDENCE
+BG-03.056,Inspect derived-data outcome.,R01,RECONCILE_EVIDENCE
+BG-03.057,Verify source evidence preserved.,R01,RECONCILE_EVIDENCE
+BG-03.058,Verify canonical ID unchanged.,R01,RECONCILE_EVIDENCE
+BG-03.059,Read final version.,R01,RECONCILE_EVIDENCE
+BG-03.060,Preserve final policy evidence.,R01,RECONCILE_EVIDENCE
+BG-03.061,Prepare stale version deliberately.,R01,RECONCILE_EVIDENCE
+BG-03.062,Send isolated conflicting mutation.,R01,RECONCILE_EVIDENCE
+BG-03.063,Assert conflict response.,R01,RECONCILE_EVIDENCE
+BG-03.064,Confirm current values unchanged.,R01,RECONCILE_EVIDENCE
+BG-03.065,Prevent automatic overwrite retry.,R01,RECONCILE_EVIDENCE
+BG-03.066,Report expected versus observed conflict.,R01,RECONCILE_EVIDENCE
+BG-03.067,Keep conflict test independently marked.,R01,RECONCILE_EVIDENCE
+BG-03.068,Avoid local version increment assumption.,R01,RECONCILE_EVIDENCE
+BG-03.069,Check unrelated FTS writes.,R01,RECONCILE_EVIDENCE
+BG-03.070,Verify successive versions remain authoritative.,R01,RECONCILE_EVIDENCE
+BG-03.071,Preserve failed HTTP body safely.,R01,RECONCILE_EVIDENCE
+BG-03.072,Limit diagnostic response length.,R01,RECONCILE_EVIDENCE
+BG-03.073,Label failed scenario clearly.,R01,RECONCILE_EVIDENCE
+BG-03.074,Set nonzero failure exit.,R01,RECONCILE_EVIDENCE
+BG-03.075,Avoid swallowing rejected promises.,R01,RECONCILE_EVIDENCE
+BG-03.076,Separate request and assertion failures.,R01,RECONCILE_EVIDENCE
+BG-03.077,Keep test-run marker stable.,R01,RECONCILE_EVIDENCE
+BG-03.078,Avoid logging Authorization headers.,R01,RECONCILE_EVIDENCE
+BG-03.079,Validate required environment inputs.,R01,RECONCILE_EVIDENCE
+BG-03.080,Reject missing target origin.,R01,RECONCILE_EVIDENCE
+BG-03.081,Run version reader failure fixtures.,R01,RECONCILE_EVIDENCE
+BG-03.082,Run local privacy sequence.,R01,RECONCILE_EVIDENCE
+BG-03.083,Confirm original 422 disappears.,R01,RECONCILE_EVIDENCE
+BG-03.084,Confirm stale version still rejects.,R01,RECONCILE_EVIDENCE
+BG-03.085,Confirm source text survives sequence.,R01,RECONCILE_EVIDENCE
+BG-03.086,Confirm all scenarios execute.,R01,RECONCILE_EVIDENCE
+BG-03.087,Inspect script exit on failure.,R01,RECONCILE_EVIDENCE
+BG-03.088,Check shell preserves exit status.,R01,RECONCILE_EVIDENCE
+BG-03.089,Review policy assertions separately.,R01,RECONCILE_EVIDENCE
+BG-03.090,Record corrected smoke evidence.,R01,RECONCILE_EVIDENCE
+BG-03.091,**Review:** Compare the completed checklist with BG-03's stated outcome; identify uncovered behavior.,R01,RECONCILE_EVIDENCE
+BG-03.092,**Verification:** Run or inspect the focused proof required by BG-03; reuse a valid existing run rather than repeating it gratuitously.,R01,RECONCILE_EVIDENCE
+BG-03.093,"**Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.",R01,RECONCILE_EVIDENCE
+BG-03.094,"**Integrity:** Check that BG-03 has not weakened its stated data, privacy, scope or recovery guarantees.",R01,RECONCILE_EVIDENCE
+BG-03.095,**Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.,R01,RECONCILE_EVIDENCE
+BG-03.096,**Change review:** Review task-owned code or document changes and preserve unrelated owner work.,R01,RECONCILE_EVIDENCE
+BG-03.097,"**Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.",R01,RECONCILE_EVIDENCE
+BG-03.098,**Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.,R01,RECONCILE_EVIDENCE
+BG-03.099,**Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.,R01,RECONCILE_EVIDENCE
+BG-03.100,**Gate:** Check the parent completion boundary and record whether BG-04 is unlocked.,R01,RECONCILE_EVIDENCE
+BG-11.028,Apply approved aggregate status.,R01,RECONCILE_EVIDENCE
+BG-15.073,Preserve pending capture operation.,R01/R10,RECONCILE_EVIDENCE
+BG-15.074,Preserve pending upload identifier.,R01/R10,RECONCILE_EVIDENCE
+BG-15.075,Show reauthentication action.,R01/R10,RECONCILE_EVIDENCE
+BG-15.076,Resume after valid session.,R01/R10,RECONCILE_EVIDENCE
+BG-15.077,Avoid duplicate upload initialization.,R01/R10,RECONCILE_EVIDENCE
+BG-15.078,Avoid duplicate capture submission.,R01/R10,RECONCILE_EVIDENCE
+BG-15.079,Clear session-only UI safely.,R01/R10,RECONCILE_EVIDENCE
+BG-21.044,Serve approved operator route.,R01/R02,RECONCILE_EVIDENCE
+BG-21.059,Check deployment cache invalidation.,R01/R02,RECONCILE_EVIDENCE
+BG-21.061,Verify actual HTTPS origin.,R01/R02,RECONCILE_EVIDENCE
+BG-21.062,Verify Secure cookie issuance.,R01/R02,RECONCILE_EVIDENCE
+BG-21.065,Verify login through chosen proxy.,R01/R02,RECONCILE_EVIDENCE
+BG-21.077,Verify old/new asset compatibility.,R01/R02,RECONCILE_EVIDENCE
+BG-21.080,Publish only intended release artifact.,R01/R02,RECONCILE_EVIDENCE
+BG-22.001,"**Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.",R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.002,**Dependency:** Verify BG-21's required completion evidence; preserve any unresolved prerequisite as a blocker.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.003,**Baseline:** Record the actual checkout or release candidate used for BG-22.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.004,**Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.005,**Evidence:** Check whether existing evidence already satisfies any BG-22 step; reference it instead of manufacturing work.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.006,"**Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.",R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.007,"**Environment:** Select the local, preview, production or physical-device environment required by this task.",R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.008,**Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.009,**Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.010,"**Tracking:** Open a BG-22 evidence record and distinguish planned, performed, verified and blocked work.",R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.011,Identify production-like preview artifact.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.012,Record Worker/Web revision pair.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.013,Select isolated bindings.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.014,Select synthetic fixture set.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.015,Open fresh browser profile.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.016,Verify no persisted login.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.017,Confirm preview health.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.018,Confirm asset routing active.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.019,Confirm API is not stubbed.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.020,Record browser/runtime versions.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.021,Save public URL through form.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.022,Save pasted text through form.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.023,Save private note through form.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.024,Save image through upload.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.025,Save PDF through upload.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.026,Record canonical IDs.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.027,Confirm durable success messages.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.028,Confirm source types.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.029,Confirm captured reasons.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.030,Confirm chosen privacy values.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.031,Search URL internal phrase.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.032,Search pasted text phrase.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.033,Search note phrase.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.034,Search screenshot known text.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.035,Search PDF internal phrase.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.036,Open each exact item.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.037,Inspect current coverage.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.038,Inspect original source evidence.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.039,Inspect per-stage status.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.040,Verify no unrelated search result.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.041,Download image original.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.042,Compare image checksum.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.043,Download PDF original.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.044,Compare PDF checksum.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.045,Edit derived title.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.046,Edit project metadata.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.047,Edit reminder metadata.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.048,Refresh item page.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.049,Verify persisted values.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.050,Verify source evidence unchanged.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.051,Drop capture response after commit.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.052,Retain submitted operation.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.053,Retry original key.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.054,Confirm canonical ID stability.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.055,Share canonical URL again intentionally.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.056,Use new reason/key.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.057,Inspect both capture events.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.058,Confirm metadata not silently overwritten.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.059,Confirm no duplicate attachment bytes.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.060,Record duplicate/retry outcomes.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.061,Disable approved test AI path.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.062,Disable test Notion path.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.063,Save another raw item.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.064,Retrieve raw item immediately.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.065,Search supplied phrase.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.066,Inspect deferred optional state.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.067,Restore test provider availability.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.068,Resume eligible processing.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.069,Verify owner edits survive.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.070,Verify no false capture failure.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.071,Expire session during upload.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.072,Preserve operation stage.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.073,Reauthenticate through real form.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.074,Resume confirmed upload stage.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.075,Finish canonical capture.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.076,Verify one linked object.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.077,Open direct item URL logged out.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.078,Complete login navigation.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.079,Open direct link after browser restart.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.080,Confirm correct item destination.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.081,Run full repository gate.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.082,Check migration compatibility evidence.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.083,Check Worker bundle evidence.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.084,Check Web build evidence.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.085,Inspect browser console errors.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.086,Inspect safe failed network requests.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.087,Verify mobile viewport usability.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.088,Close owned preview processes.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.089,Save scenario result matrix.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.090,Record remaining production qualifications.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.091,**Review:** Compare the completed checklist with BG-22's stated outcome; identify uncovered behavior.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.092,**Verification:** Run or inspect the focused proof required by BG-22; reuse a valid existing run rather than repeating it gratuitously.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.093,"**Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.",R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.094,"**Integrity:** Check that BG-22 has not weakened its stated data, privacy, scope or recovery guarantees.",R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.095,**Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.096,**Change review:** Review task-owned code or document changes and preserve unrelated owner work.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.097,"**Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.",R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.098,**Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.099,**Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-22.100,**Gate:** Check the parent completion boundary and record whether BG-23 is unlocked.,R01/R13/R14/R15/R16,RECONCILE_EVIDENCE
+BG-29.078,Measure multi-stage backlog delay.,R09,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.013,Verify authorized operation scope.,R03,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.019,Verify no pending unreviewed changes.,R03,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.020,Record preflight timestamp.,R03,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.021,Create approved pre-change export.,R04,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.022,Preserve original-byte backup scope.,R04,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.023,Preserve latest purge receipts.,R04,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.024,Check export command outcome.,R04,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.025,Check artifact nonempty.,R04,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.026,Calculate artifact checksum.,R04,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.027,Verify expected row counts.,R04,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.028,Verify protected destination.,R04,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.029,Record safe backup identifiers.,R04,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.030,Stop if verification fails.,R04,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.035,Capture actual command exit.,R06,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.037,Inspect schema after failure.,R06,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.039,Verify required indexes.,R06,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.075,Select approved code rollback if safe.,R05,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.076,Execute recovery plan if required.,R05,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.077,Verify rollback/recovery behavior.,R05,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-32.100,**Gate:** Check the parent completion boundary and record whether BG-33 is unlocked.,R07,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.001,"**Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.",R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.002,"**Dependency:** Review BG-32's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.",R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.003,**Baseline:** Record the actual checkout or release candidate used for BG-33.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.004,**Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.005,**Evidence:** Check whether existing evidence already satisfies any BG-33 step; reference it instead of manufacturing work.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.006,"**Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.",R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.007,"**Environment:** Select the local, preview, production or physical-device environment required by this task.",R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.008,**Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.009,**Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.010,"**Tracking:** Open a BG-33 evidence record and distinguish planned, performed, verified and blocked work.",R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.011,Verify approved test origin.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.012,Verify approved synthetic content.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.013,Identify actual client versions.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.014,Choose public URL fixture.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.015,Choose neutral text fixture.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.016,Choose neutral note fixture.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.017,Choose parseable PDF fixture.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.018,Choose screenshot fixture.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.019,Identify permitted provider operations.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.020,Record fixture privacy assignments.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.021,Save URL through intended client.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.022,Save text through intended client.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.023,Save note through intended client.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.024,Save PDF through intended client.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.025,Save image through intended client.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.026,Record returned capture IDs.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.027,Retrieve originals before optional processing.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.028,Verify reason preservation.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.029,Verify captured timestamps.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.030,Verify source type metadata.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.031,Replay exact submitted request.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.032,Compare stable canonical ID.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.033,Verify replay indicator.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.034,Verify same-key event behavior.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.035,Share same canonical URL anew.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.036,Use distinct reason.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.037,Use distinct key.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.038,Verify one canonical item.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.039,Verify intended event count.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.040,Verify intended attachment object count.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.041,Acquire approved webpage.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.042,Inspect actual acquired text.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.043,Search internal source phrase.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.044,Disable AI for lexical proof.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.045,Verify exact matching item.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.046,Inspect acquisition provenance.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.047,Inspect coverage label.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.048,Save unavailable URL fixture.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.049,Verify honest URL-only result.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.050,Verify no invented transcript.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.051,Select approved public input.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.052,Confirm eligible provider route.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.053,Run bounded real provider operation.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.054,Validate structured result.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.055,Inspect provider/model provenance.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.056,Inspect reported usage.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.057,Inspect actual summary usefulness.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.058,Preserve original source.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.059,Edit owner override.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.060,Verify override survives eligible reprocess.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.061,Prepare synthetic private marker.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.062,Test Unknown routing.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.063,Test Sensitive routing.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.064,Test Personal without consent.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.065,Observe outbound boundary safely.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.066,Assert no unapproved hosted send.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.067,Check approved consent requirements.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.068,Check no silent fallback.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.069,Avoid real sensitive test content.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.070,Record what was actually instrumented.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.071,Log into production Web.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.072,Open synthetic file detail.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.073,Download PDF original.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.074,Compare PDF checksum.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.075,Download image original.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.076,Compare image checksum.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.077,Repeat anonymously.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.078,Confirm anonymous denial.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.079,Inspect private cache headers.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.080,Verify exact original after reload.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.081,Edit synthetic derived field.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.082,Refresh and verify persisted value.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.083,Soft-delete test item.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.084,Check normal search exclusion.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.085,Restore with current version.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.086,Check search return.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.087,Record actual provider capability limits.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.088,Separate JSON validity from quality.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.089,Record production request IDs.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.090,Preserve unmet acceptance qualifications.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.091,**Review:** Compare the completed checklist with BG-33's stated outcome; identify uncovered behavior.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.092,**Verification:** Run or inspect the focused proof required by BG-33; reuse a valid existing run rather than repeating it gratuitously.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.093,"**Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.",R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.094,"**Integrity:** Check that BG-33 has not weakened its stated data, privacy, scope or recovery guarantees.",R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.095,**Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.096,**Change review:** Review task-owned code or document changes and preserve unrelated owner work.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.097,"**Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.",R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.098,**Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.099,**Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-33.100,**Gate:** Check the parent completion boundary and record whether BG-34 is unlocked.,R13/R14/R15,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.001,"**Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.",R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.002,"**Dependency:** Review BG-33's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.",R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.003,**Baseline:** Record the actual checkout or release candidate used for BG-34.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.004,**Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.005,**Evidence:** Check whether existing evidence already satisfies any BG-34 step; reference it instead of manufacturing work.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.006,"**Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.",R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.007,"**Environment:** Select the local, preview, production or physical-device environment required by this task.",R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.008,**Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.009,**Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.010,"**Tracking:** Open a BG-34 evidence record and distinguish planned, performed, verified and blocked work.",R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.011,Verify approved synthetic Notion destination.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.012,Verify configured database identity.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.013,Verify integration access.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.014,Inspect expected property schema.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.015,Compare property types.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.016,Identify machine-owned fields.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.017,Identify human-owned fields.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.018,Record safe destination identifier.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.019,Avoid real knowledge-store disruption.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.020,Record test scope authorization.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.021,Create neutral canonical item.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.022,Schedule intended sync.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.023,Record canonical Capture ID.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.024,Observe sync attempt state.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.025,Wait for actual projection.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.026,Record Notion page ID.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.027,Inspect machine-owned values.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.028,Inspect source link.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.029,Inspect privacy-safe content.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.030,Verify D1 remains authoritative.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.031,Requeue supported sync path.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.032,Trigger duplicate scheduling fixture.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.033,Wait for convergence.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.034,Search destination by Capture ID.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.035,Verify one intended page.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.036,Verify stored page reference.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.037,Verify no duplicate active attempt.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.038,Verify idempotent result handling.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.039,Inspect safe audit history.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.040,Record replay proof.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.041,Edit allowed human-owned Notion field.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.042,Preserve canonical item state.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.043,Run routine synchronization.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.044,Verify human value remains.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.045,Update machine-owned canonical field.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.046,Synchronize again.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.047,Verify machine projection updates.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.048,Verify source evidence unchanged.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.049,Check unsupported field behavior.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.050,Record ownership boundary result.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.051,Select isolated outage mechanism.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.052,Trigger definite test 429 if supported.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.053,Record Retry-After behavior.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.054,Trigger temporary integration failure.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.055,Observe delayed sync state.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.056,Capture new item during outage.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.057,Retrieve new raw item.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.058,Search new phrase.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.059,Verify no capture dependency.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.060,Record simulation versus live distinction.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.061,Restore test integration availability.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.062,Wait until retry is eligible.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.063,Trigger supported retry when appropriate.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.064,Verify attempts stay bounded.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.065,Verify one eventual projection.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.066,Verify no duplicate page.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.067,Verify preserved human fields.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.068,Verify cleared transient error state.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.069,Inspect sync timestamps.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.070,Record outage recovery duration.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.071,Remove approved synthetic projection.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.072,Run supported missing-page detection.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.073,Verify original D1 item remains.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.074,Verify R2 original remains.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.075,Verify stored missing reference behavior.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.076,Inspect server recovery eligibility.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.077,Avoid clearing page ID manually.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.078,Verify ineligible recreation denial.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.079,Confirm Notion deletion grants no purge authority.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.080,Record missing-page state.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.081,Request approved admin recreation.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.082,Record new sync attempt.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.083,Wait for new projection.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.084,Verify one replacement page.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.085,Verify new canonical page reference.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.086,Verify superseded attempt retry restriction.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.087,Verify source content unchanged.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.088,Save safe IDs and timestamps.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.089,Document manual actions.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.090,Record real projection acceptance boundary.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.091,**Review:** Compare the completed checklist with BG-34's stated outcome; identify uncovered behavior.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.092,**Verification:** Run or inspect the focused proof required by BG-34; reuse a valid existing run rather than repeating it gratuitously.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.093,"**Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.",R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.094,"**Integrity:** Check that BG-34 has not weakened its stated data, privacy, scope or recovery guarantees.",R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.095,**Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.096,**Change review:** Review task-owned code or document changes and preserve unrelated owner work.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.097,"**Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.",R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.098,**Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.099,**Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-34.100,**Gate:** Check the parent completion boundary and record whether BG-35 is unlocked.,R16,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.001,"**Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.",R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.002,"**Dependency:** Review BG-34's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.",R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.003,**Baseline:** Record the actual checkout or release candidate used for BG-35.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.004,**Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.005,**Evidence:** Check whether existing evidence already satisfies any BG-35 step; reference it instead of manufacturing work.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.006,"**Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.",R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.007,"**Environment:** Select the local, preview, production or physical-device environment required by this task.",R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.008,**Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.009,**Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.010,"**Tracking:** Open a BG-35 evidence record and distinguish planned, performed, verified and blocked work.",R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.011,Record physical device model.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.012,Record iOS version.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.013,Record Shortcut version.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.014,Record capture API environment.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.015,Record acceptance date.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.016,Record tester identity.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.017,Prepare neutral fixture content.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.018,Prepare PDF hash reference.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.019,Prepare image reference.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.020,Keep credentials out of evidence.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.021,Install intended Shortcut version.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.022,Configure actual API base.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.023,Configure capture credential privately.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.024,Verify Share Sheet visibility.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.025,Verify accepted input types.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.026,Verify requested file permissions.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.027,Verify intended action menu.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.028,Verify initial privacy default.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.029,Verify debug output redaction.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.030,Record installation issues honestly.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.031,Share normal Safari page.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.032,Verify original URL preserved.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.033,Verify source application metadata.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.034,Verify capture timestamp.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.035,Add explicit reason.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.036,Find item by reason.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.037,Share selected text.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.038,Verify Unicode preservation.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.039,Verify intended whitespace handling.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.040,Verify text-only capture type.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.041,Share Instagram URL.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.042,Inspect canonical normalization.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.043,Verify honest URL-only label.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.044,Verify no invented transcript.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.045,Preserve optional personal reason.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.046,Share YouTube URL.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.047,Check tracking duplicate handling.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.048,Confirm exact source link.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.049,Test long supported link.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.050,Record source-specific limitations.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.051,Select approved synthetic image.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.052,Share through Photos.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.053,Verify selected bytes reach upload.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.054,Verify finalization result.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.055,Verify linked image item.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.056,Inspect declared/detected MIME.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.057,Inspect extraction coverage.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.058,Download from Web Inbox.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.059,Compare original image evidence.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.060,Record Photos story outcome.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.061,Share parseable PDF from Files.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.062,Verify canonical file capture.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.063,Verify attachment linkage.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.064,Search known internal phrase.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.065,Download PDF through Web.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.066,Compare PDF hash.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.067,Share supported generic file.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.068,Verify truthful unsupported-extraction behavior.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.069,Verify original generic file retained.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.070,Record Files story outcome.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.071,Exercise Quick Save.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.072,Verify no forced optional prompt.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.073,Exercise Add Reason.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.074,Verify reason persisted.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.075,Exercise Private Save.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.076,Verify intended privacy class.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.077,Verify no unapproved AI route.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.078,Exercise manual note action.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.079,Verify note requires no URL.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.080,Record mode-specific results.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.081,Repeat same pending operation.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.082,Verify same-key replay outcome.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.083,Verify no extra replay event.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.084,Intentionally share source again.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.085,Use new reason/key.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.086,Verify canonical reuse.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.087,Verify both reasons in history.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.088,Fill online device QA rows.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.089,Link sanitized evidence per row.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.090,Record unresolved physical-device failures.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.091,**Review:** Compare the completed checklist with BG-35's stated outcome; identify uncovered behavior.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.092,**Verification:** Run or inspect the focused proof required by BG-35; reuse a valid existing run rather than repeating it gratuitously.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.093,"**Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.",R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.094,"**Integrity:** Check that BG-35 has not weakened its stated data, privacy, scope or recovery guarantees.",R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.095,**Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.096,**Change review:** Review task-owned code or document changes and preserve unrelated owner work.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.097,"**Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.",R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.098,**Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.099,**Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-35.100,**Gate:** Check the parent completion boundary and record whether BG-36 is unlocked.,R17/R18/R20,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.001,"**Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.",R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.002,"**Dependency:** Review BG-35's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.",R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.003,**Baseline:** Record the actual checkout or release candidate used for BG-36.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.004,**Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.005,**Evidence:** Check whether existing evidence already satisfies any BG-36 step; reference it instead of manufacturing work.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.006,"**Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.",R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.007,"**Environment:** Select the local, preview, production or physical-device environment required by this task.",R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.008,**Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.009,**Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.010,"**Tracking:** Open a BG-36 evidence record and distinguish planned, performed, verified and blocked work.",R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.011,Enable airplane mode.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.012,Share neutral note.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.013,Verify no server Saved claim.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.014,Inspect retained logical key.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.015,Inspect retained original timestamp.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.016,Inspect retained text.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.017,Inspect retained reason.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.018,Inspect retained privacy.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.019,Exit Shortcut process.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.020,Verify retry entry survives reopening.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.021,Select approved test file.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.022,Share while offline.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.023,Verify retained upload operation.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.024,Verify actual bytes retained or disclosed.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.025,Record expected hash.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.026,Exit and reopen Shortcut.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.027,Inspect file recovery action.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.028,Verify filename alone is not completion.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.029,Verify missing-byte guidance.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.030,Preserve unchanged logical capture key.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.031,Restore network connectivity.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.032,Retry retained note.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.033,Compare original key.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.034,Compare original timestamp.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.035,Verify canonical acknowledgment.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.036,Retry retained file.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.037,Verify finalized attachment linkage.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.038,Compare eventual file hash.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.039,Clear only successful queue entries.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.040,Keep unrelated pending entries.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.041,Simulate response loss after commit.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.042,Retain pending queue record.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.043,Retry same operation.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.044,Compare returned canonical ID.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.045,Check same-key event count.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.046,Check attachment object count.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.047,Verify reason remains unchanged.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.048,Verify privacy remains unchanged.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.049,Verify truthful replay message.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.050,Record ambiguous-response evidence.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.051,Interrupt byte transfer.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.052,Retry from known stage.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.053,Interrupt finalization response.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.054,Reconcile stored upload state.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.055,Trigger expired upload fixture.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.056,Reinitialize deliberately.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.057,Preserve original capture key.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.058,Verify old orphan handling.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.059,Finish canonical save.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.060,Verify one intended linked original.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.061,Use authorized invalid test credential.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.062,Attempt retained save.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.063,Verify actionable auth message.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.064,Preserve queued payload.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.065,Rotate/update test credential safely.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.066,Retry without new logical key.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.067,Verify successful save.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.068,Test overlap boundary where authorized.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.069,Verify old credential retirement.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.070,Record no queued-content loss.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.071,Share unsupported signature.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.072,Verify type correction guidance.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.073,Share over-limit file.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.074,Verify no false upload success.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.075,Simulate approved API outage.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.076,Verify queue retention.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.077,Simulate approved R2 outage.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.078,Verify no false Saved claim.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.079,Restore availability.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.080,Verify bounded successful retry.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.081,Check iCloud queue permissions.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.082,Check queue storage availability.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.083,Restart relevant device workflow.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.084,Verify retained records afterward.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.085,Inspect multi-entry cleanup behavior.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.086,Check privacy default unchanged.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.087,Check reason not dropped.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.088,Complete offline device QA rows.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.089,Record OS-specific limitations.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.090,Keep unavailable-device gate explicitly blocked.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.091,**Review:** Compare the completed checklist with BG-36's stated outcome; identify uncovered behavior.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.092,**Verification:** Run or inspect the focused proof required by BG-36; reuse a valid existing run rather than repeating it gratuitously.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.093,"**Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.",R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.094,"**Integrity:** Check that BG-36 has not weakened its stated data, privacy, scope or recovery guarantees.",R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.095,**Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.096,**Change review:** Review task-owned code or document changes and preserve unrelated owner work.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.097,"**Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.",R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.098,**Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.099,**Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-36.100,**Gate:** Check the parent completion boundary and record whether BG-37 is unlocked.,R19/R21,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.001,"**Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.",R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.002,"**Dependency:** Review BG-36's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.",R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.003,**Baseline:** Record the actual checkout or release candidate used for BG-37.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.004,**Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.005,**Evidence:** Check whether existing evidence already satisfies any BG-37 step; reference it instead of manufacturing work.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.006,"**Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.",R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.007,"**Environment:** Select the local, preview, production or physical-device environment required by this task.",R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.008,**Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.009,**Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.010,"**Tracking:** Open a BG-37 evidence record and distinguish planned, performed, verified and blocked work.",R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.011,Create multiple canonical items.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.012,Create repeated capture events.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.013,Create owner field overrides.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.014,Assign varied privacy classes.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.015,Link image original.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.016,Link PDF original.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.017,Persist URL extraction evidence.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.018,Create safe pending jobs.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.019,Record known search phrases.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.020,Record expected entity counts.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.021,Export portable JSON.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.022,Record export schema version.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.023,Copy original attachment bytes.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.024,Create hash manifest.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.025,Preserve newest purge receipts.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.026,Identify independent storage target.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.027,Verify artifact access permissions.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.028,Verify artifact byte counts.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.029,Verify artifact checksums.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.030,Record protected artifact references.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.031,Choose clean recovery D1.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.032,Choose recovery R2 target.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.033,Verify source/target are distinct.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.034,Apply compatible migrations.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.035,Disable external delivery credentials.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.036,Disable unintended hosted processing.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.037,Verify empty canonical state.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.038,Verify intended artifact version.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.039,Record target identifiers safely.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.040,Define stop-on-mismatch rule.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.041,Send explicit dry_run=true.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.042,Validate input envelope.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.043,Validate item count.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.044,Validate child ownership.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.045,Validate duplicate references.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.046,Validate purge ledger merge.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.047,Inspect planned skipped items.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.048,Inspect missing prerequisites.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.049,Verify no canonical writes.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.050,Approve only correct recovery plan.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.051,Select explicit real restore mode.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.052,Import canonical records.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.053,Restore capture history.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.054,Restore owner overrides.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.055,Restore attachment metadata.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.056,Restore original bytes independently.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.057,Restore permitted extraction evidence.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.058,Reset transient leases safely.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.059,Preserve privacy state.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.060,Record actual restore outcome.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.061,Compare canonical item count.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.062,Compare event count.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.063,Check foreign keys.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.064,Verify attachment ownership.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.065,Download from recovery target.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.066,Compare original byte hashes.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.067,Search known internal phrases.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.068,Verify owner overrides.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.069,Verify no external delivery occurred.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.070,Measure recovery duration.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.071,Take older synthetic backup.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.072,Soft-delete synthetic target item.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.073,Request exact purge workflow.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.074,Confirm intended purge phrase.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.075,Complete test purge steps.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.076,Preserve newer receipt ledger.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.077,Restore older backup into another clean target.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.078,Verify purged item skipped.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.079,Verify purged FTS content absent.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.080,Verify purged objects/queues absent.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.081,Remove one test attachment.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.082,Run integrity check.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.083,Confirm missing-object finding.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.084,Corrupt one backup artifact.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.085,Confirm verification rejection.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.086,Simulate partial purge.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.087,Confirm truthful partial state.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.088,Record every manual recovery action.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.089,State residual full-bucket-loss risk.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.090,Save disaster acceptance evidence.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.091,**Review:** Compare the completed checklist with BG-37's stated outcome; identify uncovered behavior.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.092,**Verification:** Run or inspect the focused proof required by BG-37; reuse a valid existing run rather than repeating it gratuitously.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.093,"**Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.",R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.094,"**Integrity:** Check that BG-37 has not weakened its stated data, privacy, scope or recovery guarantees.",R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.095,**Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.096,**Change review:** Review task-owned code or document changes and preserve unrelated owner work.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.097,"**Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.",R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.098,**Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.099,**Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-37.100,**Gate:** Check the parent completion boundary and record whether BG-38 is unlocked.,R22,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.001,"**Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.",R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.002,"**Dependency:** Review BG-37's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.",R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.003,**Baseline:** Record the actual checkout or release candidate used for BG-38.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.004,**Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.005,**Evidence:** Check whether existing evidence already satisfies any BG-38 step; reference it instead of manufacturing work.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.006,"**Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.",R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.007,"**Environment:** Select the local, preview, production or physical-device environment required by this task.",R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.008,**Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.009,**Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.010,"**Tracking:** Open a BG-38 evidence record and distinguish planned, performed, verified and blocked work.",R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.011,Record stable candidate SHA.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.012,Record private destination identifier.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.013,Record canonical Web origin.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.014,Verify Asia/Kolkata schedule.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.015,Define eligible-period criteria.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.016,Define empty-period exclusion.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.017,Define missed-day restart rule.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.018,Define build-change invalidation rule.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.019,Confirm explicit live delivery authorization.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.020,Prepare seven-day evidence ledger.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.021,Record scheduled first period.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.022,Record first digest identifier.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.023,Record first eligible item count.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.024,Observe scheduler-owned delivery.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.025,Record received timestamp.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.026,Record message identifier.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.027,Open exact item link.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.028,Check neutral restricted labels.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.029,Classify actual delivery outcome.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.030,Save first-day evidence.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.031,Verify candidate remains unchanged.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.032,Record second scheduled period.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.033,Record second digest identifier.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.034,Record eligible item count.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.035,Observe actual scheduled receipt.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.036,Record message identifier.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.037,Check link authentication.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.038,Verify no duplicate delivery.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.039,Confirm consecutive eligible success.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.040,Save second-day evidence.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.041,Record third scheduled period.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.042,Record third digest identifier.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.043,Verify current privacy recheck.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.044,Use approved synthetic privacy change.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.045,Inspect neutralized delivery content.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.046,Record actual receipt time.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.047,Open linked surviving item.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.048,Check no stale sensitive label.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.049,Confirm sequence still eligible.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.050,Save third-day evidence.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.051,Record fourth scheduled period.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.052,Record fourth digest identifier.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.053,Record selected item count.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.054,Observe scheduled receipt.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.055,Compare period boundaries.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.056,Check no previous-period duplicate.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.057,Record actual message identifier.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.058,Verify exact source links.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.059,Classify suppression separately if empty.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.060,Save fourth-day or restart evidence.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.061,Verify same accepted scheduler build.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.062,Record fifth scheduled period.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.063,Record fifth digest identifier.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.064,Observe actual delivery state.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.065,Investigate unknown outcome if present.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.066,Reconcile only with receipt evidence.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.067,Avoid blind resend.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.068,Record message identifier if sent.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.069,Confirm valid consecutive sequence.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.070,Save fifth-day evidence.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.071,Record sixth scheduled period.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.072,Record sixth digest identifier.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.073,Record eligible selection count.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.074,Observe scheduled delivery.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.075,Record received timestamp.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.076,Verify logged-out link authentication.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.077,Inspect privacy-safe labels.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.078,Check definite retry timing if encountered.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.079,Restart sequence after missed eligible day.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.080,Save sixth-day evidence.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.081,Record seventh scheduled period.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.082,Record seventh digest identifier.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.083,Observe actual receipt.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.084,Record message identifier.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.085,Verify exact item link.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.086,Verify no duplicate period delivery.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.087,Count seven qualifying consecutive results.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.088,Review any build changes.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.089,Record weekly-review evidence separately.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.090,Prepare sustained-delivery acceptance conclusion.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.091,**Review:** Compare the completed checklist with BG-38's stated outcome; identify uncovered behavior.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.092,**Verification:** Run or inspect the focused proof required by BG-38; reuse a valid existing run rather than repeating it gratuitously.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.093,"**Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.",R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.094,"**Integrity:** Check that BG-38 has not weakened its stated data, privacy, scope or recovery guarantees.",R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.095,**Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.096,**Change review:** Review task-owned code or document changes and preserve unrelated owner work.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.097,"**Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.",R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.098,**Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.099,**Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-38.100,**Gate:** Check the parent completion boundary and record whether BG-39 is unlocked.,R23/R24,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.001,"**Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.",R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.002,"**Dependency:** Review BG-38's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.",R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.003,**Baseline:** Record the actual checkout or release candidate used for BG-39.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.004,**Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.005,**Evidence:** Check whether existing evidence already satisfies any BG-39 step; reference it instead of manufacturing work.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.006,"**Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.",R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.007,"**Environment:** Select the local, preview, production or physical-device environment required by this task.",R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.008,**Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.009,**Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.010,"**Tracking:** Open a BG-39 evidence record and distinguish planned, performed, verified and blocked work.",R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.011,Record trial start date.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.012,Record candidate version.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.013,Define fourteen-day minimum.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.014,Identify actual daily device.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.015,Define everyday source mix.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.016,Define useful-recall goal.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.017,Define accepted privacy defaults.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.018,Define severe-friction categories.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.019,Define evidence privacy rules.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.020,Prepare daily observation ledger.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.021,Capture ordinary webpage when useful.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.022,Capture ordinary note when useful.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.023,Capture screenshot when useful.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.024,Capture PDF when useful.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.025,Record steps needed to save.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.026,Record failed share trigger.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.027,Record acknowledged capture identifier.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.028,Check optional-processing independence.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.029,Repeat observations across trial days.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.030,Avoid synthetic-only usability claim.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.031,Search a remembered reason.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.032,Search a known source phrase.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.033,Search an imperfect remembered keyword.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.034,Use intended filter combination.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.035,Open expected item.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.036,Inspect original source.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.037,Record unsuccessful search example safely.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.038,Distinguish lexical from semantic expectation.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.039,Record recovery without Notion.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.040,Repeat recall observations throughout trial.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.041,Correct generated title when needed.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.042,Correct project classification when needed.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.043,Set useful review date.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.044,Verify displayed local time.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.045,Act or archive reviewed item.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.046,Observe scheduled digest usefulness.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.047,Open digest source link.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.048,Record confusing coverage message.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.049,Record unnecessary operator intervention.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.050,Preserve natural-use feedback.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.051,Check acknowledged items remain retrievable.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.052,Record false Saved immediately.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.053,Record lost draft immediately.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.054,Record privacy leak immediately.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.055,Record silent billing immediately.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.056,Classify launch-blocking incident.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.057,Preserve safe diagnostic identifiers.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.058,Fix critical defect before acceptance.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.059,Rerun affected workflow.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.060,Record candidate change impact.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.061,Identify provider account scope.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.062,Identify Cloudflare account scope.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.063,Read actual trial-period spend.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.064,Read actual provider usage.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.065,Distinguish shared-account unrelated usage.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.066,Compare internal usage estimates.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.067,Investigate unexplained difference.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.068,Verify hard guard configuration.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.069,Record safe billing evidence.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.070,Avoid zero-estimate-only cost claim.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.071,Rank repeated capture friction.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.072,Rank repeated search friction.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.073,Rank confusing failure messages.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.074,Rank retry recovery friction.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.075,Rank reminder usefulness issues.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.076,Select required V1 fixes.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.077,Implement through appropriate task scope.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.078,Verify owner-facing improvement.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.079,Record accepted residual limitation.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.080,Avoid silently lowering required acceptance.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.081,Count actual real-use days.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.082,Verify minimum duration reached.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.083,Review severe incident resolution.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.084,Review digest sequence evidence.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.085,Review actual-cost evidence.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.086,Review tested deployed revision.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.087,Identify invalidated earlier evidence.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.088,Record unresolved required behavior.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.089,Prepare real-use acceptance summary.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.090,Prepare owner launch review packet.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.091,**Review:** Compare the completed checklist with BG-39's stated outcome; identify uncovered behavior.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.092,**Verification:** Run or inspect the focused proof required by BG-39; reuse a valid existing run rather than repeating it gratuitously.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.093,"**Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.",R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.094,"**Integrity:** Check that BG-39 has not weakened its stated data, privacy, scope or recovery guarantees.",R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.095,**Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.096,**Change review:** Review task-owned code or document changes and preserve unrelated owner work.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.097,"**Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.",R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.098,**Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.099,**Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-39.100,**Gate:** Check the parent completion boundary and record whether BG-40 is unlocked.,R25/R26,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.001,"**Scope:** Read this task's what/why, file pointers and completion boundary before using its checklist.",R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.002,"**Dependency:** Review BG-39's actual completion evidence and list unresolved prerequisites. When BG-29.078 is the only inherited blocker for safe development, apply the documented owner-directed $0 exception (not PASS), preserving all other predecessor, production and acceptance gates.",R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.003,**Baseline:** Record the actual checkout or release candidate used for BG-40.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.004,**Discovery:** Locate the current implementation or operational record named in this task; use graph discovery for code.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.005,**Evidence:** Check whether existing evidence already satisfies any BG-40 step; reference it instead of manufacturing work.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.006,"**Contract:** Identify the authoritative schema, policy or acceptance rule governing this task.",R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.007,"**Environment:** Select the local, preview, production or physical-device environment required by this task.",R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.008,**Authorization:** Confirm the task's existing action boundary; preparation does not grant production or messaging authorization.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.009,**Inputs:** Prepare the smallest appropriate synthetic fixtures or authorized real-use inputs for this task.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.010,"**Tracking:** Open a BG-40 evidence record and distinguish planned, performed, verified and blocked work.",R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.011,Open V1 acceptance checklist.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.012,Map each checkbox to evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.013,Identify missing evidence links.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.014,Identify historical-only evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.015,Identify candidate-specific evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.016,Identify deployed-specific evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.017,Identify physical-device evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.018,Identify sustained-use evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.019,Identify accepted limitations.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.020,Identify unresolved mandatory failures.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.021,Record final Git SHA.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.022,Record final Worker version.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.023,Record matching Web asset version.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.024,Record applied migration head.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.025,Record canonical Web origin.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.026,Record actual client versions.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.027,Record relevant configuration version.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.028,Record provider policy version.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.029,Record deployment date.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.030,Verify identity consistency across evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.031,Review capture durability proof.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.032,Review duplicate/replay proof.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.033,Review private download proof.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.034,Review actual source search proof.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.035,Review owner override proof.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.036,Review failure/status consistency proof.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.037,Review delete/restore proof.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.038,Review export/backup proof.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.039,Review independent restore proof.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.040,Review purge anti-resurrection proof.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.041,Review real provider scope evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.042,Review privacy outbound evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.043,Review Notion outage evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.044,Review Notion recreation evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.045,Review iPhone online rows.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.046,Review iPhone offline rows.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.047,Review rotation device behavior.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.048,Review seven-day digest ledger.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.049,Review weekly evidence separately.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.050,Review fourteen-day real-use ledger.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.051,Review OPE-247 packet.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.052,Review token revocation evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.053,Review session security evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.054,Review log redaction evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.055,Review operational controls.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.056,Review capacity/concurrency proof.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.057,Review provider limit revalidation.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.058,Review actual billing evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.059,Review performance qualifications.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.060,Identify remaining release-critical risk.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.061,Verify local-processing requirement status.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.062,Reject API-only client completion claim.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.063,Record approved local-client deferral if applicable.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.064,Keep required local client blocking otherwise.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.065,Confirm RAG remains conditional.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.066,Confirm optional clients remain separate.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.067,Distinguish limitation from missing requirement.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.068,Avoid renaming failed behavior complete.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.069,Record owner tradeoff decisions.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.070,Preserve required V1 outcome.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.071,Name decision owner.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.072,Record review date.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.073,Present evidence summary.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.074,Present unresolved blocker list.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.075,Present accepted limitation list.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.076,Record explicit go or no-go.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.077,Record reasons for decision.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.078,Avoid automatic CI-based approval.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.079,Name task resolving each no-go blocker.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.080,Record required follow-up evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.081,Update current completion matrix.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.082,Preserve historical audit SHA.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.083,Link fixing revisions.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.084,Link deployed acceptance evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.085,Update cumulative guide status.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.086,Update OPE-229 record through authorized workflow.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.087,Avoid invented external ticket state.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.088,Record next eligible milestone.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.089,Preserve protected evidence locations.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.090,Close only actually accepted V1 gates.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.091,**Review:** Compare the completed checklist with BG-40's stated outcome; identify uncovered behavior.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.092,**Verification:** Run or inspect the focused proof required by BG-40; reuse a valid existing run rather than repeating it gratuitously.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.093,"**Failures:** Confirm the task's required rejection, failure or incomplete-outcome cases remain truthful.",R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.094,"**Integrity:** Check that BG-40 has not weakened its stated data, privacy, scope or recovery guarantees.",R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.095,**Cleanup:** Stop only owned temporary processes and remove only disposable task fixtures where appropriate; preserve required evidence.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.096,**Change review:** Review task-owned code or document changes and preserve unrelated owner work.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.097,"**Results:** Record actual outcomes and evidence references, with source/deployment/device identity as applicable.",R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.098,**Exceptions:** Record remaining blockers or justified nonapplicable steps; do not mark unperformed work as passed.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.099,**Documentation:** Update the task status only to the level actually proved; link the detailed evidence record.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
+BG-40.100,**Gate:** Check the parent completion boundary and record whether the explicitly approved post-V1 milestone is unlocked.,R27/R28,RETAIN_REQUIRED_OR_EVALUATE_CONDITION
