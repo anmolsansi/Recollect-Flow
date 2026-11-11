@@ -1,5 +1,7 @@
 # Remaining work — execution contract, November 10, 2026
 
+For step-by-step implementation and verification instructions for all 52 packets, use the [junior engineer development handbook](../../development.md). This contract remains the authority for scope and readiness.
+
 This is the current entry point for unfinished work. Full V1 remains the destination, as confirmed by the owner on November 10; the deployed core is an intermediate milestone. Later RAG, V2 and V3 work remains conditional. This redesign authorizes planning and ticket maintenance, not the operations described in the tickets.
 
 Baseline: `1cab02f6710a8c5e61437885ebcece6764d1b3ab`, freshly fetched and equal to origin/main. GitHub open issues and Linear RecollectFlow issues were inspected November 10. Their descriptions contain historical status; the latest dated evidence wins over an old count, not over an actual acceptance requirement.
