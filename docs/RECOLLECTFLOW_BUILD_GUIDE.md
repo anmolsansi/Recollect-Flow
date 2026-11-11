@@ -1,5 +1,7 @@
 # RecollectFlow — Plain-Language Product and Build Guide
 
+> **November 10 execution redesign:** Start with [remaining-work execution contract](tickets/REMAINING_WORK.md) and its 52 packets. The older sequences/counts below are historical requirements and evidence, not the current pick-next queue. Existing acceptance requirements and frozen approvals remain; remapping is not completion.
+
 ## Current application status — baseline audited 2026-09-12
 
 Guide prepared: **2026-09-13**. Detailed implementation edition, with a linked **100-step checklist per task / 4,000 total**.

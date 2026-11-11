@@ -1,5 +1,7 @@
 # Complete release and development roadmap
 
+> **November 10 execution redesign:** Start with [remaining-work execution contract](tickets/REMAINING_WORK.md) and its 52 packets. The older sequences/counts below are historical requirements and evidence, not the current pick-next queue. Existing acceptance requirements and frozen approvals remain; remapping is not completion.
+
 ## Current November 6 status — core deployed, BG-32 verification in progress
 
 The [November 3 approved core-only release](releases/BG-31_CORE_RELEASE_2026-11-03.md)

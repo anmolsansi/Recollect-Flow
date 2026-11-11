@@ -1,5 +1,7 @@
 # Repo Context — RecollectFlow — refreshed 2026-09-16
 
+> **November 10 execution redesign:** Start with [remaining-work execution contract](tickets/REMAINING_WORK.md) and its 52 packets. The older sequences/counts below are historical requirements and evidence, not the current pick-next queue. Existing acceptance requirements and frozen approvals remain; remapping is not completion.
+
 ## 2026-10-21 development-order addendum
 
 The original September 2026 runtime audit below is historical; it does not certify current deployment. For all BG-30 through BG-40 development, apply the [owner's strict $0 BG-29.078 exception](verification/BG-29_078_ZERO_COST_DOWNSTREAM_EXCEPTION.md). BG-29.078 remains unverified, and the waiver permits local work **only**, not unchecked production, device, real-clock, provider or billing acceptance. A downstream task's independent technical prerequisites and financial permissions still apply.

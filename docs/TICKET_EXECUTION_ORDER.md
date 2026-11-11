@@ -1,5 +1,7 @@
 # Exact ticket execution order
 
+> **November 10 execution redesign:** Start with [remaining-work execution contract](tickets/REMAINING_WORK.md) and its 52 packets. The older sequences/counts below are historical requirements and evidence, not the current pick-next queue. Existing acceptance requirements and frozen approvals remain; remapping is not completion.
+
 This is the canonical one-ticket-at-a-time queue. Pick the first incomplete ticket whose prerequisites are satisfied. Do not choose by issue number. A ticket advances only after its acceptance criteria, tests, documentation, and Linear evidence pass.
 
 ## Already completed

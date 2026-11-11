@@ -1,5 +1,7 @@
 # RecollectFlow documentation
 
+> **November 10 execution redesign:** Start with [remaining-work execution contract](tickets/REMAINING_WORK.md) and its 52 packets. The older sequences/counts below are historical requirements and evidence, not the current pick-next queue. Existing acceptance requirements and frozen approvals remain; remapping is not completion.
+
 This directory is the complete product knowledge base for RecollectFlow. It covers the personal product from initial capture through future productization. The source authority is **RecollectFlow PRD v1.1 RAG, dated 2026-07-16**. Repository documents translate that source into buildable, version-controlled contracts.
 
 ## Status language
