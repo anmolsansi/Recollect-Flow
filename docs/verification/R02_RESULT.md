@@ -2,7 +2,7 @@
 
 # R02 — Verify deployed identity and read-only public boundary
 
-**Status:** IN_PROGRESS; public boundary verified, current authenticated dashboard now inspected on 2026-11-12; full active Worker UUID still not independently visible.
+**Status:** VERIFIED (R02 scoped acceptance); seven public GET boundaries and authenticated Cloudflare inventory checked; complete active Worker UUID newly confirmed by the owner from the dashboard Copy control on 2026-11-12. Full UUID is **OWNER_REPORTED_CURRENT**, not independently browser-read. BG-32/V1 gates remain open.
 **Packet:** [R02](../tickets/REMAINING_WORK_PACKETS.md#r02--verify-the-deployed-identity-and-current-read-only-boundary)
 **Prerequisite:** [R01 evidence crosswalk](R01_RESULT.md), with unproven hosted/device acceptance retained.
 **Tracking:** [BG-32 #141](https://github.com/anmolsansi/Recollect-Flow/issues/141), [BG-21 #83](https://github.com/anmolsansi/Recollect-Flow/issues/83), Linear OPE-340/OPE-346 (historical).
@@ -78,7 +78,7 @@ The published [manifest](https://recollect-flow.openclawneutron.workers.dev/rele
 | R02-T01 | Frozen public target yields bounded public-boundary pass | Seven observed GET routes, no redirects, correct headers/status, exact Web/source manifest identity | **PASS**, current public observation |
 | R02-T02 | Wrong target/redirect yields STOP | Existing `scripts/bg32-readonly-smoke.mjs` contains explicit canonical-origin checks and manual redirect rejection. Local fixture regression has **not** been run in this session. | **NOT_EXECUTED** locally; verify by PR CI `npm run check` (includes `bg32:readonly:test`) |
 | R02-T03 | Public health cannot pass authenticated inventory | Public run was explicitly not sufficient; later same-day authenticated dashboard follow-up below inspected current platform metadata | **PASS** for separation of proof, current dashboard read recorded below |
-| R02-C01 | Exact deployed identity | Current Web release/source match; same-day signed-in dashboard confirms account, Worker prefix, D1/R2/config targets. Full active Worker UUID remains earlier owner-reported | **PARTIAL** pending independently observed full active version UUID |
+| R02-C01 | Exact deployed identity | Public release/source and read-only dashboard account, Worker prefix/traffic, D1/R2 and configuration match. Owner reports the full currently active Worker UUID from the signed-in dashboard Copy control, matching the frozen exact UUID | **PASS**, compound current browser observation plus **OWNER_REPORTED_CURRENT** full-version attestation |
 | R02-C02 | Current boundary and safe denial/cache/deep links | Seven public checks pass, with historical private-cache/session proof kept distinct | **PASS** for public surface only |
 | R02-C03 | No unauthorized mutations or misleading rollback | All operations GET-only; no production mutation or rollback; frozen release/CSV/checklists unchanged | **PASS** |
 
@@ -86,11 +86,11 @@ The published [manifest](https://recollect-flow.openclawneutron.workers.dev/rele
 
 **Failure/rollback behavior:** A wrong origin, redirect, changed manifest, 200 private data response, missing private no-store policy or active binding mismatch requires STOP and operator review. Do not auto-redeploy, change a database or delete backups. If any new public check fails later, retain its result and recheck only the affected stage. Live rollback is neither requested nor performed.
 
-**Remaining blocker after the same-day signed-in follow-up:** independently obtain the full active Worker version UUID. Current account/Worker prefix/D1/R2/bindings/secret-name/disabled-flag/cron checks were read via the reconnected Opera dashboard and are listed below. **Responsible:** authorized operator if the dashboard Copy control is needed. **Next action:** compare the full *nonsecret* version ID to the immutable November 3 value. A mismatch requires STOP and separate review, not deployment. November 6/9 owner observations retain their original dates.
+**Former blocker resolved by the final owner attestation below:** The complete active Worker version UUID was supplied from Cloudflare's Copy control and exactly matches the immutable November 3 value. The new full UUID is **owner-reported current**, not independently visible through Opera's page text. No further exact-ID input is missing for *R02's scoped acceptance*. R03–R07 and other BG-32/V1 gates remain separate; November 6/9 evidence retains its original dates.
 
 **Handoff:** R02 supplies current bounded public observations for R07 and R13. BG-32, OPE-346, independent restore, R09 hourly proof, R10 security hardening and full V1 acceptance remain open. This file/PR does not authorize deployment, paid/cloud changes or any provider activity.
 
-**Decision, updated by same-day addendum below:** Public release identity/boundary and all dashboard fields visible to the read-only connector are **verified**. Complete exact-version proof remains **IN_PROGRESS / BLOCKED_INPUT** only for the full active Worker UUID, not for a missing authenticated session. No V1 GO is implied.
+**Decision, finalized by subsequent same-day owner attestation below:** **R02 VERIFIED** for its bounded identity and public-boundary scope: current public checks and authenticated configuration plus exact current owner-confirmed Worker version. The provenance of full-version proof remains **OWNER_REPORTED_CURRENT**, not browser-independent. No BG-32/V1 GO is implied.
 
 ## November 12 follow-up — freshly authenticated Opera Cloudflare inventory
 
@@ -116,5 +116,21 @@ The published [manifest](https://recollect-flow.openclawneutron.workers.dev/rele
 **Updated R02-T03:** The browser now provides authenticated account and configuration evidence beyond public health. **PASS** for the separation requirement. **R02-C01 remains PARTIAL** because the active full Worker UUID cannot be independently read from the visible prefix. R02 public verification and other inspected identities are PASS, but do not assert complete exact-version acceptance or full V1 acceptance.
 
 **Next exact nonsecret input:** Use the Cloudflare Deployments table's existing **Copy** control beside active `ff5ba1ce` to obtain the complete active Worker version UUID for comparison with `ff5ba1ce-32b0-499c-ae67-f561ec09c93a`. Only the version ID is needed, never a token or secret. Until that exact comparison is observed, retain a bounded version-identity qualification and leave the PR draft.
+
+## November 12 final exact active-version confirmation and R02 disposition
+
+**Criterion:** R02-C01 exact approved deployed Worker version; **environment:** currently signed-in Cloudflare production Worker deployment viewed by the owner through the existing dashboard Copy control; **actor/provenance:** owner response in this conversation on 2026-11-12 (**OWNER_REPORTED_CURRENT**, not independently accessible text in the Opera connector). **Observed via agent earlier on the same date:** approved account/Worker/origin; active `ff5ba1ce` deployment prefix at **100% Ready**; exact D1 and R2 targets and bindings. **Current complete version supplied by owner:** `ff5ba1ce-32b0-499c-ae67-f561ec09c93a`.
+
+| Identity comparison | Frozen approved release | Current owner-supplied dashboard value | Outcome |
+| --- | --- | --- | --- |
+| Worker version UUID | `ff5ba1ce-32b0-499c-ae67-f561ec09c93a` | `ff5ba1ce-32b0-499c-ae67-f561ec09c93a` | **PASS**, exact string match |
+| Active version prefix and traffic | `ff5ba1ce`, 100% | `ff5ba1ce`, 100% on authenticated deployment table | **PASS**, directly read in authenticated Opera inventory |
+| Public Web source and release ID | Frozen 2026-11-03 source and Web IDs | Exact same IDs in current seven-route browser check | **PASS**, public observed |
+
+**Evidence hierarchy:** Current exact UUID is **owner-attested** after the earlier signed-in browser observation and its Copy instruction. It is **not** a claim that the agent independently read the full UUID from the dashboard, or proof of deeper Worker binary/source attestation. Previous November 9 owner confirmation is separate historical evidence. The owner supplied a nonsecret version identifier only.
+
+**R02 verdict: VERIFIED within its defined read-only scope.** Identity, origin/deep-link/API denial/cache, conditional STOP behavior in the offline regression suite, and frozen source/Web release match have explicit passing results. The current branch predecessor passed all 32 exact-head CI steps in [run #43234756297](https://github.com/anmolsansi/Recollect-Flow/actions/runs/43234756297); the next documentation edit must also pass its own exact-head CI before PR review. No Worker deploy, Cron change, D1/R2 write, restored backup, secret disclosure, synthetic mutation or new provider action occurred.
+
+**Not included in R02 approval:** private original-byte replication, independent recovery, historical migration exit/actual indexes, live authenticated session/PDF recheck, hosted hourly proof, operational or device acceptance, R07 BG-32 closure, or V1 GO. Other remaining-work packets own those conditions. The previously noted R2 bucket-size observation is not evidence of content drift. Keep issue #141 and OPE-346 open for R03–R07; do not close/merge the parent gate merely because R02 verifies.
 
 <!-- prettier-ignore-end -->
