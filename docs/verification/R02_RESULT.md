@@ -12,6 +12,7 @@
 
 Approved source [BG-31 frozen manifest](../releases/BG-31_CORE_RELEASE_2026-11-03.json) and [release closeout](../releases/BG-31_CORE_RELEASE_2026-11-03.md). The November 3 owner approval covers the *past core-only first install*, not new operations.
 
+<!-- prettier-ignore -->
 | Field | Frozen approved identity | Evidence class |
 | --- | --- | --- |
 | Source SHA | `81e82806700519b90b6fbd5c1ebb233ed5def9d2` | Frozen core release |
@@ -34,6 +35,7 @@ The [existing verifier](../../scripts/bg32-readonly-smoke.mjs) requires the exac
 
 A read-only public browser run made only GET requests to the exact approved origin and seven predefined routes. It reported **zero redirects**, no hostname/path substitutions, and matching manifest identities. These are **current browser-observed HTTP responses**, not the output of `npm run bg32:readonly`, not authenticated platform inventory and not a login test.
 
+<!-- prettier-ignore -->
 | Stage / exact public GET | HTTP | Content-Type | Cache-Control | Decision |
 | --- | ---: | --- | --- | --- |
 | [`/api/v1/health`](https://recollect-flow.openclawneutron.workers.dev/api/v1/health) | 200 | `application/json` | `private, no-store` | PASS |
@@ -54,6 +56,7 @@ The published [manifest](https://recollect-flow.openclawneutron.workers.dev/rele
 
 [BG-32 November 6 dashboard evidence](BG-32_RELEASE_GATE_2026-11-06.md#november-6-authenticated-cloudflare-dashboard-inventory-read-only) reports a read-only signed-in Opera Cloudflare inspection: exact account, Worker name/hostname, **100% traffic to version prefix `ff5ba1ce`**, intended D1 UUID, private Standard R2 bucket, five bindings `AI`, `ASSETS`, `ATTACHMENTS`, `DB`, `LOGIN_RATE_LIMITER`, four configured secret **names** (not values), five disabled execution flags and no Cron triggers. November 9 reconciliation adds **owner-confirmed** exact Worker version UUID and the reviewed 22-row D1 migration ledger. The [private-cache record](BG-32_PRIVATE_CACHE_BROWSER_CHECK.md) separately preserves 2026-11-09 owner-reported private GET headers, private PDF and anonymous denial, with its specific limitations.
 
+<!-- prettier-ignore -->
 | Platform requirement | Relevant dated evidence | 2026-11-12 classification |
 | --- | --- | --- |
 | Account + Worker name and 100% active prefix | 2026-11-06 signed-in dashboard | **HISTORICAL_OBSERVED**; not freshly read |
@@ -71,6 +74,7 @@ The published [manifest](https://recollect-flow.openclawneutron.workers.dev/rele
 
 ## Tests, evidence classes and completion gate
 
+<!-- prettier-ignore -->
 | Case | Expected behavior | Actual result | Status |
 | --- | --- | --- | --- |
 | R02-T01 | Frozen public target yields bounded public-boundary pass | Seven observed GET routes, no redirects, correct headers/status, exact Web/source manifest identity | **PASS**, current public observation |
