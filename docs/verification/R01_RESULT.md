@@ -30,3 +30,9 @@ The checked-in CSV has **1,236 mapped legacy rows**, zero duplicate IDs, zero ma
 | **Total** | **415** | **Every R01-owned ID has a mapped downstream owner or evidence path.** |
 
 **Reconciliation interpretation:** A syntactically valid mapping is not proof that an underlying action passed. The remainder of this record names the exact evidence and unresolved execution packet(s). The other **821** rows remain with their existing non-R01 packet owners. The CSV, historical evidence files and issues remain unchanged.
+
+## BG-01: 100/100 historical baseline requirements
+
+**Disposition:** SATISFIED by existing dated task evidence, not reproduced in this R01 session. The [BG-01 checklist reconciliation](BG-01_CHECKLIST_RECONCILIATION.md) maps all 100 actions to current-at-2026-09-16, reused 2026-09-12, or explained nonapplicable procedural paths. The [baseline result](BG-01_REPRODUCIBLE_BASELINE.md) and [PR #24](https://github.com/anmolsansi/Recollect-Flow/pull/24) anchor the artifact. Existing CI is not current production or device proof.
+
+**Tracker discrepancy:** [GitHub #23](https://github.com/anmolsansi/Recollect-Flow/issues/23) was **open** when checked for R01 despite a completed task checklist and evidence that its historical objective was satisfied. Preserve the original issue; a tracker-owner status correction is separate from proving the baseline. **Next behavior owner:** none for the historic baseline; changed production/security requirements remain in R02/R10 and later verification packets.
