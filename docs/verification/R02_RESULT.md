@@ -29,3 +29,23 @@ Approved source [BG-31 frozen manifest](../releases/BG-31_CORE_RELEASE_2026-11-0
 **Repository HEAD is not the deployed Worker:** GitHub `main` at R02 start was `8bd1321236258bd2903522a0d6cea675f4fffd92`, from documentation PR #154 on November 11, distinct from frozen deployed source.
 
 The [existing verifier](../../scripts/bg32-readonly-smoke.mjs) requires the exact canonical HTTPS origin and frozen record, sends only seven GETs with `redirect: manual`, rejects redirects, requires correct statuses/types/private cache, and verifies public manifest source/release IDs. Target/UUID/source mismatch is a **STOP**, not a reason to retarget to another account. This review did not run that Node script because the repository could not be cloned in the execution environment; a browser-based bounded public check was performed instead. Its proof scope is recorded below.
+
+## Current public boundary observation (2026-11-12)
+
+A read-only public browser run made only GET requests to the exact approved origin and seven predefined routes. It reported **zero redirects**, no hostname/path substitutions, and matching manifest identities. These are **current browser-observed HTTP responses**, not the output of `npm run bg32:readonly`, not authenticated platform inventory and not a login test.
+
+| Stage / exact public GET | HTTP | Content-Type | Cache-Control | Decision |
+| --- | ---: | --- | --- | --- |
+| [`/api/v1/health`](https://recollect-flow.openclawneutron.workers.dev/api/v1/health) | 200 | `application/json` | `private, no-store` | PASS |
+| [`/`](https://recollect-flow.openclawneutron.workers.dev/) | 200 | `text/html` | `no-cache, must-revalidate` | PASS |
+| [`/items/bg32-readonly-route-probe`](https://recollect-flow.openclawneutron.workers.dev/items/bg32-readonly-route-probe) | 200 | `text/html` | `no-cache, must-revalidate` | PASS, deep-link shell |
+| [`/api/v1/items/bg32-readonly-route-probe`](https://recollect-flow.openclawneutron.workers.dev/api/v1/items/bg32-readonly-route-probe) | 403 | `application/json` | `private, no-store` | PASS, anonymous private API denied |
+| [`/api/v1/bg32-readonly-no-route`](https://recollect-flow.openclawneutron.workers.dev/api/v1/bg32-readonly-no-route) | 404 | `application/json` | `private, no-store` | PASS, API unknown route not SPA HTML |
+| [`/assets/bg32-missing-aBcD1234.js`](https://recollect-flow.openclawneutron.workers.dev/assets/bg32-missing-aBcD1234.js) | 404 | `text/plain; charset=utf-8` | `no-store` | PASS, missing hashed asset not SPA HTML |
+| [`/release-manifest.json`](https://recollect-flow.openclawneutron.workers.dev/release-manifest.json) | 200 | `application/json` | `public, max-age=0, must-revalidate` | PASS, public release identity |
+
+The published [manifest](https://recollect-flow.openclawneutron.workers.dev/release-manifest.json) explicitly reported `release_id = 3b455e5d2150e5a38c24f340164b220fe74b05163604c2e159572affbdd8def6` and `source_revision = 81e82806700519b90b6fbd5c1ebb233ed5def9d2`, **both exact matches** to the frozen approval.
+
+**Boundary conclusion:** `PUBLIC_BOUNDARIES_PASS_NOT_RELEASE_GO` under the same meaning as the existing verifier. The public manifest does not identify the active Worker binary's full version UUID, attached secret values, current D1 schema/index state, independent backups or provider behavior. The health endpoint by itself cannot satisfy the authenticated inventory criterion.
+
+**No changes made:** No login, capture, upload, remote SQL, private attachment download, paid operation, external provider, Cron, DNS, secret mutation, deletion, rollback or deployment. The read-only runner did not inspect any private response bodies or cookies.
