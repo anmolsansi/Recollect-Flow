@@ -36,3 +36,9 @@ The checked-in CSV has **1,236 mapped legacy rows**, zero duplicate IDs, zero ma
 **Disposition:** SATISFIED by existing dated task evidence, not reproduced in this R01 session. The [BG-01 checklist reconciliation](BG-01_CHECKLIST_RECONCILIATION.md) maps all 100 actions to current-at-2026-09-16, reused 2026-09-12, or explained nonapplicable procedural paths. The [baseline result](BG-01_REPRODUCIBLE_BASELINE.md) and [PR #24](https://github.com/anmolsansi/Recollect-Flow/pull/24) anchor the artifact. Existing CI is not current production or device proof.
 
 **Tracker discrepancy:** [GitHub #23](https://github.com/anmolsansi/Recollect-Flow/issues/23) was **open** when checked for R01 despite a completed task checklist and evidence that its historical objective was satisfied. Preserve the original issue; a tracker-owner status correction is separate from proving the baseline. **Next behavior owner:** none for the historic baseline; changed production/security requirements remain in R02/R10 and later verification packets.
+
+## BG-02 and BG-03: 200/200 historical source actions
+
+**BG-02.001–.100:** [BG-02 reconciliation](BG-02_CHECKLIST_RECONCILIATION.md) and [clock-stabilization evidence](BG-02_USAGE_CLOCK_STABILIZATION.md) record the isolated D1 clock fix, matching test/CI proof and justified no-op paths. Do **not** rebuild the already accepted test stabilization.
+
+**BG-03.001–.100:** The original [BG-03 reconciliation](BG-03_CHECKLIST_RECONCILIATION.md) deliberately stopped at 99/100 pending the final merge. The later [authoritative post-merge closeout](BG-03_FINAL_CLOSEOUT.md) states that `BG-03.100` passed after [PR #28](https://github.com/anmolsansi/Recollect-Flow/pull/28) and its final CI. The later dated closure supersedes the pre-merge count. **No current deployment acceptance** is inferred from either source task.
