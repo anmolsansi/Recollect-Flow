@@ -68,3 +68,24 @@ The published [manifest](https://recollect-flow.openclawneutron.workers.dev/rele
 **Drift:** The unchanged current public manifest strongly supports the expected deployed Web artifact. It cannot rule out a Worker-only version/configuration change since the last authenticated dashboard observation. No unexplained **public** origin/source/release-ID drift was observed; current **private configuration drift remains untested**.
 
 **Stop rule:** Do not log in with credentials in chat, paste session tokens, use GitHub source state as current configuration, rerun migrations, adjust bindings or redeploy to satisfy documentary checks. When an authorized Cloudflare session becomes available, perform one bounded **read-only** account/Worker/D1/R2/bindings/secret-name/trigger inventory and compare exact IDs. Record status `PASS` only for fields actually observed; version-prefix only is not independent full-version verification.
+
+## Tests, evidence classes and completion gate
+
+| Case | Expected behavior | Actual result | Status |
+| --- | --- | --- | --- |
+| R02-T01 | Frozen public target yields bounded public-boundary pass | Seven observed GET routes, no redirects, correct headers/status, exact Web/source manifest identity | **PASS**, current public observation |
+| R02-T02 | Wrong target/redirect yields STOP | Existing `scripts/bg32-readonly-smoke.mjs` contains explicit canonical-origin checks and manual redirect rejection. Local fixture regression has **not** been run in this session. | **NOT_EXECUTED** locally; verify by PR CI `npm run check` (includes `bg32:readonly:test`) |
+| R02-T03 | Public health cannot pass authenticated inventory | Public observation explicitly yields `PUBLIC_BOUNDARIES_PASS_NOT_RELEASE_GO`, and current authenticated inventory is not asserted | **PASS** as evidence classification, **NOT_EXECUTED** as fresh authenticated read |
+| R02-C01 | Exact deployed identity | Current Web release ID + approved source match. Worker active prefix and exact UUID have only dated/owner evidence | **PARTIAL**, additional authenticated read recommended |
+| R02-C02 | Current boundary and safe denial/cache/deep links | Seven public checks pass, with historical private-cache/session proof kept distinct | **PASS** for public surface only |
+| R02-C03 | No unauthorized mutations or misleading rollback | All operations GET-only; no production mutation or rollback; frozen release/CSV/checklists unchanged | **PASS** |
+
+**Commands actually run:** The browser-based public GET sequence. Source/issue/CI manifest review via GitHub connector. **Not run here:** `npm run bg32:readonly:test`, `npm run bg31:manifest:test`, `npm run bg31:ledger:test`, the actual `npm run bg32:readonly` Node command, a new authenticated Cloudflare inspection, or live private download. These require a repository-capable runner or owner's existing authenticated session. PR CI can establish the offline assertions but cannot replace cloud-side auth inventory.
+
+**Failure/rollback behavior:** A wrong origin, redirect, changed manifest, 200 private data response, missing private no-store policy or active binding mismatch requires STOP and operator review. Do not auto-redeploy, change a database or delete backups. If any new public check fails later, retain its result and recheck only the affected stage. Live rollback is neither requested nor performed.
+
+**Remaining blocker:** fresh signed-in Cloudflare metadata read (exact account/Worker/full version/D1/R2/binding/secret-name/disabled-flag/cron identity). **Responsible:** authorized operator with existing Cloudflare access. **Next action:** use the existing approved read-only inventory procedure, record safe metadata only, and compare exact target to the immutable November 3 release. A changed target requires a new explicit review, not an implicit acceptance. Previous November 6/9 observations are reused as historical evidence, never re-dated.
+
+**Handoff:** R02 supplies current bounded public observations for R07 and R13. BG-32, OPE-346, independent restore, R09 hourly proof, R10 security hardening and full V1 acceptance remain open. This file/PR does not authorize deployment, paid/cloud changes or any provider activity.
+
+**Decision:** Public release identity/boundary **verified**; complete R02 platform identity **IN_PROGRESS / BLOCKED_INPUT** pending a current authenticated observation. This is a truthful partial acceptance, not a V1 GO.
