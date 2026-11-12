@@ -284,3 +284,10 @@ and Linear OPE-327 can close and BG-08 is unlocked.
 - Use synthetic fixture identifiers only.
 - Never commit actual credentials or private captured content.
 - Do not call local/CI implementation evidence production acceptance.
+
+## R01 / R02 — November 12, 2026 remaining-work verification
+
+- [R01 evidence reconciliation](R01_RESULT.md) compares the 415 legacy IDs that include R01 against the dated BG closeouts, identifies their packet-level owners and preserves unsatisfied hosted/source gaps. It does not relabel old local CI as deployed evidence.
+- [R02 deployed identity/public boundary](R02_RESULT.md) records a new seven-route GET-only public check and exact frozen source/Web manifest match. Current authenticated Cloudflare inventory is not independently rechecked; prior November 6/9 dashboard and owner observations are labeled historical. This is **not** a new production deployment or full V1 acceptance.
+
+The [remaining-work execution contract](../tickets/REMAINING_WORK.md) and [packet definitions](../tickets/REMAINING_WORK_PACKETS.md) control the next work. BG-32 remains open; R03–R07 are separate recovery/release prerequisites.
