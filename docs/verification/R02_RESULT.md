@@ -49,3 +49,22 @@ The published [manifest](https://recollect-flow.openclawneutron.workers.dev/rele
 **Boundary conclusion:** `PUBLIC_BOUNDARIES_PASS_NOT_RELEASE_GO` under the same meaning as the existing verifier. The public manifest does not identify the active Worker binary's full version UUID, attached secret values, current D1 schema/index state, independent backups or provider behavior. The health endpoint by itself cannot satisfy the authenticated inventory criterion.
 
 **No changes made:** No login, capture, upload, remote SQL, private attachment download, paid operation, external provider, Cron, DNS, secret mutation, deletion, rollback or deployment. The read-only runner did not inspect any private response bodies or cookies.
+
+## Previously authorized authenticated inventory, not freshly reread
+
+[BG-32 November 6 dashboard evidence](BG-32_RELEASE_GATE_2026-11-06.md#november-6-authenticated-cloudflare-dashboard-inventory-read-only) reports a read-only signed-in Opera Cloudflare inspection: exact account, Worker name/hostname, **100% traffic to version prefix `ff5ba1ce`**, intended D1 UUID, private Standard R2 bucket, five bindings `AI`, `ASSETS`, `ATTACHMENTS`, `DB`, `LOGIN_RATE_LIMITER`, four configured secret **names** (not values), five disabled execution flags and no Cron triggers. November 9 reconciliation adds **owner-confirmed** exact Worker version UUID and the reviewed 22-row D1 migration ledger. The [private-cache record](BG-32_PRIVATE_CACHE_BROWSER_CHECK.md) separately preserves 2026-11-09 owner-reported private GET headers, private PDF and anonymous denial, with its specific limitations.
+
+| Platform requirement | Relevant dated evidence | 2026-11-12 classification |
+| --- | --- | --- |
+| Account + Worker name and 100% active prefix | 2026-11-06 signed-in dashboard | **HISTORICAL_OBSERVED**; not freshly read |
+| Full active Worker version UUID | 2026-11-09 owner confirmation, 2026-11-06 only prefix independently visible | **OWNER_REPORTED**, not independently full UUID |
+| D1 exact name/UUID and 22 ledger rows | 2026-11-06 authenticated UUID and 2026-11-09 owner ledger | **HISTORICAL / OWNER_REPORTED**; not current schema/index proof |
+| R2 bucket privacy and Standard class | 2026-11-06 authenticated dashboard | **HISTORICAL_OBSERVED**; not byte-complete backup |
+| Binding names and disabled flags / no triggers | 2026-11-06 authenticated dashboard | **HISTORICAL_OBSERVED**; not a new current flag read |
+| Secret name presence without values | 2026-11-06 authenticated dashboard | **HISTORICAL_OBSERVED**; no credential exposure |
+| Private cache/session/PDF denial | 2026-11-09 owner's bounded browser check + earlier source and release records | **OWNER_REPORTED / HISTORICAL**, not repeated this session |
+| Current (November 12) authenticated account/Worker version/bindings | Opera connector reports **browser not connected**; public browser does not supply owner login | **NOT_EXECUTED, BLOCKED_INPUT** |
+
+**Drift:** The unchanged current public manifest strongly supports the expected deployed Web artifact. It cannot rule out a Worker-only version/configuration change since the last authenticated dashboard observation. No unexplained **public** origin/source/release-ID drift was observed; current **private configuration drift remains untested**.
+
+**Stop rule:** Do not log in with credentials in chat, paste session tokens, use GitHub source state as current configuration, rerun migrations, adjust bindings or redeploy to satisfy documentary checks. When an authorized Cloudflare session becomes available, perform one bounded **read-only** account/Worker/D1/R2/bindings/secret-name/trigger inventory and compare exact IDs. Record status `PASS` only for fields actually observed; version-prefix only is not independent full-version verification.
