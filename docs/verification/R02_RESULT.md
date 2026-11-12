@@ -2,7 +2,7 @@
 
 # R02 — Verify deployed identity and read-only public boundary
 
-**Status:** IN_PROGRESS; public boundary verified, current authenticated platform inventory not independently read this session.
+**Status:** IN_PROGRESS; public boundary verified, current authenticated dashboard now inspected on 2026-11-12; full active Worker UUID still not independently visible.
 **Packet:** [R02](../tickets/REMAINING_WORK_PACKETS.md#r02--verify-the-deployed-identity-and-current-read-only-boundary)
 **Prerequisite:** [R01 evidence crosswalk](R01_RESULT.md), with unproven hosted/device acceptance retained.
 **Tracking:** [BG-32 #141](https://github.com/anmolsansi/Recollect-Flow/issues/141), [BG-21 #83](https://github.com/anmolsansi/Recollect-Flow/issues/83), Linear OPE-340/OPE-346 (historical).
@@ -91,5 +91,30 @@ The published [manifest](https://recollect-flow.openclawneutron.workers.dev/rele
 **Handoff:** R02 supplies current bounded public observations for R07 and R13. BG-32, OPE-346, independent restore, R09 hourly proof, R10 security hardening and full V1 acceptance remain open. This file/PR does not authorize deployment, paid/cloud changes or any provider activity.
 
 **Decision:** Public release identity/boundary **verified**; complete R02 platform identity **IN_PROGRESS / BLOCKED_INPUT** pending a current authenticated observation. This is a truthful partial acceptance, not a V1 GO.
+
+## November 12 follow-up — freshly authenticated Opera Cloudflare inventory
+
+**Status:** READ_ONLY_AUTHENTICATED_INVENTORY_PARTIAL, no write operation. **Observed on:** 2026-11-12 UTC. **Source:** current signed-in Opera Cloudflare dashboard on the already approved account, not a public Worker response. This is a *new* observation and supersedes only the earlier R02 statement that Opera was disconnected, not the preceding historical or public observations.
+
+| Current authenticated field | Observation | Judgment |
+| --- | --- | --- |
+| Account | Signed-in Cloudflare dashboard account URL contains `a9482fbfb91ace26dee097cbd41293f9`; account home lists `recollect-flow`. | **PASS**, exact approved account |
+| Worker and origin | `recollect-flow`, production; `recollect-flow.openclawneutron.workers.dev` on Worker overview | **PASS**, exact approved Worker and origin |
+| Deployment and traffic | Deployments table shows `ff5ba1ce`, `100% Ready`, source Wrangler, by `openclawneutron`, created approximately 9 days earlier | **PASS** for active prefix and traffic, **PARTIAL** for full UUID |
+| Full active Worker version | Cloudflare's table exposes the prefix `ff5ba1ce` plus a Copy control, but the accessible read-only view does **not** expose the full UUID | **NOT_INDEPENDENTLY_VERIFIED**. Earlier 2026-11-09 owner-confirmed exact `ff5ba1ce-32b0-499c-ae67-f561ec09c93a` remains *owner-reported*, not a newly observed complete version |
+| D1 | Database page displays `recollect-flow-prod-v2` and full UUID `76bd35c6-c833-4987-a47e-6aa8238bb832` | **PASS**, exact target. No SQL, index or row inspection performed |
+| R2 | Bucket `recollect-flow-attachments-prod-v2`, default **Standard**, **Public Access: Disabled** | **PASS** for correct bucket, storage class and dashboard privacy. No file bytes, purge receipts or backup completeness inspected |
+| R2 dashboard metrics | Bucket Size displayed `12.77 KB` at observation; earlier historic figure was smaller | **OBSERVED**, not a proven application mutation, content inventory or independent recovery proof |
+| Worker bindings | Overview reports **5**: `ASSETS` (assets section), `AI`, `ATTACHMENTS` mapped to approved R2, `DB` mapped to approved D1 and `LOGIN_RATE_LIMITER` | **PASS** for names and declared targets. Runtime access tests were not repeated |
+| Secret-name presence | `ADMIN_TOKEN`, `CAPTURE_TOKEN`, `LOCAL_WORKER_TOKEN`, `WEB_INBOX_BASE_URL` each appear as **Secret / Value encrypted** | **PASS** for presence; no values opened, read, copied or disclosed |
+| Disabled execution controls | `DIGEST_AI_ENABLED=false`, `HOSTED_BACKUP_AUTOCREATE_ENABLED=false`, `HOSTED_EXTERNAL_DISPATCH_ENABLED=false`, `HOSTED_HTTP_DISPATCH_ENABLED=false`, `HOSTED_SCHEDULED_WORK_ENABLED=false`; `AI_PROVIDER_IMPLEMENTATIONS={}` | **PASS**, explicit current dashboard variables. No provider action performed |
+| Scheduled triggers | Worker settings states **No cron triggers configured** | **PASS**, no active Cron trigger shown |
+| Deployed Web identity | Earlier same-day current public `/release-manifest.json` matches the frozen 2026-11-03 source and release ID | **PASS**, public Web artifact, not proof of full Worker version |
+
+**Scope and discrepancies:** Current account, Worker prefix, exact D1 ID, R2 name/privacy, listed bindings and disabled flags match the frozen release. Dashboard R2 reported bucket size differs from the November 6 size, but no contents were read, so **do not infer what produced the difference**. A current full Worker UUID was **not** visible to the read-only connector. No secrets, content originals, exports, SQL, authentication tokens, dashboards edits, switches, retries, restores, migrations, deployments, billing activity or new hosted checks were performed.
+
+**Updated R02-T03:** The browser now provides authenticated account and configuration evidence beyond public health. **PASS** for the separation requirement. **R02-C01 remains PARTIAL** because the active full Worker UUID cannot be independently read from the visible prefix. R02 public verification and other inspected identities are PASS, but do not assert complete exact-version acceptance or full V1 acceptance.
+
+**Next exact nonsecret input:** Use the Cloudflare Deployments table's existing **Copy** control beside active `ff5ba1ce` to obtain the complete active Worker version UUID for comparison with `ff5ba1ce-32b0-499c-ae67-f561ec09c93a`. Only the version ID is needed, never a token or secret. Until that exact comparison is observed, retain a bounded version-identity qualification and leave the PR draft.
 
 <!-- prettier-ignore-end -->
