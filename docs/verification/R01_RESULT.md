@@ -18,6 +18,7 @@ Evidence class is **source/CI**, **historical release**, **owner-reported**, **c
 
 The checked-in CSV has **1,236 mapped legacy rows**, zero duplicate IDs, zero malformed IDs, zero missing packet fields, and no invalid `Rxx` packet syntax in the 415 rows including R01. Of those, **415 IDs include R01** as an owner:
 
+<!-- prettier-ignore -->
 | Legacy set | Mapped IDs | Disposition / next owner |
 | --- | ---: | --- |
 | BG-01.001–.100 | 100 | R01, reconcile existing baseline proof |
@@ -53,6 +54,7 @@ The checked-in CSV has **1,236 mapped legacy rows**, zero duplicate IDs, zero ma
 
 The [BG-21 evidence](BG-21_WEB_HOSTING.md), [GitHub #83](https://github.com/anmolsansi/Recollect-Flow/issues/83), the frozen [BG-31 core release](../releases/BG-31_CORE_RELEASE_2026-11-03.md), and R02's new public observations have different scopes. #83 was still open on 2026-11-12.
 
+<!-- prettier-ignore -->
 | Legacy ID | Supported evidence and evidence class | Required remaining disposition |
 | --- | --- | --- |
 | `BG-21.044` | [PR #121](https://github.com/anmolsansi/Recollect-Flow/pull/121) and historical exact-head CI prove the approved `/operations` route in packaged local browser, **source/CI**. | R13 to confirm deployed owner route without assuming Web UI access. |
@@ -78,6 +80,7 @@ This is an ownership crosswalk for all 100 IDs, **not 100 PASS claims**. Already
 
 ## R01 acceptance and failure matrix
 
+<!-- prettier-ignore -->
 | Case / criterion | Expected | Actual inspection | State / evidence class |
 | --- | --- | --- | --- |
 | R01-T01 | Old sourced work not rebuilt | BG-01/02/03 closeouts and BG-11/15/21 records reused without source or deployment edits | **PASS**, historical source/CI |
