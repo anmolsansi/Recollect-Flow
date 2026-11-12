@@ -87,8 +87,12 @@ The [R01 reconciliation](../verification/R01_RESULT.md) has classified all **415
 
 The [R02 result](../verification/R02_RESULT.md) adds seven read-only public checks at the frozen origin on November 12 with exact approved source/release-manifest identity. Authenticated account/D1/R2/Worker binding/active version verification was **not repeated** because the connected Opera session was unavailable; older signed-in/owner observations are kept at their original evidence dates. R02 remains **IN_PROGRESS / BLOCKED_INPUT** for fresh account inventory, and BG-32 [#141](https://github.com/anmolsansi/Recollect-Flow/issues/141)/Linear OPE-346 remain open. No production operation, migration, deploy, cost change, or release approval occurred.
 
+<!-- prettier-ignore-start -->
+
 ## November 12, 2026 authenticated R02 follow-up
 
 The owner reconnected Opera, and the authenticated Cloudflare dashboard was **read-only inspected** on the approved account. [R02's fresh inventory addendum](../verification/R02_RESULT.md#november-12-follow-up--freshly-authenticated-opera-cloudflare-inventory) confirms the exact account, Worker name, active version **prefix** `ff5ba1ce` at 100% traffic, exact D1 UUID, private Standard R2 bucket, declared five Worker bindings, four encrypted secret **names**, disabled hosted dispatch/backup/Cron variables and zero configured cron triggers. Neither secrets nor private original bytes were inspected. This supersedes the earlier claim that the Opera connection was unavailable.
 
 **Still not independently evidenced:** the *complete* current Worker version UUID; Cloudflare's read-only table exposes only the prefix, while the complete value remains a November 9 owner-confirmed historical record. The R02 exact-version check stays qualified, and [draft PR #155](https://github.com/anmolsansi/Recollect-Flow/pull/155) remains unmerged. BG-32, Linear OPE-346 and V1 acceptance stay open. The current R2 dashboard reports a different bucket size from November 6, which does not independently establish a content or security change.
+
+<!-- prettier-ignore-end -->
