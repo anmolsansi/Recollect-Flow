@@ -48,3 +48,19 @@ The checked-in CSV has **1,236 mapped legacy rows**, zero duplicate IDs, zero ma
 **BG-11.028 (one action):** [BG-11 historical closeout](BG-11_FINAL_CLOSEOUT.md) explicitly delegated applying aggregate status to BG-13 instead of claiming it at BG-11 close. [BG-13 final closeout](BG-13_FINAL_CLOSEOUT.md) identifies merged [PR #62](https://github.com/anmolsansi/Recollect-Flow/pull/62) at `3d1af004bc0ebfaa95645a39880b38f623d3c447` with source/CI verification of current-generation aggregate materialization. **Source disposition: SATISFIED by the later task.** Actual hosted processing/search freshness remains a separate R14/R15 acceptance concern.
 
 **BG-15.073–.079 (seven actions):** [BG-15 closeout](BG-15_FINAL_CLOSEOUT.md) records backend authorization as accepted, but intentionally delegates pending capture/upload identity, reauthentication, resume and UI cleanup to BG-16–BG-18. [BG-16 final](BG-16_FINAL_CLOSEOUT.md) and [BG-17 final](BG-17_FINAL_CLOSEOUT.md) establish staged source/client progress; [BG-22 #85](https://github.com/anmolsansi/Recollect-Flow/issues/85) records more isolated Chrome work including file PUT reauthentication. **Not promoted to hosted PASS.** R10 owns the security/session contract, R13 the deployed browser capture/retry behavior. No duplicate backend authorization rewrite is warranted.
+
+## BG-21: seven specific deployed-Web exceptions
+
+The [BG-21 evidence](BG-21_WEB_HOSTING.md), [GitHub #83](https://github.com/anmolsansi/Recollect-Flow/issues/83), the frozen [BG-31 core release](../releases/BG-31_CORE_RELEASE_2026-11-03.md), and R02's new public observations have different scopes. #83 was still open on 2026-11-12.
+
+| Legacy ID | Supported evidence and evidence class | Required remaining disposition |
+| --- | --- | --- |
+| `BG-21.044` | [PR #121](https://github.com/anmolsansi/Recollect-Flow/pull/121) and historical exact-head CI prove the approved `/operations` route in packaged local browser, **source/CI**. | R13 to confirm deployed owner route without assuming Web UI access. |
+| `BG-21.059` | Static release-manifest match now observable, **current public GET**. It does **not** test old/new CDN cache invalidation across a deployment. | R02/R07; do not redeploy just to tick the check. |
+| `BG-21.061` | HTTPS canonical root, deep link and API GETs on exact deployed origin returned without redirects, **current public GET** (R02). | Public HTTPS path supported; current account ownership remains historical/read-only R02 inventory. |
+| `BG-21.062` | [BG-31 release](../releases/BG-31_CORE_RELEASE_2026-11-03.md) reports Secure/HttpOnly/SameSite cookie checks, **historical live**; owner session reports differ from independent header capture. | R02/R10; no cookie values or credential reads. |
+| `BG-21.065` | BG-31 records successful hosted login/session on approved origin, **historical live/owner**. | R02/R10/R13; no fresh authenticated login attempted. |
+| `BG-21.077` | Packaging/rollback instructions exist, but an actual old/new asset compatibility rollback rehearsal is **not observed**. | R02/R07 separate authorized preflight. |
+| `BG-21.080` | BG-31 deployed the approved core artifact, and R02's public manifest matches frozen release ID/source, **historical deployment + current public**. | R02 authenticated active Worker/version check remains distinct. |
+
+Do not change the source checklist or close #83 solely on this mapping: missing hosted cache/rollback and exact authenticated release evidence are still explicit.
