@@ -64,3 +64,14 @@ The [BG-21 evidence](BG-21_WEB_HOSTING.md), [GitHub #83](https://github.com/anmo
 | `BG-21.080` | BG-31 deployed the approved core artifact, and R02's public manifest matches frozen release ID/source, **historical deployment + current public**. | R02 authenticated active Worker/version check remains distinct. |
 
 Do not change the source checklist or close #83 solely on this mapping: missing hosted cache/rollback and exact authenticated release evidence are still explicit.
+
+## BG-22: all 100 IDs retain a concrete execution owner
+
+The [coverage CSV](../tickets/REMAINING_WORK_COVERAGE.csv) assigns every `BG-22.001–.100` to the exact joint path `R01/R13/R14/R15/R16`. [GitHub #85](https://github.com/anmolsansi/Recollect-Flow/issues/85) records isolated local Chrome/Worker progress and names **five explicitly incomplete source checks**: `.031` acquired URL internal-phrase search, `.034` image OCR internal search, `.035` PDF internal search, `.062` Notion disable-path test, and `.068` pending AI retry/resume. [Draft PR #86](https://github.com/anmolsansi/Recollect-Flow/pull/86) is **closed, unmerged**; its branch evidence cannot be advertised as merged `main` functionality or hosted acceptance.
+
+- **R13** owns actual hosted browser creation, safe retry, deep link, loss-of-session and private original acceptance.
+- **R14** owns acquisition, lexical search and URL/PDF body phrase visibility (`.031`, `.035`, and source evidence for `.034`).
+- **R15** owns approved OCR/AI modality, privacy, quota and same-job retry (`.034`, `.035`, `.068` as applicable).
+- **R16** owns the explicit disable/outage/recreation behavior for Notion (`.062`).
+
+This is an ownership crosswalk for all 100 IDs, **not 100 PASS claims**. Already recorded local examples are reused only as their original evidence class. The hosted V1 user story and remaining five tests stay open.
