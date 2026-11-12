@@ -75,3 +75,24 @@ The [coverage CSV](../tickets/REMAINING_WORK_COVERAGE.csv) assigns every `BG-22.
 - **R16** owns the explicit disable/outage/recreation behavior for Notion (`.062`).
 
 This is an ownership crosswalk for all 100 IDs, **not 100 PASS claims**. Already recorded local examples are reused only as their original evidence class. The hosted V1 user story and remaining five tests stay open.
+
+## R01 acceptance and failure matrix
+
+| Case / criterion | Expected | Actual inspection | State / evidence class |
+| --- | --- | --- | --- |
+| R01-T01 | Old sourced work not rebuilt | BG-01/02/03 closeouts and BG-11/15/21 records reused without source or deployment edits | **PASS**, historical source/CI |
+| R01-T02 | Local/source work not called hosted proof | BG-15/21/22 and BG-31 records preserve local/CI vs hosted/owner distinctions | **PASS**, documentary audit |
+| R01-T03 | No orphan ID in R01 coverage | 1,236 total rows, 415 R01-owned, 0 duplicate IDs, 0 malformed IDs, all 415 packet syntax valid | **PASS**, source CSV inventory |
+| R01-C01 | Every mapped action classified | Seven groups listed above, BG-21 seven actions individually and BG-22 100-action downstream ownership preserved | **PASS** for *reconciliation*, NOT 415 runtime acceptance passes |
+| R01-C02 | Missing behavior has one current execution owner | R02 for release identity; R10 security; R13 browser; R14 acquisition/lexical; R15 hosted AI; R16 Notion, plus R07 for BG-32 release gate | **PASS** for ownership; execution remains pending |
+| R01-C03 | Reconcile active trackers without closing prematurely | #23 open despite historical completion; #83 and #85 open with hosted gaps; #141 remains open as combined deployment track | **PASS** documentary, tracker states unchanged |
+
+**Additional retained blockers:** `BG-29.078` stays R09, BG-32 historical exit-code/index and backup/recovery stay R03–R07, OPE-247 security hardening remains open, and device/client, delivery and V1 gates stay with R17–R28/R50–R52. These are *outside R01's 415 IDs* but must not be hidden by reconciliation.
+
+**Validation actually performed:** GitHub source/PR/issue reads, exact main SHA identification, CSV row/ID/packet uniqueness and owner parsing, cross-check with dated primary closeouts and the new seven-stage public R02 observation. No local repository clone or `npm` test was available in this environment. `npm run bg32:readonly:test`, `npm run bg31:manifest:test`, and `npm run bg31:ledger:test` are **NOT_EXECUTED locally**; exact-PR CI via `npm run check` is the required follow-up and will be recorded in the PR rather than asserted in advance.
+
+**Data/safety:** No changes to runtime, D1 schema, R2 bytes, Worker config, credentials, Cloudflare environment, original historical evidence or pending issue acceptance status. All genuine missing execution remains with the named packet. Frozen sources remain immutable.
+
+**Handoff:** [R02](R02_RESULT.md) consumes frozen source identity, the current public GET results, and the explicitly older authenticated Cloudflare inventory. The next release gate remains R03–R07 and their separate operations/backup approvals. Do not use this reconciliation as R07/BG-32/V1 release acceptance.
+
+**Result interpretation:** R01's *record classification and ownership* are complete when this scoped PR passes its documentation/source CI and the parent receives the evidence link. Underlying hosted/device/security acceptance remains open by design.
