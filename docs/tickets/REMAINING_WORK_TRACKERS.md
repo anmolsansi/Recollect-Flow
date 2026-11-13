@@ -80,3 +80,19 @@ Local redesign is complete independently of publication. Automatic approval revi
 | OPE-346 | R02–R07               |
 
 GitHub mirror mapping: #23 → R01; #83 → R01/R02; #85 → R01/R13–R16; #99 → R08/R09; #141 → R02–R07. Add current scope before preserved historical text, replacing obsolete active 50-pair instructions with a historical label. Refer all statuses to the same evidence records; never recalculate legacy percentages. No new per-microtask issues.
+
+## November 12, 2026 R01/R02 evidence update
+
+The [R01 reconciliation](../verification/R01_RESULT.md) has classified all **415** legacy rows assigned to R01, without changing their original checklist, issue state or remaining R-packet owners. In particular, historical BG-01/02/03 source closure does not close R10/R13–R16 hosted work. GitHub [#23](https://github.com/anmolsansi/Recollect-Flow/issues/23) remains open despite its historically complete baseline record; [#83](https://github.com/anmolsansi/Recollect-Flow/issues/83) and [#85](https://github.com/anmolsansi/Recollect-Flow/issues/85) retain their distinct hosted/browser gaps.
+
+The [R02 result](../verification/R02_RESULT.md) adds seven read-only public checks at the frozen origin on November 12 with exact approved source/release-manifest identity. Authenticated account/D1/R2/Worker binding/active version verification was **not repeated** because the connected Opera session was unavailable; older signed-in/owner observations are kept at their original evidence dates. R02 remains **IN_PROGRESS / BLOCKED_INPUT** for fresh account inventory, and BG-32 [#141](https://github.com/anmolsansi/Recollect-Flow/issues/141)/Linear OPE-346 remain open. No production operation, migration, deploy, cost change, or release approval occurred.
+
+<!-- prettier-ignore-start -->
+
+## November 12, 2026 authenticated R02 follow-up
+
+The owner reconnected Opera, and the authenticated Cloudflare dashboard was **read-only inspected** on the approved account. [R02's fresh inventory addendum](../verification/R02_RESULT.md#november-12-follow-up--freshly-authenticated-opera-cloudflare-inventory) confirms the exact account, Worker name, active version **prefix** `ff5ba1ce` at 100% traffic, exact D1 UUID, private Standard R2 bucket, declared five Worker bindings, four encrypted secret **names**, disabled hosted dispatch/backup/Cron variables and zero configured cron triggers. Neither secrets nor private original bytes were inspected. This supersedes the earlier claim that the Opera connection was unavailable.
+
+**November 12 owner completion:** The owner supplied the complete **current** Cloudflare Copy-control version UUID `ff5ba1ce-32b0-499c-ae67-f561ec09c93a`. It matches the frozen approved Worker UUID exactly. This is **OWNER_REPORTED_CURRENT** confirmation corroborated by the same-day read-only observed prefix at 100% traffic, not an independent full-UUID browser read. [R02 is VERIFIED within its public-boundary/deployed-identity scope](../verification/R02_RESULT.md#november-12-final-exact-active-version-confirmation-and-r02-disposition), pending passing CI on the final evidence-commit head. [PR #155](https://github.com/anmolsansi/Recollect-Flow/pull/155) remains unmerged; BG-32, Linear OPE-346 and V1 acceptance remain open for R03–R07 and other gates. The different dashboard R2 bucket size from November 6 does not establish a content or security change.
+
+<!-- prettier-ignore-end -->
