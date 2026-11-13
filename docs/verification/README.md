@@ -1,5 +1,11 @@
 # Verification Evidence Index
 
+## R03/R04 — independent recovery preparation and evidence (November 13, 2026)
+
+- [R03 bounded operation packet](R03_RESULT.md): **PREPARED, live execution BLOCKED_INPUT** pending current approval/access/cost proof. Reuses the November 9 Scope B limits without expanding permissions.
+- [R04 acquisition and verification ledger](R04_RESULT.md): **IN_PROGRESS, BLOCKED_INPUT**. Preserves November 9 owner-reported hashes and local checks, while explicitly leaving complete source pagination, canonical bundle verification, encrypted off-device readback and key recovery unverified.
+- [BG-32 parent #141](https://github.com/anmolsansi/Recollect-Flow/issues/141). No new production backup, R2/D1 writes, restore, deployment, billing change or V1 acceptance is authorized by these records.
+
 ## BG-31 — release manifest (development draft, NO-GO)
 
 [Human release packet](../releases/BG-31_RELEASE_MANIFEST.md) and
