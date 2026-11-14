@@ -41,4 +41,28 @@ On **November 13**, the owner attested that the R04 acquisition steps had been d
 
 **Stop decision:** Do not mark BG-32.075–.077, R05 or BG-32 as verified. Do not delete/replace the R04 recovery set or attempt a production rollback. The next action is R04 evidence sign-off followed by an independently approved, precisely named, **nonproduction-only** Scope D rehearsal.
 
+## Scope D execution handoff (not executed)
+
+The operator may resume **only after** R04 passes with source snapshot identity, full paginated object/receipt listing, a canonical `recovery-bundle.mjs` manifest, independent encrypted Drive readback and recoverable key. The named Scope D approval must state *both* isolated Worker/D1/R2 identities, whether both restore calls are included, no production exposure, disabled outbound destinations, an operation ceiling and explicit stop/recovery steps. If any identity or approval is missing, **STOP**. A previously approved local test does not authorize a new hosted target.
+
+1. **Identity and containment:** Record source and target identities side-by-side in the private operator log. Confirm fresh nonproduction D1 with intended schema through `0025`, no canonical items, a separate R2 bucket, a route that cannot receive production traffic, and disabled scheduled/provider/Notion/Telegram/digest effects. Never copy live secrets, repoint DNS, or use production D1/R2 bindings.
+2. **Independent input:** Unlock the verified off-device copy under owner control. Compare export count/hash, independently preserved receipt prefix and original per-object size/SHA-256 against the accepted R04 manifest. Copy original bytes and newest receipt mirrors into the explicitly named isolated R2 target only if the approved Scope D operation includes that preparation. Reject missing, stale or mismatching objects, and preserve the source backup.
+3. **Dry run (write-bearing):** In the approved target only, submit the portable JSON with admin authentication and exact `POST /api/v1/restore?dry_run=true`. Record response status, `plannedItemCount`, `skippedPurgedItemIds` and `attachmentReadiness.checked/problems`. Do not paste the raw response or private item IDs into GitHub. `attachmentReadiness` verifies R2 existence and byte size, not full SHA-256.
+4. **Stop/checkpoint:** Do not apply if target is populated, schema is incompatible, purge receipts are incomplete, planned counts differ, `attachmentReadiness.problems` is nonempty, key custody fails, or any external dispatch is enabled. Preserve safe failure codes and do not attempt to repair production.
+5. **Approved apply:** Only after a clean preview and an explicit authorization covering the separate apply, submit `POST /api/v1/restore?dry_run=false` to the same isolated target. A 409 `RESTORE_TARGET_NOT_EMPTY` or `RESTORE_ATTACHMENTS_UNAVAILABLE` is a stop, not a reason to delete rows or weaken validation.
+6. **Independent readback:** In the isolated target only, run read-only `PRAGMA foreign_key_check` (expect zero rows), compare canonical item/event/child counts to the approved plan, count active items versus `item_search_fts`, search a privately approved phrase through the application, and retrieve the original using the application's authenticated private download flow. Hash the returned bytes against R04. Verify purge exclusions, processing/sync lease safety, URL/source links, and no external send or unexpected side-effect.
+7. **Recovery decision:** Record exact test output, target identity, UTC observation, failed checks and reviewer approval. Preserve isolated fixtures and source evidence under the agreed retention policy. **No traffic switch.** This was a first installation: there is no known compatible earlier Worker to roll back to, and code rollback never undoes schema changes. In an incident, contain ingress, preserve D1/R2 and exact release bytes, then use a separately reviewed forward repair or authorized isolated recovery.
+
+### Existing local regressions to rerun on a disposable environment
+
+```bash
+npm run recovery:bundle:test
+npx vitest run --config vitest.d1.config.ts apps/worker-api/test/restore-roundtrip.d1.spec.ts apps/worker-api/test/restore-purge-ledger.d1.spec.ts
+npx vitest run --config vitest.d1.config.ts apps/worker-api/test/restore-originals.d1.spec.ts apps/worker-api/test/restore-explicit-mode.d1.spec.ts
+```
+
+These commands were **not run in this documentation-only session**. They are local source gates and cannot replace actual Scope D target/independent-copy acceptance. No write-bearing restore request, DNS change, new resource, migration or production operation was performed.
+
+**Review handoff:** R04 evidence reviewer/owner for off-device sign-off; authorized operator for target/Scope D; independent reviewer for R05 readback. Only after all R05 criteria pass may the parent [#141](https://github.com/anmolsansi/Recollect-Flow/issues/141) receive a verified R05 link. R07 remains separately gated.
+
 <!-- prettier-ignore-end -->
