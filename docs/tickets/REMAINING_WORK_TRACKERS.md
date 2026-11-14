@@ -95,4 +95,14 @@ The owner reconnected Opera, and the authenticated Cloudflare dashboard was **re
 
 **November 12 owner completion:** The owner supplied the complete **current** Cloudflare Copy-control version UUID `ff5ba1ce-32b0-499c-ae67-f561ec09c93a`. It matches the frozen approved Worker UUID exactly. This is **OWNER_REPORTED_CURRENT** confirmation corroborated by the same-day read-only observed prefix at 100% traffic, not an independent full-UUID browser read. [R02 is VERIFIED within its public-boundary/deployed-identity scope](../verification/R02_RESULT.md#november-12-final-exact-active-version-confirmation-and-r02-disposition), pending passing CI on the final evidence-commit head. [PR #155](https://github.com/anmolsansi/Recollect-Flow/pull/155) remains unmerged; BG-32, Linear OPE-346 and V1 acceptance remain open for R03–R07 and other gates. The different dashboard R2 bucket size from November 6 does not establish a content or security change.
 
+## November 14, 2026 R05/R06 evidence handoff
+
+[PR #155](https://github.com/anmolsansi/Recollect-Flow/pull/155) and [PR #156](https://github.com/anmolsansi/Recollect-Flow/pull/156) have since **merged into `main`**. Their R01–R04 documents remain distinct evidence records, not automatic hosted recovery acceptance. The November 13 [R04 owner attestation](https://github.com/anmolsansi/Recollect-Flow/issues/141#issuecomment-6860482724) says the owner completed all R04 steps, but its supporting sanitized outputs have not been reviewed and `R04_RESULT.md` retains its blocker.
+
+The new [R05 result](../verification/R05_RESULT.md) reuses the **November 6 owner-reported** local real-bundle restore without relabeling it as a restore of the independently read-back Drive copy. A separately identified clean nonproduction D1/R2/Worker target, approved Scope D dry-run and apply, and current readback are missing. **R05 remains BLOCKED_DEPENDENCY / BLOCKED_INPUT**. No restore was submitted by this audit.
+
+The new [R06 result](../verification/R06_RESULT.md) keeps the **November 3 historical command exit missing**, classifies no-failure post-migration inspection as **NOT_TRIGGERED**, and provides a source-derived index/FTS comparison protocol that requires a **fresh, authorized read-only D1 `sqlite_master` inventory**. No present hosted index definition comparison occurred. **R06 remains IN_PROGRESS / BLOCKED_INPUT**.
+
+**Parent status:** [BG-32 #141](https://github.com/anmolsansi/Recollect-Flow/issues/141) and Linear OPE-228/OPE-346 stay open; R07 and V1 remain gated. R05/R06 verification docs may be reviewed independently, but source CI is not a replacement for operator/device evidence. No migrations, cloud changes, new resources, provider sends, DNS or traffic switches were executed.
+
 <!-- prettier-ignore-end -->
