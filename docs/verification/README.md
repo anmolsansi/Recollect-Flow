@@ -1,5 +1,11 @@
 # Verification Evidence Index
 
+## R05/R06 — independent restore and migration/index evidence (November 14, 2026)
+
+- [R05 isolated restore acceptance](R05_RESULT.md): **BLOCKED_DEPENDENCY / BLOCKED_INPUT**. Preserves the November 6 owner-reported **local** real-bundle restore (3 items, 1 original, 639 bytes, FKs/FTS checked) without calling it a restore from the independently sealed, off-device R04 set. Requires reviewed R04 proof, named clean nonproduction Worker/D1/R2, separately approved Scope D dry-run/apply, and full application/original/search/no-dispatch readback. No restore was performed in this documentation pass.
+- [R06 migration/index audit](R06_RESULT.md): **IN_PROGRESS / BLOCKED_INPUT**. The Nov 3 approved 22-file migration ledger is historically supported, but the original process exit artifact was not located and the current hosted D1 index definition inventory was not observed. Post-failure inspection is **NOT_TRIGGERED**, not performed. Includes source-derived index/FTS definition checkpoints and a fail-closed read-only comparison procedure. No remote SQL or migration replay occurred.
+- Both results preserve [BG-32 #141](https://github.com/anmolsansi/Recollect-Flow/issues/141), Linear OPE-228/OPE-346, and R07/V1 acceptance as open. A documentation PR or green source CI cannot authorize Scope D or certify current hosted schema.
+
 ## R03/R04 — independent recovery preparation and evidence (November 13, 2026)
 
 - [R03 bounded operation packet](R03_RESULT.md): **PREPARED, live execution BLOCKED_INPUT** pending current approval/access/cost proof. Reuses the November 9 Scope B limits without expanding permissions.
